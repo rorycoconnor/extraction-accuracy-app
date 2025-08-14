@@ -1,0 +1,1190 @@
+{
+  "templateKey": "certificateOfInsurance",
+  "baseModel": "google__gemini_2_0_flash_001",
+  "fields": [
+    {
+      "name": "Insured Name",
+      "key": "insuredName",
+      "type": "string",
+      "prompt": "",
+      "promptHistory": []
+    },
+    {
+      "name": "Insured Address",
+      "key": "insuredAddress",
+      "type": "string",
+      "prompt": "",
+      "promptHistory": []
+    },
+    {
+      "name": "Producer Name",
+      "key": "producerName",
+      "type": "string",
+      "prompt": "",
+      "promptHistory": []
+    },
+    {
+      "name": "Producer Address",
+      "key": "producerAddress",
+      "type": "string",
+      "prompt": "",
+      "promptHistory": []
+    },
+    {
+      "name": "Total Coverage",
+      "key": "totalCoverage",
+      "type": "float",
+      "prompt": "",
+      "promptHistory": []
+    },
+    {
+      "name": "Number of Policies",
+      "key": "numberOfPolicies",
+      "type": "float",
+      "prompt": "",
+      "promptHistory": []
+    },
+    {
+      "name": "Certificate Holder",
+      "key": "certificateHolder",
+      "type": "string",
+      "prompt": "",
+      "promptHistory": []
+    },
+    {
+      "name": "Summary of Coverage",
+      "key": "summaryOfCoverage",
+      "type": "string",
+      "prompt": "",
+      "promptHistory": []
+    }
+  ],
+  "results": [
+    {
+      "id": "1379334733649",
+      "fileName": "example.html",
+      "fileType": "HTML",
+      "fields": {
+        "insuredName": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "insuredAddress": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "producerName": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "producerAddress": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "totalCoverage": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "numberOfPolicies": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "certificateHolder": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "summaryOfCoverage": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        }
+      }
+    },
+    {
+      "id": "1823596213622",
+      "fileName": "05. American Dynamic Imaging records and bill with AFF.pdf",
+      "fileType": "PDF",
+      "fields": {
+        "insuredName": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Edward J. Dearkos",
+          "google__gemini_2_0_flash_001_no_prompt": "Edward J. Dearkos",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "insuredAddress": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "5202 Charter Oak Dr.\nSan Antonio, TX 78229",
+          "google__gemini_2_0_flash_001_no_prompt": "5202 Charter Oak Dr.\nSan Antonio, TX 78229",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "producerName": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Lilia C, Jones",
+          "google__gemini_2_0_flash_001_no_prompt": "Lilia C, Jones",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "producerAddress": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "5826 IH-10 West \nSan Antonio, TX 78201",
+          "google__gemini_2_0_flash_001_no_prompt": "5826 IH-10 West\nSan Antonio, TX 78201",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "totalCoverage": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "4000",
+          "google__gemini_2_0_flash_001_no_prompt": "4000",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "numberOfPolicies": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "certificateHolder": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "Begum Law Group",
+          "google__gemini_2_0_flash_001_no_prompt": "Begum Law Group",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "summaryOfCoverage": {
+          "Ground Truth": "",
+          "google__gemini_2_0_flash_001": "health care after I was injured due to somcone else's fault",
+          "google__gemini_2_0_flash_001_no_prompt": "health care after I was injured due to somcone else's fault",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        }
+      }
+    }
+  ],
+  "averages": {
+    "insuredName": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    },
+    "insuredAddress": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    },
+    "producerName": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    },
+    "producerAddress": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    },
+    "totalCoverage": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    },
+    "numberOfPolicies": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    },
+    "certificateHolder": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    },
+    "summaryOfCoverage": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0.5,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    }
+  },
+  "sessions": [],
+  "shownColumns": {
+    "Ground Truth": true,
+    "google__gemini_2_0_flash_001": true,
+    "google__gemini_2_0_flash_001_no_prompt": true,
+    "google__gemini_2_5_pro": false,
+    "google__gemini_2_5_pro_no_prompt": false,
+    "enhanced_extract_agent": false,
+    "enhanced_extract_agent_no_prompt": false,
+    "aws__claude_3_7_sonnet": false,
+    "aws__claude_3_7_sonnet_no_prompt": false,
+    "aws__claude_4_sonnet": false,
+    "aws__claude_4_sonnet_no_prompt": false,
+    "azure__openai__gpt_4_1": false,
+    "azure__openai__gpt_4_1_no_prompt": false,
+    "azure__openai__gpt_4_1_mini": false,
+    "azure__openai__gpt_4_1_mini_no_prompt": false,
+    "openai__o3": false,
+    "openai__o3_no_prompt": false
+  },
+  "lastModified": "2025-08-13T20:37:50.225Z",
+  "currentSessionId": "47096f94-104e-4927-88d2-f5ab522d1123"
+}

@@ -1,0 +1,1285 @@
+{
+  "noticePeriod": {
+    "activePrompt": "Extract the Renewal Notice Period from this contracts. Standardize the format and handle variations consistently something like 30 Days, 60 Days, etc.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the Renewal Notice Period from this contracts. Standardize the format and handle variations consistently something like 30 Days, 60 Days, etc.",
+        "savedAt": "2025-07-22T04:28:58.303Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-22T04:28:58.305Z"
+  },
+  "terminationForConvenience": {
+    "activePrompt": "Extract the Termination for Convenience from this contracts. If not directly stated, look for related information or alternative expressions.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the Termination for Convenience from this contracts. If not directly stated, look for related information or alternative expressions.",
+        "savedAt": "2025-07-22T04:29:31.431Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-22T04:29:31.433Z"
+  },
+  "terminationForCause": {
+    "activePrompt": "Extract the Termination for Cause from this contracts. If not directly stated, look for related information or alternative expressions.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the Termination for Cause from this contracts. If not directly stated, look for related information or alternative expressions.",
+        "savedAt": "2025-07-22T04:29:44.246Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-22T04:29:44.246Z"
+  },
+  "governingLaw": {
+    "activePrompt": "Extract the “Governing Law” from this contract",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the “Governing Law” from this contract",
+        "savedAt": "2025-08-01T18:11:14.407Z"
+      },
+      {
+        "id": "v1",
+        "prompt": "Format the USA states in most simple form such as Nevada, Delaware, Florida.",
+        "savedAt": "2025-07-22T04:30:44.751Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 2,
+    "lastModified": "2025-08-01T18:11:14.409Z"
+  },
+  "venue": {
+    "activePrompt": "Extract the “Venue” from this contract",
+    "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "Extract the “Venue” from this contract",
+        "savedAt": "2025-08-01T18:11:53.451Z"
+      },
+      {
+        "id": "v3",
+        "prompt": "Format the USA states in most simple form such as Nevada, Delaware, Florida.",
+        "savedAt": "2025-07-23T03:47:44.297Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Output city and state",
+        "savedAt": "2025-07-23T03:47:14.914Z"
+      },
+      {
+        "id": "v1",
+        "prompt": "Format the USA states in most simple form such as Nevada, Delaware, Florida.",
+        "savedAt": "2025-07-22T04:31:01.643Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 5,
+    "lastModified": "2025-08-01T18:11:53.454Z"
+  },
+  "endDate": {
+    "activePrompt": "Extract the contract's end date as YYYY-MM-DD; if not explicitly stated, calculate it by adding the contract term to the start date (or last signature date if the start is missing) and then subtracting one day.",
+    "promptHistory": [
+      {
+        "id": "v9",
+        "prompt": "Extract the contract's end date as YYYY-MM-DD; if not explicitly stated, calculate it by adding the contract term to the start date (or last signature date if the start is missing) and then subtracting one day.",
+        "savedAt": "2025-08-08T00:33:14.379Z"
+      },
+      {
+        "id": "v8",
+        "prompt": "Extract the contract's end date, formatted as YYYY-MM-DD. If the end date is not explicitly stated, calculate it using the contract term and start date, defaulting to the last signature date if the start date is unspecified.",
+        "savedAt": "2025-08-07T07:37:07.902Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0.125,
+              "accuracy": 0.125,
+              "precision": 0.125,
+              "recall": 0.125
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0.125,
+              "accuracy": 0.125,
+              "precision": 0.125,
+              "recall": 0.125
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-08-08T00:28:54.403Z"
+        }
+      },
+      {
+        "id": "v7",
+        "prompt": "Extract the contract's end date, formatting it as YYYY-MM-DD. Look for terms like \"end date,\" \"expiration date,\" or \"termination date.\"",
+        "savedAt": "2025-08-07T07:35:00.940Z"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-08-07T06:12:56.674Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0.125,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0.125,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-08-07T07:22:06.654Z"
+        }
+      },
+      {
+        "id": "v5",
+        "prompt": "Extract the contract's end date (termination/expiration date), formatted as YYYY-MM-DD. If the end date is not explicitly stated, calculate it using the contract's term and start date, using the last signature date as the start date if it is not specified.",
+        "savedAt": "2025-08-07T03:21:27.636Z"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-08-07T03:15:00.432Z"
+      },
+      {
+        "id": "v3",
+        "prompt": "Extract the \"End Date\" from the document and format it as YYYY-MM-DD; if no end date is found, calculate it using the start date and term; if the start date is missing but can be inferred from the last signature date, use that as the start date for calculation.",
+        "savedAt": "2025-07-23T03:25:56.405Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0,
+              "accuracy": 0.125,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-08-07T03:12:43.927Z"
+        }
+      },
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-07-23T01:57:34.195Z"
+      },
+      {
+        "id": "v1",
+        "prompt": "Extract the End Date from this contracts. Format as YYYY-MM-DD. If not explicitly stated, look for signature dates or document dates.",
+        "savedAt": "2025-07-22T04:31:59.448Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0.125,
+              "accuracy": 0.125,
+              "precision": 0.125,
+              "recall": 0.125
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0.125,
+              "accuracy": 0.125,
+              "precision": 0.125,
+              "recall": 0.125
+            },
+            "enhanced_extract_agent": {
+              "f1": 0.75,
+              "accuracy": 0.75,
+              "precision": 0.75,
+              "recall": 0.75
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "aws__claude_3_5_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_5_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-07-23T01:52:16.877Z"
+        }
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 9,
+    "lastModified": "2025-08-08T00:33:14.384Z"
+  },
+  "effectiveDate": {
+    "activePrompt": "Extract the Effective Date from this contracts. Format as YYYY-MM-DD. If not explicitly stated, look for signature dates or document dates.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the Effective Date from this contracts. Format as YYYY-MM-DD. If not explicitly stated, look for signature dates or document dates.",
+        "savedAt": "2025-07-22T04:32:17.790Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-22T04:32:17.792Z"
+  },
+  "contractTerm": {
+    "activePrompt": "Extract the Contract Term from this contracts. If not directly stated, look for related information or alternative expressions.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the Contract Term from this contracts. If not directly stated, look for related information or alternative expressions.",
+        "savedAt": "2025-07-22T04:32:34.841Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-22T04:32:34.843Z"
+  },
+  "counterPartyName": {
+    "activePrompt": "Extract the name of the counter party, which may be a person or company, but exclude our company name, IBM, Inc.",
+    "promptHistory": [
+      {
+        "id": "v5",
+        "prompt": "Extract the name of the counter party, which may be a person or company, but exclude our company name, IBM, Inc.",
+        "savedAt": "2025-08-08T01:30:56.939Z"
+      },
+      {
+        "id": "v4",
+        "prompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will not be our company name which is Increo, Inc. ",
+        "savedAt": "2025-08-06T18:37:27.542Z"
+      },
+      {
+        "id": "v3",
+        "prompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will be other then our company name which is Increo, Inc. ",
+        "savedAt": "2025-08-02T05:22:39.584Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 1,
+          "lastRunAt": "2025-08-06T18:33:02.135Z"
+        }
+      },
+      {
+        "id": "v2",
+        "prompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will be other then our company name which is Qualys.",
+        "savedAt": "2025-07-30T02:57:19.896Z"
+      },
+      {
+        "id": "v1",
+        "prompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will be other then our company name which is Increo, Inc.",
+        "savedAt": "2025-07-22T16:55:56.906Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0,
+              "accuracy": 0.16666666666666666,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0,
+              "accuracy": 0.3333333333333333,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0.5,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0.8333333333333334,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_5_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_5_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 6,
+          "lastRunAt": "2025-07-29T22:05:19.963Z"
+        }
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 5,
+    "lastModified": "2025-08-08T01:30:56.947Z"
+  },
+  "counterPartyAddress": {
+    "activePrompt": "Extract the Counter Party address from this contracts. The counter party address will be other then Increo, Inc. company address.",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the Counter Party address from this contracts. The counter party address will be other then Qualys company address.",
+        "savedAt": "2025-07-30T02:57:36.208Z"
+      },
+      {
+        "id": "v1",
+        "prompt": "Extract the Counter Party address from this contracts. The counter party address will be other then Increo, Inc. company address.",
+        "savedAt": "2025-07-22T16:57:13.568Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0,
+              "accuracy": 0.6666666666666666,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0.8333333333333334,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "aws__claude_3_5_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_5_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 6,
+          "lastRunAt": "2025-07-29T22:05:19.963Z"
+        }
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 2,
+    "lastModified": "2025-07-31T17:07:38.615Z"
+  },
+  "contractType": {
+    "activePrompt": "Extract the \"Contract Type\" from the document, mapping \"Master Server Agreement\" to \"Master Agreement,\" and ensure the value matches one of the predefined enum choices provided by the system. ",
+    "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "Extract the \"Contract Type\" from the document, mapping \"Master Server Agreement\" to \"Master Agreement,\" and ensure the value matches one of the predefined enum choices provided by the system. ",
+        "savedAt": "2025-08-08T00:30:10.767Z"
+      },
+      {
+        "id": "v3",
+        "prompt": "Extract the \"Contract Type\" from the document, mapping \"Master Server Agreement\" to \"Master Agreement,\" and ensure the value matches one of the predefined enum choices provided by the system.",
+        "savedAt": "2025-07-23T03:23:42.401Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-08-08T00:28:54.403Z"
+        }
+      },
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-07-23T01:41:05.870Z"
+      },
+      {
+        "id": "v1",
+        "prompt": "test",
+        "savedAt": "2025-07-23T01:40:54.915Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 4,
+    "lastModified": "2025-08-08T00:30:10.776Z"
+  },
+  "limitationOfLiability": {
+    "activePrompt": "Specifies the maximum amount a party can be held financially responsible for under the contract, often expressed as a multiple of contract value (e.g., 1x = contract value, 3x = three times contract value) or as \"Unlimited\" (no cap) or \"None\" (no liability limit specified).",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Specifies the maximum amount a party can be held financially responsible for under the contract, often expressed as a multiple of contract value (e.g., 1x = contract value, 3x = three times contract value) or as \"Unlimited\" (no cap) or \"None\" (no liability limit specified).",
+        "savedAt": "2025-07-29T05:47:26.867Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-29T05:47:26.869Z"
+  },
+  "warrantyPeriodMonths": {
+    "activePrompt": "The duration, in months, for which the vendor guarantees the performance or quality of goods/services provided under the contract.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "The duration, in months, for which the vendor guarantees the performance or quality of goods/services provided under the contract.",
+        "savedAt": "2025-07-29T05:48:12.639Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-29T05:48:12.641Z"
+  },
+  "indemnification": {
+    "activePrompt": "Identifies whether indemnity obligations (to compensate the other party for losses or damages) are mutual (both parties), one-way (one party indemnifies the other), or not present.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Identifies whether indemnity obligations (to compensate the other party for losses or damages) are mutual (both parties), one-way (one party indemnifies the other), or not present.",
+        "savedAt": "2025-07-29T05:48:35.924Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-29T05:48:35.926Z"
+  },
+  "paymentTerms": {
+    "activePrompt": "Describes the agreed schedule and conditions for payments (e.g., days after invoice, upfront, milestones). Standardize where possible (Net 30, Net 45, etc.) to enable financial reporting and compliance.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Describes the agreed schedule and conditions for payments (e.g., days after invoice, upfront, milestones). Standardize where possible (Net 30, Net 45, etc.) to enable financial reporting and compliance.",
+        "savedAt": "2025-07-29T05:49:10.571Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-29T05:49:10.574Z"
+  },
+  "keyObligationsSummary": {
+    "activePrompt": "Free-form summary of the most important contractual obligations for either or both parties that are not mentioned in the other fields.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Free-form summary of the most important contractual obligations for either or both parties that are not mentioned in the other fields.",
+        "savedAt": "2025-07-29T05:50:13.989Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-07-29T05:50:13.991Z"
+  },
+  "contractValue": {
+    "activePrompt": "Extract the total contract value (or synonyms like total amount, total price, or consideration) and format the output as US currency, including the dollar sign and commas (e.g., $10,000.00). If no monetary value is found, leave the field blank.",
+    "promptHistory": [
+      {
+        "id": "v5",
+        "prompt": "Extract the total contract value (or synonyms like total amount, total price, or consideration) and format the output as US currency, including the dollar sign and commas (e.g., $10,000.00). If no monetary value is found, leave the field blank.",
+        "savedAt": "2025-08-06T22:19:47.960Z"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-08-06T22:15:03.547Z"
+      },
+      {
+        "id": "v3",
+        "prompt": "Extract the total monetary value from terms like 'Contract Value' or 'Total Amount' and format it as US currency (e.g., $1,234.56).",
+        "savedAt": "2025-08-06T18:34:45.438Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 1,
+          "lastRunAt": "2025-08-06T18:35:31.950Z"
+        }
+      },
+      {
+        "id": "v2",
+        "prompt": "Extract the total monetary value from terms like 'Contract Value' or 'Total Amount' and format it as US currency (e.g., $1,234.56). If a specific value is absent, summarize the financial obligations; if no financial terms are mentioned at all, return 'Not specified'.",
+        "savedAt": "2025-08-06T18:33:49.580Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 1,
+          "lastRunAt": "2025-08-06T18:34:33.899Z"
+        }
+      },
+      {
+        "id": "v1",
+        "prompt": "This was the original prompt it generate for \"Contract Value\"\n\nExtract the total monetary value of this contract, which may be labeled as 'Contract Value', 'Total Amount', or similar terms. If a specific value is not explicitly stated, summarize any language describing the financial terms or payment obligations. If no financial terms are mentioned, return 'Not specified'.\n\n\nThen I went back to the. prompt.... What do you need this prompt to do better...\nI wrote.   \nI am not getting the correct formatting. I would like it to be in US Currency.\n\nThen clicked improve prompt\n\nThis was the new one it generated.\n\nExtract the total monetary value from terms like 'Contract Value' or 'Total Amount' and format it as US currency (e.g., $1,234.56). If a specific value is absent, summarize the financial obligations; if no financial terms are mentioned at all, return 'Not specified'.",
+        "savedAt": "2025-08-06T18:32:46.321Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 1,
+          "lastRunAt": "2025-08-06T18:33:02.136Z"
+        }
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 5,
+    "lastModified": "2025-08-06T22:19:47.964Z"
+  }
+}

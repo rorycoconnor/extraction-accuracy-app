@@ -1,0 +1,1136 @@
+[
+  {
+    "id": "89342d28-58d3-4015-b04f-95aae508ef7d",
+    "type": "metadata_template",
+    "templateKey": "insuranceCertificate",
+    "scope": "enterprise_1218697394",
+    "displayName": "Compliance ",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "e43b510f-7f8c-40d6-9a73-2de642f134ff",
+        "type": "string",
+        "key": "vendorName",
+        "displayName": "Vendor Name",
+        "hidden": false,
+        "description": "Enter Insurance Party Name",
+        "isActive": true
+      },
+      {
+        "id": "fe189551-7579-4965-bdfa-90b26ba3285c",
+        "type": "string",
+        "key": "vendorContactName",
+        "displayName": "Vendor Contact Name",
+        "hidden": false,
+        "description": "Enter Insurance Party Contact Name",
+        "isActive": true
+      },
+      {
+        "id": "8aa5a0b1-0ec1-4be2-a82d-d6a4e10b9faf",
+        "type": "string",
+        "key": "vendorContactEmail",
+        "displayName": "Vendor Contact email",
+        "hidden": false,
+        "description": "Enter Insurance Party Contact Email",
+        "isActive": true
+      },
+      {
+        "id": "a3e69d3e-9716-416a-b05e-93d11a5cbd0d",
+        "type": "date",
+        "key": "insuranceStartDate",
+        "displayName": "Start Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "3d690e9c-5d24-4205-a5c5-70f0d615fa00",
+        "type": "date",
+        "key": "insuranceExpirationDate",
+        "displayName": "Expiration Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "01d5b437-841d-41d8-a5e8-e41010c25bf5",
+        "type": "float",
+        "key": "generalLiabilityInsuranceCoverage",
+        "displayName": "General Liability",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "c3a7f7c7-cdc0-4b6b-a595-05bf069fccb8",
+        "type": "float",
+        "key": "workersCompensationInsuranceCoverage",
+        "displayName": "Workers Compensation",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "8888409b-fdcf-451a-8587-a04d4ebd0b60",
+        "type": "enum",
+        "key": "status",
+        "displayName": "Status",
+        "hidden": false,
+        "options": [
+          {
+            "id": "ff35162b-6627-420e-9541-ee6be4c6cad8",
+            "key": "New Submission"
+          },
+          {
+            "id": "5a40fe2d-2b3e-4874-973d-3014d6e8ee3a",
+            "key": "Active"
+          },
+          {
+            "id": "6f0a1451-62d3-4931-9a4d-5586e0e20e73",
+            "key": "InActive"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "dd5ee227-8623-4f4e-b52f-69daccfcca39",
+        "type": "string",
+        "key": "submitterEmail",
+        "displayName": "Submitter eMail",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "d5352b80-e34f-42b9-8602-b745507653ef",
+        "type": "enum",
+        "key": "businessUnit",
+        "displayName": "Business Unit",
+        "hidden": false,
+        "options": [
+          {
+            "id": "0b77e1ab-3791-4543-9f86-52b72ab71ae9",
+            "key": "Engineering"
+          },
+          {
+            "id": "ba509c25-5973-4a4d-872d-d68ccc6ef198",
+            "key": "Finance"
+          },
+          {
+            "id": "201b2010-e456-498b-b095-efbbd00e880f",
+            "key": "Human Resources"
+          },
+          {
+            "id": "e07383f0-392d-4586-b4e1-a2a42ad7a0df",
+            "key": "IT"
+          },
+          {
+            "id": "0a7d4157-59b4-4392-85dd-2e44ff1a3b85",
+            "key": "Manufacturing"
+          },
+          {
+            "id": "c59cca4a-6f8c-4b74-a44e-9889d00e7a0a",
+            "key": "Marketing"
+          },
+          {
+            "id": "36cec353-6e56-4bc0-af8b-2f97860a9d55",
+            "key": "Sales"
+          }
+        ],
+        "isActive": false
+      }
+    ]
+  },
+  {
+    "id": "e9f04859-94e2-4948-9f44-a1a0ed522325",
+    "type": "metadata_template",
+    "templateKey": "contracts",
+    "scope": "enterprise_1218697394",
+    "displayName": "Contracts",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "46f84943-8ef8-4f99-b180-25c22d79f23a",
+        "type": "enum",
+        "key": "status",
+        "displayName": "Status",
+        "hidden": false,
+        "options": [
+          {
+            "id": "41d5064f-0ed3-46a7-b115-912c99408347",
+            "key": "New Submission"
+          },
+          {
+            "id": "1d30a5a9-ac74-4099-b5c7-15eafe802016",
+            "key": "Assigned"
+          },
+          {
+            "id": "562951f5-60f3-4f32-8f27-495d7b202b62",
+            "key": "In Review"
+          },
+          {
+            "id": "ae923952-08d9-4589-8cfe-43d6bfdbcd51",
+            "key": "Out for Signature"
+          },
+          {
+            "id": "bdccc81c-6e70-42e8-8f78-f900f1f62738",
+            "key": "Pending approval"
+          },
+          {
+            "id": "adbf6c35-92bd-4b30-93d1-24acbab225a5",
+            "key": "Signed"
+          },
+          {
+            "id": "acea995b-6d43-4a58-b484-c5e0bdea8d4a",
+            "key": "Approved"
+          },
+          {
+            "id": "373d8e43-864f-4acc-9971-32b1fa221204",
+            "key": "Active"
+          },
+          {
+            "id": "3c112e78-f63a-4f0d-8ac1-462bcbf27e78",
+            "key": "Issue"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "eb435ec6-a432-488d-be92-f4ad3279d1a6",
+        "type": "string",
+        "key": "comments",
+        "displayName": "Comments",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "2a022613-a8f3-413e-9193-e9e46d3dba46",
+        "type": "enum",
+        "key": "assignee",
+        "displayName": "Assignee",
+        "hidden": false,
+        "options": [
+          {
+            "id": "6a2e2f4d-7cba-4170-bef3-e5f34bb37485",
+            "key": "Jake List"
+          },
+          {
+            "id": "d171e971-b910-4c65-82bb-9de186205d63",
+            "key": "Mike Carter"
+          },
+          {
+            "id": "b41cc661-8be8-42be-9ec8-bec6165addf0",
+            "key": "Aria Voss"
+          },
+          {
+            "id": "bba517e1-cb5d-40cc-a091-949aaf54db10",
+            "key": "Sofia Ledesma"
+          },
+          {
+            "id": "e28bc8a2-4898-4cb5-8270-cb6275b3af7a",
+            "key": "Rohan Patel"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "58da9c42-e6fe-4dec-90c9-7ff3ac138e2f",
+        "type": "enum",
+        "key": "contractType",
+        "displayName": "Contract Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "a46c055b-0e27-4255-baa9-31ef353870a5",
+            "key": "NDA"
+          },
+          {
+            "id": "85eb5b25-9692-4fcf-9369-5354c447e765",
+            "key": "Master Agreement"
+          },
+          {
+            "id": "df9501b4-0519-4cbd-a56c-a92c50c80366",
+            "key": "Amendment"
+          },
+          {
+            "id": "9b9bac77-c28f-4224-b899-6773a67535eb",
+            "key": "DPA"
+          },
+          {
+            "id": "823e278d-7fee-4d76-b1fc-cddd08158b29",
+            "key": "Endorsement Agreement"
+          },
+          {
+            "id": "29aefb08-a8fa-4401-a593-78cf6503e5f0",
+            "key": "Reseller Agreement"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "020dacc7-cb31-4529-be4c-91c1404351cd",
+        "type": "string",
+        "key": "counterPartyName",
+        "displayName": "Counter Party Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "99f6c67b-6bfe-4586-b4c9-df0baeb372b2",
+        "type": "string",
+        "key": "counterPartyAddress",
+        "displayName": "Counter Party Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "193ef2a4-6e94-4add-9687-3d305b806a37",
+        "type": "date",
+        "key": "effectiveDate",
+        "displayName": "Effective Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "4d2299d6-13f8-466a-877c-2c1984212d14",
+        "type": "enum",
+        "key": "contractTerm",
+        "displayName": "Contract Term",
+        "hidden": false,
+        "options": [
+          {
+            "id": "0d08c03d-7823-4259-b9f2-433c7272a755",
+            "key": "Monthly"
+          },
+          {
+            "id": "6bfe9318-bc62-4967-b0aa-a787434df41f",
+            "key": "1 Year"
+          },
+          {
+            "id": "b3baa4ee-8602-4b9b-9bce-076861720ba4",
+            "key": "2 Year"
+          },
+          {
+            "id": "0f7b1267-82da-4045-bc7e-ec5217ea1990",
+            "key": "3 Year"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "fb83e4be-9b81-4e52-b2fb-e479dd194eb0",
+        "type": "date",
+        "key": "endDate",
+        "displayName": "End Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "2e30d31c-d484-4ca2-a5a7-b87bf4fd015a",
+        "type": "enum",
+        "key": "renewalType",
+        "displayName": "Renewal Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "cabef5b0-0255-41f0-a283-cc33cec7fb24",
+            "key": "Autorenewal"
+          },
+          {
+            "id": "6fdba85c-8548-4630-94e2-b3b65c35a09f",
+            "key": "Manual Renewal"
+          },
+          {
+            "id": "2dd896a7-5b0f-45e4-a68d-e1469c202a3e",
+            "key": "Evergreen Renewal"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "b399913e-626c-44e1-be98-995b5f6c3225",
+        "type": "string",
+        "key": "noticePeriod",
+        "displayName": "Renewal Notice Period",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "73008f46-fa34-4404-a8c9-44c6a89d6e12",
+        "type": "enum",
+        "key": "governingLaw",
+        "displayName": "Governing Law",
+        "hidden": false,
+        "description": "",
+        "options": [
+          {
+            "id": "195d0c25-4a0e-4ccd-b327-8ae6fe753d67",
+            "key": "California"
+          },
+          {
+            "id": "955976a6-a190-4a5f-8a56-96721f0510f5",
+            "key": "Delaware"
+          },
+          {
+            "id": "53f23ffb-3d1d-46d4-8e9d-7ce949ec02e3",
+            "key": "Florida"
+          },
+          {
+            "id": "b47960cb-988f-467c-aec7-611e1a60f3ca",
+            "key": "Nevada"
+          },
+          {
+            "id": "e4b4c9bf-a645-49f0-8917-64ad0c37e0b0",
+            "key": "New York"
+          },
+          {
+            "id": "a5f39421-289a-4402-a58b-70efa02a5f17",
+            "key": "Texas"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "21073bca-f7a6-46a1-867f-51a8127aae60",
+        "type": "enum",
+        "key": "venue",
+        "displayName": "Venue",
+        "hidden": false,
+        "description": "",
+        "options": [
+          {
+            "id": "fe282bbe-3fa2-474e-9b84-e4316b30a2ca",
+            "key": "California"
+          },
+          {
+            "id": "c4cb175d-972b-499d-96fe-31bbd709534d",
+            "key": "Delaware"
+          },
+          {
+            "id": "cb9f4cfa-4002-44af-b56d-2190c22e175e",
+            "key": "Florida"
+          },
+          {
+            "id": "8adbf858-d98f-4cee-b6dc-d159cbc6201d",
+            "key": "Nevada"
+          },
+          {
+            "id": "48cf191b-45a9-4388-9778-d1811e285190",
+            "key": "New York"
+          },
+          {
+            "id": "9862881d-f167-4820-bce1-2ef8ba1ca4b5",
+            "key": "Texas"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "6ac51866-55c3-4453-ba87-2c6543934f17",
+        "type": "enum",
+        "key": "terminationForConvenience",
+        "displayName": "Termination for Convenience",
+        "hidden": false,
+        "options": [
+          {
+            "id": "c8dd3236-e9df-4b13-9465-b5380ef7f004",
+            "key": "Yes"
+          },
+          {
+            "id": "77c1ff2f-4a11-4571-8eda-b265662537fa",
+            "key": "No"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "0e9316ca-f66b-4d1e-9bdf-9cc897241362",
+        "type": "enum",
+        "key": "terminationForCause",
+        "displayName": "Termination for Cause",
+        "hidden": false,
+        "options": [
+          {
+            "id": "ca0d67b0-d65c-424b-a43d-7115d058bd14",
+            "key": "Yes"
+          },
+          {
+            "id": "27286844-6a95-4cf3-afef-7a6c48ed39ec",
+            "key": "No"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "8517bf17-4b9a-4149-aa46-21ccbb17363c",
+        "type": "string",
+        "key": "contractValue",
+        "displayName": "Contract Value",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "128dceba-a7fb-4940-8f49-0876c7ae3c5e",
+        "type": "string",
+        "key": "limitationOfLiability",
+        "displayName": "Limitation of Liability",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "eda7bb6a-a04c-4c85-8c2b-f094bb765716",
+        "type": "string",
+        "key": "warrantyPeriodMonths",
+        "displayName": "Warranty Period (Months)",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "f8ba5953-19a8-4a72-a7e2-6db5a8f336a7",
+        "type": "enum",
+        "key": "indemnification",
+        "displayName": "Indemnification",
+        "hidden": false,
+        "options": [
+          {
+            "id": "134f75c5-01cc-45bf-8cd8-716875d509d8",
+            "key": "Mutual"
+          },
+          {
+            "id": "edaf30c5-b0f3-47e9-be06-a7ffccc5da6a",
+            "key": "One-way"
+          },
+          {
+            "id": "f01de156-f74a-475e-a485-2a865eff6252",
+            "key": "None"
+          },
+          {
+            "id": "913ddfb1-c9c4-4705-abf2-1fe2803a845c",
+            "key": "Not Specified"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "fba637e6-1128-4047-bdc1-fafef536005c",
+        "type": "enum",
+        "key": "confidentiality",
+        "displayName": "Confidentiality",
+        "hidden": false,
+        "options": [
+          {
+            "id": "f11d6361-4680-4b47-86c3-c2410351ae59",
+            "key": "Yes"
+          },
+          {
+            "id": "66441aab-6b37-4976-9024-814b5510f9cf",
+            "key": "Nol"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "7e3df744-bfe8-4732-bec0-e99f0f29146e",
+        "type": "string",
+        "key": "confidentialityDuration",
+        "displayName": "Confidentiality Duration",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "d15a1891-3f69-40d1-80c8-f3f734ae61c2",
+        "type": "string",
+        "key": "paymentTerms",
+        "displayName": "Payment Terms",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "b423de43-a9c3-4d66-9c66-17eb1479ceb4",
+        "type": "enum",
+        "key": "disputeResolution",
+        "displayName": "Dispute Resolution",
+        "hidden": false,
+        "options": [
+          {
+            "id": "c622154f-8a3c-409b-854e-ac73cd53170f",
+            "key": "Arbitration"
+          },
+          {
+            "id": "6607e6fd-0196-400b-b8df-ce7017eb3548",
+            "key": "Litigation"
+          },
+          {
+            "id": "1baba5a7-f06b-4a70-9c21-e7aaefc9c5ce",
+            "key": "Mediation"
+          },
+          {
+            "id": "f2dc5718-51bd-4e70-8bbd-d069906bc20b",
+            "key": "No Specified"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "cdc9e5cb-2810-4752-a5c9-330f93f2c5bb",
+        "type": "string",
+        "key": "keyObligationsSummary",
+        "displayName": "Key Obligations Summary",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "dcc0383a-770a-427d-8d2f-81b7226134f2",
+        "type": "string",
+        "key": "companySignerEmail",
+        "displayName": "Company Signer Email",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "22936b75-ddf5-4d54-9702-a87ea2b770d2",
+        "type": "string",
+        "key": "counterPartySignerEmail",
+        "displayName": "Counter Party Signer Email",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "00f6b2aa-15db-4582-95fa-9b284b268190",
+        "type": "string",
+        "key": "requestor",
+        "displayName": "Requestor",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "67e4b200-1dfb-4e45-9572-22f0109f7feb",
+        "type": "date",
+        "key": "dateNeeded",
+        "displayName": "Date Needed",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "bcf2d816-3ca0-49bc-9a64-cdad82aeb14b",
+        "type": "date",
+        "key": "submissionDate",
+        "displayName": "Submission Date",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "4c451507-3da3-4f41-9116-84fd3114ee16",
+        "type": "string",
+        "key": "ndaStatus",
+        "displayName": "NDA Status",
+        "hidden": false,
+        "isActive": false
+      }
+    ]
+  },
+  {
+    "id": "9ab888a4-b22a-4a31-804d-dcea915ff2ba",
+    "type": "metadata_template",
+    "templateKey": "hrRecords",
+    "scope": "enterprise_1218697394",
+    "displayName": "HR Records",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "482a3424-561c-42d5-9e80-3483379f6849",
+        "type": "enum",
+        "key": "status",
+        "displayName": "Status",
+        "hidden": false,
+        "options": [
+          {
+            "id": "c05218f8-5ee3-4b93-8092-0d96f289be1a",
+            "key": "Active"
+          },
+          {
+            "id": "8e7c6d34-c8ae-4e3e-a91d-763a8fbd3a8a",
+            "key": "In Active"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "7e2756e1-8b1a-46a6-acac-ec2cf2b1657b",
+        "type": "string",
+        "key": "employeeName1",
+        "displayName": "Employee Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "a081980d-a0a8-4cd8-afc0-8b939e3e1126",
+        "type": "enum",
+        "key": "employeeType",
+        "displayName": "Employee Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "49c80c84-6616-4edb-aa46-173b9e9d7d85",
+            "key": "Full Time"
+          },
+          {
+            "id": "e22df9b1-5335-488e-b254-4203286de7ba",
+            "key": "Part Time"
+          },
+          {
+            "id": "fb071755-d1b7-493a-84b9-e46c8a29fd6a",
+            "key": "Contractor"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "dbbf9786-15a0-479b-9bff-ec49fed2b533",
+        "type": "string",
+        "key": "employeeAddress",
+        "displayName": "Employee Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "f55c319e-19c3-4a72-a24c-ead76abb860f",
+        "type": "enum",
+        "key": "documentType",
+        "displayName": "Document Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "6e98dfc0-cf7a-4be7-a9a6-aaf2e7e1834b",
+            "key": "ID"
+          },
+          {
+            "id": "31579936-72ba-48bd-b384-4fd396b8bdc8",
+            "key": "Resume"
+          },
+          {
+            "id": "dba4bdf1-53be-4de2-abdd-0494ec78cc31",
+            "key": "Employment Agreement"
+          },
+          {
+            "id": "929dc202-f0c5-4dea-89a2-db0449da4fe5",
+            "key": "Offer Letter"
+          },
+          {
+            "id": "fe158732-3da5-4177-9686-d03c0dbe43f1",
+            "key": "Handbook"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "326bdde5-5f74-4550-b53d-868fca0fe75e",
+        "type": "date",
+        "key": "hireDate",
+        "displayName": "Hire Date",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "b14e07c9-2591-4e62-a306-3fc2091b6530",
+        "type": "date",
+        "key": "endDate",
+        "displayName": "End Date",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "eda78780-0532-4c2f-8279-5a9fa6022945",
+        "type": "string",
+        "key": "comments",
+        "displayName": "Comments",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "7d5c7cab-cbed-41cc-93cd-2d19002b58a5",
+        "type": "enum",
+        "key": "signedOff",
+        "displayName": "Signed Off",
+        "hidden": false,
+        "options": [
+          {
+            "id": "2ab3790f-f9ed-4cb2-b22d-b51ad0b7e9ee",
+            "key": "Yes"
+          },
+          {
+            "id": "e264cbd9-fdba-4237-9ae3-7bb5a6b3d5c9",
+            "key": "No"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "75de0631-01ca-4411-8a17-f02236d98ae8",
+        "type": "string",
+        "key": "employeeId",
+        "displayName": "Employee ID",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "eb2e4fd7-b376-4b9e-b8e7-6755766b83a9",
+        "type": "string",
+        "key": "licenseId",
+        "displayName": "License ID",
+        "hidden": false,
+        "isActive": true
+      }
+    ]
+  },
+  {
+    "id": "fe4fb0a9-cf3e-42d1-b340-83ae04762116",
+    "type": "metadata_template",
+    "templateKey": "invoice",
+    "scope": "enterprise_1218697394",
+    "displayName": "Invoice",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "39f86638-19b0-45f2-8428-a2c723e9574f",
+        "type": "string",
+        "key": "vendor",
+        "displayName": "Vendor",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "37356873-bc47-4558-bdd2-514f1d94f1ab",
+        "type": "string",
+        "key": "description",
+        "displayName": "Description",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "1ff089cb-660e-49c0-bca1-dd0ce08037c6",
+        "type": "date",
+        "key": "invoiceDate",
+        "displayName": "Invoice Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "874e74b1-4035-4ca3-974a-fc1f46c7d6a1",
+        "type": "float",
+        "key": "amountDue",
+        "displayName": "Amount Due",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "77c69232-dabb-4816-872d-100df588d061",
+        "type": "date",
+        "key": "dueDate",
+        "displayName": "Due Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "6461e4c9-a8aa-4974-85d1-dc1ccb990f85",
+        "type": "string",
+        "key": "items",
+        "displayName": "Items",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "7bf366cf-83c4-4098-9dae-a009643711aa",
+        "type": "string",
+        "key": "term",
+        "displayName": "Term",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "fa5f84e6-5863-49d9-b98c-a19fcb41ed25",
+        "type": "string",
+        "key": "poNumber",
+        "displayName": "PO Number",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "eefcc9f0-e41f-4675-89b6-c538707f734a",
+        "type": "float",
+        "key": "salesAmountNumber",
+        "displayName": "Sales Amount Number",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "2950d96a-33b6-4f60-a46e-355564628631",
+        "type": "float",
+        "key": "salesTax",
+        "displayName": "Sales Tax",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "c768044f-69f2-4076-9bd6-98aafc6fd581",
+        "type": "float",
+        "key": "freightAmount",
+        "displayName": "Freight Amount",
+        "hidden": false,
+        "isActive": true
+      }
+    ]
+  },
+  {
+    "id": "a6fc00d4-0f83-4d66-a652-7d6a9c5e4d62",
+    "type": "metadata_template",
+    "templateKey": "lease",
+    "scope": "enterprise_1218697394",
+    "displayName": "Lease",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "494cd35a-f942-4b93-8be1-295cd77a1e6e",
+        "type": "string",
+        "key": "tenantName",
+        "displayName": "Tenant Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "494553bc-eedc-449f-a628-027909bd2170",
+        "type": "string",
+        "key": "tenantAddress",
+        "displayName": "Tenant Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "21c41fc6-5268-4964-8f2c-49fa78084551",
+        "type": "date",
+        "key": "startDate",
+        "displayName": "Start Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "62db2b2b-c9d4-4475-8056-39540e6e8714",
+        "type": "date",
+        "key": "endDate",
+        "displayName": "End Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "05795305-3aaf-4305-a777-b982f9c35042",
+        "type": "string",
+        "key": "squareFootage",
+        "displayName": "Square Footage",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "9a4f1d18-3e1d-4476-80f0-a8246f65df10",
+        "type": "string",
+        "key": "renewalOptions",
+        "displayName": "Renewal Options",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "81e722b1-a784-4992-b4f8-2a773485b9dc",
+        "type": "string",
+        "key": "initialContractTerm",
+        "displayName": "Initial Contract Term",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "cd26fa15-e7aa-4fcc-b1a8-993ecc12549d",
+        "type": "string",
+        "key": "baseRent",
+        "displayName": "Base Rent",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "adb08790-2c43-472a-9e8a-67b7fd181ce9",
+        "type": "string",
+        "key": "additionalRent",
+        "displayName": "Additional Rent",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "e21818e1-6d56-490f-9fa1-084628011955",
+        "type": "string",
+        "key": "securityDeposit",
+        "displayName": "Security Deposit",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "a5891ea0-b600-41ae-844f-a6f7e0cf074b",
+        "type": "string",
+        "key": "landlordName",
+        "displayName": "Landlord Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "a4803c0e-92c9-4e22-b48c-e1f8b27a5af8",
+        "type": "string",
+        "key": "propertyAddress",
+        "displayName": "Property Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "6544893d-bd5a-49b0-9bb1-a98f2e937528",
+        "type": "string",
+        "key": "leaseAgreementNumber",
+        "displayName": "Lease Agreement Number",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "7dad9536-cc75-400c-b9c7-b37c0b005c9b",
+        "type": "enum",
+        "key": "rightOfFirstRefusal",
+        "displayName": "Right of First Refusal",
+        "hidden": false,
+        "options": [
+          {
+            "id": "438d65b7-8531-443a-9e76-baab76bbbb39",
+            "key": "Yes"
+          },
+          {
+            "id": "8764545b-6d99-444a-87cd-f11c98f4b1eb",
+            "key": "No"
+          },
+          {
+            "id": "a21371f5-d56c-4927-85e0-1beb81d71f8a",
+            "key": "Not Applicable"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "870ca9d5-d02a-4483-9450-87b9f91fb8c3",
+        "type": "enum",
+        "key": "purchaseOption",
+        "displayName": "Purchase Option",
+        "hidden": false,
+        "options": [
+          {
+            "id": "4ff5ce4f-b64c-4c7f-a01c-252b1ed3f442",
+            "key": "Yes"
+          },
+          {
+            "id": "ca093c49-33d8-45ea-a51e-c3723c256587",
+            "key": "No"
+          },
+          {
+            "id": "38f88405-c01b-4bb3-8640-a30c76b9d496",
+            "key": "Not Applicable"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "e4b8c2ee-b9eb-4f87-a896-bb51e72c53a7",
+        "type": "multiSelect",
+        "key": "landlordMaintenanceAndRepairResponsibilities",
+        "displayName": "Landlord Maintenance and Repair Responsibilities",
+        "hidden": false,
+        "options": [
+          {
+            "id": "ce7b3ba9-c7e4-435b-a08f-9496d44a2dab",
+            "key": "Landlord"
+          },
+          {
+            "id": "30dc5a32-78c7-4ea2-bde8-b708f0183c2c",
+            "key": "Tenant"
+          },
+          {
+            "id": "6875bfa7-f87c-4af2-9138-3a160b72c550",
+            "key": "Shared"
+          },
+          {
+            "id": "62383094-29d0-44d3-8cb0-dcfd465ef52b",
+            "key": "Not Specified"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "aec889de-30e5-43a1-823c-f2fb3cfbcb71",
+        "type": "date",
+        "key": "renewalOptionNoticeDate",
+        "displayName": "Renewal Option Notice Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "55e7fdb0-fe68-436a-b20b-88411b9d8831",
+        "type": "enum",
+        "key": "taxes",
+        "displayName": "Taxes",
+        "hidden": false,
+        "options": [
+          {
+            "id": "499f2ceb-5fb7-486c-a0ca-b34ded9e9db9",
+            "key": "Landlord"
+          },
+          {
+            "id": "8ada4db3-f406-49b8-a35a-90ee76c0d402",
+            "key": "Tenant"
+          },
+          {
+            "id": "51881b6e-f2dd-4245-896d-0bc444a30e75",
+            "key": "Shared"
+          },
+          {
+            "id": "fc3196b5-01d7-45a1-b3ca-487d859ff2e5",
+            "key": "Not Specified"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "8436d912-5525-4779-920c-4ee6d0cf06e1",
+        "type": "enum",
+        "key": "insurance",
+        "displayName": "Insurance",
+        "hidden": false,
+        "options": [
+          {
+            "id": "b6085249-757f-482e-9f1d-ce52760cbd48",
+            "key": "Landlord"
+          },
+          {
+            "id": "5636a9cb-75f6-4be2-bf7f-8e3bb7f2ac53",
+            "key": "Tenant"
+          },
+          {
+            "id": "5ac3c173-a58d-408e-9fe4-703729b928e0",
+            "key": "Both Parties"
+          },
+          {
+            "id": "795a6655-c99e-436f-8f80-27059a004a8a",
+            "key": "Not Specified"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "11416fb9-e6ee-47a1-9bb8-22cbd469c0c7",
+        "type": "string",
+        "key": "utilities",
+        "displayName": "Utilities",
+        "hidden": false,
+        "isActive": true
+      }
+    ]
+  }
+]
