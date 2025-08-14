@@ -56,7 +56,7 @@ function SettingsContent() {
   const [isSaving, setIsSaving] = React.useState(false);
   const [isConnectingOAuth, setIsConnectingOAuth] = React.useState(false);
   const [oauthStatus, setOauthStatus] = React.useState<'connected' | 'disconnected' | 'checking'>('checking');
-
+  console.log('Environment variables', process.env)
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
