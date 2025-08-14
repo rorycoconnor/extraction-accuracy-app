@@ -29,6 +29,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, ExternalLink, CheckCircle, XCircle } from 'lucide-react';
 import { updateBoxSettings } from '@/lib/actions/settings';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense } from 'react';
 
 const settingsSchema = z.discriminatedUnion('authMethod', [
   z.object({
@@ -47,7 +48,8 @@ const settingsSchema = z.discriminatedUnion('authMethod', [
 
 type SettingsFormValues = z.infer<typeof settingsSchema>;
 
-export default function SettingsPage() {
+// Separate component that uses useSearchParams
+function SettingsContent() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -430,5 +432,28 @@ export default function SettingsPage() {
         </form>
       </Form>
     </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="space-y-4">
+        <div>
+          <h1 className="font-headline text-3xl font-bold tracking-tight">
+            Settings
+          </h1>
+          <p className="text-muted-foreground">
+            Manage your application settings and integrations.
+          </p>
+        </div>
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </div>
+    }>
+      <SettingsContent />
+    </Suspense>
   );
 }
