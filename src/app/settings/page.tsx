@@ -113,6 +113,27 @@ function SettingsContent() {
     checkOAuthStatus();
   }, []);
 
+  React.useEffect(() => {
+    const logAccessToken = async () => {
+      try {
+        const response = await fetch('/api/auth/box/status');
+        const data = await response.json();
+        
+        if (data.success && data.status.accessToken) {
+          console.log('🔑 Access Token:', data.status.accessToken);
+          console.log('�� Expires At:', data.status.expiresAt);
+          console.log('�� Token Type:', data.status.tokenType);
+        } else {
+          console.log('❌ No access token found');
+        }
+      } catch (error) {
+        console.error('Failed to fetch token:', error);
+      }
+    };
+    
+    logAccessToken();
+  }, []);
+
   async function onSubmit(values: SettingsFormValues) {
     setIsSaving(true);
     
