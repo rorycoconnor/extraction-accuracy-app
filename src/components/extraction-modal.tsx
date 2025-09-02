@@ -44,6 +44,7 @@ type GlobalFileSelection = {
   [fileId: string]: {
     file: BoxFile;
     folderPath: string;
+    folderName?: string;
   };
 };
 
@@ -149,9 +150,11 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
       } else {
         // Add to selection with folder path info
         const folderPath = breadcrumbs.map(b => b.name).join(' > ');
+        const folderName = breadcrumbs[breadcrumbs.length - 1]?.name || 'Unknown';
         newSelection[fileId] = {
           file,
-          folderPath
+          folderPath,
+          folderName
         };
       }
       
@@ -165,11 +168,13 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
       // Add all files in current folder to global selection
       const newSelection = { ...globalFileSelection };
       const folderPath = breadcrumbs.map(b => b.name).join(' > ');
+      const folderName = breadcrumbs[breadcrumbs.length - 1]?.name || 'Unknown';
       
       files.forEach(file => {
         newSelection[file.id] = {
           file,
-          folderPath
+          folderPath,
+          folderName
         };
       });
       
@@ -263,13 +268,13 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh]">
+      <DialogContent className="sm:max-w-[1320px] max-h-[90vh]">
         <DialogHeader className="pr-8">
           <DialogTitle className="text-lg font-semibold">Batch Document Processing</DialogTitle>
         </DialogHeader>
         <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto">
           {/* Step 1: Template Selection */}
-          <div className="space-y-3 p-4 rounded-lg border">
+          <div className="space-y-3 p-4 rounded-lg border bg-white">
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold bg-gray-600 text-white">
                 1
@@ -285,9 +290,6 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
               </div>
             </div>
             <div className="ml-11">
-              <p className="text-sm text-muted-foreground mb-3">
-                Select which template defines the fields to extract from your documents.
-              </p>
               <Select onValueChange={setSelectedTemplateKey} value={selectedTemplateKey} disabled={templates.length === 0}>
                 <SelectTrigger className="h-12">
                                     <SelectValue placeholder={
@@ -313,7 +315,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
 
           {/* Step 2: File Selection */}
           <div className={cn(
-            "space-y-3 p-4 rounded-lg border",
+            "space-y-3 p-4 rounded-lg border bg-white",
             !selectedTemplateKey && "opacity-60"
           )}>
             <div className="flex items-center gap-3">
@@ -342,200 +344,265 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
                 }
               </p>
             
-            {/* Global Selection Controls */}
-            {totalSelectedCount > 0 && (
-              <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-md mb-3">
-                <div className="flex-1">
-                  <div className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                    Global Selection: {totalSelectedCount} file(s) from {new Set(Object.values(globalFileSelection).map(item => item.folderPath)).size} folder(s)
-                  </div>
-                  <div className="text-xs text-blue-700 dark:text-blue-300 mt-1">
-                    {Object.values(globalFileSelection).map((item, index) => (
-                      <span key={item.file.id} className="inline-block mr-2 mb-1">
-                        📄 {item.file.name} ({item.folderPath})
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleClearAllSelections}
-                  className="text-blue-700 border-blue-300 hover:bg-blue-100"
-                >
-                  Clear All
-                </Button>
-              </div>
-            )}
-
-            {/* Breadcrumb Navigation */}
-            <div className="flex items-center gap-1 text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-md">
-              <button
-                onClick={navigateToRoot}
-                className="hover:text-foreground transition-colors hover:underline"
-                title="Go to root folder"
-              >
-                <Home className="h-4 w-4" />
-              </button>
-              {breadcrumbs.length > 1 && (
-                <button
-                  onClick={navigateToParent}
-                  className="hover:text-foreground transition-colors hover:underline ml-1"
-                  title="Go to parent folder"
-                >
-                  <ArrowUp className="h-4 w-4" />
-                </button>
-              )}
-              {breadcrumbs.map((breadcrumb, index) => (
-                <div key={breadcrumb.id} className="flex items-center gap-1">
-                  {index > 0 && <ChevronRight className="h-3 w-3" />}
+            {/* Header Row: Breadcrumb Navigation | Selected Files Title */}
+            <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 items-center mb-3">
+              {/* Breadcrumb Navigation */}
+              <div className="lg:col-span-6">
+                <div className="flex items-center gap-1 text-sm text-muted-foreground px-1 py-2">
                   <button
-                    onClick={() => navigateToBreadcrumb(breadcrumb)}
-                    className={cn(
-                      "hover:text-foreground transition-colors",
-                      index === breadcrumbs.length - 1 
-                        ? "text-foreground font-medium" 
-                        : "hover:underline"
-                    )}
-                    disabled={index === breadcrumbs.length - 1}
+                    onClick={navigateToRoot}
+                    className="hover:text-foreground transition-colors hover:underline"
+                    title="Go to root folder"
                   >
-                    {breadcrumb.name}
+                    <Home className="h-4 w-4" />
                   </button>
-                </div>
-              ))}
-            </div>
-            
-             <div className="border rounded-md">
-                {isLoadingFiles ? (
-                    <div className="flex items-center justify-center h-64">
-                        <Loader2 className="h-8 w-8 animate-spin" />
-                    </div>
-                ) : errorFiles ? (
-                    <div className="p-4">
-                        <Alert variant="destructive">
-                        <Terminal className="h-4 w-4" />
-                        <AlertTitle>Error Fetching Files</AlertTitle>
-                        <AlertDescription>{errorFiles}</AlertDescription>
-                        </Alert>
-                        
-                        {/* Helpful navigation options when root folder fails */}
-                        {currentFolderId === "0" && (
-                          <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-md">
-                            <div className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-3">
-                              💡 Root folder access issue? Try these alternatives:
-                            </div>
-                            <div className="space-y-2">
-                              <div className="text-xs text-blue-700 dark:text-blue-300">
-                                • <strong>Navigate to a specific folder</strong> you know you have access to
-                              </div>
-                              <div className="text-xs text-blue-700 dark:text-blue-300">
-                                • <strong>Check Box permissions</strong> - ensure the app is invited to folders
-                              </div>
-                              <div className="text-xs text-blue-700 dark:text-blue-300">
-                                • <strong>Use OAuth2.0</strong> - personal accounts have different access patterns
-                              </div>
-                            </div>
-                            <div className="mt-3 flex gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={() => {
-                                  // Try to navigate to a common folder ID (Documents)
-                                  setCurrentFolderId("329136417488");
-                                  setBreadcrumbs([{ id: "329136417488", name: "Documents" }]);
-                                  loadFolderContents("329136417488");
-                                }}
-                                className="text-blue-700 border-blue-300 hover:bg-blue-100"
-                              >
-                                Try Documents Folder
-                              </Button>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={() => {
-                                  // Reset to root and try again
-                                  setCurrentFolderId("0");
-                                  setBreadcrumbs([{ id: "0", name: "All Files" }]);
-                                  loadFolderContents("0");
-                                }}
-                                className="text-blue-700 border-blue-300 hover:bg-blue-100"
-                              >
-                                Retry Root
-                              </Button>
-                            </div>
-                          </div>
+                  {breadcrumbs.length > 1 && (
+                    <button
+                      onClick={navigateToParent}
+                      className="hover:text-foreground transition-colors hover:underline ml-1"
+                      title="Go to parent folder"
+                    >
+                      <ArrowUp className="h-4 w-4" />
+                    </button>
+                  )}
+                  {breadcrumbs.map((breadcrumb, index) => (
+                    <div key={breadcrumb.id} className="flex items-center gap-1">
+                      {index > 0 && <ChevronRight className="h-3 w-3" />}
+                      <button
+                        onClick={() => navigateToBreadcrumb(breadcrumb)}
+                        className={cn(
+                          "hover:text-foreground transition-colors",
+                          index === breadcrumbs.length - 1 
+                            ? "text-foreground font-medium" 
+                            : "hover:underline"
                         )}
+                        disabled={index === breadcrumbs.length - 1}
+                      >
+                        {breadcrumb.name}
+                      </button>
                     </div>
-                ) : files.length === 0 && folders.length === 0 ? (
-                    <p className="text-sm text-center text-muted-foreground py-8 h-64 flex items-center justify-center">
-                      {currentFolderId === "0" 
-                        ? "No files or folders found at root level. You may need to grant access to specific folders."
-                        : "No files or folders found in this folder."
-                      }
-                    </p>
-                ) : (
-                    <>
-                        <div className="flex items-center space-x-3 p-4 border-b">
-                            <Checkbox
-                                id="select-all-files-in-folder"
-                                checked={allFilesInFolderSelected ? true : someFilesInFolderSelected ? 'indeterminate' : false}
-                                onCheckedChange={handleSelectAllInFolder}
-                            />
-                            <Label htmlFor="select-all-files-in-folder" className="flex-1 cursor-pointer text-sm font-medium">
-                                Select All in Current Folder ({files.filter(f => globalFileSelection[f.id]).length}/{files.length} files)
-                            </Label>
-                        </div>
-                        <ScrollArea className="h-64 w-full max-w-full">
-                            <div className="space-y-1 p-1 max-w-full overflow-hidden">
-                                {/* Show folders first */}
-                                {folders.map(folder => (
-                                <button
-                                  key={`folder-${folder.id}`} 
-                                  onClick={() => navigateToFolder(folder)}
-                                  className="w-full flex items-center space-x-3 rounded-md bg-blue-50 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-950/30 transition-colors"
-                                >
-                                    <div className="flex-shrink-0 px-3">
-                                      <div className="w-4 h-4" /> {/* Spacer where checkbox would be */}
-                                    </div>
-                                    <div className="py-3 text-left overflow-hidden flex-1">
-                                        <div className="flex items-center gap-2">
-                                            <Folder className="h-4 w-4 text-blue-600 flex-shrink-0" />
-                                            <span className="truncate text-sm font-medium">{folder.name}</span>
-                                            <span className="text-xs text-muted-foreground">(folder)</span>
-                                            <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto" />
-                                        </div>
-                                    </div>
-                                </button>
-                                ))}
-                                
-                                {/* Show files */}
-                                {files.map(file => (
-                                <div key={file.id} className="flex items-center space-x-3 rounded-md">
-                                    <div className="flex-shrink-0 px-3">
-                                      <Checkbox
-                                          id={`file-${file.id}`}
-                                          checked={!!globalFileSelection[file.id]}
-                                          onCheckedChange={() => handleToggleFileSelection(file)}
-                                      />
-                                    </div>
-                                    <Label htmlFor={`file-${file.id}`} className="cursor-pointer py-3 overflow-hidden flex-1">
-                                        <div className="flex items-center gap-2">
-                                            <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                                            <span className="block truncate text-sm">{file.name}</span>
-                                            {globalFileSelection[file.id] && (
-                                              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                                                Selected
-                                              </span>
-                                            )}
-                                        </div>
-                                    </Label>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Selected Files Title */}
+              <div className="lg:col-span-4">
+                <div className="flex items-center justify-between px-1 py-2">
+                  <h4 className="text-sm font-medium text-black">Selected Files</h4>
+                  {totalSelectedCount > 0 && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handleClearAllSelections}
+                      className="h-6 px-2 text-xs"
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Two-column layout: Navigation (60%) | Selected Files (40%) */}
+            <div className="grid grid-cols-1 lg:grid-cols-10 gap-4">
+              {/* Left Column: File/Folder Navigation */}
+              <div className="lg:col-span-6">
+                
+                                                  {/* File/Folder Browser */}
+                 <div className="border rounded-md bg-white h-[320px] flex flex-col">
+                   {isLoadingFiles ? (
+                       <div className="flex items-center justify-center h-full">
+                           <Loader2 className="h-8 w-8 animate-spin" />
+                       </div>
+                  ) : errorFiles ? (
+                      <div className="p-4">
+                          <Alert variant="destructive">
+                          <Terminal className="h-4 w-4" />
+                          <AlertTitle>Error Fetching Files</AlertTitle>
+                          <AlertDescription>{errorFiles}</AlertDescription>
+                          </Alert>
+                          
+                          {/* Helpful navigation options when root folder fails */}
+                          {currentFolderId === "0" && (
+                            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-md">
+                              <div className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-3">
+                                💡 Root folder access issue? Try these alternatives:
+                              </div>
+                              <div className="space-y-2">
+                                <div className="text-xs text-blue-700 dark:text-blue-300">
+                                  • <strong>Navigate to a specific folder</strong> you know you have access to
                                 </div>
-                                ))}
+                                <div className="text-xs text-blue-700 dark:text-blue-300">
+                                  • <strong>Check Box permissions</strong> - ensure the app is invited to folders
+                                </div>
+                                <div className="text-xs text-blue-700 dark:text-blue-300">
+                                  • <strong>Use OAuth2.0</strong> - personal accounts have different access patterns
+                                </div>
+                              </div>
+                              <div className="mt-3 flex gap-2">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => {
+                                    // Try to navigate to a common folder ID (Documents)
+                                    setCurrentFolderId("329136417488");
+                                    setBreadcrumbs([{ id: "329136417488", name: "Documents" }]);
+                                    loadFolderContents("329136417488");
+                                  }}
+                                  className="text-blue-700 border-blue-300 hover:bg-blue-100"
+                                >
+                                  Try Documents Folder
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => {
+                                    // Reset to root and try again
+                                    setCurrentFolderId("0");
+                                    setBreadcrumbs([{ id: "0", name: "All Files" }]);
+                                    loadFolderContents("0");
+                                  }}
+                                  className="text-blue-700 border-blue-300 hover:bg-blue-100"
+                                >
+                                  Retry Root
+                                </Button>
+                              </div>
                             </div>
-                        </ScrollArea>
-                    </>
-                )}
-             </div>
+                          )}
+                      </div>
+                                     ) : files.length === 0 && folders.length === 0 ? (
+                       <div className="flex items-center justify-center h-full">
+                         <p className="text-sm text-center text-muted-foreground">
+                           {currentFolderId === "0" 
+                             ? "No files or folders found at root level. You may need to grant access to specific folders."
+                             : "No files or folders found in this folder."
+                           }
+                         </p>
+                       </div>
+                   ) : (
+                       <>
+                           <div className="flex-shrink-0 flex items-center space-x-3 p-4 border-b">
+                               <Checkbox
+                                   id="select-all-files-in-folder"
+                                   checked={allFilesInFolderSelected ? true : someFilesInFolderSelected ? 'indeterminate' : false}
+                                   onCheckedChange={handleSelectAllInFolder}
+                               />
+                               <Label htmlFor="select-all-files-in-folder" className="flex-1 cursor-pointer text-sm font-medium">
+                                   Select All in Current Folder ({files.filter(f => globalFileSelection[f.id]).length}/{files.length} files)
+                               </Label>
+                           </div>
+                           <div className="flex-1 overflow-hidden">
+                             <ScrollArea className="h-full w-full">
+                                 <div className="space-y-1 p-1">
+                                     {/* Show folders first */}
+                                     {folders.map(folder => (
+                                     <button
+                                       key={`folder-${folder.id}`} 
+                                       onClick={() => navigateToFolder(folder)}
+                                       className="w-full flex items-center space-x-3 rounded-md bg-blue-50 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-950/30 transition-colors"
+                                     >
+                                         <div className="flex-shrink-0 px-3">
+                                           <div className="w-4 h-4" /> {/* Spacer where checkbox would be */}
+                                         </div>
+                                         <div className="py-3 text-left overflow-hidden flex-1">
+                                             <div className="flex items-center gap-2">
+                                                 <Folder className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                                                 <span className="truncate text-sm font-medium">{folder.name}</span>
+                                                 <span className="text-xs text-muted-foreground">(folder)</span>
+                                                 <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto" />
+                                             </div>
+                                         </div>
+                                     </button>
+                                     ))}
+                                     
+                                     {/* Show files */}
+                                     {files.map(file => (
+                                     <div key={file.id} className="flex items-center space-x-3 rounded-md">
+                                         <div className="flex-shrink-0 px-3">
+                                           <Checkbox
+                                               id={`file-${file.id}`}
+                                               checked={!!globalFileSelection[file.id]}
+                                               onCheckedChange={() => handleToggleFileSelection(file)}
+                                           />
+                                         </div>
+                                         <Label htmlFor={`file-${file.id}`} className="cursor-pointer py-3 overflow-hidden flex-1">
+                                             <div className="flex items-center gap-2">
+                                                 <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                                 <span className="block truncate text-sm">{file.name}</span>
+                                                 {globalFileSelection[file.id] && (
+                                                   <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                                                     Selected
+                                                   </span>
+                                                 )}
+                                             </div>
+                                         </Label>
+                                     </div>
+                                     ))}
+                                 </div>
+                             </ScrollArea>
+                           </div>
+                       </>
+                   )}
+                </div>
+              </div>
+
+              {/* Right Column: Selected Files Panel */}
+              <div className="lg:col-span-4">
+                <div className="sticky top-0">
+                  <div className="border rounded-md bg-white h-[320px] flex flex-col">
+                    {/* Scrollable files area - takes remaining space */}
+                    <div className="flex-1 overflow-hidden">
+                      {totalSelectedCount === 0 ? (
+                        <div className="flex items-center justify-center h-full text-center">
+                          <div className="text-sm text-muted-foreground">
+                            No files selected<br />
+                            <span className="text-xs">Select files from the left panel</span>
+                          </div>
+                        </div>
+                      ) : (
+                                                <div className="h-full overflow-auto px-3 py-2">
+                          <div className="space-y-2">
+                            {Object.values(globalFileSelection).map((item) => (
+                              <div key={item.file.id} className="group relative w-full">
+                                <div className="flex items-start gap-2 p-2 rounded-md border bg-white hover:bg-gray-50 transition-colors h-16 w-full max-w-full overflow-hidden">
+                                  <FileText className="h-4 w-4 text-muted-foreground mt-1 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0 py-1 pr-8">
+                                    <div className="text-xs font-medium truncate leading-tight" title={item.file.name}>
+                                      {item.file.name}
+                                    </div>
+                                    <div className="text-xs text-muted-foreground truncate mt-1 leading-tight" title={item.folderName || item.folderPath}>
+                                      📁 {item.folderName || item.folderPath.split(' > ').pop() || 'Unknown'}
+                                    </div>
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleToggleFileSelection(item.file)}
+                                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 absolute right-2 top-2"
+                                  >
+                                    ×
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Fixed footer area - always present to maintain consistent height */}
+                    <div className="flex-shrink-0 h-12 border-t bg-gray-50 flex items-center justify-center rounded-b-md">
+                      <div className="text-xs text-muted-foreground text-center">
+                        {totalSelectedCount === 0 
+                          ? "No files selected" 
+                          : `${totalSelectedCount} file${totalSelectedCount === 1 ? '' : 's'} from ${new Set(Object.values(globalFileSelection).map(item => item.folderName || item.folderPath.split(' > ').pop() || 'Unknown')).size} folder${new Set(Object.values(globalFileSelection).map(item => item.folderName || item.folderPath.split(' > ').pop() || 'Unknown')).size === 1 ? '' : 's'}`
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
             </div>
           </div>
         </div>
