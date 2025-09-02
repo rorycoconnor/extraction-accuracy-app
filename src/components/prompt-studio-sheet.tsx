@@ -21,6 +21,7 @@ import type { AccuracyField, PromptVersion } from '@/lib/types';
 import { Save, History, Star, Play, Copy, Sparkles, Loader2, TrendingUp, TrendingDown, BarChart3, Wand2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateInitialPrompt, improvePrompt } from '@/ai/flows/generate-initial-prompt';
+import { PromptPickerDialog } from '@/features/prompt-library/components/prompt-picker-dialog';
 
 type PromptStudioSheetProps = {
   isOpen: boolean;
@@ -253,6 +254,16 @@ export default function PromptStudioSheet({
                                         </CardTitle>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        <PromptPickerDialog
+                                            fieldName={field.name}
+                                            onSelectPrompt={(promptText) => setActivePromptText(promptText)}
+                                            triggerButtonContent={
+                                                <>
+                                                    <Star className="h-4 w-4" />
+                                                    Library
+                                                </>
+                                            }
+                                        />
                                         <Button
                                             variant="outline"
                                             size="sm"
@@ -396,11 +407,11 @@ export default function PromptStudioSheet({
                                                 
                                                 {/* Top 2 models performance */}
                                                 {version.metrics.modelMetrics && (() => {
-                                                    // Calculate average F1 score for each model to determine ranking
+                                                    // Calculate average Accuracy for each model to determine ranking
                                                     const modelEntries = Object.entries(version.metrics.modelMetrics);
                                                     if (modelEntries.length === 0) return null;
                                     
-                                                    // Sort models by F1 score (best first)
+                                                    // Sort models by Accuracy (best first)
                                                     const sortedModels = modelEntries
                                                         .map(([modelName, metrics]) => ({
                                                             name: modelName,
@@ -414,7 +425,7 @@ export default function PromptStudioSheet({
                                                                 .replace(/_/g, ' ')
                                                                 .replace(/\b\w/g, l => l.toUpperCase())
                                                         }))
-                                                        .sort((a, b) => b.metrics.f1 - a.metrics.f1);
+                                                        .sort((a, b) => b.metrics.accuracy - a.metrics.accuracy);
                                     
                                                     // Show top 2 models
                                                     const topModels = sortedModels.slice(0, 2);
@@ -444,15 +455,15 @@ export default function PromptStudioSheet({
                                                                     </div>
                                                                     <div className="grid grid-cols-4 gap-4">
                                                                         <div className="text-center">
-                                                                            <div className="text-xs text-muted-foreground mb-1">F1 Score</div>
-                                                                            <div className={`font-bold text-lg ${model.metrics.f1 >= 0.9 ? 'text-green-600' : model.metrics.f1 >= 0.7 ? 'text-yellow-600' : 'text-red-600'}`}>
-                                                                                {(model.metrics.f1 * 100).toFixed(0)}%
-                                                                            </div>
-                                                                        </div>
-                                                                        <div className="text-center">
                                                                             <div className="text-xs text-muted-foreground mb-1">Accuracy</div>
                                                                             <div className={`font-bold text-lg ${model.metrics.accuracy >= 0.9 ? 'text-green-600' : model.metrics.accuracy >= 0.7 ? 'text-yellow-600' : 'text-red-600'}`}>
                                                                                 {(model.metrics.accuracy * 100).toFixed(0)}%
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="text-center">
+                                                                            <div className="text-xs text-muted-foreground mb-1">F1 Score</div>
+                                                                            <div className={`font-bold text-lg ${model.metrics.f1 >= 0.9 ? 'text-green-600' : model.metrics.f1 >= 0.7 ? 'text-yellow-600' : 'text-red-600'}`}>
+                                                                                {(model.metrics.f1 * 100).toFixed(0)}%
                                                                             </div>
                                                                         </div>
                                                                         <div className="text-center">

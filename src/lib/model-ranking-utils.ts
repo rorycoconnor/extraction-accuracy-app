@@ -117,58 +117,42 @@ export function calculateModelSummaries(
 }
 
 /**
- * Determines field winners using sophisticated tie-breaking logic
- * 1. F1 Score (primary)
- * 2. Precision (first tie-breaker) 
+ * Determines field winners using tie-breaking hierarchy:
+ * 1. Accuracy (primary)
+ * 2. Precision (first tie-breaker)
  * 3. Recall (second tie-breaker)
- * 
- * Awards wins when models achieve the best performance.
- * If all models perform identically, they all share the victory.
  */
 export function determineFieldWinners(
   modelSummaries: ModelSummary[],
   fields: AccuracyData['fields']
 ): void {
+  
   fields.forEach((field, fieldIndex) => {
-    let bestF1 = -1;
-    let winnerIndices: number[] = [];
+    // Find the best accuracy for this field
+    const performances = modelSummaries.map(summary => summary.fieldPerformance[fieldIndex]);
+    const bestAccuracy = Math.max(...performances.map(p => p.accuracy));
     
-    // Find the best F1 score
-    modelSummaries.forEach((summary, modelIndex) => {
-      const fieldF1 = summary.fieldPerformance[fieldIndex].f1;
-      if (fieldF1 > bestF1) {
-        bestF1 = fieldF1;
+    // Find all models that achieved the best accuracy
+    let winnerIndices = performances
+      .map((perf, index) => ({ perf, index }))
+      .filter(({ perf }) => Math.abs(perf.accuracy - bestAccuracy) <= FLOATING_POINT_PRECISION)
+      .map(({ index }) => index);
+    
+    // Apply tie-breaking if multiple winners
+    if (winnerIndices.length > 1) {
+      winnerIndices = applyTieBreaking(modelSummaries, fieldIndex, winnerIndices);
+    }
+    
+    // Mark winners
+    winnerIndices.forEach(index => {
+      modelSummaries[index].fieldPerformance[fieldIndex].isWinner = true;
+      modelSummaries[index].fieldsWon += winnerIndices.length > 1 ? (1 / winnerIndices.length) : 1;
+      
+      // Mark shared victories
+      if (winnerIndices.length > 1) {
+        modelSummaries[index].fieldPerformance[fieldIndex].isSharedVictory = true;
       }
     });
-    
-    // Find all models that achieved the best F1 score
-    if (bestF1 > 0) {
-      modelSummaries.forEach((summary, modelIndex) => {
-        const fieldF1 = summary.fieldPerformance[fieldIndex].f1;
-        if (Math.abs(fieldF1 - bestF1) < FLOATING_POINT_PRECISION) {
-          winnerIndices.push(modelIndex);
-        }
-      });
-      
-      // Apply tie-breaking logic if needed (but not if all models tie)
-      if (winnerIndices.length > 1 && winnerIndices.length < modelSummaries.length) {
-        winnerIndices = applyTieBreaking(modelSummaries, fieldIndex, winnerIndices);
-      }
-      
-      // Mark winners and determine if it's a shared victory
-      const isSharedVictory = winnerIndices.length > 1;
-      
-      // For field wins counting (whole numbers only for clear performance differences)
-      const shouldCountWins = winnerIndices.length < modelSummaries.length;
-      const winValue = shouldCountWins ? (isSharedVictory ? (1 / winnerIndices.length) : 1) : 0;
-      
-      winnerIndices.forEach(modelIndex => {
-        modelSummaries[modelIndex].fieldPerformance[fieldIndex].isWinner = true;
-        modelSummaries[modelIndex].fieldPerformance[fieldIndex].isSharedVictory = isSharedVictory;
-        // Only add to fieldsWon if there's a performance difference
-        modelSummaries[modelIndex].fieldsWon += winValue;
-      });
-    }
   });
 }
 
@@ -225,7 +209,7 @@ function applyTieBreaking(
 
 /**
  * Assigns ranks based on the specification tie-breaking hierarchy:
- * 1. Overall F1 Score
+ * 1. Overall Accuracy Score
  * 2. Overall Precision  
  * 3. Overall Recall
  * 4. Total Field Wins
@@ -233,9 +217,9 @@ function applyTieBreaking(
  */
 export function assignRanks(modelSummaries: ModelSummary[]): void {
   modelSummaries.sort((a, b) => {
-    // 1. Overall F1 Score (primary)
-    if (Math.abs(a.overallF1 - b.overallF1) > FLOATING_POINT_PRECISION) {
-      return b.overallF1 - a.overallF1;
+    // 1. Overall Accuracy Score (primary)
+    if (Math.abs(a.overallAccuracy - b.overallAccuracy) > FLOATING_POINT_PRECISION) {
+      return b.overallAccuracy - a.overallAccuracy;
     }
     
     // 2. Overall Precision (first tie-breaker)
@@ -264,7 +248,7 @@ export function assignRanks(modelSummaries: ModelSummary[]): void {
       const prev = modelSummaries[index - 1];
       
       // If this model has different performance than previous, increment rank
-      if (Math.abs(summary.overallF1 - prev.overallF1) > FLOATING_POINT_PRECISION ||
+      if (Math.abs(summary.overallAccuracy - prev.overallAccuracy) > FLOATING_POINT_PRECISION ||
           Math.abs(summary.overallPrecision - prev.overallPrecision) > FLOATING_POINT_PRECISION ||
           Math.abs(summary.overallRecall - prev.overallRecall) > FLOATING_POINT_PRECISION ||
           Math.abs(summary.fieldsWon - prev.fieldsWon) > FLOATING_POINT_PRECISION) {

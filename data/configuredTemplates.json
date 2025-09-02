@@ -627,6 +627,530 @@
     ]
   },
   {
+    "id": "bfdd8378-28bf-4313-b78a-fba8a265ee77",
+    "type": "metadata_template",
+    "templateKey": "digitalAssets",
+    "scope": "enterprise_1218697394",
+    "displayName": "Digital Assets",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "bcfe0480-6df5-49d3-895f-4bb475974b79",
+        "type": "enum",
+        "key": "assetType",
+        "displayName": "Asset Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "553b21fd-c014-4eb4-ba85-d8765ed97560",
+            "key": "Image"
+          },
+          {
+            "id": "cb303f9b-04f7-4623-9083-e3daee333c90",
+            "key": "Video"
+          },
+          {
+            "id": "f9ba335b-ab64-4a4e-94fd-3bb43aec57dd",
+            "key": "Document"
+          },
+          {
+            "id": "04b0cab5-5f98-4237-b3bf-04b340481ee1",
+            "key": "Audio"
+          },
+          {
+            "id": "e71ec304-12df-4e9f-b56a-522239da1fc8",
+            "key": "Source"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "9337b7c7-e638-4d1e-81ed-c5315426108d",
+        "type": "string",
+        "key": "aiExtraction",
+        "displayName": "AI Description",
+        "hidden": false,
+        "description": "This field is a description of the image from metadata extraction. It should list people and objects detected in the image. If possible be specific on type of person or item. If there is food, describe the food. Describe the primary colors found in the image. Describe the overall scene and location. Describe any other details that would make it easy to search for this image. ",
+        "isActive": true
+      },
+      {
+        "id": "7ee73376-5c64-41b6-910a-85d5b92e77db",
+        "type": "float",
+        "key": "numberOfPeopleInImage",
+        "displayName": "AI Number of People in Image",
+        "hidden": false,
+        "description": "How many people are in the image? Only list the number like 0, 1, 2 ,3 etc. ",
+        "isActive": false
+      },
+      {
+        "id": "d70f189e-351b-4926-bad0-3651bd7a3d55",
+        "type": "enum",
+        "key": "subAssetType",
+        "displayName": "Sub Asset Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "1c51bad8-384b-4382-b944-762699e06c44",
+            "key": "LifeStyle"
+          },
+          {
+            "id": "9579d803-b2c0-41b2-ae34-430cf0c725ad",
+            "key": "Product"
+          },
+          {
+            "id": "638a5eba-5d76-4216-a73d-a2bea7bb0a30",
+            "key": "Stock"
+          },
+          {
+            "id": "ff28888d-20f7-4f72-8bf9-d19362454965",
+            "key": "Event"
+          },
+          {
+            "id": "ae9d4221-f148-4103-8a51-e26cc1235c6e",
+            "key": "Social"
+          },
+          {
+            "id": "d3ebf280-80cb-499c-8cf5-452ed7eb6497",
+            "key": "Source"
+          },
+          {
+            "id": "490749b2-f783-44b7-9f2a-578e0735b86d",
+            "key": "Website"
+          },
+          {
+            "id": "3f61abc0-ee50-4f8f-8183-fc2efa733212",
+            "key": "Logos"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "a4a89f54-fa73-46f1-8f6a-01e14d54cf43",
+        "type": "string",
+        "key": "keywords",
+        "displayName": "Keywords",
+        "hidden": false,
+        "description": "List up to 10 descriptive keywords for this image.",
+        "isActive": true
+      },
+      {
+        "id": "7fa32976-2b4f-4d3b-a347-cc9dcfa7d157",
+        "type": "multiSelect",
+        "key": "color",
+        "displayName": "Color",
+        "hidden": false,
+        "options": [
+          {
+            "id": "69c12782-b8f2-4b72-b377-0afcc34818c6",
+            "key": "Black"
+          },
+          {
+            "id": "51bbb6d7-e473-4ca2-9c26-3c0d7410fe82",
+            "key": "White"
+          },
+          {
+            "id": "0074c1c8-e4ff-4d5d-9fb3-ac40e1d273c2",
+            "key": "Gold"
+          },
+          {
+            "id": "d38ddde7-5908-4068-a76d-2f7460356b6f",
+            "key": "Blue"
+          },
+          {
+            "id": "bf7c3b3e-f370-4ee0-98fa-0d44910bfb08",
+            "key": "Brown"
+          },
+          {
+            "id": "0c87a6b0-56bf-42ad-9d51-5e4ed2801ac1",
+            "key": "Gray"
+          },
+          {
+            "id": "fa117a4b-16d3-4977-a593-8481a9df08f2",
+            "key": "Green"
+          },
+          {
+            "id": "3ad93bae-9e26-4b44-867b-4034110a7076",
+            "key": "Orange"
+          },
+          {
+            "id": "b907dbb6-6892-4495-bbfa-d235e8f1ed78",
+            "key": "Pink"
+          },
+          {
+            "id": "27216081-ce13-4b8f-8101-ecccea69b70d",
+            "key": "Purple"
+          },
+          {
+            "id": "ccda7b42-42b7-4fff-b29f-b4674f61917f",
+            "key": "Red"
+          },
+          {
+            "id": "e6ee1d08-f880-4fdc-a8e5-db72b1971f52",
+            "key": "Yellow"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "a87dbc93-a1df-492e-9db9-e94a5205f200",
+        "type": "string",
+        "key": "resolution",
+        "displayName": "Dimensions",
+        "hidden": false,
+        "description": "Extract the image's dimensions in pixels (format: width x height). If the dimensions cannot be directly extracted, attempt to retrieve them from file metadata.",
+        "isActive": false
+      },
+      {
+        "id": "5aaeadde-dc88-49de-aa7a-38d57433e781",
+        "type": "enum",
+        "key": "rating",
+        "displayName": "Rating",
+        "hidden": false,
+        "options": [
+          {
+            "id": "2d3f34d4-3ff0-43fd-9a19-9c08ca0201f3",
+            "key": "Hero"
+          },
+          {
+            "id": "3c7d04f0-828c-42d8-8a7d-398a73863c43",
+            "key": "Normal"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "f52bdb9b-774f-49ff-a71e-70f63dc5defe",
+        "type": "enum",
+        "key": "orientation",
+        "displayName": "Orientation",
+        "hidden": false,
+        "description": "Image will be one of the following. Portrait, Landscape, or Square",
+        "options": [
+          {
+            "id": "d9c8ce27-d956-4560-983b-da31f380ff5a",
+            "key": "Landscape"
+          },
+          {
+            "id": "21fa364c-9066-422d-87c5-c2def158ed5b",
+            "key": "Portrait"
+          },
+          {
+            "id": "8bd3d60d-6435-4edd-a33d-7e256d6bd45b",
+            "key": "Square"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "706c3b1f-97c0-488c-8ae5-6126bca77e7d",
+        "type": "string",
+        "key": "photographer",
+        "displayName": "Photographer",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "d0ac7fce-44d7-4759-bc7a-0c232148454b",
+        "type": "date",
+        "key": "dateTaken",
+        "displayName": "Date Taken",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "dd907c2d-8db0-4e3e-b6e8-c0521b45e5f5",
+        "type": "string",
+        "key": "comments",
+        "displayName": "Comments",
+        "hidden": false,
+        "description": "If text is visible, extract it as 'Copy: [extracted text]",
+        "isActive": false
+      },
+      {
+        "id": "1a1b5920-700b-4e0b-8cc3-98d58c79c0fd",
+        "type": "enum",
+        "key": "maturity",
+        "displayName": "Maturity",
+        "hidden": false,
+        "options": [
+          {
+            "id": "229482ab-83b0-4656-a28b-df6f9aed8f6a",
+            "key": "Discovery"
+          },
+          {
+            "id": "e5ba4e60-cff7-4a4c-afef-2b8aa1828776",
+            "key": "Pre-Production"
+          },
+          {
+            "id": "fe91ec8f-ab03-4ecb-b038-f3adc01f8556",
+            "key": "Production"
+          },
+          {
+            "id": "c5d5c29f-7e47-4786-a686-3362147d7765",
+            "key": "Post-Production"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "ffb59d35-c5b4-4ea2-98c3-7957717590bb",
+        "type": "enum",
+        "key": "vertical",
+        "displayName": "Vertical",
+        "hidden": false,
+        "options": [
+          {
+            "id": "92c7abb1-df7a-433d-92cc-8a1ae10ae127",
+            "key": "FNB"
+          },
+          {
+            "id": "105bc11c-0ab3-4386-ac53-0b2085a21f93",
+            "key": "SLE"
+          },
+          {
+            "id": "345f1bff-acc8-4a86-b649-66e59711dbc5",
+            "key": "RWB"
+          },
+          {
+            "id": "30040a28-053b-434c-a9c0-02965ddb1dc0",
+            "key": "ZLV"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "7eb07acf-ef6d-4dd0-b1df-3657c6c3c51f",
+        "type": "enum",
+        "key": "status",
+        "displayName": "Status",
+        "hidden": false,
+        "options": [
+          {
+            "id": "b20f58f7-8f1a-4273-a6d3-7e4927e2de22",
+            "key": "Ideation"
+          },
+          {
+            "id": "11af01c0-fa5c-48b2-946f-16954bd90e6b",
+            "key": "In Progress"
+          },
+          {
+            "id": "3a0ad0e7-79bd-4adb-a440-41d3193a9d6e",
+            "key": "In Review"
+          },
+          {
+            "id": "2aab66e1-96ef-470f-9a68-990aa7234790",
+            "key": "Approved"
+          },
+          {
+            "id": "e82a377e-fc42-4346-9ec3-3259144650a4",
+            "key": "Revisions Requested"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "70679c6b-5497-4eb8-b509-82d42edb3d85",
+        "type": "string",
+        "key": "venueLocation",
+        "displayName": "Venue Location",
+        "hidden": false,
+        "isActive": false
+      }
+    ]
+  },
+  {
+    "id": "12cca18e-f9d1-45d9-a11a-f8f1bbadafd3",
+    "type": "metadata_template",
+    "templateKey": "fincen",
+    "scope": "enterprise_1218697394",
+    "displayName": "FinCEN",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "73b86d29-5a0a-4994-a375-a124b9afbafb",
+        "type": "string",
+        "key": "legalName",
+        "displayName": "Legal Name",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "36e7d75a-ad42-4160-8e6d-0fa8162827c9",
+        "type": "string",
+        "key": "dbaDoingBusinessAs",
+        "displayName": "DBA (Doing Business As)",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "339d1940-eda0-44b3-be4d-4484b677500d",
+        "type": "date",
+        "key": "dateOfBirth",
+        "displayName": "Date of birth",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "590c5768-48e3-4a79-b6d6-7d8a0d623d3c",
+        "type": "string",
+        "key": "residentialAddress",
+        "displayName": "Residential address",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "03a86b71-ead5-4335-9f9a-2553160f39ef",
+        "type": "string",
+        "key": "primaryUsBusinessLocation",
+        "displayName": "Primary U.S. Business Location",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "7ca1990c-3d67-425c-8a7e-40293a8e7033",
+        "type": "string",
+        "key": "noUsAddressCheckbox",
+        "displayName": "No U.S. Address Checkbox",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "258c11b8-637f-4476-81c9-0b9502687da4",
+        "type": "string",
+        "key": "nationality",
+        "displayName": "Nationality",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "ebca412f-5fbc-414f-be96-d326461cf43c",
+        "type": "enum",
+        "key": "personType",
+        "displayName": "Person type",
+        "hidden": false,
+        "description": "",
+        "options": [
+          {
+            "id": "82dae8c2-0a04-43f4-bf9e-af94b4247521",
+            "key": "Beneficial Owner"
+          },
+          {
+            "id": "f0ae7b07-ed0a-48f4-8511-8f74a9e68a0f",
+            "key": "Signing Individual"
+          },
+          {
+            "id": "43b1bf06-5297-45ad-915f-447899f1f10d",
+            "key": "Legal Entity Trustee"
+          },
+          {
+            "id": "4137a4fb-2d80-4197-b98c-93ca09f5d97d",
+            "key": "Both Beneficial Owner & Signing Individual"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "384e945b-5ab7-4752-8c98-b1da9c2a6ab1",
+        "type": "string",
+        "key": "beneficialOwnerCategory",
+        "displayName": "Beneficial owner category",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "ff9234c0-23a6-4207-afb1-896f0b4fc3dd",
+        "type": "string",
+        "key": "controlType",
+        "displayName": "Control type",
+        "hidden": false,
+        "description": "",
+        "isActive": false
+      },
+      {
+        "id": "982bc9cb-13a6-4c70-aa5f-b491ef91261d",
+        "type": "string",
+        "key": "minorStatus",
+        "displayName": "Minor status",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "f7064ac7-ae90-4074-aa8d-2e9e18255f01",
+        "type": "string",
+        "key": "parentOrGuardianName",
+        "displayName": "Parent or guardian name",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "9e3f4ab4-7940-4d73-b5f4-085c2ce476ed",
+        "type": "string",
+        "key": "trusteeOrGuardianStatus",
+        "displayName": "Trustee or guardian status",
+        "hidden": false,
+        "description": "",
+        "isActive": false
+      },
+      {
+        "id": "9f782f00-03ff-4da6-b3ec-8640bfa32122",
+        "type": "string",
+        "key": "authorizationCapacitySigningIndividualsOnly",
+        "displayName": "Authorization Capacity (Signing Individuals Only)",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "3600bc6b-c68f-488d-ac21-600c7ec8a35a",
+        "type": "string",
+        "key": "employerprincipalpartnershipNameSigningIndividualsOnly",
+        "displayName": "Employer/Principal/Partnership Name (Signing Individuals Only)",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "ddf26ea3-140c-405b-86e8-0b57c6f498e1",
+        "type": "string",
+        "key": "idType",
+        "displayName": "Type of Unique Identification (ID)",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "e13ffe59-ffde-486f-9e84-50068d6bfdc1",
+        "type": "string",
+        "key": "idNumber",
+        "displayName": "Unique Identification Number",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "118179d7-08ae-4d83-b0cb-74ee58431a3a",
+        "type": "string",
+        "key": "idJurisdiction",
+        "displayName": "Issuing Jurisdiction",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      }
+    ]
+  },
+  {
     "id": "9ab888a4-b22a-4a31-804d-dcea915ff2ba",
     "type": "metadata_template",
     "templateKey": "hrRecords",

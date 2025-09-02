@@ -29,7 +29,7 @@ function calculateSummaryStats(accuracyData: AccuracyData, shownColumns: Record<
   // Filter models based on what's currently shown in the UI
   const visibleModels = allModels.filter(model => shownColumns[model] !== false);
 
-  // Sort models by performance (F1 score) if we have averages data
+  // Sort models by performance (Accuracy) if we have averages data
   let modelsCompared = visibleModels;
   if (accuracyData.averages && accuracyData.fields && hasGroundTruthData) {
     try {
@@ -40,10 +40,10 @@ function calculateSummaryStats(accuracyData: AccuracyData, shownColumns: Record<
       // Extract the model names in order of performance (best first)
       modelsCompared = modelSummaries.map(summary => summary.modelName);
       
-      console.log('✅ CSV Export: Models sorted by F1 performance:', modelsCompared.map((model, index) => {
+      console.log('✅ CSV Export: Models sorted by Accuracy performance:', modelsCompared.map((model, index) => {
         const summary = modelSummaries.find(s => s.modelName === model);
-        const f1Score = summary ? (summary.overallF1 * 100).toFixed(1) : 'N/A';
-        return `${index + 1}. ${formatModelName(model)} (F1: ${f1Score}%)`;
+        const accuracy = summary ? (summary.overallAccuracy * 100).toFixed(1) : 'N/A';
+        return `${index + 1}. ${formatModelName(model)} (Accuracy: ${accuracy}%)`;
       }));
     } catch (error) {
       console.warn('Failed to sort models by performance, using alphabetical order:', error);
@@ -142,23 +142,23 @@ function generateSummaryRows(
  * Generate field averages section (F1 scores only)
  */
 function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: ExportSummaryData): any[][] {
-  console.log('🔍 CSV Export: Generating F1 scores section...');
+  console.log('🔍 CSV Export: Generating Accuracy scores section...');
   console.log('  - Has ground truth data:', summaryData.hasGroundTruthData);
   console.log('  - Has averages data:', !!accuracyData.averages);
   console.log('  - Number of fields:', accuracyData.fields?.length || 0);
   console.log('  - Number of models:', summaryData.modelsCompared.length);
 
   if (!summaryData.hasGroundTruthData || !accuracyData.averages) {
-    console.log('❌ CSV Export: Cannot generate F1 scores - missing ground truth or averages data');
+    console.log('❌ CSV Export: Cannot generate Accuracy scores - missing ground truth or averages data');
     return [
-      ['FIELD AVERAGES (F1 Scores)'],
+      ['FIELD AVERAGES (Accuracy Scores)'],
       ['No ground truth data available - metrics cannot be calculated'],
       ['']
     ];
   }
 
   const rows: any[][] = [
-    ['FIELD AVERAGES (F1 Scores)'],
+    ['FIELD AVERAGES (Accuracy Scores)'],
     ['']
   ];
 
@@ -176,10 +176,10 @@ function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: Expo
         field.name,
         ...summaryData.modelsCompared.map(model => {
           const avg = fieldAverages[model];
-          if (avg && typeof avg.f1 === 'number') {
-            return `${(avg.f1 * 100).toFixed(1)}%`;
+          if (avg && typeof avg.accuracy === 'number') {
+            return `${(avg.accuracy * 100).toFixed(1)}%`;
           } else {
-            console.warn(`  - Missing F1 data for field "${field.key}", model "${model}":`, avg);
+            console.warn(`  - Missing Accuracy data for field "${field.key}", model "${model}":`, avg);
             return 'N/A';
           }
         })
@@ -190,7 +190,7 @@ function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: Expo
     }
   });
 
-  console.log(`✅ CSV Export: Generated F1 scores for ${fieldsWithData}/${accuracyData.fields.length} fields`);
+  console.log(`✅ CSV Export: Generated Accuracy scores for ${fieldsWithData}/${accuracyData.fields.length} fields`);
   
   rows.push(['']);
   return rows;

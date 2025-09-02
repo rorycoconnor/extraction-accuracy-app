@@ -29,8 +29,8 @@ type ViewMode = 'stack' | 'side-by-side';
  * ModelRankingSummary displays a comprehensive performance analysis of AI models
  * 
  * Features:
- * - Ranks models by overall F1 score with sophisticated tie-breaking
- * - Shows detailed metrics (F1, Accuracy, Precision, Recall) for each model
+ * - Ranks models by overall Accuracy with sophisticated tie-breaking
+ * - Shows detailed metrics (Accuracy, F1, Precision, Recall) for each model
  * - Displays field-by-field performance with winner indicators
  * - Provides actionable insights and recommendations
  * - Supports both stack and side-by-side view modes
@@ -117,7 +117,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
             'rounded-lg border p-4 transition-all',
             getRankColor(summary.rank)
           )}
-          aria-label={`${formatModelName(summary.modelName)} ranked ${summary.rank} with ${(summary.overallF1 * 100).toFixed(1)}% F1 score`}
+          aria-label={`${formatModelName(summary.modelName)} ranked ${summary.rank} with ${(summary.overallAccuracy * 100).toFixed(1)}% Accuracy`}
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
@@ -135,27 +135,27 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
               variant="outline"
               className={cn(
                 'text-lg font-bold px-3 py-1',
-                summary.overallF1 >= PERFORMANCE_THRESHOLDS.EXCELLENT
+                summary.overallAccuracy >= PERFORMANCE_THRESHOLDS.EXCELLENT
                   ? 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-400'
-                  : summary.overallF1 >= PERFORMANCE_THRESHOLDS.GOOD
+                  : summary.overallAccuracy >= PERFORMANCE_THRESHOLDS.GOOD
                   ? 'border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-400'
                   : 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-400'
               )}
-              aria-label={`F1 score: ${(summary.overallF1 * 100).toFixed(1)} percent`}
+              aria-label={`Accuracy: ${(summary.overallAccuracy * 100).toFixed(1)} percent`}
             >
-              {(summary.overallF1 * 100).toFixed(1)}% F1
+              {(summary.overallAccuracy * 100).toFixed(1)}% Accuracy
             </Badge>
           </div>
           
           {/* Overall Metrics */}
           <div className="grid grid-cols-4 gap-4 mb-3">
             <div className="text-center">
-              <div className="text-2xl font-bold">{(summary.overallF1 * 100).toFixed(1)}%</div>
-              <div className="text-xs text-muted-foreground">F1 Score</div>
-            </div>
-            <div className="text-center">
               <div className="text-2xl font-bold">{(summary.overallAccuracy * 100).toFixed(1)}%</div>
               <div className="text-xs text-muted-foreground">Accuracy</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold">{(summary.overallF1 * 100).toFixed(1)}%</div>
+              <div className="text-xs text-muted-foreground">F1 Score</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">{(summary.overallPrecision * 100).toFixed(1)}%</div>
@@ -189,7 +189,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                     </span>
                   </div>
                   <span className="font-bold">
-                    {(field.f1 * 100).toFixed(0)}%
+                    {(field.accuracy * 100).toFixed(0)}%
                   </span>
                 </div>
               ))}
@@ -205,10 +205,10 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
           Key Insights
         </h4>
         <ul className="text-sm space-y-1 text-muted-foreground">
-          <li>• <strong>{formatModelName(modelSummaries[0].modelName)}</strong> is the top performer with {(modelSummaries[0].overallF1 * 100).toFixed(1)}% average F1 score</li>
+          <li>• <strong>{formatModelName(modelSummaries[0].modelName)}</strong> is the top performer with {(modelSummaries[0].overallAccuracy * 100).toFixed(1)}% average Accuracy</li>
           <li>• Best model won {modelSummaries[0].fieldsWon % 1 === 0 ? modelSummaries[0].fieldsWon : modelSummaries[0].fieldsWon.toFixed(1)} out of {modelSummaries[0].totalFields} metadata fields</li>
           {modelSummaries.length > 1 && (
-            <li>• Performance gap between best and worst model: {((modelSummaries[0].overallF1 - modelSummaries[modelSummaries.length - 1].overallF1) * 100).toFixed(1)} percentage points</li>
+            <li>• Performance gap between best and worst model: {((modelSummaries[0].overallAccuracy - modelSummaries[modelSummaries.length - 1].overallAccuracy) * 100).toFixed(1)} percentage points</li>
           )}
           {(() => {
             const sharedVictories = modelSummaries.reduce((total, model) => {
@@ -239,7 +239,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                 'flex-shrink-0 w-[416px] rounded-lg border p-4 transition-all',
                 getRankColor(summary.rank)
               )}
-              aria-label={`${formatModelName(summary.modelName)} ranked ${summary.rank} with ${(summary.overallF1 * 100).toFixed(1)}% F1 score`}
+              aria-label={`${formatModelName(summary.modelName)} ranked ${summary.rank} with ${(summary.overallAccuracy * 100).toFixed(1)}% Accuracy`}
             >
               {/* Header with rank and name */}
               <div className="mb-3">
@@ -251,20 +251,20 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                     Rank #{summary.rank}
                   </p>
                 </div>
-                {/* F1 Score centered and 15% larger */}
+                {/* Accuracy Score centered and 15% larger */}
                 <div className="flex justify-center">
                   <Badge
                     variant="outline"
                     className={cn(
                       'text-base font-bold px-2.5 py-1.5',
-                      summary.overallF1 >= PERFORMANCE_THRESHOLDS.EXCELLENT
+                      summary.overallAccuracy >= PERFORMANCE_THRESHOLDS.EXCELLENT
                         ? 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-400'
-                        : summary.overallF1 >= PERFORMANCE_THRESHOLDS.GOOD
+                        : summary.overallAccuracy >= PERFORMANCE_THRESHOLDS.GOOD
                         ? 'border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-400'
                         : 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-400'
                     )}
                   >
-                    {(summary.overallF1 * 100).toFixed(1)}% F1
+                    {(summary.overallAccuracy * 100).toFixed(1)}% Accuracy
                   </Badge>
                 </div>
               </div>
@@ -289,7 +289,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                         {field.fieldName}
                       </span>
                       <span className="font-bold">
-                        {(field.f1 * 100).toFixed(0)}%
+                        {(field.accuracy * 100).toFixed(0)}%
                       </span>
                     </div>
                   ))}
@@ -307,10 +307,10 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
           Key Insights
         </h4>
         <ul className="text-sm space-y-1 text-muted-foreground">
-          <li>• <strong>{formatModelName(modelSummaries[0].modelName)}</strong> is the top performer with {(modelSummaries[0].overallF1 * 100).toFixed(1)}% average F1 score</li>
+          <li>• <strong>{formatModelName(modelSummaries[0].modelName)}</strong> is the top performer with {(modelSummaries[0].overallAccuracy * 100).toFixed(1)}% average Accuracy</li>
           <li>• Best model won {modelSummaries[0].fieldsWon % 1 === 0 ? modelSummaries[0].fieldsWon : modelSummaries[0].fieldsWon.toFixed(1)} out of {modelSummaries[0].totalFields} metadata fields</li>
           {modelSummaries.length > 1 && (
-            <li>• Performance gap between best and worst model: {((modelSummaries[0].overallF1 - modelSummaries[modelSummaries.length - 1].overallF1) * 100).toFixed(1)} percentage points</li>
+            <li>• Performance gap between best and worst model: {((modelSummaries[0].overallAccuracy - modelSummaries[modelSummaries.length - 1].overallAccuracy) * 100).toFixed(1)} percentage points</li>
           )}
           <li>• Consider using the top-performing model for production workloads</li>
         </ul>

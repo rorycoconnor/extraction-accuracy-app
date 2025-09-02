@@ -9,7 +9,8 @@ import {
   Home, 
   FileText, 
   Database, 
-  Settings
+  Settings,
+  BookOpen
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -31,6 +32,11 @@ const navigation = [
     name: 'Ground Truth',
     href: '/ground-truth',
     icon: Database,
+  },
+  {
+    name: 'Library',
+    href: '/library',
+    icon: BookOpen,
   },
   {
     name: 'Settings',
