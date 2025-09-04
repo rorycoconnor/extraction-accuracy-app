@@ -1490,11 +1490,11 @@
       "name": "Governing Law",
       "key": "governingLaw",
       "type": "enum",
-      "prompt": "Extract the “Governing Law” from this contract",
+      "prompt": "Extract the \u201cGoverning Law\u201d from this contract",
       "promptHistory": [
         {
           "id": "v2",
-          "prompt": "Extract the “Governing Law” from this contract",
+          "prompt": "Extract the \u201cGoverning Law\u201d from this contract",
           "savedAt": "2025-08-01T18:11:14.407Z",
           "metrics": {
             "modelMetrics": {
@@ -1636,11 +1636,11 @@
       "name": "Venue",
       "key": "venue",
       "type": "enum",
-      "prompt": "Extract the “Venue” from this contract",
+      "prompt": "Extract the \u201cVenue\u201d from this contract",
       "promptHistory": [
         {
           "id": "v4",
-          "prompt": "Extract the “Venue” from this contract",
+          "prompt": "Extract the \u201cVenue\u201d from this contract",
           "savedAt": "2025-08-01T18:11:53.451Z",
           "metrics": {
             "modelMetrics": {
@@ -3003,16 +3003,16 @@
   "averages": {
     "contractType": {
       "google__gemini_2_0_flash_001": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
       },
       "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
       },
       "google__gemini_2_5_pro": {
         "accuracy": 0,
@@ -3033,152 +3033,6 @@
         "f1": 1
       },
       "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "counterPartyName": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -3589,6 +3443,104 @@
         "f1": 0
       }
     },
+    "counterPartyName": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    },
     "renewalType": {
       "google__gemini_2_0_flash_001": {
         "accuracy": 1,
@@ -3786,42 +3738,6 @@
       }
     },
     "governingLaw": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -3852,12 +3768,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -3865,6 +3775,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -3884,42 +3836,6 @@
       }
     },
     "venue": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -3950,12 +3866,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -3963,6 +3873,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -3982,42 +3934,6 @@
       }
     },
     "terminationForConvenience": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0.5,
-        "precision": 0.5,
-        "recall": 0.5,
-        "f1": 0.5
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0.5,
-        "precision": 0.5,
-        "recall": 0.5,
-        "f1": 0.5
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -4048,12 +3964,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -4061,6 +3971,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -4080,42 +4032,6 @@
       }
     },
     "terminationForCause": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -4146,12 +4062,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -4159,6 +4069,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -4178,42 +4130,6 @@
       }
     },
     "contractValue": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -4244,12 +4160,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -4257,6 +4167,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
