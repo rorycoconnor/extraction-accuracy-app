@@ -112,7 +112,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.253Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         },
         {
@@ -375,7 +375,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.253Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         },
         {
@@ -709,7 +709,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.253Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         }
       ]
@@ -824,7 +824,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.253Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         }
       ],
@@ -957,7 +957,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.253Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         },
         {
@@ -1390,10 +1390,10 @@
                 "recall": 1
               },
               "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 0.5,
-                "accuracy": 0.5,
-                "precision": 0.5,
-                "recall": 0.5
+                "f1": 1,
+                "accuracy": 1,
+                "precision": 1,
+                "recall": 1
               },
               "google__gemini_2_5_pro": {
                 "f1": 0,
@@ -1481,7 +1481,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.253Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         }
       ]
@@ -1596,7 +1596,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.253Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         },
         {
@@ -1742,7 +1742,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.253Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         },
         {
@@ -1898,7 +1898,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.254Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         },
         {
@@ -2028,7 +2028,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.254Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         },
         {
@@ -2158,7 +2158,7 @@
               }
             },
             "filesCount": 2,
-            "lastRunAt": "2025-09-05T02:31:26.254Z"
+"lastRunAt": "2025-09-05T04:35:24.624Z"
           }
         },
         {
@@ -2491,1282 +2491,7 @@
     }
   ],
   "results": [],
-  "averages": {
-    "contractType": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "counterPartyName": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "counterPartyAddress": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "effectiveDate": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "contractTerm": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "endDate": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "renewalType": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "noticePeriod": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "governingLaw": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "venue": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "terminationForConvenience": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "terminationForCause": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "contractValue": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    }
-  },
+"averages": {},
   "currentSessionId": "49d4d9b5-1acf-4532-8260-9781c5e99c49",
   "sessions": [
     {
@@ -3787,7 +2512,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "835bcb8f-3662-4d67-bdf2-28fa5a7e91d7",
@@ -3799,7 +2524,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "01fa6112-3ffe-410d-aa62-64be25d38151",
@@ -3811,7 +2536,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "c160aaac-3b44-49a6-8427-0f8ae6ab4dc3",
@@ -3823,7 +2548,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "1255db51-bfe8-4f2a-a2fd-045e7d74556e",
@@ -3835,7 +2560,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "b03b6b3b-30b7-457f-91e4-a448edc40632",
@@ -3847,7 +2572,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "ab310764-07c2-48d1-ad3d-0e95dc95dae8",
@@ -3859,7 +2584,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "2518a65b-b692-4176-9d46-c2e7d9cd5049",
@@ -3871,7 +2596,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "bdba5932-39c0-4f61-9ee3-3914c21ccbf6",
@@ -3883,7 +2608,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "959d660d-8852-46d3-bfc7-ad99e30d4583",
@@ -3895,7 +2620,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "9fdbade5-6b0a-490d-a9a9-50130cd6f43d",
@@ -3907,7 +2632,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "b68441a1-5231-48ae-9618-08bba6417dc1",
@@ -3919,7 +2644,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "c4abcbf2-b57d-4079-b559-9bae1e8c913c",
@@ -3931,7 +2656,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "327c4c81-e546-4944-beb9-06032e35fae8",
@@ -3943,7 +2668,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "ac137918-ce1e-4940-92ce-92ab17139dd9",
@@ -3955,7 +2680,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "7bb590b6-a46d-498a-9558-6a14dc8340b0",
@@ -3967,7 +2692,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "dc0049ee-a2d9-4069-92e8-e4204268cc9f",
@@ -3979,7 +2704,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "fc119b3e-e6ba-414d-a090-b9b725a20bc4",
@@ -3991,7 +2716,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "d59846c0-21ca-4212-87da-2bd511652af7",
@@ -4003,7 +2728,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "59abe07d-163d-4d86-8836-7027e3a3a7bd",
@@ -4015,7 +2740,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "491e93c1-6028-4f55-9d42-4d5773b82e4d",
@@ -4027,7 +2752,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "208f58fa-9582-4c41-8bbe-01d7637c53be",
@@ -4039,7 +2764,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "5d19a90b-5028-46e3-bab1-5facf97db652",
@@ -4051,7 +2776,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "969482fb-9c54-4547-8a7d-9de0e3e08755",
@@ -4063,7 +2788,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "89a8dca4-3091-4054-b247-4efdf93d279a",
@@ -4075,7 +2800,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "2f12422a-d84f-4e7f-9cfe-123eceb1b582",
@@ -4087,7 +2812,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "61dd4e71-5d0e-4e13-9316-fdcb648ef403",
@@ -4099,7 +2824,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "92360cf5-43fa-4562-9b4d-c54943334024",
@@ -4111,7 +2836,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "db259c95-cee9-48bc-aecf-302b540b5893",
@@ -4123,7 +2848,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "eaab7be2-59ae-4d6c-b0aa-577d31b6889c",
@@ -4135,7 +2860,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "55405c87-896b-4f22-8d23-792490f9491f",
@@ -4147,7 +2872,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "75b65b6a-3a87-470f-8bc4-eae06ed0e801",
@@ -4159,7 +2884,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "dfb3da86-94d0-429b-9be1-38055bc1d322",
@@ -4171,7 +2896,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "e78deed4-7079-48bc-81fe-157860a6094e",
@@ -4183,7 +2908,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "0a36bd85-b8b0-4f64-b39b-1af315bb2179",
@@ -4195,7 +2920,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "8708c4ca-f64e-4c47-b98b-33f10ddc7456",
@@ -4207,7 +2932,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "95a15f00-cf0c-4574-bd9f-8c3a91e46289",
@@ -4219,7 +2944,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "effe5967-8b84-4f7a-89f4-00565a089db9",
@@ -4231,7 +2956,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         },
         {
           "id": "cf24b9d6-e335-482e-9e96-f16d0bbf4123",
@@ -4243,7 +2968,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
         }
       ]
     }
@@ -4267,5 +2992,5 @@
     "openai__o3": false,
     "openai__o3_no_prompt": false
   },
-  "lastModified": "2025-09-05T02:54:57.946Z"
+"lastModified": "2025-09-05T13:32:46.694Z"
 }
