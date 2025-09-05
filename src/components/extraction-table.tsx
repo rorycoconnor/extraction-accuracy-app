@@ -512,7 +512,7 @@ export default function ExtractionTable({
                       }
 
                       const metrics = averages[field.key]?.[colName] ?? { accuracy: 0, precision: 0, recall: 0, f1: 0 };
-                      const f1 = metrics.f1;
+                      const accuracy = metrics.accuracy;
 
                       return (
                         <TableCell
@@ -527,12 +527,12 @@ export default function ExtractionTable({
                             variant="outline"
                             className={cn(
                               'text-xs font-bold',
-                              f1 < 1.0
+                              accuracy < 1.0
                                 ? 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-400'
                                 : 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-400'
                             )}
                           >
-                            F1 {(f1 * 100).toFixed(1)}%
+                            {(accuracy * 100).toFixed(1)}% Accuracy
                           </Badge>
                         </TableCell>
                       );
