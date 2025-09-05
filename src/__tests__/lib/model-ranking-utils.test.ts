@@ -118,12 +118,12 @@ describe('Model Ranking Utils - Accuracy-First Implementation', () => {
     expect(summaries[2].rank).toBe(3)
     })
 
-    test('should use F1 for tie-breaking when accuracy is equal', () => {
+    test('should use precision for tie-breaking when accuracy is equal', () => {
       const mockData = createMockAccuracyData({
         averages: {
           field1: {
-            'Model A': { accuracy: 0.8, precision: 0.7, recall: 0.8, f1: 0.9 },
-            'Model B': { accuracy: 0.8, precision: 0.9, recall: 0.9, f1: 0.7 }
+            'Model A': { accuracy: 0.8, precision: 0.7, recall: 0.8, f1: 0.9 }, // Lower precision
+            'Model B': { accuracy: 0.8, precision: 0.9, recall: 0.7, f1: 0.7 }  // Higher precision
           }
         },
         fields: [{ name: 'Field 1', key: 'field1', type: 'string', prompt: 'test', promptHistory: [] }]
@@ -133,10 +133,10 @@ describe('Model Ranking Utils - Accuracy-First Implementation', () => {
       let summaries = calculateModelSummaries(visibleModels, mockData.fields, mockData.averages)
       assignRanks(summaries)
       
-      // Both have same accuracy (0.8), but A has higher F1 (0.9 vs 0.7)
-      expect(summaries[0].modelName).toBe('Model A')
+      // Both have same accuracy (0.8), but B has higher precision (0.9 vs 0.7)
+      expect(summaries[0].modelName).toBe('Model B')
       expect(summaries[0].rank).toBe(1)
-      expect(summaries[1].modelName).toBe('Model B')
+      expect(summaries[1].modelName).toBe('Model A')
       expect(summaries[1].rank).toBe(2)
     })
 
@@ -259,14 +259,14 @@ describe('Model Ranking Utils - Accuracy-First Implementation', () => {
       // Claude: (0.85 + 0.85) / 2 = 0.85
       // Gemini: (0.95 + 0.75) / 2 = 0.85
       
-      // All tied on accuracy, should use F1 for tie-breaking
-      // GPT-4 F1: (0.86 + 0.80) / 2 = 0.83
-      // Claude F1: (0.86 + 0.85) / 2 = 0.855
-      // Gemini F1: (0.95 + 0.75) / 2 = 0.85
+      // All tied on accuracy, should use precision for tie-breaking
+      // GPT-4 Precision: (0.85 + 0.82) / 2 = 0.835
+      // Claude Precision: (0.90 + 0.88) / 2 = 0.89
+      // Gemini Precision: (0.92 + 0.72) / 2 = 0.82
       
-      expect(summaries[0].modelName).toBe('Claude') // Highest F1
-      expect(summaries[1].modelName).toBe('Gemini') // Second highest F1
-      expect(summaries[2].modelName).toBe('GPT-4') // Lowest F1
+      expect(summaries[0].modelName).toBe('Claude') // Highest precision
+      expect(summaries[1].modelName).toBe('GPT-4') // Second highest precision
+      expect(summaries[2].modelName).toBe('Gemini') // Lowest precision
       
       // Verify field winners
       const claudeSummary = summaries.find(s => s.modelName === 'Claude')!

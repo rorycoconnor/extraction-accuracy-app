@@ -67,14 +67,14 @@ describe('Accuracy-First Metrics Workflow Integration', () => {
       expect(summaries[1].overallAccuracy).toBeGreaterThan(summaries[2].overallAccuracy)
     })
 
-    test('should use F1 for tie-breaking when Accuracy is equal', () => {
+    test('should use precision for tie-breaking when Accuracy is equal', () => {
       const testData = createTestData()
       
-      // Modify data to create accuracy tie but different F1 scores
+      // Modify data to create accuracy tie but different precision scores
       testData.averages = {
         company_name: {
-          'Model_A': { accuracy: 0.85, precision: 0.80, recall: 0.90, f1: 0.92 }, // Same accuracy, higher F1
-          'Model_B': { accuracy: 0.85, precision: 0.88, recall: 0.82, f1: 0.85 }  // Same accuracy, lower F1
+          'Model_A': { accuracy: 0.85, precision: 0.80, recall: 0.90, f1: 0.92 }, // Same accuracy, lower precision
+          'Model_B': { accuracy: 0.85, precision: 0.88, recall: 0.82, f1: 0.85 }  // Same accuracy, higher precision
         }
       }
       
@@ -83,15 +83,15 @@ describe('Accuracy-First Metrics Workflow Integration', () => {
       
       assignRanks(summaries)
       
-      // Should tie-break using F1: Model_A (higher F1) should rank first
-      expect(summaries[0].modelName).toBe('Model_A')
+      // Should tie-break using precision: Model_B (higher precision) should rank first
+      expect(summaries[0].modelName).toBe('Model_B')
       expect(summaries[0].rank).toBe(1)
-      expect(summaries[1].modelName).toBe('Model_B')
+      expect(summaries[1].modelName).toBe('Model_A')
       expect(summaries[1].rank).toBe(2)
       
-      // Verify both have same accuracy but Model_A has higher F1
+      // Verify both have same accuracy but Model_B has higher precision
       expect(summaries[0].overallAccuracy).toBe(summaries[1].overallAccuracy)
-      expect(summaries[0].overallF1).toBeGreaterThan(summaries[1].overallF1)
+      expect(summaries[0].overallPrecision).toBeGreaterThan(summaries[1].overallPrecision)
     })
 
     test('should identify field winners based on accuracy', () => {
@@ -293,7 +293,7 @@ describe('Accuracy-First Metrics Workflow Integration', () => {
       expect(metrics).toHaveProperty('accuracy')
       expect(metrics).toHaveProperty('precision')
       expect(metrics).toHaveProperty('recall')
-      expect(metrics).toHaveProperty('f1')
+      expect(metrics).toHaveProperty('f1Score')
       
       // Perfect match should yield perfect scores
       expect(metrics.accuracy).toBe(1.0)
