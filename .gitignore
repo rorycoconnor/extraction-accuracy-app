@@ -42,4 +42,11 @@ next-env.d.ts
 
 # firebase
 firebase-debug.log
-firestore-debug.logdata/
+firestore-debug.log
+
+# data files
+/data/
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
