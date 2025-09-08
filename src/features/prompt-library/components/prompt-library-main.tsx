@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { AlertCircle, BookOpen, Plus, ChevronDown, MoreHorizontal, Download, Upload } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { AlertCircle, BookOpen, Plus, ChevronDown, MoreHorizontal, Download, Upload, Box, Trash2, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,24 +21,37 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { usePromptLibrary } from '../hooks/use-prompt-library';
 import { ALL_CATEGORIES, ALL_TEMPLATES } from '../types';
 import { SearchBar } from './search-bar';
 import { FieldCard } from './field-card';
-import { exportTemplatesToCSV, parseImportCSV, validateImportData, downloadCSV } from '../utils/csv-import-export';
-import type { ExportableTemplate } from '../utils/csv-import-export';
-import type { Field, FieldType, Template } from '../types';
+import { ImportExportManager } from './import-export-manager';
+import { AddCategoryDialog } from './add-category-dialog';
+import { AddTemplateDialog } from './add-template-dialog';
+import { AddFieldDialog } from './add-field-dialog';
+import type { Template, Field, Prompt, FieldType } from '../types';
 import { useToast } from '@/hooks/use-toast';
+import { transformToBoxTemplate, validateBoxTemplate } from '../utils/box-transformer';
+import { createMetadataTemplate, checkTemplateExists } from '@/services/box';
 
 export function PromptLibraryMain() {
-  const { filteredFields, isLoading, error, database, searchFilters, addCategory, addTemplate, addField, addPrompt, deletePrompt, reorderFields } = usePromptLibrary();
+  const { filteredFields, isLoading, error, database, searchFilters, addCategory, addTemplate, deleteTemplate, renameTemplate, addField, addPrompt, deletePrompt, reorderFields } = usePromptLibrary();
   const { toast } = useToast();
 
   // Generate dynamic title based on current filters
@@ -62,26 +75,34 @@ export function PromptLibraryMain() {
     
     return 'All Fields';
   };
+
+  // Get currently selected template
+  const getSelectedTemplate = (): Template | null => {
+    if (searchFilters.template && searchFilters.template !== ALL_TEMPLATES) {
+      return database.templates.find(t => t.id === searchFilters.template) || null;
+    }
+    return null;
+  };
   
+    // Dialog state
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
   const [fieldDialogOpen, setFieldDialogOpen] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState('');
-  const [newTemplateName, setNewTemplateName] = useState('');
-  const [selectedCategoryForTemplate, setSelectedCategoryForTemplate] = useState('');
-  const [newFieldName, setNewFieldName] = useState('');
-  const [selectedTemplateForField, setSelectedTemplateForField] = useState('');
-  const [selectedFieldType, setSelectedFieldType] = useState('');
   
-  // Import/Export state
+  // Box template creation state
+  const [createBoxTemplateDialogOpen, setCreateBoxTemplateDialogOpen] = useState(false);
+  const [isCreatingBoxTemplate, setIsCreatingBoxTemplate] = useState(false);
+
+  // Delete template state
+  const [deleteTemplateDialogOpen, setDeleteTemplateDialogOpen] = useState(false);
+
+  // Rename template state
+  const [renameTemplateDialogOpen, setRenameTemplateDialogOpen] = useState(false);
+  const [newTemplateName, setNewTemplateName] = useState('');
+
+  // Import/Export dialog state
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
-  const [selectedTemplatesForExport, setSelectedTemplatesForExport] = useState<string[]>([]);
-  const [csvFile, setCsvFile] = useState<File | null>(null);
-  const [importCategory, setImportCategory] = useState('');
-  const [importTemplateName, setImportTemplateName] = useState('');
-  const [newImportCategoryName, setNewImportCategoryName] = useState('');
-  const [newImportTemplateName, setNewImportTemplateName] = useState('');
 
   if (error) {
     return (
@@ -94,57 +115,101 @@ export function PromptLibraryMain() {
     );
   }
 
-  const handleAddCategory = () => {
-    if (newCategoryName.trim()) {
-      addCategory(newCategoryName);
-      setNewCategoryName('');
-      setCategoryDialogOpen(false);
+
+
+  // Handle template deletion
+  const handleDeleteTemplate = () => {
+    const selectedTemplate = getSelectedTemplate();
+    if (!selectedTemplate) return;
+
+    deleteTemplate(selectedTemplate.id);
+    setDeleteTemplateDialogOpen(false);
+  };
+
+  // Handle template rename
+  const handleRenameTemplate = () => {
+    const selectedTemplate = getSelectedTemplate();
+    if (!selectedTemplate || !newTemplateName.trim()) return;
+
+    renameTemplate(selectedTemplate.id, newTemplateName.trim());
+    setRenameTemplateDialogOpen(false);
+    setNewTemplateName('');
+  };
+
+  const handleOpenRenameDialog = () => {
+    const selectedTemplate = getSelectedTemplate();
+    if (selectedTemplate) {
+      setNewTemplateName(selectedTemplate.name);
+      setRenameTemplateDialogOpen(true);
     }
   };
 
-  const handleAddTemplate = () => {
-    if (newTemplateName.trim() && selectedCategoryForTemplate) {
-      addTemplate(newTemplateName, selectedCategoryForTemplate);
-      setNewTemplateName('');
-      setSelectedCategoryForTemplate('');
-      setTemplateDialogOpen(false);
+  // Handle Box template creation
+  const handleCreateBoxTemplate = async () => {
+    const selectedTemplate = getSelectedTemplate();
+    if (!selectedTemplate) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No template selected.',
+      });
+      return;
     }
-  };
 
-  const handleCategoryKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddCategory();
-    }
-  };
+    setIsCreatingBoxTemplate(true);
 
-  const handleTemplateKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddTemplate();
-    }
-  };
+    try {
+      // First check if template already exists in Box
+      const exists = await checkTemplateExists(selectedTemplate.name);
+      
+      if (exists) {
+        toast({
+          variant: 'destructive',
+          title: 'Template Already Exists',
+          description: `A template named "${selectedTemplate.name}" already exists in Box. Please rename your template or use a different name.`,
+        });
+        setIsCreatingBoxTemplate(false);
+        setCreateBoxTemplateDialogOpen(false);
+        return;
+      }
 
-  const handleAddField = () => {
-    if (newFieldName.trim() && selectedTemplateForField && selectedFieldType) {
-      addField(selectedTemplateForField, newFieldName, selectedFieldType);
-      setNewFieldName('');
-      setSelectedTemplateForField('');
-      setSelectedFieldType('');
-      setFieldDialogOpen(false);
-    }
-  };
+      // Transform the template to Box API format
+      const boxTemplate = transformToBoxTemplate(selectedTemplate);
 
-  const handleFieldKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleAddField();
-    }
-  };
+      // Validate the template
+      if (!validateBoxTemplate(boxTemplate)) {
+        const errors = boxTemplate._validation?.errors || [];
+        toast({
+          variant: 'destructive',
+          title: 'Template Validation Failed',
+          description: `Template has validation errors: ${errors.join(', ')}`,
+        });
+        setIsCreatingBoxTemplate(false);
+        setCreateBoxTemplateDialogOpen(false);
+        return;
+      }
 
-  const handleOpenFieldDialog = () => {
-    // Pre-populate template if filters are set to a specific template
-    if (searchFilters.template && searchFilters.template !== ALL_TEMPLATES) {
-      setSelectedTemplateForField(searchFilters.template);
+      // Create the template in Box
+      const createdTemplate = await createMetadataTemplate(boxTemplate);
+
+      toast({
+        title: 'Template Created Successfully',
+        description: `Template "${selectedTemplate.name}" has been created in Box with key "${createdTemplate.templateKey}".`,
+      });
+
+      console.log('✅ Box template created:', createdTemplate);
+      
+    } catch (error) {
+      console.error('❌ Failed to create Box template:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Failed to Create Template',
+        description: error instanceof Error ? error.message : 'An unexpected error occurred while creating the template in Box.',
+      });
+    } finally {
+      setIsCreatingBoxTemplate(false);
+      setCreateBoxTemplateDialogOpen(false);
     }
-    setFieldDialogOpen(true);
   };
 
   // Get available templates based on current category filter
@@ -155,206 +220,7 @@ export function PromptLibraryMain() {
     return database.templates;
   }, [database.templates, searchFilters.category]);
 
-  const fieldTypes = ['Text', 'Date', 'DropdownSingle', 'DropdownMulti', 'TaxonomySingle', 'TaxonomyMulti'];
-
-  // Export/Import handlers
-  const handleExportTemplates = () => {
-    if (selectedTemplatesForExport.length === 0) {
-      toast({
-        title: 'No Templates Selected',
-        description: 'Please select at least one template to export.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    try {
-      const csvContent = exportTemplatesToCSV(database, selectedTemplatesForExport);
-      const filename = `prompt-library-templates-${new Date().toISOString().split('T')[0]}.csv`;
-      downloadCSV(csvContent, filename);
-      
-      toast({
-        title: 'Export Successful',
-        description: `Templates exported to ${filename}`,
-      });
-      
-      setExportDialogOpen(false);
-      setSelectedTemplatesForExport([]);
-    } catch (error) {
-      console.error('Export error:', error);
-      toast({
-        title: 'Export Failed',
-        description: 'Failed to export templates. Please try again.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleImportTemplates = async () => {
-    if (!csvFile || !importCategory || !importTemplateName) {
-      toast({
-        title: 'Missing Information',
-        description: 'Please select a CSV file, category, and template.',
-        variant: 'destructive',
-      });
-      return;
-    }
-    
-    // Add the category if it's new
-    const finalCategory = importCategory === '__new_category__' ? newImportCategoryName : importCategory;
-    if (!database.categories.includes(finalCategory)) {
-      addCategory(finalCategory);
-      await new Promise(resolve => setTimeout(resolve, 50));
-    }
-
-    try {
-      const csvText = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target?.result as string);
-        reader.onerror = () => reject(new Error('Failed to read file'));
-        reader.readAsText(csvFile);
-      });
-
-      const templates = parseImportCSV(csvText);
-      const validation = validateImportData(templates);
-      
-      if (!validation.valid) {
-        toast({
-          title: 'Import Failed',
-          description: `CSV validation failed: ${validation.errors[0]}`,
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      // Group templates by name and maintain field order
-      const templateGroups = new Map<string, ExportableTemplate[]>();
-      templates.forEach(t => {
-        const finalTemplateName = importTemplateName === '__new_template__' ? newImportTemplateName : importTemplateName;
-        if (!templateGroups.has(finalTemplateName)) {
-          templateGroups.set(finalTemplateName, []);
-        }
-        templateGroups.get(finalTemplateName)!.push({
-          ...t,
-          category: finalCategory,
-          templateName: finalTemplateName
-        });
-      });
-
-      let templatesCreated = 0;
-      let fieldsCreated = 0;
-      let fieldsUpdated = 0;
-      let promptsCreated = 0;
-
-      // Process each template sequentially to avoid race conditions
-      for (const [templateName, templateFields] of templateGroups) {
-        // Sort fields by their order in CSV to maintain user's intended order
-        const sortedFields = templateFields.sort((a, b) => (a.fieldOrder || 0) - (b.fieldOrder || 0));
-        
-        // Find or create template
-        let currentTemplate = database.templates.find(t => t.name === templateName && t.category === finalCategory);
-        
-        if (!currentTemplate) {
-          addTemplate(templateName, finalCategory);
-          templatesCreated++;
-          // Wait a bit for the template to be created
-          await new Promise(resolve => setTimeout(resolve, 50));
-          currentTemplate = database.templates.find(t => t.name === templateName && t.category === finalCategory);
-        }
-        
-        if (!currentTemplate) {
-          console.warn(`Could not find or create template: ${templateName}`);
-          continue;
-        }
-
-        // Create a map of existing fields by name for quick lookup
-        const existingFieldsMap = new Map(
-          currentTemplate.fields.map(field => [field.name, field])
-        );
-
-        // First pass: Create/update fields and their prompts
-        for (const templateField of sortedFields) {
-          const existingField = existingFieldsMap.get(templateField.fieldName);
-          
-          if (!existingField) {
-            // Add new field
-            addField(currentTemplate.id, templateField.fieldName, templateField.fieldType);
-            fieldsCreated++;
-            // Wait for field creation
-            await new Promise(resolve => setTimeout(resolve, 50));
-          } else {
-            // Delete existing prompts
-            for (const prompt of existingField.prompts) {
-              deletePrompt(currentTemplate.id, existingField.id, prompt.id);
-            }
-            fieldsUpdated++;
-          }
-
-          // Get the latest field reference
-          const updatedTemplate = database.templates.find(t => t.id === currentTemplate.id);
-          if (!updatedTemplate) continue;
-          
-          const fieldToUpdate = updatedTemplate.fields.find(f => f.name === templateField.fieldName);
-          if (!fieldToUpdate) continue;
-
-          // Add new prompts in order based on column position
-          const baseTimestamp = Date.now();
-          for (let i = 0; i < templateField.prompts.length; i++) {
-            const promptText = templateField.prompts[i];
-            if (promptText.trim()) {
-              // Use decreasing timestamps to maintain column order (earlier columns appear first)
-              const columnOrderTimestamp = baseTimestamp - (i * 1000);
-              addPrompt(currentTemplate.id, fieldToUpdate.id, promptText.trim(), columnOrderTimestamp);
-              promptsCreated++;
-              await new Promise(resolve => setTimeout(resolve, 1));
-            }
-          }
-        }
-
-        // Second pass: Reorder fields according to CSV order
-        const fieldOrder = sortedFields.map(field => field.fieldName);
-        reorderFields(currentTemplate.id, fieldOrder);
-        
-        // Wait for reordering to complete
-        await new Promise(resolve => setTimeout(resolve, 50));
-
-        // Wait for all updates to complete
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-
-      toast({
-        title: 'Import Successful',
-        description: `Created ${templatesCreated} templates, ${fieldsCreated} new fields, updated ${fieldsUpdated} existing fields, and ${promptsCreated} prompts.`,
-      });
-
-      setImportDialogOpen(false);
-      setCsvFile(null);
-      setImportCategory('');
-      setImportTemplateName('');
-      setNewImportCategoryName('');
-      setNewImportTemplateName('');
-    } catch (error) {
-      console.error('Import error:', error);
-      toast({
-        title: 'Import Failed',
-        description: 'Failed to import templates. Please check your CSV format.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const toggleTemplateSelection = (templateId: string) => {
-    setSelectedTemplatesForExport(prev => {
-      if (templateId === 'all') {
-        return prev.includes('all') ? [] : ['all'];
-      }
-      
-      const newSelection = prev.filter(id => id !== 'all');
-      return newSelection.includes(templateId) 
-        ? newSelection.filter(id => id !== templateId)
-        : [...newSelection, templateId];
-    });
-  };
+  const fieldTypes = ['text', 'number', 'date', 'dropdown_single', 'dropdown_multi', 'taxonomy'];
 
   return (
     <div className="max-w-full">
@@ -386,7 +252,7 @@ export function PromptLibraryMain() {
                 <DropdownMenuItem onClick={() => setTemplateDialogOpen(true)}>
                   Template
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleOpenFieldDialog}>
+                <DropdownMenuItem onClick={() => setFieldDialogOpen(true)}>
                   Field
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -408,6 +274,36 @@ export function PromptLibraryMain() {
                   <Upload className="mr-2 h-4 w-4" />
                   Import Template
                 </DropdownMenuItem>
+                
+                {/* Template-specific actions - only show when template is selected */}
+                {getSelectedTemplate() && (
+                  <>
+                    <DropdownMenuItem className="p-0">
+                      <div className="w-full h-px bg-gray-200 my-1" />
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleOpenRenameDialog}>
+                      <Edit className="mr-2 h-4 w-4" />
+                      Rename Template
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => setDeleteTemplateDialogOpen(true)}
+                      className="text-red-700"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete Template
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="p-0">
+                      <div className="w-full h-px bg-gray-200 my-1" />
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => setCreateBoxTemplateDialogOpen(true)}
+                      className="text-blue-700"
+                    >
+                      <Box className="mr-2 h-4 w-4" />
+                      Create Template in Box
+                    </DropdownMenuItem>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -454,332 +350,126 @@ export function PromptLibraryMain() {
         </div>
       </div>
 
-      {/* Add Category Dialog */}
-      <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Category</DialogTitle>
-            <DialogDescription>
-              Create a new category to organize your templates and prompts.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="categoryName">Category Name</Label>
-              <Input
-                id="categoryName"
-                placeholder="Enter category name (e.g., Legal, Finance, Marketing)"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                onKeyDown={handleCategoryKeyDown}
-                autoFocus
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCategoryDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleAddCategory} 
-              disabled={!newCategoryName.trim()}
-            >
-              Add Category
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* CRUD Dialogs */}
+      <AddCategoryDialog
+        open={categoryDialogOpen}
+        onOpenChange={setCategoryDialogOpen}
+        addCategory={addCategory}
+      />
 
-      {/* Add Template Dialog */}
-      <Dialog open={templateDialogOpen} onOpenChange={setTemplateDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Template</DialogTitle>
-            <DialogDescription>
-              Create a new template within a category. Fields can be added later.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="templateName">Template Name</Label>
+      <AddTemplateDialog
+        open={templateDialogOpen}
+        onOpenChange={setTemplateDialogOpen}
+        categories={database.categories}
+        addTemplate={addTemplate}
+      />
+
+      <AddFieldDialog
+        open={fieldDialogOpen}
+        onOpenChange={setFieldDialogOpen}
+        availableTemplates={database.templates}
+        addField={addField}
+      />
+
+      {/* Create Box Template Dialog */}
+      <AlertDialog open={createBoxTemplateDialogOpen} onOpenChange={setCreateBoxTemplateDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Create Template in Box</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to create the template "{getSelectedTemplate()?.name}" in Box?
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setCreateBoxTemplateDialogOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleCreateBoxTemplate} disabled={isCreatingBoxTemplate}>
+              {isCreatingBoxTemplate ? 'Creating...' : 'Create Template'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+              </AlertDialog>
+
+        {/* Delete Template Dialog */}
+        <AlertDialog open={deleteTemplateDialogOpen} onOpenChange={setDeleteTemplateDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Template</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete "{getSelectedTemplate()?.name}"? 
+                This action cannot be undone and will remove all fields and prompts in this template.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeleteTemplateDialogOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleDeleteTemplate}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Delete Template
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Rename Template Dialog */}
+        <AlertDialog open={renameTemplateDialogOpen} onOpenChange={setRenameTemplateDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Rename Template</AlertDialogTitle>
+              <AlertDialogDescription>
+                Enter a new name for "{getSelectedTemplate()?.name}":
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-4 py-4">
               <Input
-                id="templateName"
-                placeholder="Enter template name (e.g., Contracts, Invoices, Resumes)"
                 value={newTemplateName}
                 onChange={(e) => setNewTemplateName(e.target.value)}
-                onKeyDown={handleTemplateKeyDown}
-                autoFocus
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="templateCategory">Category</Label>
-              <Select 
-                value={selectedCategoryForTemplate} 
-                onValueChange={setSelectedCategoryForTemplate}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {database.categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setTemplateDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleAddTemplate} 
-              disabled={!newTemplateName.trim() || !selectedCategoryForTemplate}
-            >
-              Add Template
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Add Field Dialog */}
-      <Dialog open={fieldDialogOpen} onOpenChange={setFieldDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Field</DialogTitle>
-            <DialogDescription>
-              Add a new field to an existing template. You can add prompts to this field later.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="fieldName">Field Name</Label>
-              <Input
-                id="fieldName"
-                placeholder="Enter field name (e.g., Counter Party Name, Invoice Amount)"
-                value={newFieldName}
-                onChange={(e) => setNewFieldName(e.target.value)}
-                onKeyDown={handleFieldKeyDown}
-                autoFocus
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="fieldTemplate">Template</Label>
-              <Select 
-                value={selectedTemplateForField} 
-                onValueChange={setSelectedTemplateForField}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a template" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableTemplatesForField.map((template) => (
-                    <SelectItem key={template.id} value={template.id}>
-                      {template.category} → {template.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="fieldType">Field Type</Label>
-              <Select 
-                value={selectedFieldType} 
-                onValueChange={setSelectedFieldType}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select field type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {fieldTypes.map((type) => (
-                    <SelectItem key={type} value={type}>
-                      {type}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setFieldDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleAddField} 
-              disabled={!newFieldName.trim() || !selectedTemplateForField || !selectedFieldType}
-            >
-              Add Field
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Export Template Dialog */}
-      <Dialog open={exportDialogOpen} onOpenChange={(open) => {
-        setExportDialogOpen(open);
-        if (!open) {
-          setSelectedTemplatesForExport([]);
-        }
-      }}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Export Template CSV</DialogTitle>
-            <DialogDescription>
-              Select templates to export as a CSV file for backup or sharing purposes.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-                          <div className="space-y-3">
-                <Label className="text-sm font-medium">Templates to Export</Label>
-                <div className="border rounded-md p-4 max-h-64 overflow-y-auto">
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-3">
-                      <Checkbox
-                        id="select-all"
-                        checked={selectedTemplatesForExport.includes('all')}
-                        onCheckedChange={() => toggleTemplateSelection('all')}
-                      />
-                      <Label htmlFor="select-all" className="font-medium text-sm">
-                        Export All Templates
-                      </Label>
-                    </div>
-                    {database.templates.map((template) => (
-                      <div key={template.id} className="flex items-center space-x-3">
-                        <Checkbox
-                          id={template.id}
-                          checked={selectedTemplatesForExport.includes(template.id) || selectedTemplatesForExport.includes('all')}
-                          onCheckedChange={() => toggleTemplateSelection(template.id)}
-                          disabled={selectedTemplatesForExport.includes('all')}
-                        />
-                        <Label htmlFor={template.id} className="text-sm flex-1">
-                          <span className="font-medium">{template.category}</span> → <span>{template.name}</span>
-                        </Label>
-                      </div>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setExportDialogOpen(false);
-              setSelectedTemplatesForExport([]);
-            }}>
-              Cancel
-            </Button>
-            <Button onClick={handleExportTemplates}>
-              <Download className="mr-2 h-4 w-4" />
-              Export CSV
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Import Template Dialog */}
-      <Dialog open={importDialogOpen} onOpenChange={(open) => {
-        setImportDialogOpen(open);
-        if (!open) {
-          setCsvFile(null);
-          setImportCategory('');
-          setImportTemplateName('');
-          setNewImportCategoryName('');
-          setNewImportTemplateName('');
-        }
-      }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Import Template CSV</DialogTitle>
-            <DialogDescription>
-              Upload a CSV file to import templates. The file should have the format: Category, Template, Field, Type, Prompt 1, Prompt 2, Prompt 3
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="csv-file">CSV File</Label>
-              <Input
-                id="csv-file"
-                type="file"
-                accept=".csv"
-                onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="import-category">Category</Label>
-              <Select value={importCategory} onValueChange={setImportCategory}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {database.categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="__new_category__">
-                    + Create New Category
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              {importCategory === '__new_category__' && (
-                <Input
-                  placeholder="Enter new category name"
-                  value={newImportCategoryName}
-                  onChange={(e) => setNewImportCategoryName(e.target.value)}
-                  autoFocus
-                />
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="import-template-name">Template Name</Label>
-              <Select value={importTemplateName} onValueChange={setImportTemplateName}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select or create template" />
-                </SelectTrigger>
-                <SelectContent>
-                  {importCategory && importCategory !== '__new_category__' && 
-                    database.templates
-                      .filter(t => t.category === importCategory)
-                      .map(template => (
-                        <SelectItem key={template.id} value={template.name}>
-                          {template.name}
-                        </SelectItem>
-                      ))
+                placeholder="Enter template name"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleRenameTemplate();
                   }
-                  <SelectItem value="__new_template__">
-                    + Create New Template
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              {importTemplateName === '__new_template__' && (
-                <Input
-                  placeholder="Enter new template name"
-                  value={newImportTemplateName}
-                  onChange={(e) => setNewImportTemplateName(e.target.value)}
-                  autoFocus
-                />
-              )}
+                }}
+                autoFocus
+                className="h-11"
+              />
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              setImportDialogOpen(false);
-              setCsvFile(null);
-              setImportCategory('');
-              setImportTemplateName('');
-              setNewImportCategoryName('');
-              setNewImportTemplateName('');
-            }}>
-              Cancel
-            </Button>
-            <Button onClick={handleImportTemplates}>
-              <Upload className="mr-2 h-4 w-4" />
-              Import CSV
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => {
+                setRenameTemplateDialogOpen(false);
+                setNewTemplateName('');
+              }}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleRenameTemplate}
+                disabled={!newTemplateName.trim()}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Rename Template
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Import/Export Manager */}
+      <ImportExportManager
+        database={database}
+        addCategory={addCategory}
+        addTemplate={addTemplate}
+        addField={addField}
+        addPrompt={addPrompt}
+        exportDialogOpen={exportDialogOpen}
+        setExportDialogOpen={setExportDialogOpen}
+        importDialogOpen={importDialogOpen}
+        setImportDialogOpen={setImportDialogOpen}
+      />
     </div>
   );
 } 

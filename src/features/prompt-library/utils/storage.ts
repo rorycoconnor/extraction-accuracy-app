@@ -1,5 +1,6 @@
 import type { Database } from '../types';
 import { STORAGE_KEY } from '../types';
+import { autoMigrateIfNeeded } from './migration';
 
 // Seed data only used if localStorage is completely empty
 function createInitialSeedData(): Database {
@@ -10,11 +11,17 @@ function createInitialSeedData(): Database {
         id: 'legal-contracts',
         name: 'Contracts',
         category: 'Legal',
+        key: 'contracts',
+        copyOnCopy: false,
         fields: [
           {
             id: 'counter-party-name',
             name: 'Counter Party Name',
-            type: 'Text',
+            type: 'text',
+            key: 'counterPartyName',
+            hidden: false,
+            options: [],
+            optionsPaste: '',
             prompts: [
               {
                 id: 'prompt-1',
@@ -42,7 +49,11 @@ function createInitialSeedData(): Database {
           {
             id: 'start-date',
             name: 'Start Date',
-            type: 'Date',
+            type: 'date',
+            key: 'startDate',
+            hidden: false,
+            options: [],
+            optionsPaste: '',
             prompts: [
               {
                 id: 'prompt-4',
@@ -66,11 +77,17 @@ function createInitialSeedData(): Database {
         id: 'finance-invoices',
         name: 'Invoices',
         category: 'Finance',
+        key: 'invoices',
+        copyOnCopy: false,
         fields: [
           {
             id: 'invoice-number',
             name: 'Invoice Number',
-            type: 'Text',
+            type: 'text',
+            key: 'invoiceNumber',
+            hidden: false,
+            options: [],
+            optionsPaste: '',
             prompts: [
               {
                 id: 'prompt-6',
@@ -84,7 +101,11 @@ function createInitialSeedData(): Database {
           {
             id: 'invoice-amount',
             name: 'Invoice Amount',
-            type: 'Text',
+            type: 'text',
+            key: 'invoiceAmount',
+            hidden: false,
+            options: [],
+            optionsPaste: '',
             prompts: [
               {
                 id: 'prompt-7',
@@ -102,8 +123,14 @@ function createInitialSeedData(): Database {
 }
 
 export const PromptLibraryStorage = {
-  // Load data from localStorage
+  // Load data from localStorage with automatic migration
   load(): Database {
+    // First, attempt automatic migration if needed
+    const migratedData = autoMigrateIfNeeded();
+    if (migratedData) {
+      return migratedData;
+    }
+
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {

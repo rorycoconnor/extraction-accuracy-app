@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { LayoutWrapper } from '@/components/layout-wrapper';
 import { GroundTruthProvider } from '@/hooks/use-ground-truth';
 import { AccuracyDataProvider } from '@/store/AccuracyDataStore';
+import { PromptLibraryProvider } from '@/features/prompt-library/hooks/use-prompt-library';
 
 export const metadata: Metadata = {
   title: 'Box Accuracy App',
@@ -24,14 +25,16 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased bg-gray-50 dark:bg-gray-900">
-        <AccuracyDataProvider>
-          <GroundTruthProvider>
-            <LayoutWrapper>
-              {children}
-            </LayoutWrapper>
-            <Toaster />
-          </GroundTruthProvider>
-        </AccuracyDataProvider>
+        <PromptLibraryProvider>
+          <AccuracyDataProvider>
+            <GroundTruthProvider>
+              <LayoutWrapper>
+                {children}
+              </LayoutWrapper>
+              <Toaster />
+            </GroundTruthProvider>
+          </AccuracyDataProvider>
+        </PromptLibraryProvider>
       </body>
     </html>
   );

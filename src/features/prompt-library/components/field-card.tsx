@@ -60,21 +60,27 @@ export function FieldCard({ field, template }: FieldCardProps) {
 
 
 
-  // Sort prompts: pinned first, then by rating (up - down)
+  // Sort prompts with stable ordering to prevent re-ordering during interactions
   const sortedPrompts = React.useMemo(() => {
-    return [...field.prompts].sort((a, b) => {
-      // First sort by pin status
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
+    // Create a stable sort by assigning original indices
+    const promptsWithIndex = field.prompts.map((prompt, index) => ({
+      prompt,
+      originalIndex: index
+    }));
+    
+    return promptsWithIndex.sort((a, b) => {
+      // First sort by pin status (pinned prompts at top for visibility)
+      if (a.prompt.isPinned && !b.prompt.isPinned) return -1;
+      if (!a.prompt.isPinned && b.prompt.isPinned) return 1;
       
       // Then sort by rating
-      const aRating = a.up - a.down;
-      const bRating = b.up - b.down;
+      const aRating = a.prompt.up - a.prompt.down;
+      const bRating = b.prompt.up - b.prompt.down;
       if (aRating !== bRating) return bRating - aRating;
       
-      // Finally sort by creation date
-      return b.createdAt - a.createdAt;
-    });
+      // Finally sort by original index for stable order (prevents jumping)
+      return a.originalIndex - b.originalIndex;
+    }).map(item => item.prompt);
   }, [field.prompts]);
 
   return (
@@ -158,7 +164,7 @@ export function FieldCard({ field, template }: FieldCardProps) {
         <CardContent className="space-y-3 pb-5">
           {sortedPrompts.map((prompt, index) => (
             <PromptItem
-              key={prompt.id}
+              key={`${prompt.id}-${prompt.isPinned ? 'pinned' : 'unpinned'}-${index}`}
               prompt={prompt}
               templateId={template.id}
               fieldId={field.id}
