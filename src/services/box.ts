@@ -34,6 +34,39 @@ type BoxFolder = {
   type: 'folder';
 };
 
+type BoxMetadataTemplateCreateRequest = {
+  scope: 'enterprise';
+  displayName: string;
+  templateKey?: string;
+  copyInstanceOnItemCopy?: boolean;
+  fields: Array<{
+    type: 'string' | 'float' | 'date' | 'enum' | 'multiSelect';
+    key: string;
+    displayName: string;
+    description?: string;
+    hidden?: boolean;
+    options?: Array<{ key: string }>;
+  }>;
+};
+
+type BoxMetadataTemplateResponse = {
+  id: string;
+  type: string;
+  scope: string;
+  templateKey: string;
+  displayName: string;
+  hidden: boolean;
+  fields: Array<{
+    id: string;
+    type: string;
+    key: string;
+    displayName: string;
+    description?: string;
+    hidden: boolean;
+    options?: Array<{ id: string; key: string }>;
+  }>;
+};
+
 /**
  * Gets a valid access token for the Box API with caching.
  * It checks for OAuth2.0 tokens first, then Service Account config, then falls back to Developer Token.
@@ -172,6 +205,44 @@ export async function getTemplates(): Promise<BoxTemplate[]> {
 
   } catch (error) {
     console.error('Error fetching templates from Box:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create a new metadata template in Box
+ */
+export async function createMetadataTemplate(templateData: BoxMetadataTemplateCreateRequest): Promise<BoxMetadataTemplateResponse> {
+  try {
+    console.log('🔧 Creating Box metadata template:', templateData.displayName);
+    
+    const response = await boxApiFetch('/metadata_templates/schema', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(templateData),
+    });
+
+    console.log('✅ Successfully created Box metadata template:', response.templateKey);
+    return response;
+  } catch (error) {
+    console.error('❌ Error creating metadata template in Box:', error);
+    throw error;
+  }
+}
+
+/**
+ * Check if a metadata template with the given name already exists in Box
+ */
+export async function checkTemplateExists(templateName: string): Promise<boolean> {
+  try {
+    const templates = await getTemplates();
+    return templates.some(template => 
+      template.displayName.toLowerCase() === templateName.toLowerCase()
+    );
+  } catch (error) {
+    console.error('Error checking if template exists:', error);
     throw error;
   }
 }

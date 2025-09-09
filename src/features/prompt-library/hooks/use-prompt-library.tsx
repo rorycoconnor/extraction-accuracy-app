@@ -6,6 +6,9 @@ import { ALL_CATEGORIES, ALL_TEMPLATES } from '../types';
 import { PromptLibraryStorage } from '../utils/storage';
 import { useToast } from '@/hooks/use-toast';
 
+// Module-level variable to prevent double-firing of pin toggles
+let pinToggleInProgress: Record<string, boolean> = {};
+
 interface PromptLibraryContextType {
   // Data
   database: Database;
@@ -24,12 +27,15 @@ interface PromptLibraryContextType {
   deletePrompt: (templateId: string, fieldId: string, promptId: string) => void;
   addCategory: (categoryName: string) => void;
   addTemplate: (templateName: string, categoryName: string) => void;
+  deleteTemplate: (templateId: string) => void;
+  renameTemplate: (templateId: string, newName: string) => void;
   addField: (templateId: string, fieldName: string, fieldType: string) => void;
   editPrompt: (templateId: string, fieldId: string, promptId: string, newText: string) => void;
   reorderFields: (templateId: string, fieldOrder: string[]) => void;
   togglePinPrompt: (templateId: string, fieldId: string, promptId: string) => void;
   deleteField: (templateId: string, fieldId: string) => void;
   renameField: (templateId: string, fieldId: string, newName: string) => void;
+  updateField: (templateId: string, fieldId: string, updates: Partial<Field>) => void;
   
   // Utility
   copyToClipboard: (text: string) => void;
@@ -381,6 +387,47 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     });
   }, [generateUniqueId, toast]);
 
+  const deleteTemplate = useCallback((templateId: string) => {
+    if (!templateId) return;
+
+    const templateToDelete = database.templates.find(t => t.id === templateId);
+    if (!templateToDelete) return;
+
+    setDatabase(prev => ({
+      ...prev,
+      templates: prev.templates.filter(t => t.id !== templateId)
+    }));
+
+    toast({
+      title: 'Template Deleted',
+      description: `Template "${templateToDelete.name}" has been deleted.`,
+    });
+  }, [database.templates, toast]);
+
+  const renameTemplate = useCallback((templateId: string, newName: string) => {
+    const trimmedNewName = newName.trim();
+    if (!templateId || !trimmedNewName) return;
+
+    const templateToRename = database.templates.find(t => t.id === templateId);
+    if (!templateToRename) return;
+
+    const oldName = templateToRename.name;
+
+    setDatabase(prev => ({
+      ...prev,
+      templates: prev.templates.map(template => 
+        template.id === templateId 
+          ? { ...template, name: trimmedNewName }
+          : template
+      )
+    }));
+
+    toast({
+      title: 'Template Renamed',
+      description: `Template renamed from "${oldName}" to "${trimmedNewName}".`,
+    });
+  }, [database.templates, toast]);
+
   const addField = useCallback((templateId: string, fieldName: string, fieldType: string) => {
     const trimmedFieldName = fieldName.trim();
     
@@ -452,6 +499,22 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
 
   const togglePinPrompt = useCallback((templateId: string, fieldId: string, promptId: string) => {
     let wasToggled = false;
+    let isPinning = false;
+    let targetPromptText = '';
+    
+    // Prevent double-firing by checking if we're already processing this action
+    const actionKey = `${templateId}-${fieldId}-${promptId}`;
+    if (pinToggleInProgress[actionKey]) {
+      return;
+    }
+    
+    // Mark this action as in progress
+    pinToggleInProgress[actionKey] = true;
+    
+    // Clear the flag after a short delay
+    setTimeout(() => {
+      delete pinToggleInProgress[actionKey];
+    }, 100);
     
     setDatabase(prev => ({
       ...prev,
@@ -461,14 +524,28 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
             ...template,
             fields: template.fields.map(field => {
               if (field.id === fieldId) {
+                // First pass: check if we're pinning or unpinning the target prompt
+                const targetPrompt = field.prompts.find(p => p.id === promptId);
+                if (targetPrompt) {
+                  isPinning = !targetPrompt.isPinned;
+                  targetPromptText = targetPrompt.text;
+                }
+                
                 return {
                   ...field,
                   prompts: field.prompts.map(prompt => {
                     if (prompt.id === promptId) {
+                      // Toggle the target prompt
                       wasToggled = true;
                       return {
                         ...prompt,
                         isPinned: !prompt.isPinned
+                      };
+                    } else if (isPinning && prompt.isPinned) {
+                      // If we're pinning the target prompt, unpin any other pinned prompts in this field
+                      return {
+                        ...prompt,
+                        isPinned: false
                       };
                     }
                     return prompt;
@@ -487,7 +564,9 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
       setTimeout(() => {
         toast({
           title: "Prompt Updated",
-          description: "Prompt pin status has been updated.",
+          description: isPinning 
+            ? "Prompt pinned. Other pins in this field have been removed."
+            : "Prompt unpinned.",
         });
       }, 0);
     }
@@ -569,6 +648,44 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     }
   }, [toast]);
 
+  const updateField = useCallback((templateId: string, fieldId: string, updates: Partial<Field>) => {
+    let wasUpdated = false;
+    let templateName = '';
+
+    setDatabase(prev => ({
+      ...prev,
+      templates: prev.templates.map(template => {
+        if (template.id === templateId) {
+          templateName = template.name;
+          
+          return {
+            ...template,
+            fields: template.fields.map(field => {
+              if (field.id === fieldId) {
+                wasUpdated = true;
+                return {
+                  ...field,
+                  ...updates
+                };
+              }
+              return field;
+            })
+          };
+        }
+        return template;
+      })
+    }));
+
+    if (wasUpdated) {
+      setTimeout(() => {
+        toast({
+          title: "Field Updated",
+          description: `Field has been updated in "${templateName}".`,
+        });
+      }, 0);
+    }
+  }, [toast]);
+
   const value: PromptLibraryContextType = {
     database,
     filteredTemplates,
@@ -582,6 +699,8 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     deletePrompt,
     addCategory,
     addTemplate,
+    deleteTemplate,
+    renameTemplate,
     addField,
     copyToClipboard,
     isLoading,
@@ -591,7 +710,8 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     reorderFields,
     togglePinPrompt,
     deleteField,
-    renameField
+    renameField,
+    updateField
   };
 
   return (

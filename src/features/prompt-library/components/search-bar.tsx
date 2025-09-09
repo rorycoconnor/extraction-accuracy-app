@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X } from 'lucide-react';
 import { usePromptLibrary } from '../hooks/use-prompt-library';
@@ -26,9 +25,19 @@ export function SearchBar() {
     return database.templates.filter(t => t.category === searchFilters.category);
   }, [database.templates, searchFilters.category]);
 
-  const handleSearch = () => {
-    // Search functionality is already handled by the filters
-    // This button is for visual consistency with the screenshot
+  // Check if any filters are active
+  const hasActiveFilters = React.useMemo(() => {
+    return !!(
+      searchFilters.searchTerm.trim() ||
+      (searchFilters.category && searchFilters.category !== ALL_CATEGORIES) ||
+      (searchFilters.template && searchFilters.template !== ALL_TEMPLATES)
+    );
+  }, [searchFilters.searchTerm, searchFilters.category, searchFilters.template]);
+
+  const handleClear = () => {
+    setSearchTerm('');
+    setSelectedCategory(null);
+    setSelectedTemplate(null);
   };
 
   return (
@@ -45,7 +54,7 @@ export function SearchBar() {
           <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Templates</label>
         </div>
         <div className="w-32">
-          {/* Empty space for search button alignment */}
+          {/* Empty space for clear button alignment */}
         </div>
       </div>
 
@@ -111,14 +120,19 @@ export function SearchBar() {
           </Select>
         </div>
 
-        {/* Search Button - fixed width */}
+        {/* Clear Button - fixed width */}
         <div className="w-32">
-          <Button 
-            onClick={handleSearch}
-            className="w-full h-11 bg-[#0061d5] hover:bg-[#0061d5]/90 text-white font-medium"
+          <button
+            onClick={handleClear}
+            disabled={!hasActiveFilters}
+            className={`w-full h-11 font-medium rounded-md transition-colors ${
+              hasActiveFilters
+                ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                : 'bg-[#EFF6FF] text-gray-500 cursor-not-allowed'
+            }`}
           >
-            Search
-          </Button>
+            Clear
+          </button>
         </div>
       </div>
     </div>
