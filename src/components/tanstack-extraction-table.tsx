@@ -179,6 +179,7 @@ const FileNameCell = ({ row }: { row: ProcessedRowData }) => (
 // Cell component for model values
 const ModelValueCell = ({ 
   cellData,
+  fileId,
   onOpenInlineEditor,
   onRunSingleFieldForFile,
   field,
@@ -186,6 +187,7 @@ const ModelValueCell = ({
   toggleCellExpansion
 }: {
   cellData: CellData;
+  fileId: string;
   onOpenInlineEditor?: (fileId: string, fieldKey: string) => void;
   onRunSingleFieldForFile?: (field: AccuracyField, fileId: string) => void;
   field?: AccuracyField;
@@ -205,6 +207,11 @@ const ModelValueCell = ({
     const getComparisonClasses = (comparison: ComparisonResult) => {
     // Never apply styling to Ground Truth cells
     if (modelName === 'Ground Truth') {
+      return '';
+    }
+    
+    // If there's no Ground Truth to compare against, don't apply any coloring
+    if (!groundTruth || groundTruth.trim() === '' || groundTruth === '-') {
       return '';
     }
     
@@ -241,8 +248,25 @@ const ModelValueCell = ({
   // Better display for 250px columns - can show more content
   const displayContent = displayText || '-';
 
+  const handleCellClick = (e: React.MouseEvent) => {
+    // Check if clicking on expansion indicator
+    const target = e.target as HTMLElement;
+    if (target.closest('span') && target.textContent === '...') {
+      toggleCellExpansion(cellId);
+      return;
+    }
+    
+    // Handle ground truth editing - open inline editor for preview
+    if (modelName === 'Ground Truth' && onOpenInlineEditor) {
+      onOpenInlineEditor(fileId, fieldKey);
+    }
+  };
+
   return (
-    <div className="relative w-full h-full">
+    <div 
+      className="relative w-full h-full cursor-pointer" 
+      onClick={handleCellClick}
+    >
       <div className={cellClasses}>
         <span 
           className="text-sm leading-tight" 
@@ -366,6 +390,7 @@ export default function TanStackExtractionTable({
           return (
             <ModelValueCell
               cellData={cellData}
+              fileId={row.original.id}
               onOpenInlineEditor={onOpenInlineEditor}
               onRunSingleFieldForFile={onRunSingleFieldForFile}
               field={field}
@@ -675,6 +700,12 @@ export default function TanStackExtractionTable({
 
                         const metrics = averages[field.key]?.[modelName] ?? { accuracy: 0, precision: 0, recall: 0, f1: 0 };
                         const f1 = metrics.f1;
+                        
+                        // Check if there's any ground truth data for this field across all files
+                        const hasGroundTruth = results.some(result => {
+                          const groundTruthValue = result.fields[field.key]?.['Ground Truth'];
+                          return groundTruthValue && groundTruthValue.trim() !== '' && groundTruthValue !== '-';
+                        });
 
                           return (
                             <td
@@ -686,14 +717,20 @@ export default function TanStackExtractionTable({
                               )}
                             >
                               <div className="relative w-full h-full flex items-center justify-center">
-                                <div className={cn(
-                                  "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold",
-                                  f1 >= 0.9 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 
-                                  f1 >= 0.7 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
-                                  'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                                )}>
-                                  F1 {f1 > 0 ? `${(f1 * 100).toFixed(0)}%` : '0%'}
-                                </div>
+                                {!hasGroundTruth ? (
+                                  <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
+                                    TBD
+                                  </div>
+                                ) : (
+                                  <div className={cn(
+                                    "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold",
+                                    f1 >= 0.9 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 
+                                    f1 >= 0.7 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
+                                    'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                  )}>
+                                    F1 {f1 > 0 ? `${(f1 * 100).toFixed(0)}%` : '0%'}
+                                  </div>
+                                )}
                               </div>
                             </td>
                           );
