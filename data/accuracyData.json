@@ -11,109 +11,7 @@
         {
           "id": "v1",
           "prompt": "Match the name of the asset with our ENUM's.",
-          "savedAt": "2025-08-16T00:56:29.289Z",
-          "metrics": {
-            "modelMetrics": {
-              "google__gemini_2_0_flash_001": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              }
-            },
-            "filesCount": 11,
-            "lastRunAt": "2025-09-09T03:13:22.515Z"
-          }
+          "savedAt": "2025-08-16T00:56:29.289Z"
         }
       ],
       "options": [
@@ -148,109 +46,7 @@
         {
           "id": "v1",
           "prompt": "Describe the visual content of this digital asset in one or two sentences. If the asset contains no visual elements, summarize the document's main topic and purpose. The description should be clear and concise for an audience unfamiliar with the asset.",
-          "savedAt": "2025-08-16T00:57:20.348Z",
-          "metrics": {
-            "modelMetrics": {
-              "google__gemini_2_0_flash_001": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              }
-            },
-            "filesCount": 11,
-            "lastRunAt": "2025-09-09T03:13:22.515Z"
-          }
+          "savedAt": "2025-08-16T00:57:20.348Z"
         }
       ]
     },
@@ -263,109 +59,7 @@
         {
           "id": "v1",
           "prompt": "Match the name of the asset with our ENUM's.",
-          "savedAt": "2025-08-16T00:56:41.589Z",
-          "metrics": {
-            "modelMetrics": {
-              "google__gemini_2_0_flash_001": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              }
-            },
-            "filesCount": 11,
-            "lastRunAt": "2025-09-09T03:13:22.515Z"
-          }
+          "savedAt": "2025-08-16T00:56:41.589Z"
         }
       ],
       "options": [
@@ -412,109 +106,7 @@
         {
           "id": "v1",
           "prompt": "Extract a comma-separated list of keywords, or generate 5-10 relevant keywords from the content if none are explicitly stated. For assets featuring an animal, ensure the keyword list includes its breed, size, one or two dominant colors, and estimated age. ",
-          "savedAt": "2025-08-16T01:00:14.702Z",
-          "metrics": {
-            "modelMetrics": {
-              "google__gemini_2_0_flash_001": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              }
-            },
-            "filesCount": 11,
-            "lastRunAt": "2025-09-09T03:13:22.515Z"
-          }
+          "savedAt": "2025-08-16T01:00:14.702Z"
         }
       ]
     },
@@ -527,109 +119,7 @@
         {
           "id": "v2",
           "prompt": "Identify the most dominate colors of animal photos",
-          "savedAt": "2025-08-16T05:04:05.110Z",
-          "metrics": {
-            "modelMetrics": {
-              "google__gemini_2_0_flash_001": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "google__gemini_2_5_pro_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "enhanced_extract_agent_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_3_7_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "aws__claude_4_sonnet_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "azure__openai__gpt_4_1_mini_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              },
-              "openai__o3_no_prompt": {
-                "f1": 0,
-                "accuracy": 0,
-                "precision": 0,
-                "recall": 0
-              }
-            },
-            "filesCount": 11,
-            "lastRunAt": "2025-09-09T03:13:22.515Z"
-          }
+          "savedAt": "2025-08-16T05:04:05.110Z"
         },
         {
           "id": "v1",
@@ -793,123 +283,21 @@
   ],
   "results": [
     {
-      "id": "1956062370718",
-      "fileName": "dog 01.webp",
-      "fileType": "WEBP",
-      "fields": {
-        "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a full-body shot of a Belgian Malinois dog standing against a white background. The dog has a tan coat with a black mask and erect ears.",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A full-body studio portrait of a Belgian Malinois dog standing alertly against a solid white background, looking towards the camera.",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A Belgian Malinois dog standing in a portrait pose against a white background, displaying its characteristic tan and brown coat coloring with alert ears and friendly expression.",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Stock",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Stock",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Stock",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Belgian Malinois, medium size, tan, black, adult",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Belgian Malinois, dog, medium-large, brown, black, adult, animal, pet, purebred, standing, studio shot, white background",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Belgian Malinois, medium size, tan, brown, adult, dog, canine, portrait, standing, alert, friendly, purebred",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "color": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        }
-      }
-    },
-    {
       "id": "1956066395622",
       "fileName": "Dog 10.jpg",
       "fileType": "JPG",
       "fields": {
         "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
+          "Ground Truth": "Image",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -919,16 +307,16 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a Belgian Shepherd dog standing in a field of yellow flowers. The dog is medium-sized with a reddish-brown coat and a black muzzle.",
+          "Ground Truth": "A long-haired Belgian Tervuren dog stands in profile amidst a field of yellow wildflowers, with a backdrop of rolling hills displaying autumn colors.",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A majestic Belgian Tervuren dog with long, reddish-brown and black fur stands proudly in a field of bright yellow wildflowers. The background features a soft-focus hillside with hints of autumn foliage.",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A beautiful Belgian Tervuren dog stands in a field of yellow wildflowers with autumn foliage visible in the background. The dog has a thick, flowing coat in rich brown and tan colors and appears alert with its mouth open.",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -938,16 +326,16 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Stock",
+          "Ground Truth": "LifeStyle",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Stock",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "LifeStyle",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -957,16 +345,16 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Belgian Shepherd, medium, reddish-brown, black, adult, dog, field, yellow flowers",
+          "Ground Truth": "Belgian Tervuren, large dog, brown, black, adult, dog, pet, animal, outdoors, nature, field, wildflowers, yellow flowers, autumn",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Belgian Tervuren, large dog, brown, black, adult, dog, pet, animal, field, wildflowers, nature",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Belgian Tervuren, dog, large breed, brown, tan, adult, wildflowers, yellow flowers, autumn, field, nature, outdoor, canine, shepherd",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -977,15 +365,15 @@
         },
         "color": {
           "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1002,16 +390,16 @@
       "fileType": "JPG",
       "fields": {
         "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
+          "Ground Truth": "Image",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1021,16 +409,16 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a close-up of a Boston Terrier dog with a happy expression, set against a green background.",
+          "Ground Truth": "This is a close-up photograph of a happy Boston Terrier looking directly at the camera with its mouth open. The dog is set against a blurred green background, likely grass.",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A close-up photograph of a happy Boston Terrier looking directly at the camera with its mouth open in a smile. The dog has black and white fur, and the background is a soft, out-of-focus green, suggesting an outdoor setting like a grassy field.",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A close-up portrait of a happy French Bulldog with a big smile, showing its teeth and tongue, set against a blurred green background.",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1040,16 +428,16 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "LifeStyle",
+          "Ground Truth": "LifeStyle",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "LifeStyle",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "LifeStyle",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1059,16 +447,16 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Boston Terrier, dog, black, white, small, young, happy, pet, breed",
+          "Ground Truth": "Boston Terrier, dog, puppy, small dog, black and white, young adult, happy, smile, pet, animal, outdoors, grass",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Boston Terrier, dog, pet, animal, happy, smiling, close-up, portrait, small dog, black, white, young adult, outdoors, grass",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "French Bulldog, small breed, black and white, adult, happy dog, smiling, portrait, pet photography, domestic animal, companion dog",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1079,219 +467,15 @@
         },
         "color": {
           "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        }
-      }
-    },
-    {
-      "id": "1956061393446",
-      "fileName": "dog 2.jpg",
-      "fileType": "JPG",
-      "fields": {
-        "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows an Airedale Terrier standing in a grassy field with a blue sky in the background.",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A full-body profile shot of an Airedale Terrier standing alertly in a grassy field. The dog has a classic black and tan coat, and the background features a clear blue sky.",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A photograph of an Airedale Terrier dog standing in profile on grass with bare trees and blue sky in the background. The dog displays the breed's characteristic tan and black coat coloring and alert, confident posture.",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "LifeStyle",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Stock",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Stock",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Airedale Terrier, medium, brown, black, adult",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Airedale Terrier, large, black, tan, adult, dog, terrier, outdoors, standing, pet, animal",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Airedale Terrier, large dog, tan, black, adult, terrier breed, outdoor, grass, profile, standing, alert",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "color": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        }
-      }
-    },
-    {
-      "id": "1956058862308",
-      "fileName": "dog 3.jpg",
-      "fileType": "JPG",
-      "fields": {
-        "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a medium-sized Akita dog standing in a grassy field with trees in the background. The dog has a black head and white and brown fur.",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A full-length shot of a large, fluffy Akita dog standing in a grassy field. The dog, which has white, brown, and black fur, is looking towards the camera with its mouth open, set against a blurred background of green and yellow foliage and a body of water.",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A beautiful Akita dog standing on grass in a natural outdoor setting with green foliage in the background. The dog has a distinctive curled tail and appears alert with its tongue out.",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Stock",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "LifeStyle",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "LifeStyle",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Akita, dog, medium, black, white, brown, grass, field, trees, outdoor",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Akita, large dog, white, brown, black, adult, dog, pet, animal, outdoors, nature, grass, standing",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Akita, dog, medium-large size, brown, white, black, adult, outdoor, grass, nature, pet, canine, curled tail, alert",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "color": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1308,16 +492,16 @@
       "fileType": "JPG",
       "fields": {
         "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
+          "Ground Truth": "Image",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1328,15 +512,15 @@
         },
         "aiExtraction": {
           "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a large Alaskan Malamute dog standing on a green lawn. The dog has a thick coat of fur with a mix of white, gray, and black markings.",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A full-body shot of a large, fluffy Alaskan Malamute standing in profile on a vibrant green lawn. The dog has its mouth open, appearing happy and alert, with its plumed tail curled over its back.",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A beautiful Alaskan Malamute dog standing on green grass in an outdoor setting, displaying its characteristic thick double coat with distinctive markings and curled tail.",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1346,16 +530,16 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "LifeStyle",
+          "Ground Truth": "LifeStyle",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Stock",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Stock",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1366,15 +550,15 @@
         },
         "keywords": {
           "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Alaskan Malamute, large dog, white, gray, black, medium age",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Alaskan Malamute, large, black, white, adult, dog, pet, animal, outdoors, grass, fluffy, standing, profile",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Alaskan Malamute, large dog, gray, white, black, adult dog, outdoor, grass, purebred, fluffy tail",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1385,525 +569,15 @@
         },
         "color": {
           "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
+          "google__gemini_2_0_flash_001": "Pending...",
           "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
+          "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
           "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        }
-      }
-    },
-    {
-      "id": "1956067163222",
-      "fileName": "dog 5.jpg",
-      "fileType": "JPG",
-      "fields": {
-        "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a medium-sized American Bulldog standing in a grassy field with trees in the background. The dog is predominantly white with black patches.",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A muscular, white dog with large black patches stands in a grassy, wooded area, looking off to the side.",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A white and black pit bull type dog standing on grass in a park setting with trees in the background during daytime.",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "LifeStyle",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "LifeStyle",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "LifeStyle",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "American Bulldog, medium, white, black, adult",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "American Bulldog, large, white, black, adult, dog, pet, animal, outdoors, grass, park, muscular",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "pit bull, dog, white, black, medium size, adult, park, grass, trees, outdoor, pet, canine",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "color": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        }
-      }
-    },
-    {
-      "id": "1956062826679",
-      "fileName": "dog 6.jpg",
-      "fileType": "JPG",
-      "fields": {
-        "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a white American Eskimo Dog standing in a grassy field with a blurred background of trees and water.",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A small, fluffy white dog, likely an American Eskimo Dog, stands in a sunny, grassy field, looking back over its shoulder with its mouth open.",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A fluffy white Spitz-type dog standing on green grass with a blurred yellow background, appearing happy with its mouth open and tongue visible.",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Stock",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "LifeStyle",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "LifeStyle",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "American Eskimo Dog, white, medium size, fluffy, young, grass, field, outdoor",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "American Eskimo Dog, small, white, adult, dog, pet, fluffy, grass, park, outdoors, happy",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "white dog, Spitz, small breed, fluffy, white fur, adult dog, grass, outdoor, pet, canine",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "color": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        }
-      }
-    },
-    {
-      "id": "1956058551643",
-      "fileName": "dog 7.jpg",
-      "fileType": "JPG",
-      "fields": {
-        "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a husky dog standing in the snow, wearing a harness and leash. The background features a river and trees.",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A fluffy, medium-to-large Alaskan Malamute or husky-like dog with black, white, and grey fur stands in a snowy landscape. The dog is wearing a harness and looks towards the camera, with a river and bare trees in the background.",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A Siberian Husky dog wearing a black harness stands in deep snow with bare winter trees in the background. The dog has distinctive black and white markings with pointed ears and a fluffy curled tail.",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Stock",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "LifeStyle",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "LifeStyle",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "husky, dog, snow, harness, leash, black, white, gray, medium, adult",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Alaskan Malamute, large dog, black, white, grey, young adult, snow, winter, harness, sled dog, pet, animal, outdoors",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Siberian Husky, medium size, black, white, adult, winter, snow, harness, outdoor, cold weather",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "color": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        }
-      }
-    },
-    {
-      "id": "1956067871719",
-      "fileName": "dog 8.jpg",
-      "fileType": "JPG",
-      "fields": {
-        "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a large, light-colored Anatolian Shepherd dog standing outdoors in a grassy area with trees in the background. The dog is panting with its tongue out.",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A large, tan Anatolian Shepherd dog with a black muzzle and ears stands on a grassy hill in front of green bushes. The dog is looking towards the camera with its mouth open and its fluffy tail curled up over its back.",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A large, cream-colored dog with dark facial markings stands in a natural outdoor setting with green vegetation and rocks in the background, appearing alert with its tongue out.",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Stock",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Stock",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Stock",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Anatolian Shepherd, large dog, light tan, black muzzle, outdoor, grassy area, trees, adult",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Anatolian Shepherd, large dog, tan, black, adult, dog, animal, outdoors, nature, hillside, standing",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "dog, canine, large breed, cream, beige, tan, black markings, adult, outdoor, nature, rocks, vegetation, alert, tongue out",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "color": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        }
-      }
-    },
-    {
-      "id": "1956058326848",
-      "fileName": "dog 9.jpg",
-      "fileType": "JPG",
-      "fields": {
-        "assetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Image",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Image",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "Image",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "aiExtraction": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "The image shows a brown Kelpie dog herding a flock of sheep. The dog is in motion, running towards the sheep.",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "A brown, medium-sized herding dog is actively running and herding a flock of white sheep in a dusty, rural setting. The dog is in motion with its mouth open, focused on its task of managing the livestock.",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "A brown dog runs energetically across sandy ground while a flock of white sheep moves in the background, creating a dynamic farm scene with dust or movement blur.",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "subAssetType": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Stock",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "LifeStyle",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "LifeStyle",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "keywords": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "Kelpie, dog, sheep, herding, brown, medium size, adult",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "Australian Kelpie, medium size, brown, adult, herding, sheep, dog, farm, agriculture, running, dust, livestock, working dog",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "dog, sheep, farm, herding, brown dog, white sheep, running, pastoral, livestock, working dog, medium size, adult dog",
-          "aws__claude_4_sonnet_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1": "Pending...",
-          "azure__openai__gpt_4_1_no_prompt": "Pending...",
-          "azure__openai__gpt_4_1_mini": "Pending...",
-          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
-          "openai__o3": "Pending...",
-          "openai__o3_no_prompt": "Pending..."
-        },
-        "color": {
-          "Ground Truth": "",
-          "google__gemini_2_0_flash_001": "",
-          "google__gemini_2_0_flash_001_no_prompt": "Pending...",
-          "google__gemini_2_5_pro": "",
-          "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Pending...",
-          "enhanced_extract_agent_no_prompt": "Pending...",
-          "aws__claude_3_7_sonnet": "Pending...",
-          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
-          "aws__claude_4_sonnet": "",
+          "aws__claude_4_sonnet": "Pending...",
           "aws__claude_4_sonnet_no_prompt": "Pending...",
           "azure__openai__gpt_4_1": "Pending...",
           "azure__openai__gpt_4_1_no_prompt": "Pending...",
@@ -1917,42 +591,6 @@
   ],
   "averages": {
     "assetType": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -1983,12 +621,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -1996,6 +628,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -2015,42 +689,6 @@
       }
     },
     "aiExtraction": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -2081,12 +719,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -2094,6 +726,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -2113,42 +787,6 @@
       }
     },
     "subAssetType": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -2179,12 +817,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -2192,6 +824,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -2211,42 +885,6 @@
       }
     },
     "keywords": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -2277,12 +915,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -2290,6 +922,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -2309,42 +983,6 @@
       }
     },
     "color": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -2375,12 +1013,6 @@
         "recall": 0,
         "f1": 0
       },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -2388,6 +1020,48 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -2427,7 +1101,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "835bcb8f-3662-4d67-bdf2-28fa5a7e91d7",
@@ -2439,7 +1113,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "01fa6112-3ffe-410d-aa62-64be25d38151",
@@ -2451,7 +1125,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "c160aaac-3b44-49a6-8427-0f8ae6ab4dc3",
@@ -2463,7 +1137,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "1255db51-bfe8-4f2a-a2fd-045e7d74556e",
@@ -2475,7 +1149,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "b03b6b3b-30b7-457f-91e4-a448edc40632",
@@ -2487,7 +1161,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "ab310764-07c2-48d1-ad3d-0e95dc95dae8",
@@ -2499,7 +1173,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "2518a65b-b692-4176-9d46-c2e7d9cd5049",
@@ -2511,7 +1185,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "bdba5932-39c0-4f61-9ee3-3914c21ccbf6",
@@ -2523,7 +1197,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "959d660d-8852-46d3-bfc7-ad99e30d4583",
@@ -2535,7 +1209,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "9fdbade5-6b0a-490d-a9a9-50130cd6f43d",
@@ -2547,7 +1221,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "b68441a1-5231-48ae-9618-08bba6417dc1",
@@ -2559,7 +1233,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "c4abcbf2-b57d-4079-b559-9bae1e8c913c",
@@ -2571,7 +1245,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "327c4c81-e546-4944-beb9-06032e35fae8",
@@ -2583,7 +1257,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "ac137918-ce1e-4940-92ce-92ab17139dd9",
@@ -2595,7 +1269,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "7bb590b6-a46d-498a-9558-6a14dc8340b0",
@@ -2607,7 +1281,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "dc0049ee-a2d9-4069-92e8-e4204268cc9f",
@@ -2619,7 +1293,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "fc119b3e-e6ba-414d-a090-b9b725a20bc4",
@@ -2631,7 +1305,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "d59846c0-21ca-4212-87da-2bd511652af7",
@@ -2643,7 +1317,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "59abe07d-163d-4d86-8836-7027e3a3a7bd",
@@ -2655,7 +1329,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "491e93c1-6028-4f55-9d42-4d5773b82e4d",
@@ -2667,7 +1341,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "208f58fa-9582-4c41-8bbe-01d7637c53be",
@@ -2679,7 +1353,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "5d19a90b-5028-46e3-bab1-5facf97db652",
@@ -2691,7 +1365,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "969482fb-9c54-4547-8a7d-9de0e3e08755",
@@ -2703,7 +1377,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "89a8dca4-3091-4054-b247-4efdf93d279a",
@@ -2715,7 +1389,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "2f12422a-d84f-4e7f-9cfe-123eceb1b582",
@@ -2727,7 +1401,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "61dd4e71-5d0e-4e13-9316-fdcb648ef403",
@@ -2739,7 +1413,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "92360cf5-43fa-4562-9b4d-c54943334024",
@@ -2751,7 +1425,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "db259c95-cee9-48bc-aecf-302b540b5893",
@@ -2763,7 +1437,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "eaab7be2-59ae-4d6c-b0aa-577d31b6889c",
@@ -2775,7 +1449,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "55405c87-896b-4f22-8d23-792490f9491f",
@@ -2787,7 +1461,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "75b65b6a-3a87-470f-8bc4-eae06ed0e801",
@@ -2799,7 +1473,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "dfb3da86-94d0-429b-9be1-38055bc1d322",
@@ -2811,7 +1485,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "e78deed4-7079-48bc-81fe-157860a6094e",
@@ -2823,7 +1497,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "0a36bd85-b8b0-4f64-b39b-1af315bb2179",
@@ -2835,7 +1509,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "8708c4ca-f64e-4c47-b98b-33f10ddc7456",
@@ -2847,7 +1521,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "95a15f00-cf0c-4574-bd9f-8c3a91e46289",
@@ -2859,7 +1533,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "effe5967-8b84-4f7a-89f4-00565a089db9",
@@ -2871,7 +1545,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         },
         {
           "id": "cf24b9d6-e335-482e-9e96-f16d0bbf4123",
@@ -2883,7 +1557,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-09T03:07:55.274Z"
+          "lastModified": "2025-09-09T03:27:08.831Z"
         }
       ]
     }
@@ -2891,14 +1565,14 @@
   "shownColumns": {
     "Ground Truth": true,
     "google__gemini_2_0_flash_001": true,
-    "google__gemini_2_0_flash_001_no_prompt": false,
-    "google__gemini_2_5_pro": true,
+    "google__gemini_2_0_flash_001_no_prompt": true,
+    "google__gemini_2_5_pro": false,
     "google__gemini_2_5_pro_no_prompt": false,
     "enhanced_extract_agent": false,
     "enhanced_extract_agent_no_prompt": false,
     "aws__claude_3_7_sonnet": false,
     "aws__claude_3_7_sonnet_no_prompt": false,
-    "aws__claude_4_sonnet": true,
+    "aws__claude_4_sonnet": false,
     "aws__claude_4_sonnet_no_prompt": false,
     "azure__openai__gpt_4_1": false,
     "azure__openai__gpt_4_1_no_prompt": false,
@@ -2907,5 +1581,5 @@
     "openai__o3": false,
     "openai__o3_no_prompt": false
   },
-  "lastModified": "2025-09-09T03:13:22.516Z"
+  "lastModified": "2025-09-09T03:29:01.725Z"
 }

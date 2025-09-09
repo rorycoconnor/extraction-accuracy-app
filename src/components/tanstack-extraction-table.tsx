@@ -313,6 +313,26 @@ export default function TanStackExtractionTable({
   const pathname = usePathname();
   const isHomePage = pathname === '/';
   
+  // Add a force refresh counter to trigger re-renders when Ground Truth changes
+  const [refreshCounter, setRefreshCounter] = React.useState(0);
+  
+  // Force refresh when data.results changes (which includes Ground Truth updates)
+  React.useEffect(() => {
+    console.log('🔄 TanStack Table: Data changed, refreshing...', results.length);
+    setRefreshCounter(prev => prev + 1);
+  }, [results]);
+  
+  // Create a hash of Ground Truth data to detect changes
+  const groundTruthHash = React.useMemo(() => {
+    const groundTruthValues = results.map(result => 
+      fields.map(field => 
+        `${result.id}-${field.key}-${result.fields[field.key]?.['Ground Truth'] || ''}`
+      ).join('|')
+    ).join('||');
+    console.log('🔍 TanStack Table: Ground Truth hash:', groundTruthValues.slice(0, 100) + '...');
+    return groundTruthValues;
+  }, [results, fields]);
+  
   // State for tracking expanded cells
   const [expandedCells, setExpandedCells] = React.useState<Set<string>>(new Set());
   
@@ -338,6 +358,8 @@ export default function TanStackExtractionTable({
 
   // Transform data for TanStack Table
   const processedData = React.useMemo<ProcessedRowData[]>(() => {
+    console.log('🔄 TanStack Table: Processing data with results:', results.length);
+    
     return results.map(result => {
       const row: ProcessedRowData = {
         id: result.id,
@@ -349,18 +371,25 @@ export default function TanStackExtractionTable({
       fields.forEach(field => {
         visibleColumns.forEach(modelName => {
           const key = `${field.key}-${modelName}`;
+          const groundTruthValue = result.fields[field.key]?.['Ground Truth'] || '';
+          
           row[key] = {
             value: result.fields[field.key]?.[modelName] || '',
-            groundTruth: result.fields[field.key]?.['Ground Truth'] || '',
+            groundTruth: groundTruthValue,
             fieldKey: field.key,
             modelName
           };
+          
+          // Debug Ground Truth values
+          if (modelName === 'Ground Truth' && groundTruthValue) {
+            console.log(`📝 TanStack Table: Ground Truth for ${result.fileName} - ${field.key}:`, groundTruthValue);
+          }
         });
       });
       
       return row;
     });
-  }, [results, fields, visibleColumns]);
+  }, [results, fields, visibleColumns, refreshCounter, groundTruthHash]);
 
   // Define columns for TanStack Table
   const columns = React.useMemo<ColumnDef<ProcessedRowData>[]>(() => {
@@ -562,7 +591,10 @@ export default function TanStackExtractionTable({
 
         <div className="table-container bg-white dark:bg-gray-900">
           <div className="table-scroll-area">
-            <table className="extraction-table caption-bottom text-sm">
+            <table 
+              key={`table-${groundTruthHash.slice(0, 20)}`}
+              className="extraction-table caption-bottom text-sm"
+            >
             <thead className="sticky-header">
               {/* Row 1: File Name + Field Names */}
               <tr>
