@@ -51,7 +51,7 @@ import { transformToBoxTemplate, validateBoxTemplate } from '../utils/box-transf
 import { createMetadataTemplate, checkTemplateExists } from '@/services/box';
 
 export function PromptLibraryMain() {
-  const { filteredFields, isLoading, error, database, searchFilters, addCategory, addTemplate, deleteTemplate, renameTemplate, addField, addPrompt, deletePrompt, reorderFields } = usePromptLibrary();
+  const { filteredFields, isLoading, error, database, searchFilters, addCategory, addTemplate, deleteTemplate, renameTemplate, addField, addPrompt, deletePrompt, reorderFields, batchImport } = usePromptLibrary();
   const { toast } = useToast();
 
   // Generate dynamic title based on current filters
@@ -408,7 +408,7 @@ export function PromptLibraryMain() {
               </AlertDialogCancel>
               <AlertDialogAction 
                 onClick={handleDeleteTemplate}
-                className="bg-red-600 hover:bg-red-700 text-white"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 Delete Template
               </AlertDialogAction>
@@ -465,6 +465,7 @@ export function PromptLibraryMain() {
         addTemplate={addTemplate}
         addField={addField}
         addPrompt={addPrompt}
+        batchImport={batchImport}
         exportDialogOpen={exportDialogOpen}
         setExportDialogOpen={setExportDialogOpen}
         importDialogOpen={importDialogOpen}

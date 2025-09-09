@@ -1338,5 +1338,48 @@
       "assetType": "Image",
       "subAssetType": "LifeStyle"
     }
+  },
+  "1956058862308": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "subAssetType": "Stock",
+      "assetType": "Image",
+      "keywords": "Test"
+    }
+  },
+  "1956067163222": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "subAssetType": "Stock",
+      "assetType": "Image"
+    }
+  },
+  "1956062826679": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "assetType": "Image",
+      "subAssetType": "Stock"
+    }
+  },
+  "1956058551643": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "assetType": "Image",
+      "subAssetType": "Stock"
+    }
+  },
+  "1956067871719": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "assetType": "Image",
+      "subAssetType": "Stock"
+    }
+  },
+  "1956058326848": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "assetType": "Image",
+      "subAssetType": "Stock"
+    }
   }
 }

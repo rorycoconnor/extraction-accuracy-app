@@ -31,6 +31,7 @@ interface ImportExportManagerProps {
   addTemplate: (templateName: string, categoryName: string) => void;
   addField: (templateId: string, fieldName: string, fieldType: string) => void;
   addPrompt: (templateId: string, fieldId: string, promptText: string, createdAtOverride?: number) => void;
+  batchImport: (importData: { categories: string[], templates: Template[] }) => void;
   exportDialogOpen: boolean;
   setExportDialogOpen: (open: boolean) => void;
   importDialogOpen: boolean;
@@ -47,6 +48,7 @@ export function ImportExportManager({
   addTemplate,
   addField,
   addPrompt,
+  batchImport,
   exportDialogOpen,
   setExportDialogOpen,
   importDialogOpen,
@@ -220,135 +222,51 @@ export function ImportExportManager({
         });
       }
 
-      // Now update the database with complete templates
-      let templatesCreated = 0;
-      let fieldsCreated = 0;
-      let promptsCreated = 0;
+      // Convert parsed data to the format expected by batchImport
+      const categoriesToImport: string[] = [];
+      const templatesToImport: Template[] = [];
 
       for (const [templateKey, templateData] of templateMap) {
         const { template, fieldsMap } = templateData;
         
-        // Check if this is a new template
-        const isNewTemplate = !database.templates.find(t => t.id === template.id);
-        
-        if (isNewTemplate) {
-          templatesCreated++;
-          // Build complete fields array with prompts
-          const completeFields: Field[] = [];
-          
-          for (const [fieldName, fieldData] of fieldsMap) {
-            const prompts: Prompt[] = [];
-            
-            // Add prompts to field
-            fieldData.csvPrompts.forEach((promptText: string, index: number) => {
-              const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${index}`;
-              prompts.push({
-                id: promptId,
-                text: promptText,
-                up: 0,
-                down: 0,
-                createdAt: Date.now() - index // Slightly stagger timestamps
-              });
-              promptsCreated++;
-            });
-
-            completeFields.push({
-              id: fieldData.id,
-              name: fieldData.name,
-              type: fieldData.type,
-              prompts
-            });
-            
-            fieldsCreated++;
-          }
-
-          // Add complete template using existing addTemplate function
-          addTemplate(template.name, template.category);
-          
-          // Wait a moment then add fields and prompts
-          setTimeout(() => {
-            const newTemplate = database.templates.find(t => 
-              t.name === template.name && t.category === template.category
-            );
-            
-            if (newTemplate) {
-              completeFields.forEach(fieldData => {
-                addField(newTemplate.id, fieldData.name, fieldData.type);
-                
-                // Add prompts after field is created
-                setTimeout(() => {
-                  const updatedTemplate = database.templates.find(t => t.id === newTemplate.id);
-                  const newField = updatedTemplate?.fields.find(f => f.name === fieldData.name);
-                  
-                  if (newField) {
-                    fieldData.prompts.forEach(prompt => {
-                      addPrompt(newTemplate.id, newField.id, prompt.text);
-                    });
-                  }
-                }, 50);
-              });
-            }
-          }, 100);
-        } else {
-          // Update existing template - handle both new and existing fields
-          for (const [fieldName, fieldData] of fieldsMap) {
-            const existingField = template.fields.find(f => f.name === fieldName);
-            
-            if (!existingField) {
-              // Handle NEW fields
-              const prompts: Prompt[] = [];
-              
-              fieldData.csvPrompts.forEach((promptText: string, index: number) => {
-                const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${index}`;
-                prompts.push({
-                  id: promptId,
-                  text: promptText,
-                  up: 0,
-                  down: 0,
-                  createdAt: Date.now() - index
-                });
-                promptsCreated++;
-              });
-
-              // Add field with prompts to existing template
-              addField(template.id, fieldData.name, fieldData.type);
-              
-              // Wait a moment then add prompts
-              setTimeout(() => {
-                const updatedTemplate = database.templates.find(t => t.id === template.id);
-                const newField = updatedTemplate?.fields.find(f => f.name === fieldData.name);
-                
-                if (newField) {
-                  prompts.forEach(prompt => {
-                    addPrompt(template.id, newField.id, prompt.text);
-                  });
-                }
-              }, 100);
-              
-              fieldsCreated++;
-            } else {
-              // Handle EXISTING fields - add prompts from CSV
-              if (fieldData.csvPrompts.length > 0) {
-                fieldData.csvPrompts.forEach((promptText: string) => {
-                  // Check if this prompt already exists to avoid duplicates
-                  const promptExists = existingField.prompts.some(p => p.text.trim() === promptText.trim());
-                  
-                  if (!promptExists) {
-                    setTimeout(() => {
-                      addPrompt(template.id, existingField.id, promptText);
-                    }, 150);
-                    promptsCreated++;
-                  }
-                });
-              }
-            }
-          }
+        // Collect categories
+        if (!categoriesToImport.includes(template.category)) {
+          categoriesToImport.push(template.category);
         }
+        
+        // Build template with fields and prompts
+        const templateToImport: Template = {
+          id: template.id,
+          name: template.name,
+          category: template.category,
+          fields: []
+        };
+        
+        // Process fields
+        for (const [fieldName, fieldData] of fieldsMap) {
+          const field: Field = {
+            id: fieldData.id,
+            name: fieldName,
+            type: fieldData.type,
+            prompts: fieldData.csvPrompts.map((promptText, index) => ({
+              id: `temp-prompt-${index}`,
+              text: promptText,
+              up: 0,
+              down: 0,
+              createdAt: Date.now() - index
+            }))
+          };
+          
+          templateToImport.fields.push(field);
+        }
+        
+        templatesToImport.push(templateToImport);
       }
 
-      toast({
-        title: 'Import Complete',
-        description: `Successfully imported ${templatesCreated} template(s), ${fieldsCreated} field(s), and ${promptsCreated} prompt(s).`,
+      // Use the batch import function
+      batchImport({
+        categories: categoriesToImport,
+        templates: templatesToImport
       });
 
       // Reset form

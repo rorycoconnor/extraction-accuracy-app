@@ -18,7 +18,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
 // Removed unused Box folder navigation imports
 import {
   getConfiguredTemplates,
@@ -27,7 +26,7 @@ import {
   getGroundTruthData,
 } from '@/lib/mock-data';
 import type { BoxFile, BoxFolder, BoxTemplate, FileMetadataStore } from '@/lib/types';
-import { Database, Pencil, Terminal, Folder, Download, Upload, Wand2, CheckCircle } from 'lucide-react';
+import { Database, Pencil, Terminal, Folder, Download, Upload, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -71,8 +70,6 @@ export default function GroundTruthPage() {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<GroundTruthFile | null>(null);
   
-  // Multi-select state
-  const [selectedFileIds, setSelectedFileIds] = useState<Set<string>>(new Set());
   
   // CSV Export/Import state
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
@@ -100,39 +97,6 @@ export default function GroundTruthPage() {
     setConfiguredTemplates(templates);
   }, []);
 
-  // Multi-select handlers
-  const handleSelectFile = (fileId: string, checked: boolean) => {
-    const newSelectedIds = new Set(selectedFileIds);
-    if (checked) {
-      newSelectedIds.add(fileId);
-    } else {
-      newSelectedIds.delete(fileId);
-    }
-    setSelectedFileIds(newSelectedIds);
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      const allFileIds = new Set(filesWithStatus.map(file => file.id));
-      setSelectedFileIds(allFileIds);
-    } else {
-      setSelectedFileIds(new Set());
-    }
-  };
-
-  const isAllSelected = filesWithStatus.length > 0 && selectedFileIds.size === filesWithStatus.length;
-  const isIndeterminate = selectedFileIds.size > 0 && selectedFileIds.size < filesWithStatus.length;
-
-  // Generate Metadata Values handler
-  const handleGenerateMetadataValues = () => {
-    const selectedFiles = filesWithStatus.filter(file => selectedFileIds.has(file.id));
-    toast({
-      title: 'Generate Metadata Values',
-      description: `Starting metadata generation for ${selectedFiles.length} selected files.`,
-    });
-    console.log('Generating metadata for files:', selectedFiles);
-    // TODO: Implement metadata generation logic
-  };
 
   // File selection modal handlers
   const handleSelectFilesClick = () => {
@@ -259,10 +223,12 @@ export default function GroundTruthPage() {
       // Close the editor FIRST to prevent form reset from prop changes
       setIsEditorOpen(false);
       
-      // Then refresh the folder contents to update status
+      // Then refresh the files to update status
       // Add a small delay to ensure the unified ground truth system has processed all changes
       setTimeout(() => {
-        loadFolderContents(currentFolderId); // Refresh the current folder to update status
+        if (selectedFiles.length > 0) {
+          loadSelectedFiles(selectedFiles); // Refresh the current files to update status
+        }
       }, 100);
       
       toast({
@@ -404,7 +370,7 @@ export default function GroundTruthPage() {
       if (link.download !== undefined) {
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', `ground-truth-${selectedTemplateForExport}-${selectedFolder.name.replace(/[^a-zA-Z0-9]/g, '_')}-${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute('download', `ground-truth-${selectedTemplateForExport}-selected-files-${new Date().toISOString().split('T')[0]}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -419,7 +385,7 @@ export default function GroundTruthPage() {
 
       toast({
         title: 'Export Successful',
-        description: `Exported ${filesForExport.length} files from "${selectedFolder.name}" to CSV (${filesWithData.length} with existing data, ${filesForExport.length - filesWithData.length} empty).`,
+        description: `Exported ${filesForExport.length} selected files to CSV (${filesWithData.length} with existing data, ${filesForExport.length - filesWithData.length} empty).`,
       });
       
       setIsExportDialogOpen(false);
@@ -656,9 +622,11 @@ export default function GroundTruthPage() {
       console.log('🐛 DEBUG: Refreshing ground truth system...');
       refreshGroundTruth();
       
-      // Refresh current folder to update UI
-      console.log('🐛 DEBUG: Refreshing folder contents...');
-      loadFolderContents(currentFolderId);
+      // Refresh current files to update UI
+      console.log('🐛 DEBUG: Refreshing files...');
+      if (selectedFiles.length > 0) {
+        loadSelectedFiles(selectedFiles);
+      }
 
       toast({
         title: 'Import Completed',
@@ -691,9 +659,6 @@ export default function GroundTruthPage() {
       return [...Array(3)].map((_, i) => (
         <TableRow key={i}>
           <TableCell>
-            <Skeleton className="h-4 w-4" />
-          </TableCell>
-          <TableCell>
             <Skeleton className="h-5 w-48" />
           </TableCell>
           <TableCell>
@@ -712,7 +677,7 @@ export default function GroundTruthPage() {
     if (error) {
       return (
         <TableRow>
-          <TableCell colSpan={5}>
+          <TableCell colSpan={4}>
             <Alert variant="destructive">
               <Terminal className="h-4 w-4" />
               <AlertTitle>Error Fetching Data</AlertTitle>
@@ -729,13 +694,6 @@ export default function GroundTruthPage() {
         file.status.completed === file.status.total && file.status.total > 0;
       return (
         <TableRow key={file.id}>
-          <TableCell>
-            <Checkbox
-              checked={selectedFileIds.has(file.id)}
-              onCheckedChange={(checked) => handleSelectFile(file.id, checked as boolean)}
-              aria-label={`Select ${file.name}`}
-            />
-          </TableCell>
           <TableCell className="font-medium">{file.name}</TableCell>
           <TableCell>{file.template?.displayName || 'N/A'}</TableCell>
           <TableCell className="text-left">
@@ -818,12 +776,6 @@ export default function GroundTruthPage() {
                   <Folder className="mr-2 h-4 w-4" />
                   Select Files
                 </Button>
-                {selectedFileIds.size > 0 && (
-                  <Button variant="default" size="sm" onClick={handleGenerateMetadataValues}>
-                    <Wand2 className="mr-2 h-4 w-4" />
-                    Generate Metadata Values ({selectedFileIds.size})
-                  </Button>
-                )}
                 <Button variant="outline" size="sm" onClick={handleExportClick}>
                   <Download className="mr-2 h-4 w-4" />
                   Export CSV
@@ -850,7 +802,6 @@ export default function GroundTruthPage() {
                     onClick={() => {
                       setSelectedFiles([]);
                       setFilesWithStatus([]);
-                      setSelectedFileIds(new Set());
                     }}
                     className="ml-auto h-6 px-2 text-blue-600 hover:text-blue-800"
                   >
@@ -868,18 +819,10 @@ export default function GroundTruthPage() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[50px]">
-                      <Checkbox
-                        checked={isAllSelected}
-                        onCheckedChange={handleSelectAll}
-                        aria-label="Select all files"
-                        className={isIndeterminate ? "data-[state=checked]:bg-primary data-[state=checked]:border-primary" : ""}
-                      />
-                    </TableHead>
-                    <TableHead className="w-[35%] text-left">Name</TableHead>
+                    <TableHead className="w-[40%] text-left">Name</TableHead>
                     <TableHead className="w-[25%] text-left">Template</TableHead>
                     <TableHead className="w-[20%] text-left">Status</TableHead>
-                    <TableHead className="w-[20%] text-right pr-8">Actions</TableHead>
+                    <TableHead className="w-[15%] text-right pr-8">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>{renderTableContent()}</TableBody>

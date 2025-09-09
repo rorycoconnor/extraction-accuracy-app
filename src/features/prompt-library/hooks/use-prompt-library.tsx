@@ -36,6 +36,7 @@ interface PromptLibraryContextType {
   deleteField: (templateId: string, fieldId: string) => void;
   renameField: (templateId: string, fieldId: string, newName: string) => void;
   updateField: (templateId: string, fieldId: string, updates: Partial<Field>) => void;
+  batchImport: (importData: { categories: string[], templates: Template[] }) => void;
   
   // Utility
   copyToClipboard: (text: string) => void;
@@ -686,6 +687,146 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     }
   }, [toast]);
 
+  const batchImport = useCallback((importData: { categories: string[], templates: Template[] }) => {
+    let templatesCreated = 0;
+    let fieldsCreated = 0;
+    let promptsCreated = 0;
+
+    setDatabase(prev => {
+      const newCategories = [...prev.categories];
+      const newTemplates = [...prev.templates];
+
+      // Add new categories
+      importData.categories.forEach(category => {
+        if (!newCategories.includes(category)) {
+          newCategories.push(category);
+        }
+      });
+
+      // Process templates
+      importData.templates.forEach(importTemplate => {
+        // Check if template already exists
+        const existingTemplateIndex = newTemplates.findIndex(t => 
+          t.name === importTemplate.name && t.category === importTemplate.category
+        );
+
+        if (existingTemplateIndex === -1) {
+          // Create new template
+          templatesCreated++;
+          const templateId = `template-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          
+          const newTemplate: Template = {
+            id: templateId,
+            name: importTemplate.name,
+            category: importTemplate.category,
+            fields: []
+          };
+
+          // Process fields
+          importTemplate.fields.forEach(importField => {
+            fieldsCreated++;
+            const fieldId = `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+            
+            const newField: Field = {
+              id: fieldId,
+              name: importField.name,
+              type: importField.type,
+              prompts: []
+            };
+
+            // Process prompts
+            importField.prompts.forEach(importPrompt => {
+              promptsCreated++;
+              const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptsCreated}`;
+              
+              newField.prompts.push({
+                id: promptId,
+                text: importPrompt.text,
+                up: 0,
+                down: 0,
+                createdAt: Date.now() - promptsCreated
+              });
+            });
+
+            newTemplate.fields.push(newField);
+          });
+
+          newTemplates.push(newTemplate);
+        } else {
+          // Update existing template
+          const existingTemplate = newTemplates[existingTemplateIndex];
+          
+          importTemplate.fields.forEach(importField => {
+            const existingFieldIndex = existingTemplate.fields.findIndex(f => f.name === importField.name);
+            
+            if (existingFieldIndex === -1) {
+              // Add new field to existing template
+              fieldsCreated++;
+              const fieldId = `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+              
+              const newField: Field = {
+                id: fieldId,
+                name: importField.name,
+                type: importField.type,
+                prompts: []
+              };
+
+              // Process prompts
+              importField.prompts.forEach(importPrompt => {
+                promptsCreated++;
+                const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptsCreated}`;
+                
+                newField.prompts.push({
+                  id: promptId,
+                  text: importPrompt.text,
+                  up: 0,
+                  down: 0,
+                  createdAt: Date.now() - promptsCreated
+                });
+              });
+
+              existingTemplate.fields.push(newField);
+            } else {
+              // Add prompts to existing field
+              const existingField = existingTemplate.fields[existingFieldIndex];
+              
+              importField.prompts.forEach(importPrompt => {
+                // Check if prompt already exists
+                const promptExists = existingField.prompts.some(p => p.text.trim() === importPrompt.text.trim());
+                
+                if (!promptExists) {
+                  promptsCreated++;
+                  const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptsCreated}`;
+                  
+                  existingField.prompts.unshift({
+                    id: promptId,
+                    text: importPrompt.text,
+                    up: 0,
+                    down: 0,
+                    createdAt: Date.now() - promptsCreated
+                  });
+                }
+              });
+            }
+          });
+        }
+      });
+
+      return {
+        categories: newCategories,
+        templates: newTemplates
+      };
+    });
+
+    // Show success toast
+    setTimeout(() => {
+      toast({
+        title: 'Import Complete',
+        description: `Successfully imported ${templatesCreated} template(s), ${fieldsCreated} field(s), and ${promptsCreated} prompt(s).`,
+      });
+    }, 100);
+  }, [toast]);
+
   const value: PromptLibraryContextType = {
     database,
     filteredTemplates,
@@ -711,7 +852,8 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     togglePinPrompt,
     deleteField,
     renameField,
-    updateField
+    updateField,
+    batchImport
   };
 
   return (
