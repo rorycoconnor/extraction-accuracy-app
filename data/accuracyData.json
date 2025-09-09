@@ -39,10 +39,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -111,8 +111,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.441Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         },
         {
@@ -284,10 +284,10 @@
                 "recall": 1
               },
               "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0.75,
+                "accuracy": 0.75,
+                "precision": 0.75,
+                "recall": 0.75
               },
               "google__gemini_2_5_pro": {
                 "f1": 0,
@@ -302,10 +302,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -374,8 +374,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.441Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         },
         {
@@ -636,10 +636,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -708,8 +708,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.441Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         }
       ]
@@ -733,10 +733,10 @@
                 "recall": 1
               },
               "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 0.5,
-                "accuracy": 0.5,
-                "precision": 0.5,
-                "recall": 0.5
+                "f1": 0.875,
+                "accuracy": 0.875,
+                "precision": 0.875,
+                "recall": 0.875
               },
               "google__gemini_2_5_pro": {
                 "f1": 0,
@@ -751,10 +751,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -823,8 +823,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.441Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         }
       ],
@@ -860,16 +860,16 @@
           "metrics": {
             "modelMetrics": {
               "google__gemini_2_0_flash_001": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0.75,
+                "accuracy": 0.75,
+                "precision": 0.75,
+                "recall": 0.75
               },
               "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 0.5,
-                "accuracy": 0.5,
-                "precision": 0.5,
-                "recall": 0.5
+                "f1": 0.125,
+                "accuracy": 0.125,
+                "precision": 0.125,
+                "recall": 0.125
               },
               "google__gemini_2_5_pro": {
                 "f1": 0,
@@ -884,10 +884,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -956,8 +956,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.442Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         },
         {
@@ -1390,10 +1390,10 @@
                 "recall": 1
               },
               "google__gemini_2_0_flash_001_no_prompt": {
-                "f1": 0.5,
-                "accuracy": 0.5,
-                "precision": 0.5,
-                "recall": 0.5
+                "f1": 1,
+                "accuracy": 1,
+                "precision": 1,
+                "recall": 1
               },
               "google__gemini_2_5_pro": {
                 "f1": 0,
@@ -1408,10 +1408,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -1480,8 +1480,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.442Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         }
       ]
@@ -1490,11 +1490,11 @@
       "name": "Governing Law",
       "key": "governingLaw",
       "type": "enum",
-      "prompt": "Extract the \u201cGoverning Law\u201d from this contract",
+      "prompt": "Extract the “Governing Law” from this contract",
       "promptHistory": [
         {
           "id": "v2",
-          "prompt": "Extract the \u201cGoverning Law\u201d from this contract",
+          "prompt": "Extract the “Governing Law” from this contract",
           "savedAt": "2025-08-01T18:11:14.407Z",
           "metrics": {
             "modelMetrics": {
@@ -1523,10 +1523,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -1595,8 +1595,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.442Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         },
         {
@@ -1636,11 +1636,11 @@
       "name": "Venue",
       "key": "venue",
       "type": "enum",
-      "prompt": "Extract the \u201cVenue\u201d from this contract",
+      "prompt": "Extract the “Venue” from this contract",
       "promptHistory": [
         {
           "id": "v4",
-          "prompt": "Extract the \u201cVenue\u201d from this contract",
+          "prompt": "Extract the “Venue” from this contract",
           "savedAt": "2025-08-01T18:11:53.451Z",
           "metrics": {
             "modelMetrics": {
@@ -1669,10 +1669,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -1741,8 +1741,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.442Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         },
         {
@@ -1825,10 +1825,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -1897,8 +1897,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.442Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         },
         {
@@ -1955,10 +1955,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -2027,8 +2027,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.442Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         },
         {
@@ -2085,10 +2085,10 @@
                 "recall": 0
               },
               "enhanced_extract_agent": {
-                "f1": 1,
-                "accuracy": 1,
-                "precision": 1,
-                "recall": 1
+                "f1": 0,
+                "accuracy": 0,
+                "precision": 0,
+                "recall": 0
               },
               "enhanced_extract_agent_no_prompt": {
                 "f1": 0,
@@ -2157,8 +2157,8 @@
                 "recall": 0
               }
             },
-            "filesCount": 2,
-            "lastRunAt": "2025-09-02T19:59:51.442Z"
+            "filesCount": 8,
+            "lastRunAt": "2025-09-09T01:12:43.986Z"
           }
         },
         {
@@ -2492,17 +2492,17 @@
   ],
   "results": [
     {
-      "id": "1920031763042",
-      "fileName": "Increo - NewTron Agreement - GT.pdf",
+      "id": "1918858263705",
+      "fileName": "Copper State Fabrication NDA April 05 2024 - GT.pdf",
       "fileType": "PDF",
       "fields": {
         "contractType": {
-          "Ground Truth": "Master Agreement",
-          "google__gemini_2_0_flash_001": "Master Agreement",
-          "google__gemini_2_0_flash_001_no_prompt": "Master Agreement",
+          "Ground Truth": "NDA",
+          "google__gemini_2_0_flash_001": "NDA",
+          "google__gemini_2_0_flash_001_no_prompt": "NDA",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Master Agreement",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2516,12 +2516,12 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "counterPartyName": {
-          "Ground Truth": "NewTron Technologies",
-          "google__gemini_2_0_flash_001": "NewTron Technologies",
-          "google__gemini_2_0_flash_001_no_prompt": "NewTron Technologies",
+          "Ground Truth": "Copper State Fabrication",
+          "google__gemini_2_0_flash_001": "Copper State Fabrication",
+          "google__gemini_2_0_flash_001_no_prompt": "Copper State Fabrication",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "NewTron Technologies",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2535,12 +2535,12 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "counterPartyAddress": {
-          "Ground Truth": "44 Space Port, Cape Canaveral, Florida 32920",
-          "google__gemini_2_0_flash_001": "44 Space Port, Cape Canaveral, Florida 32920",
-          "google__gemini_2_0_flash_001_no_prompt": "44 Space Port, Cape Canaveral, Florida 32920",
+          "Ground Truth": "2450 W Industrial Ave Phoenix, AZ 85009",
+          "google__gemini_2_0_flash_001": "2450 W Industrial Ave Phoenix, AZ 85009",
+          "google__gemini_2_0_flash_001_no_prompt": "2450 W Industrial Ave Phoenix, AZ 85009",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "44 Space Port, Cape Canaveral, Florida 32920",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2554,12 +2554,12 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "effectiveDate": {
-          "Ground Truth": "2025-05-07",
-          "google__gemini_2_0_flash_001": "2025-05-07",
-          "google__gemini_2_0_flash_001_no_prompt": "May 7, 2025",
+          "Ground Truth": "2024-04-05",
+          "google__gemini_2_0_flash_001": "2024-04-05",
+          "google__gemini_2_0_flash_001_no_prompt": "2024-04-05",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "2025-05-07",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2575,10 +2575,10 @@
         "contractTerm": {
           "Ground Truth": "1 Year",
           "google__gemini_2_0_flash_001": "1 Year",
-          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "1 Year",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "1 Year",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2592,12 +2592,12 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "endDate": {
-          "Ground Truth": "2026-05-06",
-          "google__gemini_2_0_flash_001": "2026-05-06",
-          "google__gemini_2_0_flash_001_no_prompt": "May 6, 2026",
+          "Ground Truth": "2025-04-04",
+          "google__gemini_2_0_flash_001": "2025-04-04",
+          "google__gemini_2_0_flash_001_no_prompt": "2025-04-05",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "2026-05-06",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2613,10 +2613,10 @@
         "renewalType": {
           "Ground Truth": "Manual Renewal",
           "google__gemini_2_0_flash_001": "Manual Renewal",
-          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Manual Renewal",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Manual Renewal",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2630,12 +2630,12 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "noticePeriod": {
-          "Ground Truth": "30 Days",
-          "google__gemini_2_0_flash_001": "30 Days",
+          "Ground Truth": "Not Present",
+          "google__gemini_2_0_flash_001": "Not Present",
           "google__gemini_2_0_flash_001_no_prompt": "Not Present",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "30 Days",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2649,12 +2649,12 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "governingLaw": {
-          "Ground Truth": "Florida",
-          "google__gemini_2_0_flash_001": "Florida",
-          "google__gemini_2_0_flash_001_no_prompt": "Florida",
+          "Ground Truth": "Delaware",
+          "google__gemini_2_0_flash_001": "Delaware",
+          "google__gemini_2_0_flash_001_no_prompt": "Delaware",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Florida",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2668,12 +2668,12 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "venue": {
-          "Ground Truth": "Florida",
-          "google__gemini_2_0_flash_001": "Florida",
-          "google__gemini_2_0_flash_001_no_prompt": "Florida",
+          "Ground Truth": "Nevada",
+          "google__gemini_2_0_flash_001": "Nevada",
+          "google__gemini_2_0_flash_001_no_prompt": "Nevada",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Florida",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2687,12 +2687,12 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "terminationForConvenience": {
-          "Ground Truth": "Yes",
-          "google__gemini_2_0_flash_001": "Yes",
-          "google__gemini_2_0_flash_001_no_prompt": "Yes",
+          "Ground Truth": "No",
+          "google__gemini_2_0_flash_001": "No",
+          "google__gemini_2_0_flash_001_no_prompt": "No",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Yes",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2706,12 +2706,12 @@
           "openai__o3_no_prompt": "Pending..."
         },
         "terminationForCause": {
-          "Ground Truth": "Yes",
-          "google__gemini_2_0_flash_001": "Yes",
-          "google__gemini_2_0_flash_001_no_prompt": "Yes",
+          "Ground Truth": "No",
+          "google__gemini_2_0_flash_001": "No",
+          "google__gemini_2_0_flash_001_no_prompt": "No",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Yes",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2730,7 +2730,515 @@
           "google__gemini_2_0_flash_001_no_prompt": "Not Present",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Not Present",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        }
+      }
+    },
+    {
+      "id": "1918922486299",
+      "fileName": "Great Lakes Precision Metals  Master Agreement 03 26 2025 - GT.pdf",
+      "fileType": "PDF",
+      "fields": {
+        "contractType": {
+          "Ground Truth": "Master Agreement",
+          "google__gemini_2_0_flash_001": "Master Agreement",
+          "google__gemini_2_0_flash_001_no_prompt": "Master Agreement",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyName": {
+          "Ground Truth": "Great Lakes Precision Metals",
+          "google__gemini_2_0_flash_001": "Great Lakes Precision Metals",
+          "google__gemini_2_0_flash_001_no_prompt": "Great Lakes Precision Metals",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyAddress": {
+          "Ground Truth": "15840 Commerce Drive Novi, MI 48375",
+          "google__gemini_2_0_flash_001": "15840 Commerce Drive Novi, MI 48375",
+          "google__gemini_2_0_flash_001_no_prompt": "15840 Commerce Drive Novi, MI 48375",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "effectiveDate": {
+          "Ground Truth": "2025-03-26",
+          "google__gemini_2_0_flash_001": "2025-03-26",
+          "google__gemini_2_0_flash_001_no_prompt": "March 26 2025",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractTerm": {
+          "Ground Truth": "1 Year",
+          "google__gemini_2_0_flash_001": "1 Year",
+          "google__gemini_2_0_flash_001_no_prompt": "1 Year",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "endDate": {
+          "Ground Truth": "2026-03-25",
+          "google__gemini_2_0_flash_001": "2026-03-30",
+          "google__gemini_2_0_flash_001_no_prompt": "March 26 2026",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "renewalType": {
+          "Ground Truth": "Autorenewal",
+          "google__gemini_2_0_flash_001": "Autorenewal",
+          "google__gemini_2_0_flash_001_no_prompt": "Autorenewal",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "noticePeriod": {
+          "Ground Truth": "60 Days",
+          "google__gemini_2_0_flash_001": "60 Days",
+          "google__gemini_2_0_flash_001_no_prompt": "sixty (60) days",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "governingLaw": {
+          "Ground Truth": "Delaware",
+          "google__gemini_2_0_flash_001": "Delaware",
+          "google__gemini_2_0_flash_001_no_prompt": "Delaware",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "venue": {
+          "Ground Truth": "New York",
+          "google__gemini_2_0_flash_001": "New York",
+          "google__gemini_2_0_flash_001_no_prompt": "New York",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForConvenience": {
+          "Ground Truth": "Yes",
+          "google__gemini_2_0_flash_001": "No",
+          "google__gemini_2_0_flash_001_no_prompt": "No",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForCause": {
+          "Ground Truth": "Yes",
+          "google__gemini_2_0_flash_001": "Yes",
+          "google__gemini_2_0_flash_001_no_prompt": "Yes",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractValue": {
+          "Ground Truth": "Not Present",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        }
+      }
+    },
+    {
+      "id": "1920031763042",
+      "fileName": "Increo - NewTron Agreement - GT.pdf",
+      "fileType": "PDF",
+      "fields": {
+        "contractType": {
+          "Ground Truth": "Master Agreement",
+          "google__gemini_2_0_flash_001": "Master Agreement",
+          "google__gemini_2_0_flash_001_no_prompt": "Master Agreement",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyName": {
+          "Ground Truth": "NewTron Technologies",
+          "google__gemini_2_0_flash_001": "NewTron Technologies",
+          "google__gemini_2_0_flash_001_no_prompt": "NewTron Technologies",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyAddress": {
+          "Ground Truth": "44 Space Port, Cape Canaveral, Florida 32920",
+          "google__gemini_2_0_flash_001": "44 Space Port, Cape Canaveral, Florida 32920",
+          "google__gemini_2_0_flash_001_no_prompt": "44 Space Port, Cape Canaveral, Florida 32920",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "effectiveDate": {
+          "Ground Truth": "2025-05-07",
+          "google__gemini_2_0_flash_001": "2025-05-07",
+          "google__gemini_2_0_flash_001_no_prompt": "May 7, 2025",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractTerm": {
+          "Ground Truth": "1 Year",
+          "google__gemini_2_0_flash_001": "1 Year",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "endDate": {
+          "Ground Truth": "2026-05-06",
+          "google__gemini_2_0_flash_001": "2026-05-06",
+          "google__gemini_2_0_flash_001_no_prompt": "May 6, 2026",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "renewalType": {
+          "Ground Truth": "Manual Renewal",
+          "google__gemini_2_0_flash_001": "Manual Renewal",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "noticePeriod": {
+          "Ground Truth": "30 Days",
+          "google__gemini_2_0_flash_001": "30 Days",
+          "google__gemini_2_0_flash_001_no_prompt": "thirty (30) days",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "governingLaw": {
+          "Ground Truth": "Florida",
+          "google__gemini_2_0_flash_001": "Florida",
+          "google__gemini_2_0_flash_001_no_prompt": "Florida",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "venue": {
+          "Ground Truth": "Florida",
+          "google__gemini_2_0_flash_001": "Florida",
+          "google__gemini_2_0_flash_001_no_prompt": "Florida",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForConvenience": {
+          "Ground Truth": "Yes",
+          "google__gemini_2_0_flash_001": "Yes",
+          "google__gemini_2_0_flash_001_no_prompt": "Yes",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForCause": {
+          "Ground Truth": "Yes",
+          "google__gemini_2_0_flash_001": "Yes",
+          "google__gemini_2_0_flash_001_no_prompt": "Yes",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractValue": {
+          "Ground Truth": "Not Present",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2756,7 +3264,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "Master Agreement",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Master Agreement",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2775,7 +3283,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "Noko Industies",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Noko Industies",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2794,7 +3302,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "8945 Industrial Park, Houston, TX 78701",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "8945 Industrial Park, Houston, TX 78701",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2810,10 +3318,10 @@
         "effectiveDate": {
           "Ground Truth": "2024-10-27",
           "google__gemini_2_0_flash_001": "2024-10-27",
-          "google__gemini_2_0_flash_001_no_prompt": "October 27 2024",
+          "google__gemini_2_0_flash_001_no_prompt": "2024-10-27",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "2024-10-27",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2832,7 +3340,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "1 Year",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "1 Year",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2848,10 +3356,10 @@
         "endDate": {
           "Ground Truth": "2025-10-26",
           "google__gemini_2_0_flash_001": "2025-10-26",
-          "google__gemini_2_0_flash_001_no_prompt": "October 27 2025",
+          "google__gemini_2_0_flash_001_no_prompt": "2025-10-27",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "2025-10-26",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2870,7 +3378,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "Autorenewal",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Autorenewal",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2889,7 +3397,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "sixty (60) days",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "60 Days",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2908,7 +3416,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "Delaware",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Delaware",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2927,7 +3435,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "New York",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "New York",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2946,7 +3454,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "No",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Yes",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2965,7 +3473,7 @@
           "google__gemini_2_0_flash_001_no_prompt": "Yes",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Yes",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -2984,7 +3492,1023 @@
           "google__gemini_2_0_flash_001_no_prompt": "Not Present",
           "google__gemini_2_5_pro": "Pending...",
           "google__gemini_2_5_pro_no_prompt": "Pending...",
-          "enhanced_extract_agent": "Not Present",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        }
+      }
+    },
+    {
+      "id": "1918885002919",
+      "fileName": "PlainsTech Manufacturing Co.  Master Agreement 03 31 2025 - GT.pdf",
+      "fileType": "PDF",
+      "fields": {
+        "contractType": {
+          "Ground Truth": "Master Agreement",
+          "google__gemini_2_0_flash_001": "Master Agreement",
+          "google__gemini_2_0_flash_001_no_prompt": "Master Agreement",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyName": {
+          "Ground Truth": "PlainsTech Manufacturing Co.",
+          "google__gemini_2_0_flash_001": "PlainsTech Manufacturing Co.",
+          "google__gemini_2_0_flash_001_no_prompt": "PlainsTech Manufacturing Co.",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyAddress": {
+          "Ground Truth": "1525 Steel Ridge Road Fremont, NE 68025",
+          "google__gemini_2_0_flash_001": "1525 Steel Ridge Road Fremont, NE 68025",
+          "google__gemini_2_0_flash_001_no_prompt": "1525 Steel Ridge Road Fremont, NE 68025",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "effectiveDate": {
+          "Ground Truth": "2025-03-31",
+          "google__gemini_2_0_flash_001": "2025-03-31",
+          "google__gemini_2_0_flash_001_no_prompt": "2025-03-31",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractTerm": {
+          "Ground Truth": "1 Year",
+          "google__gemini_2_0_flash_001": "1 Year",
+          "google__gemini_2_0_flash_001_no_prompt": "1 Year",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "endDate": {
+          "Ground Truth": "2026-03-30",
+          "google__gemini_2_0_flash_001": "2026-03-30",
+          "google__gemini_2_0_flash_001_no_prompt": "2026-03-31",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "renewalType": {
+          "Ground Truth": "Autorenewal",
+          "google__gemini_2_0_flash_001": "Autorenewal",
+          "google__gemini_2_0_flash_001_no_prompt": "Autorenewal",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "noticePeriod": {
+          "Ground Truth": "60 Days",
+          "google__gemini_2_0_flash_001": "60 Days",
+          "google__gemini_2_0_flash_001_no_prompt": "sixty (60) days",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "governingLaw": {
+          "Ground Truth": "Delaware",
+          "google__gemini_2_0_flash_001": "Delaware",
+          "google__gemini_2_0_flash_001_no_prompt": "Delaware",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "venue": {
+          "Ground Truth": "New York",
+          "google__gemini_2_0_flash_001": "New York",
+          "google__gemini_2_0_flash_001_no_prompt": "New York",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForConvenience": {
+          "Ground Truth": "Yes",
+          "google__gemini_2_0_flash_001": "No",
+          "google__gemini_2_0_flash_001_no_prompt": "No",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForCause": {
+          "Ground Truth": "Yes",
+          "google__gemini_2_0_flash_001": "Yes",
+          "google__gemini_2_0_flash_001_no_prompt": "Yes",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractValue": {
+          "Ground Truth": "Not Present",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        }
+      }
+    },
+    {
+      "id": "1918854938133",
+      "fileName": "Precision Plastics Co.  Master Agreement 02 08 2024 - GT.pdf",
+      "fileType": "PDF",
+      "fields": {
+        "contractType": {
+          "Ground Truth": "Master Agreement",
+          "google__gemini_2_0_flash_001": "Master Agreement",
+          "google__gemini_2_0_flash_001_no_prompt": "Master Agreement",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyName": {
+          "Ground Truth": "Precision Plastics Co.",
+          "google__gemini_2_0_flash_001": "Precision Plastics Co.",
+          "google__gemini_2_0_flash_001_no_prompt": "Precision Plastics Co.",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyAddress": {
+          "Ground Truth": "410 Polymer Road, Columbus, OH 43215",
+          "google__gemini_2_0_flash_001": "410 Polymer Road, Columbus, OH 43215",
+          "google__gemini_2_0_flash_001_no_prompt": "410 Polymer Road, Columbus, OH 43215",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "effectiveDate": {
+          "Ground Truth": "2024-02-08",
+          "google__gemini_2_0_flash_001": "2024-02-08",
+          "google__gemini_2_0_flash_001_no_prompt": "2024-02-08",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractTerm": {
+          "Ground Truth": "1 Year",
+          "google__gemini_2_0_flash_001": "1 Year",
+          "google__gemini_2_0_flash_001_no_prompt": "1 Year",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "endDate": {
+          "Ground Truth": "2025-02-07",
+          "google__gemini_2_0_flash_001": "2025-12-22",
+          "google__gemini_2_0_flash_001_no_prompt": "2025-02-08",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "renewalType": {
+          "Ground Truth": "Autorenewal",
+          "google__gemini_2_0_flash_001": "Autorenewal",
+          "google__gemini_2_0_flash_001_no_prompt": "Autorenewal",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "noticePeriod": {
+          "Ground Truth": "60 Days",
+          "google__gemini_2_0_flash_001": "60 Days",
+          "google__gemini_2_0_flash_001_no_prompt": "sixty (60) days",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "governingLaw": {
+          "Ground Truth": "Delaware",
+          "google__gemini_2_0_flash_001": "Delaware",
+          "google__gemini_2_0_flash_001_no_prompt": "Delaware",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "venue": {
+          "Ground Truth": "New York",
+          "google__gemini_2_0_flash_001": "New York",
+          "google__gemini_2_0_flash_001_no_prompt": "New York",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForConvenience": {
+          "Ground Truth": "Yes",
+          "google__gemini_2_0_flash_001": "No",
+          "google__gemini_2_0_flash_001_no_prompt": "No",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForCause": {
+          "Ground Truth": "Yes",
+          "google__gemini_2_0_flash_001": "Yes",
+          "google__gemini_2_0_flash_001_no_prompt": "Yes",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractValue": {
+          "Ground Truth": "Not Present",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        }
+      }
+    },
+    {
+      "id": "1912827412690",
+      "fileName": "Techstar. Inc NDA 03 12 2024 - GT.pdf",
+      "fileType": "PDF",
+      "fields": {
+        "contractType": {
+          "Ground Truth": "NDA",
+          "google__gemini_2_0_flash_001": "NDA",
+          "google__gemini_2_0_flash_001_no_prompt": "NDA",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyName": {
+          "Ground Truth": "Techstar, Inc.",
+          "google__gemini_2_0_flash_001": "Techstar. Inc",
+          "google__gemini_2_0_flash_001_no_prompt": "Increo, Inc.",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyAddress": {
+          "Ground Truth": "1 Market Street, San Jose, CA 95432",
+          "google__gemini_2_0_flash_001": "1 Market Street, San Jose, CA 95432",
+          "google__gemini_2_0_flash_001_no_prompt": "1234 Main Street, Phoenix, Arizona 85032",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "effectiveDate": {
+          "Ground Truth": "2024-03-12",
+          "google__gemini_2_0_flash_001": "2024-03-12",
+          "google__gemini_2_0_flash_001_no_prompt": "2024-03-12",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractTerm": {
+          "Ground Truth": "1 Year",
+          "google__gemini_2_0_flash_001": "1 Year",
+          "google__gemini_2_0_flash_001_no_prompt": "1 Year",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "endDate": {
+          "Ground Truth": "2025-03-11",
+          "google__gemini_2_0_flash_001": "2025-03-11",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "renewalType": {
+          "Ground Truth": "Manual Renewal",
+          "google__gemini_2_0_flash_001": "Manual Renewal",
+          "google__gemini_2_0_flash_001_no_prompt": "Autorenewal",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "noticePeriod": {
+          "Ground Truth": "Not Present",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "governingLaw": {
+          "Ground Truth": "Delaware",
+          "google__gemini_2_0_flash_001": "Delaware",
+          "google__gemini_2_0_flash_001_no_prompt": "Delaware",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "venue": {
+          "Ground Truth": "Nevada",
+          "google__gemini_2_0_flash_001": "Nevada",
+          "google__gemini_2_0_flash_001_no_prompt": "Nevada",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForConvenience": {
+          "Ground Truth": "No",
+          "google__gemini_2_0_flash_001": "No",
+          "google__gemini_2_0_flash_001_no_prompt": "No",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForCause": {
+          "Ground Truth": "No",
+          "google__gemini_2_0_flash_001": "No",
+          "google__gemini_2_0_flash_001_no_prompt": "No",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractValue": {
+          "Ground Truth": "Not Present",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        }
+      }
+    },
+    {
+      "id": "1912834427833",
+      "fileName": "VoltEdge Power Systems, Inc. NDA 05 24 2024 - GT.pdf",
+      "fileType": "PDF",
+      "fields": {
+        "contractType": {
+          "Ground Truth": "NDA",
+          "google__gemini_2_0_flash_001": "NDA",
+          "google__gemini_2_0_flash_001_no_prompt": "NDA",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyName": {
+          "Ground Truth": "VoltEdge Power Systems, Inc.",
+          "google__gemini_2_0_flash_001": "VoltEdge Power Systems, Inc.",
+          "google__gemini_2_0_flash_001_no_prompt": "Increo, Inc.",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "counterPartyAddress": {
+          "Ground Truth": "34875 Edison Drive, Novi, MI 48375",
+          "google__gemini_2_0_flash_001": "34875 Edison Drive, Novi, MI 48375",
+          "google__gemini_2_0_flash_001_no_prompt": "1234 Main Street, Phoenix, Arizona 85032",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "effectiveDate": {
+          "Ground Truth": "2024-05-24",
+          "google__gemini_2_0_flash_001": "2024-05-24",
+          "google__gemini_2_0_flash_001_no_prompt": "2024-05-24",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractTerm": {
+          "Ground Truth": "1 Year",
+          "google__gemini_2_0_flash_001": "1 Year",
+          "google__gemini_2_0_flash_001_no_prompt": "1 Year",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "endDate": {
+          "Ground Truth": "2025-05-23",
+          "google__gemini_2_0_flash_001": "2025-05-23",
+          "google__gemini_2_0_flash_001_no_prompt": "2025-05-24",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "renewalType": {
+          "Ground Truth": "Manual Renewal",
+          "google__gemini_2_0_flash_001": "Manual Renewal",
+          "google__gemini_2_0_flash_001_no_prompt": "Manual Renewal",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "noticePeriod": {
+          "Ground Truth": "Not Present",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "governingLaw": {
+          "Ground Truth": "Delaware",
+          "google__gemini_2_0_flash_001": "Delaware",
+          "google__gemini_2_0_flash_001_no_prompt": "Delaware",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "venue": {
+          "Ground Truth": "Nevada",
+          "google__gemini_2_0_flash_001": "Nevada",
+          "google__gemini_2_0_flash_001_no_prompt": "Nevada",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForConvenience": {
+          "Ground Truth": "No",
+          "google__gemini_2_0_flash_001": "No",
+          "google__gemini_2_0_flash_001_no_prompt": "No",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "terminationForCause": {
+          "Ground Truth": "No",
+          "google__gemini_2_0_flash_001": "No",
+          "google__gemini_2_0_flash_001_no_prompt": "No",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
+          "enhanced_extract_agent_no_prompt": "Pending...",
+          "aws__claude_3_7_sonnet": "Pending...",
+          "aws__claude_3_7_sonnet_no_prompt": "Pending...",
+          "aws__claude_4_sonnet": "Pending...",
+          "aws__claude_4_sonnet_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1": "Pending...",
+          "azure__openai__gpt_4_1_no_prompt": "Pending...",
+          "azure__openai__gpt_4_1_mini": "Pending...",
+          "azure__openai__gpt_4_1_mini_no_prompt": "Pending...",
+          "openai__o3": "Pending...",
+          "openai__o3_no_prompt": "Pending..."
+        },
+        "contractValue": {
+          "Ground Truth": "Not Present",
+          "google__gemini_2_0_flash_001": "Not Present",
+          "google__gemini_2_0_flash_001_no_prompt": "Not Present",
+          "google__gemini_2_5_pro": "Pending...",
+          "google__gemini_2_5_pro_no_prompt": "Pending...",
+          "enhanced_extract_agent": "Pending...",
           "enhanced_extract_agent_no_prompt": "Pending...",
           "aws__claude_3_7_sonnet": "Pending...",
           "aws__claude_3_7_sonnet_no_prompt": "Pending...",
@@ -3003,16 +4527,16 @@
   "averages": {
     "contractType": {
       "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
       },
       "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
       },
       "google__gemini_2_5_pro": {
         "accuracy": 0,
@@ -3027,12 +4551,158 @@
         "f1": 0
       },
       "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "openai__o3_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      }
+    },
+    "counterPartyName": {
+      "google__gemini_2_0_flash_001": {
         "accuracy": 1,
         "precision": 1,
         "recall": 1,
         "f1": 1
       },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0.75,
+        "precision": 0.75,
+        "recall": 0.75,
+        "f1": 0.75
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_3_7_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "aws__claude_4_sonnet_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "azure__openai__gpt_4_1_mini_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -3059,10 +4729,10 @@
         "f1": 1
       },
       "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
+        "accuracy": 0.75,
+        "precision": 0.75,
+        "recall": 0.75,
+        "f1": 0.75
       },
       "google__gemini_2_5_pro": {
         "accuracy": 0,
@@ -3077,10 +4747,10 @@
         "f1": 0
       },
       "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
       },
       "enhanced_extract_agent_no_prompt": {
         "accuracy": 0,
@@ -3175,10 +4845,10 @@
         "f1": 0
       },
       "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
       },
       "enhanced_extract_agent_no_prompt": {
         "accuracy": 0,
@@ -3255,10 +4925,10 @@
         "f1": 1
       },
       "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0.5,
-        "precision": 0.5,
-        "recall": 0.5,
-        "f1": 0.5
+        "accuracy": 0.875,
+        "precision": 0.875,
+        "recall": 0.875,
+        "f1": 0.875
       },
       "google__gemini_2_5_pro": {
         "accuracy": 0,
@@ -3273,10 +4943,10 @@
         "f1": 0
       },
       "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
       },
       "enhanced_extract_agent_no_prompt": {
         "accuracy": 0,
@@ -3347,114 +5017,16 @@
     },
     "endDate": {
       "google__gemini_2_0_flash_001": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
+        "accuracy": 0.75,
+        "precision": 0.75,
+        "recall": 0.75,
+        "f1": 0.75
       },
       "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0.5,
-        "precision": 0.5,
-        "recall": 0.5,
-        "f1": 0.5
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_3_7_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "aws__claude_4_sonnet_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "openai__o3_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      }
-    },
-    "counterPartyName": {
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
+        "accuracy": 0.125,
+        "precision": 0.125,
+        "recall": 0.125,
+        "f1": 0.125
       },
       "google__gemini_2_5_pro": {
         "accuracy": 0,
@@ -3510,6 +5082,12 @@
         "recall": 0,
         "f1": 0
       },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -3517,12 +5095,6 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -3549,10 +5121,10 @@
         "f1": 1
       },
       "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0.5,
-        "precision": 0.5,
-        "recall": 0.5,
-        "f1": 0.5
+        "accuracy": 0.75,
+        "precision": 0.75,
+        "recall": 0.75,
+        "f1": 0.75
       },
       "google__gemini_2_5_pro": {
         "accuracy": 0,
@@ -3567,10 +5139,10 @@
         "f1": 0
       },
       "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
       },
       "enhanced_extract_agent_no_prompt": {
         "accuracy": 0,
@@ -3647,10 +5219,10 @@
         "f1": 1
       },
       "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0.5,
-        "precision": 0.5,
-        "recall": 0.5,
-        "f1": 0.5
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
       },
       "google__gemini_2_5_pro": {
         "accuracy": 0,
@@ -3665,10 +5237,10 @@
         "f1": 0
       },
       "enhanced_extract_agent": {
-        "accuracy": 1,
-        "precision": 1,
-        "recall": 1,
-        "f1": 1
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
       },
       "enhanced_extract_agent_no_prompt": {
         "accuracy": 0,
@@ -3738,6 +5310,42 @@
       }
     },
     "governingLaw": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -3768,6 +5376,12 @@
         "recall": 0,
         "f1": 0
       },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -3775,48 +5389,6 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -3836,6 +5408,42 @@
       }
     },
     "venue": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -3866,6 +5474,12 @@
         "recall": 0,
         "f1": 0
       },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -3873,48 +5487,6 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -3934,6 +5506,42 @@
       }
     },
     "terminationForConvenience": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 0.5,
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 0.5,
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -3964,6 +5572,12 @@
         "recall": 0,
         "f1": 0
       },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -3971,48 +5585,6 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -4032,6 +5604,42 @@
       }
     },
     "terminationForCause": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -4062,6 +5670,12 @@
         "recall": 0,
         "f1": 0
       },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -4069,48 +5683,6 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -4130,6 +5702,42 @@
       }
     },
     "contractValue": {
+      "google__gemini_2_0_flash_001": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_0_flash_001_no_prompt": {
+        "accuracy": 1,
+        "precision": 1,
+        "recall": 1,
+        "f1": 1
+      },
+      "google__gemini_2_5_pro": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "google__gemini_2_5_pro_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
+      "enhanced_extract_agent_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "aws__claude_3_7_sonnet": {
         "accuracy": 0,
         "precision": 0,
@@ -4160,6 +5768,12 @@
         "recall": 0,
         "f1": 0
       },
+      "azure__openai__gpt_4_1_no_prompt": {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "f1": 0
+      },
       "azure__openai__gpt_4_1_mini": {
         "accuracy": 0,
         "precision": 0,
@@ -4167,48 +5781,6 @@
         "f1": 0
       },
       "azure__openai__gpt_4_1_mini_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "azure__openai__gpt_4_1_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "enhanced_extract_agent_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_0_flash_001_no_prompt": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro": {
-        "accuracy": 0,
-        "precision": 0,
-        "recall": 0,
-        "f1": 0
-      },
-      "google__gemini_2_5_pro_no_prompt": {
         "accuracy": 0,
         "precision": 0,
         "recall": 0,
@@ -4248,7 +5820,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "835bcb8f-3662-4d67-bdf2-28fa5a7e91d7",
@@ -4260,7 +5832,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "01fa6112-3ffe-410d-aa62-64be25d38151",
@@ -4272,7 +5844,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "c160aaac-3b44-49a6-8427-0f8ae6ab4dc3",
@@ -4284,7 +5856,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "1255db51-bfe8-4f2a-a2fd-045e7d74556e",
@@ -4296,7 +5868,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "b03b6b3b-30b7-457f-91e4-a448edc40632",
@@ -4308,7 +5880,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "ab310764-07c2-48d1-ad3d-0e95dc95dae8",
@@ -4320,7 +5892,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "2518a65b-b692-4176-9d46-c2e7d9cd5049",
@@ -4332,7 +5904,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "bdba5932-39c0-4f61-9ee3-3914c21ccbf6",
@@ -4344,7 +5916,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "959d660d-8852-46d3-bfc7-ad99e30d4583",
@@ -4356,7 +5928,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "9fdbade5-6b0a-490d-a9a9-50130cd6f43d",
@@ -4368,7 +5940,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "b68441a1-5231-48ae-9618-08bba6417dc1",
@@ -4380,7 +5952,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "c4abcbf2-b57d-4079-b559-9bae1e8c913c",
@@ -4392,7 +5964,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "327c4c81-e546-4944-beb9-06032e35fae8",
@@ -4404,7 +5976,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "ac137918-ce1e-4940-92ce-92ab17139dd9",
@@ -4416,7 +5988,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "7bb590b6-a46d-498a-9558-6a14dc8340b0",
@@ -4428,7 +6000,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "dc0049ee-a2d9-4069-92e8-e4204268cc9f",
@@ -4440,7 +6012,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "fc119b3e-e6ba-414d-a090-b9b725a20bc4",
@@ -4452,7 +6024,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "d59846c0-21ca-4212-87da-2bd511652af7",
@@ -4464,7 +6036,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "59abe07d-163d-4d86-8836-7027e3a3a7bd",
@@ -4476,7 +6048,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "491e93c1-6028-4f55-9d42-4d5773b82e4d",
@@ -4488,7 +6060,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "208f58fa-9582-4c41-8bbe-01d7637c53be",
@@ -4500,7 +6072,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "5d19a90b-5028-46e3-bab1-5facf97db652",
@@ -4512,7 +6084,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "969482fb-9c54-4547-8a7d-9de0e3e08755",
@@ -4524,7 +6096,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "89a8dca4-3091-4054-b247-4efdf93d279a",
@@ -4536,7 +6108,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "2f12422a-d84f-4e7f-9cfe-123eceb1b582",
@@ -4548,7 +6120,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "61dd4e71-5d0e-4e13-9316-fdcb648ef403",
@@ -4560,7 +6132,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "92360cf5-43fa-4562-9b4d-c54943334024",
@@ -4572,7 +6144,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "db259c95-cee9-48bc-aecf-302b540b5893",
@@ -4584,7 +6156,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "eaab7be2-59ae-4d6c-b0aa-577d31b6889c",
@@ -4596,7 +6168,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "55405c87-896b-4f22-8d23-792490f9491f",
@@ -4608,7 +6180,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "75b65b6a-3a87-470f-8bc4-eae06ed0e801",
@@ -4620,7 +6192,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "dfb3da86-94d0-429b-9be1-38055bc1d322",
@@ -4632,7 +6204,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "e78deed4-7079-48bc-81fe-157860a6094e",
@@ -4644,7 +6216,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "0a36bd85-b8b0-4f64-b39b-1af315bb2179",
@@ -4656,7 +6228,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "8708c4ca-f64e-4c47-b98b-33f10ddc7456",
@@ -4668,7 +6240,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "95a15f00-cf0c-4574-bd9f-8c3a91e46289",
@@ -4680,7 +6252,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "effe5967-8b84-4f7a-89f4-00565a089db9",
@@ -4692,7 +6264,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         },
         {
           "id": "cf24b9d6-e335-482e-9e96-f16d0bbf4123",
@@ -4704,7 +6276,7 @@
           "averages": {},
           "apiResults": [],
           "isActive": false,
-          "lastModified": "2025-09-02T19:48:26.357Z"
+          "lastModified": "2025-09-09T00:42:53.336Z"
         }
       ]
     }
@@ -4715,12 +6287,12 @@
     "google__gemini_2_0_flash_001_no_prompt": true,
     "google__gemini_2_5_pro": false,
     "google__gemini_2_5_pro_no_prompt": false,
-    "enhanced_extract_agent": true,
+    "enhanced_extract_agent": false,
     "enhanced_extract_agent_no_prompt": false,
     "aws__claude_3_7_sonnet": false,
     "aws__claude_3_7_sonnet_no_prompt": false,
-    "aws__claude_4_sonnet": false,
-    "aws__claude_4_sonnet_no_prompt": false,
+    "aws__claude_4_sonnet": true,
+    "aws__claude_4_sonnet_no_prompt": true,
     "azure__openai__gpt_4_1": false,
     "azure__openai__gpt_4_1_no_prompt": false,
     "azure__openai__gpt_4_1_mini": false,
@@ -4728,5 +6300,5 @@
     "openai__o3": false,
     "openai__o3_no_prompt": false
   },
-  "lastModified": "2025-09-02T19:59:51.442Z"
+  "lastModified": "2025-09-09T01:45:11.635Z"
 }
