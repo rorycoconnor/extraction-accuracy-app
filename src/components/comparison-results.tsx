@@ -1,26 +1,33 @@
 import React from 'react';
-import { usePathname } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-
-import ExtractionTable from '@/components/extraction-table';
-import type { AccuracyData, AccuracyField, BoxFile, BoxTemplate } from '@/lib/types';
+import TanStackExtractionTable from './tanstack-extraction-table';
+import type { AccuracyData, AccuracyField } from '@/lib/types';
 
 interface ComparisonResultsProps {
   accuracyData: AccuracyData;
   shownColumns: Record<string, boolean>;
-  // Remove showMetrics prop - it will be computed automatically
+  showMetrics?: boolean;
   onOpenPromptStudio: (field: AccuracyField) => void;
-  onOpenInlineEditor: (fileId: string, fieldKey: string) => void;
+  onOpenInlineEditor?: (fileId: string, fieldKey: string) => void;
+  onRunSingleField?: (field: AccuracyField) => void;
+  onRunSingleFieldForFile?: (field: AccuracyField, fileId: string) => void;
+  recentlyChangedPrompts?: Set<string>;
+  isExtracting?: boolean;
+  extractingFields?: Set<string>;
 }
 
-const ComparisonResults: React.FC<ComparisonResultsProps> = ({
+export default function ComparisonResults({
   accuracyData,
   shownColumns,
-  // Remove showMetrics prop
+  showMetrics = false,
   onOpenPromptStudio,
   onOpenInlineEditor,
-}) => {
-  // Function to determine if metrics should be shown automatically
+  onRunSingleField,
+  onRunSingleFieldForFile,
+  recentlyChangedPrompts = new Set(),
+  isExtracting = false,
+  extractingFields = new Set()
+}: ComparisonResultsProps) {
+  // Auto-determine showMetrics like the original implementation
   const shouldShowMetrics = React.useMemo(() => {
     if (!accuracyData || !accuracyData.averages) return false;
     
@@ -31,71 +38,53 @@ const ComparisonResults: React.FC<ComparisonResultsProps> = ({
     });
   }, [accuracyData]);
 
-  const pathname = usePathname();
-  const isHomePage = pathname === '/';
-
-  // Conditional classes based on page
-  const cardClassName = isHomePage 
-    ? "bg-white dark:bg-gray-900 flex flex-col flex-1 min-h-0 rounded-none border-0"
-    : "bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 flex flex-col flex-1 min-h-0";
-    
-  const cardContentClassName = isHomePage
-    ? "flex-1 min-h-0 overflow-hidden p-0 flex flex-col"
-    : "p-0 flex-1 min-h-0 overflow-hidden";
-
   return (
     <div className="flex flex-col h-full">
-      <Card className={cardClassName}>
-        <CardHeader className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 shrink-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-gray-900 dark:text-gray-100">
-                Model Comparison Analysis
-              </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-400">
-                Select{' '}
-                <span className="font-semibold text-gray-800 dark:text-gray-200">
-                  Compare Models
-                </span>{' '}
-                to add &amp; remove models. You can also edit the{' '}
-                <span className="font-semibold text-gray-800 dark:text-gray-200">
-                  prompts
-                </span>{' '}
-                and{' '}
-                <span className="font-semibold text-gray-800 dark:text-gray-200">
-                  field averages are automatically shown when available.
-                </span>
-              </CardDescription>
-            </div>
-            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded"></div>
-                <span>Different Format</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded"></div>
-                <span>Partial match</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded"></div>
-                <span>Mismatch</span>
-              </div>
-            </div>
-          </div>
-        </CardHeader>
+      {/* Header text with inline legend */}
+      <div className="px-4 md:px-8 py-3 flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold text-foreground mb-1">Model Comparison Analysis</h2>
+          <p className="text-sm text-muted-foreground">
+            Select <strong>Compare Models</strong> to add & remove models. You can also edit the <strong>prompts</strong>.
+          </p>
+        </div>
         
-        <CardContent className={cardContentClassName}>
-          <ExtractionTable
-            data={accuracyData}
-            onOpenPromptStudio={onOpenPromptStudio}
-            onOpenInlineEditor={onOpenInlineEditor}
-            shownColumns={shownColumns}
-            showMetrics={shouldShowMetrics}
-          />
-        </CardContent>
-      </Card>
+        {/* Legend for comparison results */}
+        <div className="flex items-center gap-4 text-xs">
+          <span className="font-medium text-muted-foreground">Legend:</span>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 bg-green-100 border border-green-200 rounded-sm"></div>
+            <span className="text-muted-foreground">Match</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 bg-yellow-100 border border-yellow-200 rounded-sm"></div>
+            <span className="text-muted-foreground">Different Format</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 bg-blue-100 border border-blue-200 rounded-sm"></div>
+            <span className="text-muted-foreground">Partial Match</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-4 h-4 bg-red-100 border border-red-200 rounded-sm"></div>
+            <span className="text-muted-foreground">Mismatch</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 min-h-0">
+        <TanStackExtractionTable
+          data={accuracyData}
+          shownColumns={shownColumns}
+          showMetrics={shouldShowMetrics}
+          onOpenPromptStudio={onOpenPromptStudio}
+          onOpenInlineEditor={onOpenInlineEditor}
+          onRunSingleField={onRunSingleField}
+          onRunSingleFieldForFile={onRunSingleFieldForFile}
+          recentlyChangedPrompts={recentlyChangedPrompts}
+          isExtracting={isExtracting}
+          extractingFields={extractingFields}
+        />
+      </div>
     </div>
   );
-};
-
-export default ComparisonResults; 
+} 

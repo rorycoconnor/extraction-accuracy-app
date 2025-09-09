@@ -1298,5 +1298,45 @@
       "terminationForCause": "No",
       "contractValue": "Not Present"
     }
+  },
+  "1956062370718": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "assetType": "Image"
+    }
+  },
+  "1956066395622": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "assetType": "Image",
+      "aiExtraction": "A long-haired Belgian Tervuren dog stands in profile amidst a field of yellow wildflowers, with a backdrop of rolling hills displaying autumn colors.",
+      "subAssetType": "LifeStyle",
+      "keywords": "Belgian Tervuren, large dog, brown, black, adult, dog, pet, animal, outdoors, nature, field, wildflowers, yellow flowers, autumn"
+    }
+  },
+  "1956066198575": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "assetType": "Image",
+      "aiExtraction": "This is a close-up photograph of a happy Boston Terrier looking directly at the camera with its mouth open. The dog is set against a blurred green background, likely grass.",
+      "subAssetType": "LifeStyle",
+      "keywords": "Boston Terrier, dog, puppy, small dog, black and white, young adult, happy, smile, pet, animal, outdoors, grass"
+    }
+  },
+  "1956061393446": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "assetType": "Image",
+      "aiExtraction": "The image displays a full-body, side profile of an Airedale Terrier standing alertly in a grassy, outdoor setting. The dog, which has a distinctive black and tan wiry coat, is positioned against a clear blue sky and some sparse, leafless trees.",
+      "subAssetType": "Stock",
+      "keywords": "Airedale Terrier, medium-large size, black, tan, adult, dog, canine, pet, outdoors, purebred"
+    }
+  },
+  "1956066928468": {
+    "templateKey": "digitalAssets",
+    "groundTruth": {
+      "assetType": "Image",
+      "subAssetType": "LifeStyle"
+    }
   }
 }
