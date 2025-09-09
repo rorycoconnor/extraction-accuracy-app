@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { getBoxFilesInFolder, getBoxFolderContents } from '@/lib/actions/box';
+// Removed unused Box folder navigation imports
 import {
   getConfiguredTemplates,
   saveGroundTruthForFile,
@@ -27,7 +27,7 @@ import {
   getGroundTruthData,
 } from '@/lib/mock-data';
 import type { BoxFile, BoxFolder, BoxTemplate, FileMetadataStore } from '@/lib/types';
-import { Database, Pencil, Terminal, Folder, ChevronRight, Home, Download, Upload, Wand2 } from 'lucide-react';
+import { Database, Pencil, Terminal, Folder, Download, Upload, Wand2, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
@@ -49,6 +49,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import GroundTruthEditor from '@/components/ground-truth-editor';
+import ExtractionModal from '@/components/extraction-modal';
 import { useToast } from '@/hooks/use-toast';
 import { useGroundTruth } from '@/hooks/use-ground-truth';
 
@@ -60,10 +61,7 @@ type GroundTruthFile = BoxFile & {
   };
 };
 
-type BreadcrumbItem = {
-  id: string;
-  name: string;
-};
+// Removed BreadcrumbItem type - no longer using folder navigation
 
 export default function GroundTruthPage() {
   const [filesWithStatus, setFilesWithStatus] = useState<GroundTruthFile[]>([]);
@@ -83,11 +81,13 @@ export default function GroundTruthPage() {
   const [selectedFolderForExport, setSelectedFolderForExport] = useState<string>('');
   const [csvFile, setCsvFile] = useState<File | null>(null);
   
-  // Navigation state
-  const [currentFolderId, setCurrentFolderId] = useState<string>("329136417488");
-  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([
-    { id: "329136417488", name: "Documents" }
-  ]);
+  // File selection modal state
+  const [isFileSelectionModalOpen, setIsFileSelectionModalOpen] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<BoxFile[]>([]);
+  
+  // Remove folder navigation - we'll only show selected files
+  // const [currentFolderId, setCurrentFolderId] = useState<string>("0");
+  // const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
 
   const { toast } = useToast();
   const { saveGroundTruth, getGroundTruth, refreshGroundTruth } = useGroundTruth();
@@ -134,22 +134,38 @@ export default function GroundTruthPage() {
     // TODO: Implement metadata generation logic
   };
 
-  // Load folder contents
-  const loadFolderContents = useCallback(async (folderId: string) => {
+  // File selection modal handlers
+  const handleSelectFilesClick = () => {
+    setIsFileSelectionModalOpen(true);
+  };
+
+  const handleFileSelectionComplete = async (template: BoxTemplate, files: BoxFile[]) => {
+    setSelectedFiles(files);
+    setIsFileSelectionModalOpen(false);
+    
+    if (files.length > 0) {
+      // Load the selected files into the main table
+      await loadSelectedFiles(files);
+      
+      toast({
+        title: 'Files Selected',
+        description: `Added ${files.length} files to ground truth editing.`,
+      });
+    }
+  };
+
+  // Load selected files into the main table
+  const loadSelectedFiles = async (files: BoxFile[]) => {
     setIsLoading(true);
     setError(null);
+    
     try {
-      const [contents, templates, fileMetadataStore] = await Promise.all([
-        getBoxFolderContents(folderId),
+      const [templates, fileMetadataStore] = await Promise.all([
         Promise.resolve(getConfiguredTemplates()),
         Promise.resolve(getFileMetadataStore()),
       ]);
 
-      setFolders(contents.folders);
-      console.log(`📁 Folder ${folderId} - Folders found:`, contents.folders);
-      console.log(`📄 Folder ${folderId} - Files found:`, contents.files);
-
-      const filesWithStatusData = contents.files.map(file => {
+      const filesWithStatusData = files.map(file => {
         const fileMetadata = fileMetadataStore[file.id];
         const associatedTemplate = fileMetadata
           ? templates.find(t => t.templateKey === fileMetadata.templateKey) ||
@@ -163,16 +179,9 @@ export default function GroundTruthPage() {
           const activeFields = associatedTemplate.fields.filter(f => f.isActive);
           total = activeFields.length;
           const groundTruth = getGroundTruth(file.id);
-          console.log(`📊 Status calculation for file ${file.id}:`, {
-            template: associatedTemplate.templateKey,
-            activeFieldsCount: activeFields.length,
-            groundTruthData: groundTruth,
-            activeFields: activeFields.map(f => f.key)
-          });
           completed = activeFields.filter(f => {
             const value = groundTruth[f.key];
             const hasValue = value !== undefined && value !== null && String(value).trim() !== '';
-            console.log(`  📝 Field ${f.key}: "${value}" → ${hasValue ? 'completed' : 'incomplete'}`);
             return hasValue;
           }).length;
         }
@@ -185,41 +194,22 @@ export default function GroundTruthPage() {
       });
 
       setFilesWithStatus(filesWithStatusData);
+      setFolders([]); // No folders to show
     } catch (err) {
-      let errorMessage = err instanceof Error ? err.message : 'An unknown error occurred while fetching data.';
-      if (err instanceof Error && (err.message.includes('Not Found') || err.message.includes('404'))) {
-        errorMessage = 'Not Found: The application does not have access to the specified folder. Please ensure you have invited the application\'s Service Account as a collaborator on the folder in your Box account.';
-      }
+      let errorMessage = err instanceof Error ? err.message : 'An unknown error occurred while processing selected files.';
       setError(errorMessage);
       console.error(err);
     } finally {
       setIsLoading(false);
     }
-  }, [getGroundTruth]);
-
-  // Navigate to a folder
-  const navigateToFolder = (folder: BoxFolder) => {
-    setCurrentFolderId(folder.id);
-    setBreadcrumbs(prev => [...prev, { id: folder.id, name: folder.name }]);
-    setSelectedFileIds(new Set()); // Clear selections when navigating
-    loadFolderContents(folder.id);
   };
 
-  // Navigate to a breadcrumb (go back)
-  const navigateToBreadcrumb = (targetBreadcrumb: BreadcrumbItem) => {
-    const targetIndex = breadcrumbs.findIndex(b => b.id === targetBreadcrumb.id);
-    if (targetIndex !== -1) {
-      setCurrentFolderId(targetBreadcrumb.id);
-      setBreadcrumbs(breadcrumbs.slice(0, targetIndex + 1));
-      setSelectedFileIds(new Set()); // Clear selections when navigating
-      loadFolderContents(targetBreadcrumb.id);
-    }
-  };
-
+  // Initialize with empty state - no files loaded by default
   useEffect(() => {
-    // Load initial folder contents
-    loadFolderContents(currentFolderId);
-  }, [loadFolderContents, currentFolderId]);
+    setFilesWithStatus([]);
+    setFolders([]);
+    setIsLoading(false);
+  }, []);
 
   const handleEditClick = (file: GroundTruthFile) => {
     if (!file.template) {
@@ -289,36 +279,7 @@ export default function GroundTruthPage() {
     }
   };
 
-  // Recursive function to collect all files from folder hierarchy
-  const collectAllFilesFromFolder = async (folderId: string, folderPath: string = ''): Promise<Array<{file: BoxFile, path: string, folderId: string}>> => {
-    const allFiles: Array<{file: BoxFile, path: string, folderId: string}> = [];
-    
-    try {
-      const contents = await getBoxFolderContents(folderId);
-      
-      // Add all files from current folder
-      contents.files.forEach(file => {
-        allFiles.push({
-          file,
-          path: folderPath,
-          folderId
-        });
-      });
-      
-      // Recursively process subfolders
-      for (const folder of contents.folders) {
-        const subFolderPath = folderPath ? `${folderPath}/${folder.name}` : folder.name;
-        const subFolderFiles = await collectAllFilesFromFolder(folder.id, subFolderPath);
-        allFiles.push(...subFolderFiles);
-      }
-      
-    } catch (error) {
-      console.warn(`Failed to access folder ${folderId}:`, error);
-      // Continue with other folders
-    }
-    
-    return allFiles;
-  };
+  // Removed collectAllFilesFromFolder function - no longer doing folder scanning
 
   // CSV Export/Import handlers
   const handleExportClick = () => {
@@ -342,10 +303,10 @@ export default function GroundTruthPage() {
       return;
     }
 
-    if (!selectedFolderForExport) {
+    if (selectedFiles.length === 0) {
       toast({
-        title: 'Folder Required',
-        description: 'Please select a folder to export from.',
+        title: 'No Files Selected',
+        description: 'Please select files first using the "Select Files" button.',
         variant: 'destructive',
       });
       return;
@@ -360,25 +321,22 @@ export default function GroundTruthPage() {
         throw new Error('Template not found');
       }
 
-      // Find the selected folder info for path building
-      const selectedFolder = selectedFolderForExport === currentFolderId 
-        ? { name: breadcrumbs[breadcrumbs.length - 1].name }
-        : folders.find(f => f.id === selectedFolderForExport);
-      
-      if (!selectedFolder) {
-        throw new Error('Selected folder not found');
+      // Use selected files instead of folder scanning
+      if (selectedFiles.length === 0) {
+        throw new Error('No files selected for export. Please select files first.');
       }
 
-      // Collect all files from selected folder and its subfolders
       toast({
-        title: 'Scanning Folders',
-        description: `Collecting files from ${selectedFolder.name} and subfolders...`,
+        title: 'Preparing Export',
+        description: `Exporting ${selectedFiles.length} selected files...`,
       });
       
-      const baseFolderPath = selectedFolderForExport === currentFolderId 
-        ? breadcrumbs.map(b => b.name).join('/')
-        : `${breadcrumbs.map(b => b.name).join('/')}/${selectedFolder.name}`;
-      const allFiles = await collectAllFilesFromFolder(selectedFolderForExport, baseFolderPath);
+      // Use selected files directly
+      const allFiles = selectedFiles.map(file => ({
+        file,
+        path: 'Selected Files', // Since these are from the file picker
+        folderId: 'selected'
+      }));
       
       // Get ground truth data
       const groundTruthData = getGroundTruthData();
@@ -765,32 +723,7 @@ export default function GroundTruthPage() {
       );
     }
 
-    // Show folders first
-    const folderRows = folders.map(folder => (
-      <TableRow key={`folder-${folder.id}`} className="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950/20" onClick={() => navigateToFolder(folder)}>
-        <TableCell>
-          {/* Empty cell for checkbox column - folders aren't selectable */}
-        </TableCell>
-        <TableCell className="font-medium">
-          <div className="flex items-center gap-2">
-            <Folder className="h-4 w-4 text-blue-600" />
-            {folder.name}
-            <span className="text-xs text-muted-foreground">(folder)</span>
-          </div>
-        </TableCell>
-        <TableCell>-</TableCell>
-        <TableCell className="text-left">
-          <Badge variant="outline" className="border-blue-300 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-400">
-            Folder
-          </Badge>
-        </TableCell>
-        <TableCell className="text-right">
-          {/* Empty cell for actions column - folders don't have actions */}
-        </TableCell>
-      </TableRow>
-    ));
-
-    // Show files
+    // Show files only
     const fileRows = filesWithStatus.map(file => {
       const isComplete =
         file.status.completed === file.status.total && file.status.total > 0;
@@ -837,20 +770,26 @@ export default function GroundTruthPage() {
       );
     });
 
-    if (folders.length === 0 && filesWithStatus.length === 0) {
+    if (filesWithStatus.length === 0) {
       return (
         <TableRow>
           <TableCell
             colSpan={5}
-            className="h-24 text-center text-muted-foreground"
+            className="h-32 text-center text-muted-foreground"
           >
-            No files or folders found in this location.
+            <div className="flex flex-col items-center gap-2">
+              <Folder className="h-8 w-8 text-muted-foreground/50" />
+              <div className="text-lg font-medium">No files selected</div>
+              <div className="text-sm">
+                Use the "Select Files" button above to choose files from your Box account for ground truth editing.
+              </div>
+            </div>
           </TableCell>
         </TableRow>
       );
     }
 
-    return [...folderRows, ...fileRows];
+    return fileRows;
   };
 
   return (
@@ -871,10 +810,14 @@ export default function GroundTruthPage() {
               <div>
                 <CardTitle>Ground Truth Files</CardTitle>
                 <CardDescription>
-                  Navigate through folders to find your files, then select <span className="font-semibold text-foreground">Edit</span> to manage ground truth data.
+                  Use <span className="font-semibold text-foreground">Select Files</span> to choose files from any Box folder for ground truth editing. Selected files will appear in the table below where you can manage their ground truth data.
                 </CardDescription>
               </div>
               <div className="flex gap-2">
+                <Button variant="default" size="sm" onClick={handleSelectFilesClick}>
+                  <Folder className="mr-2 h-4 w-4" />
+                  Select Files
+                </Button>
                 {selectedFileIds.size > 0 && (
                   <Button variant="default" size="sm" onClick={handleGenerateMetadataValues}>
                     <Wand2 className="mr-2 h-4 w-4" />
@@ -893,27 +836,32 @@ export default function GroundTruthPage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Breadcrumb Navigation */}
-            <div className="flex items-center gap-1 text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-md">
-              <Home className="h-4 w-4" />
-              {breadcrumbs.map((breadcrumb, index) => (
-                <div key={breadcrumb.id} className="flex items-center gap-1">
-                  {index > 0 && <ChevronRight className="h-3 w-3" />}
-                  <button
-                    onClick={() => navigateToBreadcrumb(breadcrumb)}
-                    className={cn(
-                      "hover:text-foreground transition-colors",
-                      index === breadcrumbs.length - 1 
-                        ? "text-foreground font-medium" 
-                        : "hover:underline"
-                    )}
-                    disabled={index === breadcrumbs.length - 1}
+            {/* Selected Files Status */}
+            {selectedFiles.length > 0 && (
+              <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md p-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-4 w-4 text-blue-600" />
+                  <span className="font-medium text-blue-900 dark:text-blue-100">
+                    {selectedFiles.length} file{selectedFiles.length !== 1 ? 's' : ''} selected for ground truth editing
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedFiles([]);
+                      setFilesWithStatus([]);
+                      setSelectedFileIds(new Set());
+                    }}
+                    className="ml-auto h-6 px-2 text-blue-600 hover:text-blue-800"
                   >
-                    {breadcrumb.name}
-                  </button>
+                    Clear All
+                  </Button>
                 </div>
-              ))}
-            </div>
+                <div className="mt-2 text-xs text-blue-700 dark:text-blue-300">
+                  These files are ready for ground truth editing. Use "Select Files" to add more files.
+                </div>
+              </div>
+            )}
 
             {/* Files and Folders Table */}
             <div className="relative w-full overflow-auto">
@@ -958,7 +906,7 @@ export default function GroundTruthPage() {
           <DialogHeader>
             <DialogTitle>Export Ground Truth CSV</DialogTitle>
             <DialogDescription>
-              Select a template and folder to export ground truth data from the chosen folder and its subfolders.
+              Select a template to export ground truth data from your selected files.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -978,24 +926,13 @@ export default function GroundTruthPage() {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="folder-select">Folder</Label>
-              <Select value={selectedFolderForExport} onValueChange={setSelectedFolderForExport}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a folder" />
-                </SelectTrigger>
-                <SelectContent>
-                  {/* Current folder option */}
-                  <SelectItem value={currentFolderId}>
-                    📁 {breadcrumbs[breadcrumbs.length - 1].name} (current folder)
-                  </SelectItem>
-                  {/* Subfolder options */}
-                  {folders.map((folder) => (
-                    <SelectItem key={folder.id} value={folder.id}>
-                      📁 {folder.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="files-info">Selected Files</Label>
+              <div className="text-sm text-muted-foreground bg-muted/50 px-3 py-2 rounded-md">
+                {selectedFiles.length > 0 
+                  ? `${selectedFiles.length} file${selectedFiles.length !== 1 ? 's' : ''} selected for export`
+                  : 'No files selected. Please use "Select Files" to choose files first.'
+                }
+              </div>
             </div>
           </div>
           <DialogFooter>
@@ -1044,6 +981,14 @@ export default function GroundTruthPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* File Selection Modal */}
+      <ExtractionModal
+        isOpen={isFileSelectionModalOpen}
+        onClose={() => setIsFileSelectionModalOpen(false)}
+        templates={configuredTemplates}
+        onRunExtraction={handleFileSelectionComplete}
+      />
     </>
   );
 } 
