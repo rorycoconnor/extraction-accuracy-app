@@ -314,7 +314,7 @@ function SettingsContent() {
                 
                 {/* Warning if environment variables are not set */}
                 {!process.env.NEXT_PUBLIC_BOX_CLIENT_ID && (
-                  <div className="p-3 bg-yellow-100 border border-yellow-300 rounded-md text-sm text-yellow-800">
+                  <div className="p-3 bg-yellow-100 border border-yellow-200 rounded-md text-sm text-yellow-800">
                     <div className="font-semibold mb-1">⚠️ Configuration Required</div>
                     <div>OAuth2.0 is not properly configured. Please set the following environment variables in your <code>.env.local</code> file:</div>
                     <div className="mt-2 font-mono text-xs">

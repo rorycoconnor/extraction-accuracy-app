@@ -743,10 +743,10 @@ export default function GroundTruthPage() {
               variant="outline"
               className={cn(
                 !file.template
-                  ? 'border-gray-300 bg-gray-50 text-gray-500'
+                  ? 'border-muted bg-muted text-muted-foreground'
                   : isComplete
-                    ? 'border-green-300 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-400'
-                    : 'border-yellow-300 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-400'
+                    ? 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-400'
+                    : 'border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-400'
               )}
             >
               {!file.template

@@ -68,7 +68,7 @@ export function PromptItem({ prompt, templateId, fieldId, rank, fieldName }: Pro
 
   return (
     <>
-      <div className="flex items-start gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+      <div className="flex items-start gap-3 p-4 border rounded-lg bg-card hover:bg-muted/50 transition-colors">
         {/* Rank Badge */}
         <Badge variant="secondary" className={cn('text-xs font-semibold min-w-[2rem] justify-center', getRankColor(rank))}>
           {rank}
