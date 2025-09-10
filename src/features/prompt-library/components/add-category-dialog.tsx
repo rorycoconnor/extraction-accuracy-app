@@ -77,6 +77,7 @@ export function AddCategoryDialog({
             <Input
               id="categoryName"
               placeholder="Enter category name (e.g., Legal, Finance, Marketing)"
+              className="bg-white dark:bg-gray-800"
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               onKeyDown={handleKeyDown}

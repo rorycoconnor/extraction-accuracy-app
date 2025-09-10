@@ -98,6 +98,7 @@ export function AddTemplateDialog({
             <Input
               id="templateName"
               placeholder="Enter template name (e.g., Contracts, Invoices, Resumes)"
+              className="bg-white dark:bg-gray-800"
               value={newTemplateName}
               onChange={(e) => setNewTemplateName(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -110,10 +111,10 @@ export function AddTemplateDialog({
               value={selectedCategoryForTemplate} 
               onValueChange={setSelectedCategoryForTemplate}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white dark:bg-gray-800">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white dark:bg-gray-800">
                 {categories.map((category) => (
                   <SelectItem key={category} value={category}>
                     {category}

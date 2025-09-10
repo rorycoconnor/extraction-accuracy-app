@@ -115,9 +115,9 @@ export function FieldCard({ field, template }: FieldCardProps) {
               </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add New Prompt</DialogTitle>
+                <DialogTitle>Prompt</DialogTitle>
                 <DialogDescription>
-                  Add a new prompt for "{field.name}" in {template.category} → {template.name}
+                  Field Name: {field.name} in {template.category} → {template.name}
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
@@ -129,13 +129,10 @@ export function FieldCard({ field, template }: FieldCardProps) {
                     value={newPromptText}
                     onChange={(e) => setNewPromptText(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="min-h-[120px] resize-none font-mono text-sm"
+                    className="min-h-[120px] resize-none font-mono text-sm bg-white dark:bg-gray-800"
                     autoFocus
                   />
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Tip: Press Cmd+Enter (Mac) or Ctrl+Enter (Windows) to save quickly
-                </p>
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>

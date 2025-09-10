@@ -155,7 +155,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">{(summary.overallF1 * 100).toFixed(1)}%</div>
-              <div className="text-xs text-muted-foreground">F1 Score</div>
+              <div className="text-xs text-muted-foreground">Accuracy Score</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold">{(summary.overallPrecision * 100).toFixed(1)}%</div>
@@ -332,7 +332,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                 'flex items-center gap-2 text-xs px-3 py-1.5',
                 viewMode === 'stack' 
                   ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100' 
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-accent hover:text-accent-foreground'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100'
               )}
             >
               <LayoutGrid className="h-3 w-3" />
@@ -346,7 +346,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                 'flex items-center gap-2 text-xs px-3 py-1.5',
                 viewMode === 'side-by-side' 
                   ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100' 
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-accent hover:text-accent-foreground'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100'
               )}
             >
               <Columns className="h-3 w-3" />

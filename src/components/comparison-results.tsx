@@ -49,8 +49,8 @@ export default function ComparisonResults({
           </p>
         </div>
         
-        {/* Legend for comparison results */}
-        <div className="flex items-center gap-4 text-xs">
+        {/* Legend for comparison results - moved 0.5 inch left */}
+        <div className="flex items-center gap-4 text-xs mr-9">
           <span className="font-medium text-muted-foreground">Legend:</span>
           <div className="flex items-center gap-1">
             <div className="w-4 h-4 bg-green-100 border border-green-200 rounded-sm"></div>

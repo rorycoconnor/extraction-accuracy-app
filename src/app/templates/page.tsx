@@ -133,7 +133,7 @@ export default function TemplatesPage() {
             </TableCell>
              <TableCell className="w-[80px] text-right">
                 <Button variant="ghost" size="icon" onClick={() => handleRemoveTemplate(template.id)}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
+                    <Trash2 className="h-4 w-4 text-foreground" />
                     <span className="sr-only">Remove {template.displayName}</span>
                 </Button>
             </TableCell>

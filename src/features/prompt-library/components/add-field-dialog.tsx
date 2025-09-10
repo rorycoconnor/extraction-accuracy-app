@@ -114,6 +114,7 @@ export function AddFieldDialog({
             <Input
               id="fieldName"
               placeholder="Enter field name (e.g., Counter Party Name, Invoice Amount)"
+              className="bg-white dark:bg-gray-800"
               value={newFieldName}
               onChange={(e) => setNewFieldName(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -126,10 +127,10 @@ export function AddFieldDialog({
               value={selectedTemplateForField} 
               onValueChange={setSelectedTemplateForField}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white dark:bg-gray-800">
                 <SelectValue placeholder="Select a template" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white dark:bg-gray-800">
                 {availableTemplates.map((template) => (
                   <SelectItem key={template.id} value={template.id}>
                     {template.category} → {template.name}
@@ -144,10 +145,10 @@ export function AddFieldDialog({
               value={selectedFieldType} 
               onValueChange={setSelectedFieldType}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white dark:bg-gray-800">
                 <SelectValue placeholder="Select field type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white dark:bg-gray-800">
                 {fieldTypes.map((type) => (
                   <SelectItem key={type} value={type}>
                     {type}

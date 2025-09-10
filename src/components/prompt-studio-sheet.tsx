@@ -461,7 +461,7 @@ export default function PromptStudioSheet({
                                                                             </div>
                                                                         </div>
                                                                         <div className="text-center">
-                                                                            <div className="text-xs text-muted-foreground mb-1">F1 Score</div>
+                                                                            <div className="text-xs text-muted-foreground mb-1">Accuracy Score</div>
                                                                             <div className={`font-bold text-lg ${model.metrics.f1 >= 0.9 ? 'text-green-600' : model.metrics.f1 >= 0.7 ? 'text-yellow-600' : 'text-red-600'}`}>
                                                                                 {(model.metrics.f1 * 100).toFixed(0)}%
                                                                             </div>

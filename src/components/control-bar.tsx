@@ -80,7 +80,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
 
   return (
     <div className="flex items-center gap-2 px-6 py-4 mb-2">
-      <Button onClick={onSelectDocuments} variant="outline">
+      <Button onClick={onSelectDocuments} variant="outline" className="bg-gray-700 text-white hover:bg-gray-600 hover:text-white border-gray-700">
         <FileText className="mr-2 h-4 w-4" />
         Select Documents
       </Button>
@@ -125,7 +125,8 @@ const ControlBar: React.FC<ControlBarProps> = ({
       <Button 
         onClick={onRunComparison} 
         disabled={isExtracting || !accuracyData}
-        className="bg-blue-600 hover:bg-blue-700 text-white"
+        className={accuracyData?.results?.length > 0 ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
+        variant={accuracyData?.results?.length > 0 ? "default" : "outline"}
       >
         {isExtracting ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -135,6 +136,11 @@ const ControlBar: React.FC<ControlBarProps> = ({
         {isExtracting && progress.total > 0 
           ? `Processing ${progress.processed}/${progress.total} extractions` 
           : 'Run Comparison'}
+      </Button>
+      
+      <Button variant="outline" onClick={onClearResults}>
+        <Trash2 className="mr-2 h-4 w-4" />
+        Clear Results
       </Button>
       
       <DropdownMenu>
@@ -165,19 +171,11 @@ const ControlBar: React.FC<ControlBarProps> = ({
         </DropdownMenuContent>
       </DropdownMenu>
 
-
       
-      <div className="ml-auto flex items-center gap-2">
-        {/* Remove the Show Performance/Hide Performance toggle button */}
-        
-        <Button variant="ghost" onClick={onOpenSummary}>
+      <div className="ml-auto mr-12 flex items-center gap-2">
+        <Button variant="outline" onClick={onOpenSummary}>
           <Eye className="mr-2 h-4 w-4" />
           Show Summary
-        </Button>
-        
-        <Button variant="outline" onClick={onClearResults}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          Clear Results
         </Button>
 
 

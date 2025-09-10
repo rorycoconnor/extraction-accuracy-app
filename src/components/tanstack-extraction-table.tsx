@@ -18,6 +18,7 @@ import { cn, formatModelName, NOT_PRESENT_VALUE } from '@/lib/utils';
 import { compareValues, type ComparisonResult } from '@/lib/metrics';
 import { MousePointer2, Play, RotateCcw, Clock } from 'lucide-react';
 import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
+import { ImageThumbnailHover } from '@/components/image-thumbnail-hover';
 
 // Extend TanStack's ColumnMeta to include our custom properties
 declare module '@tanstack/react-table' {
@@ -159,22 +160,70 @@ const ModelHeader = ({
 // Cell component for file names - optimized for 200px width with text wrapping
 const FileNameCell = ({ row }: { row: ProcessedRowData }) => (
   <div className="font-medium text-left p-3 h-full flex flex-col justify-center">
-    <div 
-      className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight break-words hyphens-auto"
-      title={row.fileName}
-      style={{
-        wordWrap: 'break-word',
-        overflowWrap: 'break-word',
-        lineHeight: '1.2'
-      }}
-    >
-      {row.fileName.replace(/\.pdf$|\.docx$|\.jpg$/, '')}
-    </div>
-    <Badge variant="outline" className="mt-1 font-normal text-xs w-fit">
-      {row.fileType}
-    </Badge>
+    <ImageThumbnailHover fileName={row.fileName} fileId={row.id}>
+      <div 
+        className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight break-words hyphens-auto"
+        title={row.fileName}
+        style={{
+          wordWrap: 'break-word',
+          overflowWrap: 'break-word',
+          lineHeight: '1.2'
+        }}
+      >
+        {row.fileName.replace(/\.pdf$|\.docx$|\.jpg$/, '')}
+      </div>
+      <Badge variant="outline" className="mt-1 font-normal text-xs w-fit">
+        {row.fileType}
+      </Badge>
+    </ImageThumbnailHover>
   </div>
 );
+
+// Function to get background color for a cell based on its data
+const getCellBackgroundColor = (cellData: CellData): string => {
+  const { value, groundTruth, modelName } = cellData;
+  const isPending = value.startsWith('Pending');
+  const isError = value.startsWith('Error:');
+  const isNotPresent = value === NOT_PRESENT_VALUE;
+  
+  // No background for Ground Truth cells or pending/error states
+  if (modelName === 'Ground Truth' || isPending || isNotPresent) {
+    return '';
+  }
+  
+  // Error state background
+  if (isError) {
+    return 'bg-red-100/60 dark:bg-red-900/30';
+  }
+  
+  // Comparison-based background colors
+  const comparison = compareValues(value, groundTruth);
+  
+  // If there's no Ground Truth to compare against, don't apply any coloring
+  if (!groundTruth || groundTruth.trim() === '' || groundTruth === '-') {
+    return '';
+  }
+  
+  if (!comparison.isMatch) {
+    // Don't show red for empty values
+    if (!value || value.trim() === '' || value === '-') {
+      return '';
+    }
+    return 'bg-red-100/80 dark:bg-red-900/30';
+  }
+  
+  switch (comparison.matchType) {
+    case 'exact':
+    case 'normalized':
+      return 'bg-green-100/80 dark:bg-green-900/30';
+    case 'partial':
+      return 'bg-blue-100/80 dark:bg-blue-900/30';
+    case 'date_format':
+      return 'bg-yellow-100/80 dark:bg-yellow-900/30';
+    default:
+      return '';
+  }
+};
 
 // Cell component for model values
 const ModelValueCell = ({ 
@@ -182,17 +231,13 @@ const ModelValueCell = ({
   fileId,
   onOpenInlineEditor,
   onRunSingleFieldForFile,
-  field,
-  expandedCells,
-  toggleCellExpansion
+  field
 }: {
   cellData: CellData;
   fileId: string;
   onOpenInlineEditor?: (fileId: string, fieldKey: string) => void;
   onRunSingleFieldForFile?: (field: AccuracyField, fileId: string) => void;
   field?: AccuracyField;
-  expandedCells: Set<string>;
-  toggleCellExpansion: (cellId: string) => void;
 }) => {
   const { value, groundTruth, fieldKey, modelName } = cellData;
   const isPending = value.startsWith('Pending');
@@ -200,11 +245,7 @@ const ModelValueCell = ({
   const isNotPresent = value === NOT_PRESENT_VALUE;
   const comparison = compareValues(value, groundTruth);
   
-  // Generate unique cell ID for expansion tracking
-  const cellId = `${fieldKey}-${modelName}`;
-  const { displayText, canExpand, isExpanded } = getTruncatedText(value, cellId, 150, expandedCells);
-
-    const getComparisonClasses = (comparison: ComparisonResult) => {
+  const getComparisonClasses = (comparison: ComparisonResult) => {
     // Never apply styling to Ground Truth cells
     if (modelName === 'Ground Truth') {
       return '';
@@ -236,26 +277,15 @@ const ModelValueCell = ({
     }
   };
 
-    // Create cell classes for full background coverage - simplified single row
-  const cellClasses = cn(
-    "absolute inset-0 flex items-center justify-center text-center px-2 rounded-sm",
+  // Simple centering wrapper without background colors (background now on td)
+  const wrapperClasses = cn(
+    "grid place-items-center w-full h-full px-2 py-3",
     isPending && "text-muted-foreground italic",
-    isError && "text-red-700 dark:text-red-400 bg-red-100/60 dark:bg-red-900/30",
-    isNotPresent && "text-muted-foreground italic",
-    !isPending && !isError && !isNotPresent && getComparisonClasses(comparison)
+    isError && "text-red-700 dark:text-red-400",
+    isNotPresent && "text-muted-foreground italic"
   );
 
-  // Better display for 250px columns - can show more content
-  const displayContent = displayText || '-';
-
   const handleCellClick = (e: React.MouseEvent) => {
-    // Check if clicking on expansion indicator
-    const target = e.target as HTMLElement;
-    if (target.closest('span') && target.textContent === '...') {
-      toggleCellExpansion(cellId);
-      return;
-    }
-    
     // Handle ground truth editing - open inline editor for preview
     if (modelName === 'Ground Truth' && onOpenInlineEditor) {
       onOpenInlineEditor(fileId, fieldKey);
@@ -264,44 +294,33 @@ const ModelValueCell = ({
 
   return (
     <div 
-      className="relative w-full h-full cursor-pointer" 
+      className={wrapperClasses}
       onClick={handleCellClick}
     >
-      <div className={cellClasses}>
-        <span 
-          className="text-sm leading-tight" 
-          title={value} // Show full text on hover
-          style={{
-            display: '-webkit-box',
-            WebkitLineClamp: canExpand && isExpanded ? 'unset' : '2',
-            WebkitBoxOrient: 'vertical',
-            overflow: 'hidden'
-          }}
-        >
-          {displayContent}
-        </span>
+      <div 
+        className="text-sm text-center leading-snug whitespace-pre-wrap break-words max-w-full cursor-pointer" 
+        title={value} // Show full text on hover
+        style={{
+          display: '-webkit-box',
+          WebkitLineClamp: 7,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+          lineHeight: 1.4,
+          wordBreak: 'break-word'
+        }}
+      >
+        {value || '-'}
       </div>
     </div>
   );
 };
 
-// Helper function for text truncation
-const getTruncatedText = (text: string, cellId: string, maxLength: number, expandedCells: Set<string>) => {
-  if (!text || text.length <= maxLength) {
-    return { displayText: text, canExpand: false };
-  }
-  
-  const isExpanded = expandedCells.has(cellId);
-  const displayText = isExpanded ? text : text.substring(0, maxLength) + '...';
-  
-  return { displayText, canExpand: true, isExpanded };
-};
 
-export default function TanStackExtractionTable({
-  data,
-  shownColumns,
-  showMetrics,
-  onOpenPromptStudio,
+export default function TanStackExtractionTable({ 
+  data, 
+  shownColumns, 
+  showMetrics, 
+  onOpenPromptStudio, 
   onOpenInlineEditor,
   onRunSingleField,
   onRunSingleFieldForFile,
@@ -309,6 +328,7 @@ export default function TanStackExtractionTable({
   isExtracting = false,
   extractingFields = new Set()
 }: TanStackExtractionTableProps) {
+  
   const { fields, results, averages } = data;
   const pathname = usePathname();
   const isHomePage = pathname === '/';
@@ -332,24 +352,6 @@ export default function TanStackExtractionTable({
     console.log('🔍 TanStack Table: Ground Truth hash:', groundTruthValues.slice(0, 100) + '...');
     return groundTruthValues;
   }, [results, fields]);
-  
-  // State for tracking expanded cells
-  const [expandedCells, setExpandedCells] = React.useState<Set<string>>(new Set());
-  
-  // Function to toggle cell expansion
-  const toggleCellExpansion = (cellId: string) => {
-    setExpandedCells(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(cellId)) {
-        newSet.delete(cellId);
-      } else {
-        newSet.add(cellId);
-      }
-      return newSet;
-    });
-  };
-
-
 
   // Get visible columns (models) based on shownColumns prop
   const visibleColumns = React.useMemo(() => {
@@ -423,8 +425,6 @@ export default function TanStackExtractionTable({
               onOpenInlineEditor={onOpenInlineEditor}
               onRunSingleFieldForFile={onRunSingleFieldForFile}
               field={field}
-              expandedCells={expandedCells}
-              toggleCellExpansion={toggleCellExpansion}
             />
           );
         },
@@ -459,7 +459,7 @@ export default function TanStackExtractionTable({
     });
 
     return dynamicColumns;
-  }, [fields, visibleColumns, recentlyChangedPrompts, onOpenPromptStudio, onRunSingleField, onOpenInlineEditor, onRunSingleFieldForFile, expandedCells, toggleCellExpansion]);
+  }, [fields, visibleColumns, recentlyChangedPrompts, onOpenPromptStudio, onRunSingleField, onOpenInlineEditor, onRunSingleFieldForFile]);
 
   // Create table instance
   const table = useReactTable({
@@ -490,7 +490,7 @@ export default function TanStackExtractionTable({
             border-radius: 12px;
             max-width: 100%;
             background: hsl(var(--background));
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 1px 0 rgba(0, 0, 0, 0.02);
           }
           .table-scroll-area {
             overflow-x: auto;
@@ -504,24 +504,27 @@ export default function TanStackExtractionTable({
           .extraction-table {
             border-collapse: separate;
             border-spacing: 0;
-            table-layout: fixed;
+            table-layout: auto;
             width: max-content;
             min-width: 100%;
           }
           .extraction-table tbody tr:last-child td {
             border-bottom: none;
           }
+          .extraction-table tbody td {
+            vertical-align: middle;
+          }
           .sticky-header {
             position: sticky;
             top: 0;
             z-index: 20;
-            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
           }
           .sticky-column {
             position: sticky;
             left: 0;
             z-index: 10;
-            box-shadow: 2px 0 4px 0 rgba(0, 0, 0, 0.05);
+            box-shadow: 1px 0 2px 0 rgba(0, 0, 0, 0.02);
             width: 200px;
             min-width: 200px;
             max-width: 200px;
@@ -531,7 +534,7 @@ export default function TanStackExtractionTable({
             left: 0;
             top: 0;
             z-index: 30;
-            box-shadow: 2px 2px 4px 0 rgba(0, 0, 0, 0.1);
+            box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.04);
             width: 200px;
             min-width: 200px;
             max-width: 200px;
@@ -554,8 +557,7 @@ export default function TanStackExtractionTable({
             text-align: center;
             vertical-align: middle;
             padding: 0 !important;
-            height: 48px;
-            min-height: 48px;
+            height: auto !important;
             width: 250px;
             min-width: 250px;
             max-width: 250px;
@@ -571,8 +573,8 @@ export default function TanStackExtractionTable({
             position: sticky;
             left: 0;
             z-index: 10;
-            height: 48px;
-            min-height: 48px;
+            height: auto !important;
+            vertical-align: middle;
           }
           .sticky-header .file-name-cell {
             z-index: 30;
@@ -684,14 +686,27 @@ export default function TanStackExtractionTable({
                     const groupIdx = cell.column.columnDef.meta?.groupIndex ?? -1;
                     const isGroupRightEdge = cell.column.columnDef.meta?.isGroupRightEdge ?? false;
                     
+                    // Get cell background color for comparison results
+                    let cellBgColor = '';
+                    if (!isFirstColumn) {
+                      // Get the cell data from row.original using the column id
+                      const cellData = row.original[cell.column.id] as CellData;
+                      if (cellData) {
+                        cellBgColor = getCellBackgroundColor(cellData);
+                      }
+                    }
+                    
                     return (
                       <td
                         key={cell.id}
                         className={cn(
                           isFirstColumn ? "sticky-column file-name-cell bg-white" : "result-cell",
                           !isFirstColumn && isGroupRightEdge && "border-r",
-                          // Alternating field colors by metadata field group
-                          !isFirstColumn && groupIdx >= 0 && (groupIdx % 2 === 0 ? "bg-white" : "bg-slate-50")
+                          // Apply comparison background colors or alternating field colors
+                          !isFirstColumn && (
+                            cellBgColor || 
+                            (groupIdx >= 0 && (groupIdx % 2 === 0 ? "bg-white" : "bg-slate-50"))
+                          )
                         )}
                         style={{
                           width: cell.column.getSize(),
@@ -706,8 +721,8 @@ export default function TanStackExtractionTable({
               
               {/* Field Averages Row - only show when metrics are available */}
               {showMetrics && (
-                <tr className="border-t-2 border-t-gray-300 sticky bottom-0 z-50">
-                  <td className="sticky-column file-name-cell field-averages-cell bg-white font-bold border-t-2 border-t-gray-300">
+                <tr className="border-t sticky bottom-0 z-50">
+                  <td className="sticky-column file-name-cell field-averages-cell bg-white font-bold border-t">
                     <div className="p-3 text-center font-semibold field-averages-text">Field Averages</div>
                   </td>
                   {fields.map((field, fieldIndex) => {
@@ -722,7 +737,7 @@ export default function TanStackExtractionTable({
                               <td
                                 key={`${modelName}-avg`}
                                                               className={cn(
-                                'result-cell border-t-2 border-t-gray-300 sticky bottom-0 z-30',
+                                'result-cell border-t sticky bottom-0 z-30',
                                 groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
                                 isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r' : ''
                               )}
@@ -731,7 +746,7 @@ export default function TanStackExtractionTable({
                           }
 
                         const metrics = averages[field.key]?.[modelName] ?? { accuracy: 0, precision: 0, recall: 0, f1: 0 };
-                        const f1 = metrics.f1;
+                        const accuracy = metrics.accuracy;
                         
                         // Check if there's any ground truth data for this field across all files
                         const hasGroundTruth = results.some(result => {
@@ -743,7 +758,7 @@ export default function TanStackExtractionTable({
                             <td
                               key={`${modelName}-avg`}
                               className={cn(
-                                'result-cell border-t-2 border-t-gray-300 text-center font-semibold sticky bottom-0 z-30',
+                                'result-cell border-t text-center font-semibold sticky bottom-0 z-30',
                                 groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
                                 isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r' : ''
                               )}
@@ -756,11 +771,11 @@ export default function TanStackExtractionTable({
                                 ) : (
                                   <div className={cn(
                                     "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold",
-                                    f1 >= 0.9 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 
-                                    f1 >= 0.7 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
+                                    accuracy >= 0.9 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 
+                                    accuracy >= 0.7 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
                                     'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                                   )}>
-                                    F1 {f1 > 0 ? `${(f1 * 100).toFixed(0)}%` : '0%'}
+                                    Accuracy {accuracy > 0 ? `${(accuracy * 100).toFixed(0)}%` : '0%'}
                                   </div>
                                 )}
                               </div>

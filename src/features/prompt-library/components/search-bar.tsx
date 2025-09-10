@@ -67,7 +67,7 @@ export function SearchBar() {
             placeholder="Search for categories, templates, fields, prompts, etc."
             value={searchFilters.searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-11 pr-10"
+            className="h-11 pr-10 bg-white dark:bg-gray-800"
           />
           {searchFilters.searchTerm && (
             <button
@@ -86,10 +86,10 @@ export function SearchBar() {
             value={searchFilters.category || ALL_CATEGORIES} 
             onValueChange={(value) => setSelectedCategory(value === ALL_CATEGORIES ? null : value)}
           >
-            <SelectTrigger className="h-11">
+            <SelectTrigger className="h-11 bg-white dark:bg-gray-800">
               <SelectValue placeholder="All" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-gray-800">
               <SelectItem value={ALL_CATEGORIES}>All</SelectItem>
               {database.categories.map((category) => (
                 <SelectItem key={category} value={category}>
@@ -106,10 +106,10 @@ export function SearchBar() {
             value={searchFilters.template || ALL_TEMPLATES} 
             onValueChange={(value) => setSelectedTemplate(value === ALL_TEMPLATES ? null : value)}
           >
-            <SelectTrigger className="h-11">
+            <SelectTrigger className="h-11 bg-white dark:bg-gray-800">
               <SelectValue placeholder="All" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-gray-800">
               <SelectItem value={ALL_TEMPLATES}>All</SelectItem>
               {availableTemplates.map((template) => (
                 <SelectItem key={template.id} value={template.id}>

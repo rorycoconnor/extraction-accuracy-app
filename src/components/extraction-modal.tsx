@@ -291,7 +291,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
             </div>
             <div className="ml-11">
               <Select onValueChange={setSelectedTemplateKey} value={selectedTemplateKey} disabled={templates.length === 0}>
-                <SelectTrigger className="h-12">
+                <SelectTrigger className="h-12 bg-white dark:bg-gray-800">
                                     <SelectValue placeholder={
                       <div className="flex items-center gap-2 text-muted-foreground">
                           <FileText className="h-4 w-4" />
@@ -299,7 +299,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
                       </div>
                   } />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white dark:bg-gray-800">
                     {templates.map((template) => (
                       <SelectItem key={template.id} value={template.templateKey}>
                          <div className="flex items-center gap-2">

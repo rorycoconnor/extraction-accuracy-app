@@ -285,9 +285,8 @@ export function PromptLibraryMain() {
                       <Edit className="mr-2 h-4 w-4" />
                       Rename Template
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => setDeleteTemplateDialogOpen(true)}
-                      className="text-red-700"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
                       Delete Template
@@ -295,9 +294,8 @@ export function PromptLibraryMain() {
                     <DropdownMenuItem className="p-0">
                       <div className="w-full h-px bg-gray-200 my-1" />
                     </DropdownMenuItem>
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       onClick={() => setCreateBoxTemplateDialogOpen(true)}
-                      className="text-blue-700"
                     >
                       <Box className="mr-2 h-4 w-4" />
                       Create Template in Box
@@ -429,6 +427,7 @@ export function PromptLibraryMain() {
               <Input
                 value={newTemplateName}
                 onChange={(e) => setNewTemplateName(e.target.value)}
+                className="bg-white dark:bg-gray-800"
                 placeholder="Enter template name"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
