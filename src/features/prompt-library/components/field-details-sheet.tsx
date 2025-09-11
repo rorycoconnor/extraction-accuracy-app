@@ -202,11 +202,11 @@ export function FieldDetailsSheet({
   return (
     <>
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent className="w-[936px] max-w-[95vw] flex flex-col">
+        <SheetContent className="!w-[1218px] max-w-[95vw] flex flex-col">
           <SheetHeader className="flex-shrink-0">
             <SheetTitle className="text-xl">Field Details</SheetTitle>
             <SheetDescription className="text-base">
-              Configure field settings for {template.category} → {template.name}
+              {template.category} → {template.name}
             </SheetDescription>
           </SheetHeader>
 
@@ -217,24 +217,23 @@ export function FieldDetailsSheet({
                 <Label htmlFor="field-name" className="text-sm font-medium text-gray-700">
                   Field Name
                 </Label>
-                <Input
-                  id="field-name"
-                  value={fieldName}
-                  onChange={(e) => setFieldName(e.target.value)}
-                  placeholder="Enter field name"
-                  className="h-11 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0"
-                  autoFocus={false}
-                />
+                  <Input
+                    id="field-name"
+                    value={fieldName}
+                    onChange={(e) => setFieldName(e.target.value)}
+                    placeholder="Enter field name"
+                    className="h-11 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0 bg-white dark:bg-gray-800"
+                  />
               </div>
               
               {/* Field Type */}
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-gray-700">Field Type</Label>
                 <Select value={getFieldTypeDisplayValue()} onValueChange={handleFieldTypeChange}>
-                  <SelectTrigger className="h-11 focus:ring-0 focus:ring-offset-0">
+                  <SelectTrigger className="h-11 focus:ring-0 focus:ring-offset-0 bg-white dark:bg-gray-800">
                     <SelectValue placeholder="Select field type" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-white dark:bg-gray-800">
                     <SelectItem value="text">Text</SelectItem>
                     <SelectItem value="number">Number</SelectItem>
                     <SelectItem value="date">Date</SelectItem>
@@ -278,26 +277,9 @@ export function FieldDetailsSheet({
                       value={optionsPaste}
                       onChange={(e) => setOptionsPaste(e.target.value)}
                       placeholder={`Enter values (one per line or comma-separated):\n\nExample:\nPending\nApproved\nPaid\n\nOr: Pending, Approved, Paid`}
-                      className="min-h-[182px] resize-y focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0"
+                      className="min-h-[182px] resize-y focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0 bg-white dark:bg-gray-800"
                       rows={9}
                     />
-                    {optionsPaste && (
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium text-gray-700">Preview ({parseOptions(optionsPaste).length} values):</p>
-                        <div className="flex flex-wrap gap-3">
-                          {parseOptions(optionsPaste).slice(0, 12).map((option, index) => (
-                            <Badge key={index} variant="outline" className="text-xs px-2.5 py-1.5 m-0.5">
-                              {option}
-                            </Badge>
-                          ))}
-                          {parseOptions(optionsPaste).length > 12 && (
-                            <Badge variant="outline" className="text-xs px-2.5 py-1.5 text-muted-foreground m-0.5">
-                              +{parseOptions(optionsPaste).length - 12} more
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
@@ -318,7 +300,6 @@ export function FieldDetailsSheet({
               <DropdownMenuContent align="start">
                 <DropdownMenuItem 
                   onClick={() => setIsDeleteDialogOpen(true)}
-                  className="text-red-600 dark:text-red-400"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete Field
@@ -326,7 +307,7 @@ export function FieldDetailsSheet({
               </DropdownMenuContent>
             </DropdownMenu>
             
-            <div className="flex gap-3 mr-6">
+            <div className="flex gap-3">
               <SheetClose asChild>
                 <Button variant="outline" size="sm" className="h-9">
                   Cancel

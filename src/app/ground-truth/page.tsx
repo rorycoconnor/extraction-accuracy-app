@@ -703,7 +703,7 @@ export default function GroundTruthPage() {
                 !file.template
                   ? 'border-muted bg-muted text-muted-foreground'
                   : isComplete
-                    ? 'border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-400'
+                    ? 'Click "Select Documents" and choose your template & files. Then select "Run Comparison".'
                     : 'border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-800 dark:bg-yellow-950 dark:text-yellow-400'
               )}
             >
@@ -856,10 +856,10 @@ export default function GroundTruthPage() {
             <div className="space-y-2">
               <Label htmlFor="template-select">Template</Label>
               <Select value={selectedTemplateForExport} onValueChange={setSelectedTemplateForExport}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white dark:bg-gray-800">
                   <SelectValue placeholder="Select a template" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white dark:bg-gray-800">
                   {configuredTemplates.map((template) => (
                     <SelectItem key={template.id} value={template.templateKey}>
                       {template.displayName}

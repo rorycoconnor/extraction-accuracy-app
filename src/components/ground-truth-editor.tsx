@@ -179,10 +179,10 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
         const options = templateField.options?.map(opt => opt.key) || [];
         return (
           <Select onValueChange={formField.onChange} defaultValue={formField.value}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-white dark:bg-gray-800">
               <SelectValue placeholder={`Select ${templateField.displayName}`} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white dark:bg-gray-800">
               <SelectItem value={NOT_PRESENT_VALUE}>{NOT_PRESENT_VALUE}</SelectItem>
               {options.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
             </SelectContent>
@@ -198,16 +198,16 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
                 formField.onChange(value);
               }
             }} defaultValue={formField.value === NOT_PRESENT_VALUE ? NOT_PRESENT_VALUE : 'custom'}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white dark:bg-gray-800">
                 <SelectValue placeholder="Select option or enter custom value" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white dark:bg-gray-800">
                 <SelectItem value={NOT_PRESENT_VALUE}>{NOT_PRESENT_VALUE}</SelectItem>
                 <SelectItem value="custom">Enter custom value</SelectItem>
               </SelectContent>
             </Select>
             {formField.value !== NOT_PRESENT_VALUE && (
-              <Input {...formField} placeholder={`Enter ${templateField.displayName}`} />
+              <Input {...formField} placeholder={`Enter ${templateField.displayName}`} className="bg-white dark:bg-gray-800" />
             )}
           </div>
         );

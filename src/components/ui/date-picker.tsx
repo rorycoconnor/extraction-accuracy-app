@@ -153,6 +153,7 @@ export function DatePicker({
           onChange={(e) => handleInputChange(e.target.value)}
           placeholder="Enter date (MM/DD/YYYY or MM-DD-YYYY)"
           className={cn(
+            "bg-white dark:bg-gray-800",
             "flex-1",
             inputError && "border-destructive focus:border-destructive",
             className

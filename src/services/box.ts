@@ -146,6 +146,11 @@ export async function clearTokenCache(): Promise<void> {
     console.log('🔑 Token cache cleared');
 }
 
+// Export function to get access token for external use
+export async function getBoxAccessToken(): Promise<string> {
+    return await getAccessToken();
+}
+
 // Centralized fetch function for Box API calls
 export async function boxApiFetch(path: string, options: RequestInit = {}) {
     const accessToken = await getAccessToken();

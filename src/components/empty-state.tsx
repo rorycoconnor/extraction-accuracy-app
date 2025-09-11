@@ -24,6 +24,10 @@ const EmptyState: React.FC = () => {
             <span className="font-semibold text-gray-800 dark:text-gray-200">
               files
             </span>
+            .{' '}
+            <span className="font-semibold text-gray-800 dark:text-gray-200">
+              "Compare Models"
+            </span>
             . Then select{' '}
             <span className="font-semibold text-gray-800 dark:text-gray-200">
               "Run Comparison"
