@@ -1,143 +1,5 @@
 [
   {
-    "id": "89342d28-58d3-4015-b04f-95aae508ef7d",
-    "type": "metadata_template",
-    "templateKey": "insuranceCertificate",
-    "scope": "enterprise_1218697394",
-    "displayName": "Compliance ",
-    "hidden": false,
-    "copyInstanceOnItemCopy": false,
-    "fields": [
-      {
-        "id": "e43b510f-7f8c-40d6-9a73-2de642f134ff",
-        "type": "string",
-        "key": "vendorName",
-        "displayName": "Vendor Name",
-        "hidden": false,
-        "description": "Enter Insurance Party Name",
-        "isActive": true
-      },
-      {
-        "id": "fe189551-7579-4965-bdfa-90b26ba3285c",
-        "type": "string",
-        "key": "vendorContactName",
-        "displayName": "Vendor Contact Name",
-        "hidden": false,
-        "description": "Enter Insurance Party Contact Name",
-        "isActive": true
-      },
-      {
-        "id": "8aa5a0b1-0ec1-4be2-a82d-d6a4e10b9faf",
-        "type": "string",
-        "key": "vendorContactEmail",
-        "displayName": "Vendor Contact email",
-        "hidden": false,
-        "description": "Enter Insurance Party Contact Email",
-        "isActive": true
-      },
-      {
-        "id": "a3e69d3e-9716-416a-b05e-93d11a5cbd0d",
-        "type": "date",
-        "key": "insuranceStartDate",
-        "displayName": "Start Date",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "3d690e9c-5d24-4205-a5c5-70f0d615fa00",
-        "type": "date",
-        "key": "insuranceExpirationDate",
-        "displayName": "Expiration Date",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "01d5b437-841d-41d8-a5e8-e41010c25bf5",
-        "type": "float",
-        "key": "generalLiabilityInsuranceCoverage",
-        "displayName": "General Liability",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "c3a7f7c7-cdc0-4b6b-a595-05bf069fccb8",
-        "type": "float",
-        "key": "workersCompensationInsuranceCoverage",
-        "displayName": "Workers Compensation",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "8888409b-fdcf-451a-8587-a04d4ebd0b60",
-        "type": "enum",
-        "key": "status",
-        "displayName": "Status",
-        "hidden": false,
-        "options": [
-          {
-            "id": "ff35162b-6627-420e-9541-ee6be4c6cad8",
-            "key": "New Submission"
-          },
-          {
-            "id": "5a40fe2d-2b3e-4874-973d-3014d6e8ee3a",
-            "key": "Active"
-          },
-          {
-            "id": "6f0a1451-62d3-4931-9a4d-5586e0e20e73",
-            "key": "InActive"
-          }
-        ],
-        "isActive": false
-      },
-      {
-        "id": "dd5ee227-8623-4f4e-b52f-69daccfcca39",
-        "type": "string",
-        "key": "submitterEmail",
-        "displayName": "Submitter eMail",
-        "hidden": false,
-        "isActive": false
-      },
-      {
-        "id": "d5352b80-e34f-42b9-8602-b745507653ef",
-        "type": "enum",
-        "key": "businessUnit",
-        "displayName": "Business Unit",
-        "hidden": false,
-        "options": [
-          {
-            "id": "0b77e1ab-3791-4543-9f86-52b72ab71ae9",
-            "key": "Engineering"
-          },
-          {
-            "id": "ba509c25-5973-4a4d-872d-d68ccc6ef198",
-            "key": "Finance"
-          },
-          {
-            "id": "201b2010-e456-498b-b095-efbbd00e880f",
-            "key": "Human Resources"
-          },
-          {
-            "id": "e07383f0-392d-4586-b4e1-a2a42ad7a0df",
-            "key": "IT"
-          },
-          {
-            "id": "0a7d4157-59b4-4392-85dd-2e44ff1a3b85",
-            "key": "Manufacturing"
-          },
-          {
-            "id": "c59cca4a-6f8c-4b74-a44e-9889d00e7a0a",
-            "key": "Marketing"
-          },
-          {
-            "id": "36cec353-6e56-4bc0-af8b-2f97860a9d55",
-            "key": "Sales"
-          }
-        ],
-        "isActive": false
-      }
-    ]
-  },
-  {
     "id": "e9f04859-94e2-4948-9f44-a1a0ed522325",
     "type": "metadata_template",
     "templateKey": "contracts",
@@ -190,7 +52,7 @@
             "key": "Issue"
           }
         ],
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "eb435ec6-a432-488d-be92-f4ad3279d1a6",
@@ -198,7 +60,7 @@
         "key": "comments",
         "displayName": "Comments",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "2a022613-a8f3-413e-9193-e9e46d3dba46",
@@ -228,7 +90,7 @@
             "key": "Rohan Patel"
           }
         ],
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "58da9c42-e6fe-4dec-90c9-7ff3ac138e2f",
@@ -472,7 +334,7 @@
         "key": "limitationOfLiability",
         "displayName": "Limitation of Liability",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "eda7bb6a-a04c-4c85-8c2b-f094bb765716",
@@ -480,7 +342,7 @@
         "key": "warrantyPeriodMonths",
         "displayName": "Warranty Period (Months)",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "f8ba5953-19a8-4a72-a7e2-6db5a8f336a7",
@@ -506,7 +368,7 @@
             "key": "Not Specified"
           }
         ],
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "fba637e6-1128-4047-bdc1-fafef536005c",
@@ -524,7 +386,7 @@
             "key": "Nol"
           }
         ],
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "7e3df744-bfe8-4732-bec0-e99f0f29146e",
@@ -532,7 +394,7 @@
         "key": "confidentialityDuration",
         "displayName": "Confidentiality Duration",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "d15a1891-3f69-40d1-80c8-f3f734ae61c2",
@@ -540,7 +402,7 @@
         "key": "paymentTerms",
         "displayName": "Payment Terms",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "b423de43-a9c3-4d66-9c66-17eb1479ceb4",
@@ -566,7 +428,7 @@
             "key": "No Specified"
           }
         ],
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "cdc9e5cb-2810-4752-a5c9-330f93f2c5bb",
@@ -574,7 +436,7 @@
         "key": "keyObligationsSummary",
         "displayName": "Key Obligations Summary",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "dcc0383a-770a-427d-8d2f-81b7226134f2",
@@ -582,7 +444,7 @@
         "key": "companySignerEmail",
         "displayName": "Company Signer Email",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "22936b75-ddf5-4d54-9702-a87ea2b770d2",
@@ -590,7 +452,7 @@
         "key": "counterPartySignerEmail",
         "displayName": "Counter Party Signer Email",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "00f6b2aa-15db-4582-95fa-9b284b268190",
@@ -598,7 +460,7 @@
         "key": "requestor",
         "displayName": "Requestor",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "67e4b200-1dfb-4e45-9572-22f0109f7feb",
@@ -606,7 +468,7 @@
         "key": "dateNeeded",
         "displayName": "Date Needed",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "bcf2d816-3ca0-49bc-9a64-cdad82aeb14b",
@@ -614,1044 +476,13 @@
         "key": "submissionDate",
         "displayName": "Submission Date",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "4c451507-3da3-4f41-9116-84fd3114ee16",
         "type": "string",
         "key": "ndaStatus",
         "displayName": "NDA Status",
-        "hidden": false,
-        "isActive": false
-      }
-    ]
-  },
-  {
-    "id": "bfdd8378-28bf-4313-b78a-fba8a265ee77",
-    "type": "metadata_template",
-    "templateKey": "digitalAssets",
-    "scope": "enterprise_1218697394",
-    "displayName": "Digital Assets",
-    "hidden": false,
-    "copyInstanceOnItemCopy": false,
-    "fields": [
-      {
-        "id": "bcfe0480-6df5-49d3-895f-4bb475974b79",
-        "type": "enum",
-        "key": "assetType",
-        "displayName": "Asset Type",
-        "hidden": false,
-        "options": [
-          {
-            "id": "553b21fd-c014-4eb4-ba85-d8765ed97560",
-            "key": "Image"
-          },
-          {
-            "id": "cb303f9b-04f7-4623-9083-e3daee333c90",
-            "key": "Video"
-          },
-          {
-            "id": "f9ba335b-ab64-4a4e-94fd-3bb43aec57dd",
-            "key": "Document"
-          },
-          {
-            "id": "04b0cab5-5f98-4237-b3bf-04b340481ee1",
-            "key": "Audio"
-          },
-          {
-            "id": "e71ec304-12df-4e9f-b56a-522239da1fc8",
-            "key": "Source"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "9337b7c7-e638-4d1e-81ed-c5315426108d",
-        "type": "string",
-        "key": "aiExtraction",
-        "displayName": "AI Description",
-        "hidden": false,
-        "description": "This field is a description of the image from metadata extraction. It should list people and objects detected in the image. If possible be specific on type of person or item. If there is food, describe the food. Describe the primary colors found in the image. Describe the overall scene and location. Describe any other details that would make it easy to search for this image. ",
-        "isActive": true
-      },
-      {
-        "id": "7ee73376-5c64-41b6-910a-85d5b92e77db",
-        "type": "float",
-        "key": "numberOfPeopleInImage",
-        "displayName": "AI Number of People in Image",
-        "hidden": false,
-        "description": "How many people are in the image? Only list the number like 0, 1, 2 ,3 etc. ",
-        "isActive": false
-      },
-      {
-        "id": "d70f189e-351b-4926-bad0-3651bd7a3d55",
-        "type": "enum",
-        "key": "subAssetType",
-        "displayName": "Sub Asset Type",
-        "hidden": false,
-        "options": [
-          {
-            "id": "1c51bad8-384b-4382-b944-762699e06c44",
-            "key": "LifeStyle"
-          },
-          {
-            "id": "9579d803-b2c0-41b2-ae34-430cf0c725ad",
-            "key": "Product"
-          },
-          {
-            "id": "638a5eba-5d76-4216-a73d-a2bea7bb0a30",
-            "key": "Stock"
-          },
-          {
-            "id": "ff28888d-20f7-4f72-8bf9-d19362454965",
-            "key": "Event"
-          },
-          {
-            "id": "ae9d4221-f148-4103-8a51-e26cc1235c6e",
-            "key": "Social"
-          },
-          {
-            "id": "d3ebf280-80cb-499c-8cf5-452ed7eb6497",
-            "key": "Source"
-          },
-          {
-            "id": "490749b2-f783-44b7-9f2a-578e0735b86d",
-            "key": "Website"
-          },
-          {
-            "id": "3f61abc0-ee50-4f8f-8183-fc2efa733212",
-            "key": "Logos"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "a4a89f54-fa73-46f1-8f6a-01e14d54cf43",
-        "type": "string",
-        "key": "keywords",
-        "displayName": "Keywords",
-        "hidden": false,
-        "description": "List up to 10 descriptive keywords for this image.",
-        "isActive": true
-      },
-      {
-        "id": "7fa32976-2b4f-4d3b-a347-cc9dcfa7d157",
-        "type": "multiSelect",
-        "key": "color",
-        "displayName": "Color",
-        "hidden": false,
-        "options": [
-          {
-            "id": "69c12782-b8f2-4b72-b377-0afcc34818c6",
-            "key": "Black"
-          },
-          {
-            "id": "51bbb6d7-e473-4ca2-9c26-3c0d7410fe82",
-            "key": "White"
-          },
-          {
-            "id": "0074c1c8-e4ff-4d5d-9fb3-ac40e1d273c2",
-            "key": "Gold"
-          },
-          {
-            "id": "d38ddde7-5908-4068-a76d-2f7460356b6f",
-            "key": "Blue"
-          },
-          {
-            "id": "bf7c3b3e-f370-4ee0-98fa-0d44910bfb08",
-            "key": "Brown"
-          },
-          {
-            "id": "0c87a6b0-56bf-42ad-9d51-5e4ed2801ac1",
-            "key": "Gray"
-          },
-          {
-            "id": "fa117a4b-16d3-4977-a593-8481a9df08f2",
-            "key": "Green"
-          },
-          {
-            "id": "3ad93bae-9e26-4b44-867b-4034110a7076",
-            "key": "Orange"
-          },
-          {
-            "id": "b907dbb6-6892-4495-bbfa-d235e8f1ed78",
-            "key": "Pink"
-          },
-          {
-            "id": "27216081-ce13-4b8f-8101-ecccea69b70d",
-            "key": "Purple"
-          },
-          {
-            "id": "ccda7b42-42b7-4fff-b29f-b4674f61917f",
-            "key": "Red"
-          },
-          {
-            "id": "e6ee1d08-f880-4fdc-a8e5-db72b1971f52",
-            "key": "Yellow"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "a87dbc93-a1df-492e-9db9-e94a5205f200",
-        "type": "string",
-        "key": "resolution",
-        "displayName": "Dimensions",
-        "hidden": false,
-        "description": "Extract the image's dimensions in pixels (format: width x height). If the dimensions cannot be directly extracted, attempt to retrieve them from file metadata.",
-        "isActive": false
-      },
-      {
-        "id": "5aaeadde-dc88-49de-aa7a-38d57433e781",
-        "type": "enum",
-        "key": "rating",
-        "displayName": "Rating",
-        "hidden": false,
-        "options": [
-          {
-            "id": "2d3f34d4-3ff0-43fd-9a19-9c08ca0201f3",
-            "key": "Hero"
-          },
-          {
-            "id": "3c7d04f0-828c-42d8-8a7d-398a73863c43",
-            "key": "Normal"
-          }
-        ],
-        "isActive": false
-      },
-      {
-        "id": "f52bdb9b-774f-49ff-a71e-70f63dc5defe",
-        "type": "enum",
-        "key": "orientation",
-        "displayName": "Orientation",
-        "hidden": false,
-        "description": "Image will be one of the following. Portrait, Landscape, or Square",
-        "options": [
-          {
-            "id": "d9c8ce27-d956-4560-983b-da31f380ff5a",
-            "key": "Landscape"
-          },
-          {
-            "id": "21fa364c-9066-422d-87c5-c2def158ed5b",
-            "key": "Portrait"
-          },
-          {
-            "id": "8bd3d60d-6435-4edd-a33d-7e256d6bd45b",
-            "key": "Square"
-          }
-        ],
-        "isActive": false
-      },
-      {
-        "id": "706c3b1f-97c0-488c-8ae5-6126bca77e7d",
-        "type": "string",
-        "key": "photographer",
-        "displayName": "Photographer",
-        "hidden": false,
-        "isActive": false
-      },
-      {
-        "id": "d0ac7fce-44d7-4759-bc7a-0c232148454b",
-        "type": "date",
-        "key": "dateTaken",
-        "displayName": "Date Taken",
-        "hidden": false,
-        "isActive": false
-      },
-      {
-        "id": "dd907c2d-8db0-4e3e-b6e8-c0521b45e5f5",
-        "type": "string",
-        "key": "comments",
-        "displayName": "Comments",
-        "hidden": false,
-        "description": "If text is visible, extract it as 'Copy: [extracted text]",
-        "isActive": false
-      },
-      {
-        "id": "1a1b5920-700b-4e0b-8cc3-98d58c79c0fd",
-        "type": "enum",
-        "key": "maturity",
-        "displayName": "Maturity",
-        "hidden": false,
-        "options": [
-          {
-            "id": "229482ab-83b0-4656-a28b-df6f9aed8f6a",
-            "key": "Discovery"
-          },
-          {
-            "id": "e5ba4e60-cff7-4a4c-afef-2b8aa1828776",
-            "key": "Pre-Production"
-          },
-          {
-            "id": "fe91ec8f-ab03-4ecb-b038-f3adc01f8556",
-            "key": "Production"
-          },
-          {
-            "id": "c5d5c29f-7e47-4786-a686-3362147d7765",
-            "key": "Post-Production"
-          }
-        ],
-        "isActive": false
-      },
-      {
-        "id": "ffb59d35-c5b4-4ea2-98c3-7957717590bb",
-        "type": "enum",
-        "key": "vertical",
-        "displayName": "Vertical",
-        "hidden": false,
-        "options": [
-          {
-            "id": "92c7abb1-df7a-433d-92cc-8a1ae10ae127",
-            "key": "FNB"
-          },
-          {
-            "id": "105bc11c-0ab3-4386-ac53-0b2085a21f93",
-            "key": "SLE"
-          },
-          {
-            "id": "345f1bff-acc8-4a86-b649-66e59711dbc5",
-            "key": "RWB"
-          },
-          {
-            "id": "30040a28-053b-434c-a9c0-02965ddb1dc0",
-            "key": "ZLV"
-          }
-        ],
-        "isActive": false
-      },
-      {
-        "id": "7eb07acf-ef6d-4dd0-b1df-3657c6c3c51f",
-        "type": "enum",
-        "key": "status",
-        "displayName": "Status",
-        "hidden": false,
-        "options": [
-          {
-            "id": "b20f58f7-8f1a-4273-a6d3-7e4927e2de22",
-            "key": "Ideation"
-          },
-          {
-            "id": "11af01c0-fa5c-48b2-946f-16954bd90e6b",
-            "key": "In Progress"
-          },
-          {
-            "id": "3a0ad0e7-79bd-4adb-a440-41d3193a9d6e",
-            "key": "In Review"
-          },
-          {
-            "id": "2aab66e1-96ef-470f-9a68-990aa7234790",
-            "key": "Approved"
-          },
-          {
-            "id": "e82a377e-fc42-4346-9ec3-3259144650a4",
-            "key": "Revisions Requested"
-          }
-        ],
-        "isActive": false
-      },
-      {
-        "id": "70679c6b-5497-4eb8-b509-82d42edb3d85",
-        "type": "string",
-        "key": "venueLocation",
-        "displayName": "Venue Location",
-        "hidden": false,
-        "isActive": false
-      }
-    ]
-  },
-  {
-    "id": "12cca18e-f9d1-45d9-a11a-f8f1bbadafd3",
-    "type": "metadata_template",
-    "templateKey": "fincen",
-    "scope": "enterprise_1218697394",
-    "displayName": "FinCEN",
-    "hidden": false,
-    "copyInstanceOnItemCopy": false,
-    "fields": [
-      {
-        "id": "73b86d29-5a0a-4994-a375-a124b9afbafb",
-        "type": "string",
-        "key": "legalName",
-        "displayName": "Legal Name",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "36e7d75a-ad42-4160-8e6d-0fa8162827c9",
-        "type": "string",
-        "key": "dbaDoingBusinessAs",
-        "displayName": "DBA (Doing Business As)",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "339d1940-eda0-44b3-be4d-4484b677500d",
-        "type": "date",
-        "key": "dateOfBirth",
-        "displayName": "Date of birth",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "590c5768-48e3-4a79-b6d6-7d8a0d623d3c",
-        "type": "string",
-        "key": "residentialAddress",
-        "displayName": "Residential address",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "03a86b71-ead5-4335-9f9a-2553160f39ef",
-        "type": "string",
-        "key": "primaryUsBusinessLocation",
-        "displayName": "Primary U.S. Business Location",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "7ca1990c-3d67-425c-8a7e-40293a8e7033",
-        "type": "string",
-        "key": "noUsAddressCheckbox",
-        "displayName": "No U.S. Address Checkbox",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "258c11b8-637f-4476-81c9-0b9502687da4",
-        "type": "string",
-        "key": "nationality",
-        "displayName": "Nationality",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "ebca412f-5fbc-414f-be96-d326461cf43c",
-        "type": "enum",
-        "key": "personType",
-        "displayName": "Person type",
-        "hidden": false,
-        "description": "",
-        "options": [
-          {
-            "id": "82dae8c2-0a04-43f4-bf9e-af94b4247521",
-            "key": "Beneficial Owner"
-          },
-          {
-            "id": "f0ae7b07-ed0a-48f4-8511-8f74a9e68a0f",
-            "key": "Signing Individual"
-          },
-          {
-            "id": "43b1bf06-5297-45ad-915f-447899f1f10d",
-            "key": "Legal Entity Trustee"
-          },
-          {
-            "id": "4137a4fb-2d80-4197-b98c-93ca09f5d97d",
-            "key": "Both Beneficial Owner & Signing Individual"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "384e945b-5ab7-4752-8c98-b1da9c2a6ab1",
-        "type": "string",
-        "key": "beneficialOwnerCategory",
-        "displayName": "Beneficial owner category",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "ff9234c0-23a6-4207-afb1-896f0b4fc3dd",
-        "type": "string",
-        "key": "controlType",
-        "displayName": "Control type",
-        "hidden": false,
-        "description": "",
-        "isActive": false
-      },
-      {
-        "id": "982bc9cb-13a6-4c70-aa5f-b491ef91261d",
-        "type": "string",
-        "key": "minorStatus",
-        "displayName": "Minor status",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "f7064ac7-ae90-4074-aa8d-2e9e18255f01",
-        "type": "string",
-        "key": "parentOrGuardianName",
-        "displayName": "Parent or guardian name",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "9e3f4ab4-7940-4d73-b5f4-085c2ce476ed",
-        "type": "string",
-        "key": "trusteeOrGuardianStatus",
-        "displayName": "Trustee or guardian status",
-        "hidden": false,
-        "description": "",
-        "isActive": false
-      },
-      {
-        "id": "9f782f00-03ff-4da6-b3ec-8640bfa32122",
-        "type": "string",
-        "key": "authorizationCapacitySigningIndividualsOnly",
-        "displayName": "Authorization Capacity (Signing Individuals Only)",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "3600bc6b-c68f-488d-ac21-600c7ec8a35a",
-        "type": "string",
-        "key": "employerprincipalpartnershipNameSigningIndividualsOnly",
-        "displayName": "Employer/Principal/Partnership Name (Signing Individuals Only)",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "ddf26ea3-140c-405b-86e8-0b57c6f498e1",
-        "type": "string",
-        "key": "idType",
-        "displayName": "Type of Unique Identification (ID)",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "e13ffe59-ffde-486f-9e84-50068d6bfdc1",
-        "type": "string",
-        "key": "idNumber",
-        "displayName": "Unique Identification Number",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      },
-      {
-        "id": "118179d7-08ae-4d83-b0cb-74ee58431a3a",
-        "type": "string",
-        "key": "idJurisdiction",
-        "displayName": "Issuing Jurisdiction",
-        "hidden": false,
-        "description": "",
-        "isActive": true
-      }
-    ]
-  },
-  {
-    "id": "9ab888a4-b22a-4a31-804d-dcea915ff2ba",
-    "type": "metadata_template",
-    "templateKey": "hrRecords",
-    "scope": "enterprise_1218697394",
-    "displayName": "HR Records",
-    "hidden": false,
-    "copyInstanceOnItemCopy": false,
-    "fields": [
-      {
-        "id": "482a3424-561c-42d5-9e80-3483379f6849",
-        "type": "enum",
-        "key": "status",
-        "displayName": "Status",
-        "hidden": false,
-        "options": [
-          {
-            "id": "c05218f8-5ee3-4b93-8092-0d96f289be1a",
-            "key": "Active"
-          },
-          {
-            "id": "8e7c6d34-c8ae-4e3e-a91d-763a8fbd3a8a",
-            "key": "In Active"
-          }
-        ],
-        "isActive": false
-      },
-      {
-        "id": "7e2756e1-8b1a-46a6-acac-ec2cf2b1657b",
-        "type": "string",
-        "key": "employeeName1",
-        "displayName": "Employee Name",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "a081980d-a0a8-4cd8-afc0-8b939e3e1126",
-        "type": "enum",
-        "key": "employeeType",
-        "displayName": "Employee Type",
-        "hidden": false,
-        "options": [
-          {
-            "id": "49c80c84-6616-4edb-aa46-173b9e9d7d85",
-            "key": "Full Time"
-          },
-          {
-            "id": "e22df9b1-5335-488e-b254-4203286de7ba",
-            "key": "Part Time"
-          },
-          {
-            "id": "fb071755-d1b7-493a-84b9-e46c8a29fd6a",
-            "key": "Contractor"
-          }
-        ],
-        "isActive": false
-      },
-      {
-        "id": "dbbf9786-15a0-479b-9bff-ec49fed2b533",
-        "type": "string",
-        "key": "employeeAddress",
-        "displayName": "Employee Address",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "f55c319e-19c3-4a72-a24c-ead76abb860f",
-        "type": "enum",
-        "key": "documentType",
-        "displayName": "Document Type",
-        "hidden": false,
-        "options": [
-          {
-            "id": "6e98dfc0-cf7a-4be7-a9a6-aaf2e7e1834b",
-            "key": "ID"
-          },
-          {
-            "id": "31579936-72ba-48bd-b384-4fd396b8bdc8",
-            "key": "Resume"
-          },
-          {
-            "id": "dba4bdf1-53be-4de2-abdd-0494ec78cc31",
-            "key": "Employment Agreement"
-          },
-          {
-            "id": "929dc202-f0c5-4dea-89a2-db0449da4fe5",
-            "key": "Offer Letter"
-          },
-          {
-            "id": "fe158732-3da5-4177-9686-d03c0dbe43f1",
-            "key": "Handbook"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "326bdde5-5f74-4550-b53d-868fca0fe75e",
-        "type": "date",
-        "key": "hireDate",
-        "displayName": "Hire Date",
-        "hidden": false,
-        "isActive": false
-      },
-      {
-        "id": "b14e07c9-2591-4e62-a306-3fc2091b6530",
-        "type": "date",
-        "key": "endDate",
-        "displayName": "End Date",
-        "hidden": false,
-        "isActive": false
-      },
-      {
-        "id": "eda78780-0532-4c2f-8279-5a9fa6022945",
-        "type": "string",
-        "key": "comments",
-        "displayName": "Comments",
-        "hidden": false,
-        "isActive": false
-      },
-      {
-        "id": "7d5c7cab-cbed-41cc-93cd-2d19002b58a5",
-        "type": "enum",
-        "key": "signedOff",
-        "displayName": "Signed Off",
-        "hidden": false,
-        "options": [
-          {
-            "id": "2ab3790f-f9ed-4cb2-b22d-b51ad0b7e9ee",
-            "key": "Yes"
-          },
-          {
-            "id": "e264cbd9-fdba-4237-9ae3-7bb5a6b3d5c9",
-            "key": "No"
-          }
-        ],
-        "isActive": false
-      },
-      {
-        "id": "75de0631-01ca-4411-8a17-f02236d98ae8",
-        "type": "string",
-        "key": "employeeId",
-        "displayName": "Employee ID",
-        "hidden": false,
-        "isActive": false
-      },
-      {
-        "id": "eb2e4fd7-b376-4b9e-b8e7-6755766b83a9",
-        "type": "string",
-        "key": "licenseId",
-        "displayName": "License ID",
-        "hidden": false,
-        "isActive": true
-      }
-    ]
-  },
-  {
-    "id": "fe4fb0a9-cf3e-42d1-b340-83ae04762116",
-    "type": "metadata_template",
-    "templateKey": "invoice",
-    "scope": "enterprise_1218697394",
-    "displayName": "Invoice",
-    "hidden": false,
-    "copyInstanceOnItemCopy": false,
-    "fields": [
-      {
-        "id": "39f86638-19b0-45f2-8428-a2c723e9574f",
-        "type": "string",
-        "key": "vendor",
-        "displayName": "Vendor",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "37356873-bc47-4558-bdd2-514f1d94f1ab",
-        "type": "string",
-        "key": "description",
-        "displayName": "Description",
-        "hidden": false,
-        "isActive": false
-      },
-      {
-        "id": "1ff089cb-660e-49c0-bca1-dd0ce08037c6",
-        "type": "date",
-        "key": "invoiceDate",
-        "displayName": "Invoice Date",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "874e74b1-4035-4ca3-974a-fc1f46c7d6a1",
-        "type": "float",
-        "key": "amountDue",
-        "displayName": "Amount Due",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "77c69232-dabb-4816-872d-100df588d061",
-        "type": "date",
-        "key": "dueDate",
-        "displayName": "Due Date",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "6461e4c9-a8aa-4974-85d1-dc1ccb990f85",
-        "type": "string",
-        "key": "items",
-        "displayName": "Items",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "7bf366cf-83c4-4098-9dae-a009643711aa",
-        "type": "string",
-        "key": "term",
-        "displayName": "Term",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "fa5f84e6-5863-49d9-b98c-a19fcb41ed25",
-        "type": "string",
-        "key": "poNumber",
-        "displayName": "PO Number",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "eefcc9f0-e41f-4675-89b6-c538707f734a",
-        "type": "float",
-        "key": "salesAmountNumber",
-        "displayName": "Sales Amount Number",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "2950d96a-33b6-4f60-a46e-355564628631",
-        "type": "float",
-        "key": "salesTax",
-        "displayName": "Sales Tax",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "c768044f-69f2-4076-9bd6-98aafc6fd581",
-        "type": "float",
-        "key": "freightAmount",
-        "displayName": "Freight Amount",
-        "hidden": false,
-        "isActive": true
-      }
-    ]
-  },
-  {
-    "id": "a6fc00d4-0f83-4d66-a652-7d6a9c5e4d62",
-    "type": "metadata_template",
-    "templateKey": "lease",
-    "scope": "enterprise_1218697394",
-    "displayName": "Lease",
-    "hidden": false,
-    "copyInstanceOnItemCopy": false,
-    "fields": [
-      {
-        "id": "494cd35a-f942-4b93-8be1-295cd77a1e6e",
-        "type": "string",
-        "key": "tenantName",
-        "displayName": "Tenant Name",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "494553bc-eedc-449f-a628-027909bd2170",
-        "type": "string",
-        "key": "tenantAddress",
-        "displayName": "Tenant Address",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "21c41fc6-5268-4964-8f2c-49fa78084551",
-        "type": "date",
-        "key": "startDate",
-        "displayName": "Start Date",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "62db2b2b-c9d4-4475-8056-39540e6e8714",
-        "type": "date",
-        "key": "endDate",
-        "displayName": "End Date",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "05795305-3aaf-4305-a777-b982f9c35042",
-        "type": "string",
-        "key": "squareFootage",
-        "displayName": "Square Footage",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "9a4f1d18-3e1d-4476-80f0-a8246f65df10",
-        "type": "string",
-        "key": "renewalOptions",
-        "displayName": "Renewal Options",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "81e722b1-a784-4992-b4f8-2a773485b9dc",
-        "type": "string",
-        "key": "initialContractTerm",
-        "displayName": "Initial Contract Term",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "cd26fa15-e7aa-4fcc-b1a8-993ecc12549d",
-        "type": "string",
-        "key": "baseRent",
-        "displayName": "Base Rent",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "adb08790-2c43-472a-9e8a-67b7fd181ce9",
-        "type": "string",
-        "key": "additionalRent",
-        "displayName": "Additional Rent",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "e21818e1-6d56-490f-9fa1-084628011955",
-        "type": "string",
-        "key": "securityDeposit",
-        "displayName": "Security Deposit",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "a5891ea0-b600-41ae-844f-a6f7e0cf074b",
-        "type": "string",
-        "key": "landlordName",
-        "displayName": "Landlord Name",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "a4803c0e-92c9-4e22-b48c-e1f8b27a5af8",
-        "type": "string",
-        "key": "propertyAddress",
-        "displayName": "Property Address",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "6544893d-bd5a-49b0-9bb1-a98f2e937528",
-        "type": "string",
-        "key": "leaseAgreementNumber",
-        "displayName": "Lease Agreement Number",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "7dad9536-cc75-400c-b9c7-b37c0b005c9b",
-        "type": "enum",
-        "key": "rightOfFirstRefusal",
-        "displayName": "Right of First Refusal",
-        "hidden": false,
-        "options": [
-          {
-            "id": "438d65b7-8531-443a-9e76-baab76bbbb39",
-            "key": "Yes"
-          },
-          {
-            "id": "8764545b-6d99-444a-87cd-f11c98f4b1eb",
-            "key": "No"
-          },
-          {
-            "id": "a21371f5-d56c-4927-85e0-1beb81d71f8a",
-            "key": "Not Applicable"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "870ca9d5-d02a-4483-9450-87b9f91fb8c3",
-        "type": "enum",
-        "key": "purchaseOption",
-        "displayName": "Purchase Option",
-        "hidden": false,
-        "options": [
-          {
-            "id": "4ff5ce4f-b64c-4c7f-a01c-252b1ed3f442",
-            "key": "Yes"
-          },
-          {
-            "id": "ca093c49-33d8-45ea-a51e-c3723c256587",
-            "key": "No"
-          },
-          {
-            "id": "38f88405-c01b-4bb3-8640-a30c76b9d496",
-            "key": "Not Applicable"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "e4b8c2ee-b9eb-4f87-a896-bb51e72c53a7",
-        "type": "multiSelect",
-        "key": "landlordMaintenanceAndRepairResponsibilities",
-        "displayName": "Landlord Maintenance and Repair Responsibilities",
-        "hidden": false,
-        "options": [
-          {
-            "id": "ce7b3ba9-c7e4-435b-a08f-9496d44a2dab",
-            "key": "Landlord"
-          },
-          {
-            "id": "30dc5a32-78c7-4ea2-bde8-b708f0183c2c",
-            "key": "Tenant"
-          },
-          {
-            "id": "6875bfa7-f87c-4af2-9138-3a160b72c550",
-            "key": "Shared"
-          },
-          {
-            "id": "62383094-29d0-44d3-8cb0-dcfd465ef52b",
-            "key": "Not Specified"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "aec889de-30e5-43a1-823c-f2fb3cfbcb71",
-        "type": "date",
-        "key": "renewalOptionNoticeDate",
-        "displayName": "Renewal Option Notice Date",
-        "hidden": false,
-        "isActive": true
-      },
-      {
-        "id": "55e7fdb0-fe68-436a-b20b-88411b9d8831",
-        "type": "enum",
-        "key": "taxes",
-        "displayName": "Taxes",
-        "hidden": false,
-        "options": [
-          {
-            "id": "499f2ceb-5fb7-486c-a0ca-b34ded9e9db9",
-            "key": "Landlord"
-          },
-          {
-            "id": "8ada4db3-f406-49b8-a35a-90ee76c0d402",
-            "key": "Tenant"
-          },
-          {
-            "id": "51881b6e-f2dd-4245-896d-0bc444a30e75",
-            "key": "Shared"
-          },
-          {
-            "id": "fc3196b5-01d7-45a1-b3ca-487d859ff2e5",
-            "key": "Not Specified"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "8436d912-5525-4779-920c-4ee6d0cf06e1",
-        "type": "enum",
-        "key": "insurance",
-        "displayName": "Insurance",
-        "hidden": false,
-        "options": [
-          {
-            "id": "b6085249-757f-482e-9f1d-ce52760cbd48",
-            "key": "Landlord"
-          },
-          {
-            "id": "5636a9cb-75f6-4be2-bf7f-8e3bb7f2ac53",
-            "key": "Tenant"
-          },
-          {
-            "id": "5ac3c173-a58d-408e-9fe4-703729b928e0",
-            "key": "Both Parties"
-          },
-          {
-            "id": "795a6655-c99e-436f-8f80-27059a004a8a",
-            "key": "Not Specified"
-          }
-        ],
-        "isActive": true
-      },
-      {
-        "id": "11416fb9-e6ee-47a1-9bb8-22cbd469c0c7",
-        "type": "string",
-        "key": "utilities",
-        "displayName": "Utilities",
         "hidden": false,
         "isActive": true
       }

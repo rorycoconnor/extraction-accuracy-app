@@ -84,7 +84,7 @@ export function FieldCard({ field, template }: FieldCardProps) {
   }, [field.prompts]);
 
   return (
-    <Card className="w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+    <Card className="w-full">
       <CardHeader className={field.prompts.length === 0 ? "pb-5" : "pb-3"}>
         <div className="flex items-center justify-between">
           <div className="space-y-2">

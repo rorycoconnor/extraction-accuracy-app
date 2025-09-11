@@ -170,7 +170,7 @@ const FileNameCell = ({ row }: { row: ProcessedRowData }) => (
     >
       {row.fileName.replace(/\.pdf$|\.docx$|\.jpg$/, '')}
     </div>
-    <Badge variant="outline" className="mt-1 font-normal text-xs bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 w-fit">
+    <Badge variant="outline" className="mt-1 font-normal text-xs w-fit">
       {row.fileType}
     </Badge>
   </div>
@@ -615,7 +615,7 @@ export default function TanStackExtractionTable({
                       className={cn(
                         'header-cell text-center align-middle font-semibold text-foreground px-2 py-3',
                         groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
-                        fieldIndex < fields.length - 1 ? 'border-r-2 border-gray-200' : ''
+                        fieldIndex < fields.length - 1 ? 'border-r' : ''
                       )}
                     >
                       <FieldHeaderGroup
@@ -640,7 +640,7 @@ export default function TanStackExtractionTable({
                       className={cn(
                         'header-cell align-top text-xs font-normal text-muted-foreground whitespace-normal text-left px-2 py-2',
                         groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
-                        fieldIndex < fields.length - 1 ? 'border-r-2 border-gray-200' : ''
+                        fieldIndex < fields.length - 1 ? 'border-r' : ''
                       )}
                     >
                       <PromptHeader field={field} onOpenPromptStudio={onOpenPromptStudio} />
@@ -661,7 +661,7 @@ export default function TanStackExtractionTable({
                                                       className={cn(
                               'header-cell text-center align-middle font-medium text-muted-foreground px-1 py-2',
                               groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
-                              colIndex === visibleColumns.length - 1 && fieldIndex < fields.length - 1 ? 'border-r-2 border-gray-200' : ''
+                              colIndex === visibleColumns.length - 1 && fieldIndex < fields.length - 1 ? 'border-r' : ''
                             )}
                         >
                           <ModelHeader modelName={modelName} onOpenInlineEditor={!!onOpenInlineEditor} />
@@ -689,7 +689,7 @@ export default function TanStackExtractionTable({
                         key={cell.id}
                         className={cn(
                           isFirstColumn ? "sticky-column file-name-cell bg-white" : "result-cell",
-                          !isFirstColumn && isGroupRightEdge && "border-r-2 border-gray-200",
+                          !isFirstColumn && isGroupRightEdge && "border-r",
                           // Alternating field colors by metadata field group
                           !isFirstColumn && groupIdx >= 0 && (groupIdx % 2 === 0 ? "bg-white" : "bg-slate-50")
                         )}
@@ -724,7 +724,7 @@ export default function TanStackExtractionTable({
                                                               className={cn(
                                 'result-cell border-t-2 border-t-gray-300 sticky bottom-0 z-30',
                                 groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
-                                isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r-2 border-gray-200' : ''
+                                isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r' : ''
                               )}
                               />
                             );
@@ -745,7 +745,7 @@ export default function TanStackExtractionTable({
                               className={cn(
                                 'result-cell border-t-2 border-t-gray-300 text-center font-semibold sticky bottom-0 z-30',
                                 groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
-                                isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r-2 border-gray-200' : ''
+                                isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r' : ''
                               )}
                             >
                               <div className="relative w-full h-full flex items-center justify-center">

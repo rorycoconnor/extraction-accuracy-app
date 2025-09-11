@@ -222,7 +222,7 @@ export function FieldDetailsSheet({
                   value={fieldName}
                   onChange={(e) => setFieldName(e.target.value)}
                   placeholder="Enter field name"
-                  className="h-11 border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-blue-500 focus:ring-0"
+                  className="h-11 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0"
                   autoFocus={false}
                 />
               </div>
@@ -231,7 +231,7 @@ export function FieldDetailsSheet({
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-gray-700">Field Type</Label>
                 <Select value={getFieldTypeDisplayValue()} onValueChange={handleFieldTypeChange}>
-                  <SelectTrigger className="h-11 border-gray-300 focus:ring-0 focus:ring-offset-0">
+                  <SelectTrigger className="h-11 focus:ring-0 focus:ring-offset-0">
                     <SelectValue placeholder="Select field type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -278,7 +278,7 @@ export function FieldDetailsSheet({
                       value={optionsPaste}
                       onChange={(e) => setOptionsPaste(e.target.value)}
                       placeholder={`Enter values (one per line or comma-separated):\n\nExample:\nPending\nApproved\nPaid\n\nOr: Pending, Approved, Paid`}
-                      className="min-h-[182px] resize-y border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-blue-500 focus:ring-0"
+                      className="min-h-[182px] resize-y focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0"
                       rows={9}
                     />
                     {optionsPaste && (
@@ -286,12 +286,12 @@ export function FieldDetailsSheet({
                         <p className="text-sm font-medium text-gray-700">Preview ({parseOptions(optionsPaste).length} values):</p>
                         <div className="flex flex-wrap gap-3">
                           {parseOptions(optionsPaste).slice(0, 12).map((option, index) => (
-                            <Badge key={index} variant="outline" className="text-xs px-2.5 py-1.5 bg-white border-gray-300 m-0.5">
+                            <Badge key={index} variant="outline" className="text-xs px-2.5 py-1.5 m-0.5">
                               {option}
                             </Badge>
                           ))}
                           {parseOptions(optionsPaste).length > 12 && (
-                            <Badge variant="outline" className="text-xs px-2.5 py-1.5 bg-gray-50 text-gray-600 border-gray-300 m-0.5">
+                            <Badge variant="outline" className="text-xs px-2.5 py-1.5 text-muted-foreground m-0.5">
                               +{parseOptions(optionsPaste).length - 12} more
                             </Badge>
                           )}
