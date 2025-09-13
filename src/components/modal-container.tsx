@@ -32,6 +32,7 @@ interface ModalContainerProps {
   onUpdatePrompt: (fieldKey: string, newPrompt: string) => void;
   onUsePromptVersion: (fieldKey: string, promptVersion: any) => void;
   onToggleFavorite?: (fieldKey: string, versionId: string) => void;
+  onDeletePromptVersion?: (fieldKey: string, versionId: string) => void;
   
   // Inline Ground Truth Editor
   isInlineEditorOpen: boolean;
@@ -69,6 +70,7 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
   onUpdatePrompt,
   onUsePromptVersion,
   onToggleFavorite,
+  onDeletePromptVersion,
   isInlineEditorOpen,
   selectedCellForEdit,
   selectedTemplate,
@@ -101,6 +103,7 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
         onUpdatePrompt={onUpdatePrompt}
         onUsePromptVersion={onUsePromptVersion}
         onToggleFavorite={onToggleFavorite}
+        onDeletePromptVersion={onDeletePromptVersion}
         selectedFileIds={accuracyData?.results?.map(r => r.id) ?? []}
       />
       

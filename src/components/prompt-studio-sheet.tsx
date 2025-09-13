@@ -12,13 +12,23 @@ import {
   SheetFooter,
   SheetClose,
 } from '@/components/ui/sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import type { AccuracyField, PromptVersion } from '@/lib/types';
-import { Save, History, Star, Play, Copy, Sparkles, Loader2, TrendingUp, TrendingDown, BarChart3, Wand2 } from 'lucide-react';
+import { Save, History, Star, Play, Copy, Sparkles, Loader2, TrendingUp, TrendingDown, BarChart3, Wand2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { generateInitialPrompt, improvePrompt } from '@/ai/flows/generate-initial-prompt';
 import { PromptPickerDialog } from '@/features/prompt-library/components/prompt-picker-dialog';
@@ -31,6 +41,7 @@ type PromptStudioSheetProps = {
   onUpdatePrompt: (fieldKey: string, newPrompt: string) => void;
   onUsePromptVersion: (fieldKey: string, promptVersion: PromptVersion) => void;
   onToggleFavorite?: (fieldKey: string, versionId: string) => void;
+  onDeletePromptVersion?: (fieldKey: string, versionId: string) => void;
   selectedFileIds?: string[];
 };
 
@@ -42,12 +53,18 @@ export default function PromptStudioSheet({
   onUpdatePrompt,
   onUsePromptVersion,
   onToggleFavorite,
+  onDeletePromptVersion,
   selectedFileIds = [],
 }: PromptStudioSheetProps) {
   const [activePromptText, setActivePromptText] = React.useState('');
   const [originalPromptText, setOriginalPromptText] = React.useState('');
   const [improvementInstructions, setImprovementInstructions] = React.useState('');
   const [isGenerating, setIsGenerating] = React.useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = React.useState<{
+    isOpen: boolean;
+    versionId: string;
+    versionNumber: number;
+  }>({ isOpen: false, versionId: '', versionNumber: 0 });
   const { toast } = useToast();
 
   React.useEffect(() => {
@@ -175,6 +192,34 @@ export default function PromptStudioSheet({
     if (onToggleFavorite && field) {
       onToggleFavorite(field.key, versionId);
     }
+  };
+
+  const handleDeletePromptVersion = (versionId: string, versionNumber: number) => {
+    if (onDeletePromptVersion && field) {
+      // Open confirmation dialog
+      setDeleteConfirmation({
+        isOpen: true,
+        versionId,
+        versionNumber
+      });
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (onDeletePromptVersion && field && deleteConfirmation.versionId) {
+      onDeletePromptVersion(field.key, deleteConfirmation.versionId);
+      toast({
+        title: "Prompt Version Deleted",
+        description: `Version ${deleteConfirmation.versionNumber} has been permanently deleted.`
+      });
+      
+      // Close the dialog
+      setDeleteConfirmation({ isOpen: false, versionId: '', versionNumber: 0 });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmation({ isOpen: false, versionId: '', versionNumber: 0 });
   };
 
   // Determine button text and icon
@@ -374,6 +419,16 @@ export default function PromptStudioSheet({
                                                     <Star className={`h-4 w-4 ${version.isFavorite ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'}`} />
                                                 </Button>
                                                 <Button 
+                                                    variant="ghost" 
+                                                    size="icon" 
+                                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                                    onClick={() => handleDeletePromptVersion(version.id, versionNumber)}
+                                                    disabled={!onDeletePromptVersion || field.promptHistory.length <= 1}
+                                                    title={field.promptHistory.length <= 1 ? "Cannot delete the last remaining prompt version" : "Delete this prompt version"}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                                <Button 
                                                     variant="outline" 
                                                     size="sm" 
                                                     onClick={() => onUsePromptVersion(field.key, version)}
@@ -519,6 +574,26 @@ export default function PromptStudioSheet({
           </div>
         </SheetFooter>
       </SheetContent>
+      
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmation.isOpen} onOpenChange={handleCancelDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete Version
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete Version {deleteConfirmation.versionNumber}?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelDelete}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete}>
+              Delete Version
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sheet>
   );
 }

@@ -26,7 +26,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ExternalLink, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, ExternalLink, CheckCircle, XCircle, User } from 'lucide-react';
 import { updateBoxSettings } from '@/lib/actions/settings';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
@@ -229,6 +229,16 @@ function SettingsContent() {
           Manage your application settings and integrations.
         </p>
       </div>
+
+      {/* User Information Card */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="text-sm">
+            <span className="font-medium">Login:</span> <span className="font-mono">mlane@box.com</span>
+            <span className="ml-6 font-medium">EID:</span> <span className="font-mono">12345678</span>
+          </div>
+        </CardContent>
+      </Card>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

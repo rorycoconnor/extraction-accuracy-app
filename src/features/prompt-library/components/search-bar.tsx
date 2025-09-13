@@ -125,7 +125,7 @@ export function SearchBar() {
           <button
             onClick={handleClear}
             disabled={!hasActiveFilters}
-            className={`w-full h-11 font-medium rounded-md transition-colors ${
+            className={`w-full h-11 font-medium rounded-full transition-colors ${
               hasActiveFilters
                 ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
                 : 'bg-[#EFF6FF] text-gray-500 cursor-not-allowed'

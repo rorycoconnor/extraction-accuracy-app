@@ -632,11 +632,6 @@
         }
       },
       {
-        "id": "v2",
-        "prompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will be other then our company name which is Qualys.",
-        "savedAt": "2025-07-30T02:57:19.896Z"
-      },
-      {
         "id": "v1",
         "prompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will be other then our company name which is Increo, Inc.",
         "savedAt": "2025-07-22T16:55:56.906Z",
@@ -685,8 +680,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 5,
-    "lastModified": "2025-08-08T01:30:56.947Z"
+    "usageCount": 6,
+    "lastModified": "2025-09-13T00:55:47.976Z"
   },
   "counterPartyAddress": {
     "activePrompt": "Extract the Counter Party address from this contracts. The counter party address will be other then Increo, Inc. company address.",
@@ -862,21 +857,11 @@
           "filesCount": 8,
           "lastRunAt": "2025-08-08T00:28:54.403Z"
         }
-      },
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-07-23T01:41:05.870Z"
-      },
-      {
-        "id": "v1",
-        "prompt": "test",
-        "savedAt": "2025-07-23T01:40:54.915Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 4,
-    "lastModified": "2025-08-08T00:30:10.776Z"
+    "usageCount": 6,
+    "lastModified": "2025-09-13T00:53:39.670Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Specifies the maximum amount a party can be held financially responsible for under the contract, often expressed as a multiple of contract value (e.g., 1x = contract value, 3x = three times contract value) or as \"Unlimited\" (no cap) or \"None\" (no liability limit specified).",
@@ -1281,5 +1266,31 @@
     "lastUsedTemplate": "contracts",
     "usageCount": 5,
     "lastModified": "2025-08-06T22:19:47.964Z"
+  },
+  "assetType": {
+    "activePrompt": "Extract the 'Asset Type' from the document, ensuring the value is one of the predefined choices. If no asset type is mentioned or if the value does not match a predefined choice, return 'null'.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the 'Asset Type' from the document, ensuring the value is one of the predefined choices. If no asset type is mentioned or if the value does not match a predefined choice, return 'null'.",
+        "savedAt": "2025-09-13T00:47:16.745Z"
+      }
+    ],
+    "lastUsedTemplate": "digitalAssets",
+    "usageCount": 1,
+    "lastModified": "2025-09-13T00:47:16.747Z"
+  },
+  "subAssetType": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-09-13T00:51:42.185Z"
+      }
+    ],
+    "lastUsedTemplate": "digitalAssets",
+    "usageCount": 7,
+    "lastModified": "2025-09-13T00:52:39.901Z"
   }
 }

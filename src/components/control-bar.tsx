@@ -173,13 +173,6 @@ const ControlBar: React.FC<ControlBarProps> = ({
 
       
       <div className="ml-auto mr-12 flex items-center gap-2">
-        <Button variant="outline" onClick={onOpenSummary}>
-          <Eye className="mr-2 h-4 w-4" />
-          Show Summary
-        </Button>
-
-
-        
         <div className="hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

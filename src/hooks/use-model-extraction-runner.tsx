@@ -18,6 +18,7 @@ import type {
   FileResult, 
   ApiExtractionResult 
 } from '@/lib/types';
+import { FIELD_TYPE_MAPPING } from '@/features/prompt-library/types';
 
 interface ExtractionJob {
   fileResult: FileResult;
@@ -42,6 +43,7 @@ interface UseModelExtractionRunnerReturn {
 const FIELD_TYPES = {
   DATE: 'date',
   ENUM: 'enum',
+  MULTISELECT: 'multiSelect',
   STRING: 'string',
   FILE: 'file'
 } as const;
@@ -235,41 +237,45 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       console.log(`=== PROMPT DEBUG for ${field.key} ===`);
       console.log(`Current prompt: "${field.prompt}"`);
       
+      // Transform UI field type to Box AI field type
+      const boxFieldType = FIELD_TYPE_MAPPING[field.type as keyof typeof FIELD_TYPE_MAPPING] || field.type;
+      console.log(`🔄 Field type transformation: ${field.key} - UI type: "${field.type}" → Box AI type: "${boxFieldType}"`);
+      
       const baseField = {
         key: field.key,
-        type: field.type,
+        type: boxFieldType,
         displayName: field.name,
         prompt: field.prompt,
       };
       
-      // Handle enum fields with options
-      if (field.type === FIELD_TYPES.ENUM) {
-        let enumOptions: { key: string }[] = [];
+      // Handle enum and multiSelect fields with options (check against transformed Box type)
+      if (boxFieldType === FIELD_TYPES.ENUM || boxFieldType === FIELD_TYPES.MULTISELECT) {
+        let fieldOptions: { key: string }[] = [];
         
         // 🔧 FIXED: Use persisted field options first (most reliable)
         if (field.options && field.options.length > 0) {
-          enumOptions = field.options.map(opt => ({ key: opt.key }));
-          console.log(`✅ Using persisted enum options for ${field.key}:`, enumOptions);
+          fieldOptions = field.options.map(opt => ({ key: opt.key }));
+          console.log(`✅ Using persisted ${field.type} options for ${field.key}:`, fieldOptions);
         } 
         // Fallback to selectedTemplate if field options not available
         else if (selectedTemplate) {
           const templateField = selectedTemplate.fields.find(tf => tf.key === field.key);
           if (templateField?.options && templateField.options.length > 0) {
-            enumOptions = templateField.options.map(opt => ({ key: opt.key }));
-            console.log(`⚠️ Using template enum options for ${field.key}:`, enumOptions);
+            fieldOptions = templateField.options.map(opt => ({ key: opt.key }));
+            console.log(`⚠️ Using template ${field.type} options for ${field.key}:`, fieldOptions);
           }
         }
         
         // Final fallback to defaults
-        if (enumOptions.length === 0) {
-          enumOptions = getDefaultEnumOptions(field.key, field.name);
-          console.log(`🆘 Using default enum options for ${field.key}:`, enumOptions);
+        if (fieldOptions.length === 0) {
+          fieldOptions = getDefaultEnumOptions(field.key, field.name);
+          console.log(`🆘 Using default ${field.type} options for ${field.key}:`, fieldOptions);
         }
         
-        if (enumOptions.length > 0) {
+        if (fieldOptions.length > 0) {
           return {
             ...baseField,
-            options: enumOptions
+            options: fieldOptions
           };
         }
       }
@@ -277,9 +283,9 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       return baseField;
     });
 
-    // 🛡️ GUARDRAIL: Validate all enum fields have options before proceeding
+    // 🛡️ GUARDRAIL: Validate all enum and multiSelect fields have options before proceeding
     const enumFieldsWithoutOptions = fieldsForExtraction.filter(field => {
-      if (field.type === FIELD_TYPES.ENUM) {
+      if (field.type === FIELD_TYPES.ENUM || field.type === FIELD_TYPES.MULTISELECT) {
         // Type guard: check if field has options property
         const fieldWithOptions = field as typeof field & { options?: { key: string }[] };
         return !fieldWithOptions.options || fieldWithOptions.options.length === 0;

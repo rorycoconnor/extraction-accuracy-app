@@ -40,6 +40,7 @@ interface ImportExportManagerProps {
 
 interface FieldWithImportData extends Field {
   csvPrompts: string[];
+  csvOrder?: number;
 }
 
 export function ImportExportManager({
@@ -118,7 +119,21 @@ export function ImportExportManager({
     }
 
     try {
-      const csvText = await csvFile.text();
+      // Read file with explicit UTF-8 encoding to handle special characters properly
+      const csvText = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          if (e.target?.result) {
+            resolve(e.target.result as string);
+          } else {
+            reject(new Error('Failed to read file'));
+          }
+        };
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        // Explicitly read as UTF-8 text
+        reader.readAsText(csvFile, 'UTF-8');
+      });
+      
       const parsedData = parseImportCSV(csvText);
       
       if (parsedData.length === 0) {
@@ -191,21 +206,23 @@ export function ImportExportManager({
           let existingField = templateData.template.fields.find(f => f.name === row.fieldName);
           
           if (!existingField) {
-            // Create new field with csvPrompts
+            // Create new field with csvPrompts and order
             const fieldId = `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             const newField: FieldWithImportData = {
               id: fieldId,
               name: row.fieldName,
               type: (row.fieldType as FieldType) || 'text',
               prompts: [],
-              csvPrompts: []
+              csvPrompts: [],
+              csvOrder: row.fieldOrder
             };
             existingField = newField;
           } else {
-            // Add csvPrompts property to existing field
+            // Add csvPrompts property and order to existing field
             const extendedField: FieldWithImportData = {
               ...existingField,
-              csvPrompts: []
+              csvPrompts: [],
+              csvOrder: row.fieldOrder
             };
             existingField = extendedField;
           }
@@ -242,8 +259,16 @@ export function ImportExportManager({
           fields: []
         };
         
-        // Process fields
-        for (const [fieldName, fieldData] of fieldsMap) {
+        // Process fields in CSV order
+        const fieldsArray = Array.from(fieldsMap.entries());
+        // Sort fields by their CSV order to preserve the order from the imported file
+        fieldsArray.sort(([, fieldDataA], [, fieldDataB]) => {
+          const orderA = fieldDataA.csvOrder ?? 999;
+          const orderB = fieldDataB.csvOrder ?? 999;
+          return orderA - orderB;
+        });
+        
+        for (const [fieldName, fieldData] of fieldsArray) {
           const field: Field = {
             id: fieldData.id,
             name: fieldName,

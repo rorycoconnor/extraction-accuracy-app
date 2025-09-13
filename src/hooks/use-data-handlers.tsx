@@ -226,6 +226,72 @@ export const useDataHandlers = ({
   };
 
   /**
+   * Delete a specific prompt version from history
+   * 
+   * @param fieldKey - The key of the field to update
+   * @param versionId - The ID of the version to delete
+   */
+  const handleDeletePromptVersion = (fieldKey: string, versionId: string) => {
+    if (!accuracyData) return;
+
+    const fieldInCurrentState = accuracyData.fields.find(f => f.key === fieldKey);
+    if (!fieldInCurrentState) return;
+
+    // Don't allow deleting if it's the only version
+    if (fieldInCurrentState.promptHistory.length <= 1) {
+      toast({
+        variant: "destructive",
+        title: "Cannot Delete",
+        description: "Cannot delete the last remaining prompt version."
+      });
+      return;
+    }
+
+    const newAccuracyData = JSON.parse(JSON.stringify(accuracyData));
+    const fieldToUpdate = newAccuracyData.fields.find((f: AccuracyField) => f.key === fieldKey)!;
+
+    // Find and remove the version
+    const versionIndex = fieldToUpdate.promptHistory.findIndex(v => v.id === versionId);
+    if (versionIndex === -1) return;
+
+    const deletedVersion = fieldToUpdate.promptHistory[versionIndex];
+    fieldToUpdate.promptHistory.splice(versionIndex, 1);
+
+    // If the deleted version was the active prompt, switch to the most recent version
+    if (fieldToUpdate.prompt === deletedVersion.prompt && fieldToUpdate.promptHistory.length > 0) {
+      fieldToUpdate.prompt = fieldToUpdate.promptHistory[0].prompt;
+      
+      // Also update cross-template prompt storage
+      updateFieldActivePrompt(fieldKey, fieldToUpdate.prompt);
+      
+      toast({
+        title: "Active Prompt Changed",
+        description: "The deleted version was active. Switched to the most recent version."
+      });
+    }
+
+    // Update state and persist to localStorage/JSON
+    setAccuracyData(newAccuracyData);
+    saveAccuracyData(newAccuracyData);
+    
+    // Update cross-template prompt storage
+    saveFieldPrompt(
+      fieldKey,
+      fieldToUpdate.prompt,
+      fieldToUpdate.promptHistory,
+      accuracyData.templateKey
+    );
+    
+    setSelectedFieldForPromptStudio(fieldToUpdate);
+    
+    console.log('✅ Prompt version deleted:', {
+      fieldKey,
+      deletedVersionId: versionId,
+      remainingVersions: fieldToUpdate.promptHistory.length
+    });
+  };
+
+  /**
    * Update prompt version metrics after a run comparison is completed
    * This ensures metrics are only added after actually testing the prompt
    * 
@@ -298,6 +364,7 @@ export const useDataHandlers = ({
     handleSaveInlineGroundTruth,
     handleUpdatePrompt,
     handleUsePromptVersion,
+    handleDeletePromptVersion,
     updatePromptVersionMetrics,
   };
 }; 

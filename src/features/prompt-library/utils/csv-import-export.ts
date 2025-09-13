@@ -49,7 +49,13 @@ export function exportTemplatesToCSV(database: Database, selectedTemplateIds: st
 }
 
 export function parseImportCSV(csvText: string): ExportableTemplate[] {
-  const lines = csvText.trim().split('\n');
+  // Normalize different types of quotes to standard quotes
+  const normalizedText = csvText
+    .replace(/[""]/g, '"')  // Replace smart quotes with regular quotes
+    .replace(/['']/g, "'")  // Replace smart apostrophes with regular apostrophes
+    .trim();
+  
+  const lines = normalizedText.split('\n');
   if (lines.length < 2) {
     throw new Error('CSV file must contain at least a header row and one data row');
   }
@@ -80,7 +86,7 @@ export function parseImportCSV(csvText: string): ExportableTemplate[] {
         }
       } else if (char === ',' && !insideQuotes) {
         // End of field
-        values.push(currentValue.trim());
+        values.push(normalizeFieldValue(currentValue.trim()));
         currentValue = '';
       } else {
         currentValue += char;
@@ -88,11 +94,13 @@ export function parseImportCSV(csvText: string): ExportableTemplate[] {
     }
     
     // Add the last value
-    values.push(currentValue.trim());
+    values.push(normalizeFieldValue(currentValue.trim()));
     
     if (values.length >= 4) {
-      // Get all prompts from columns 5 onwards
-      const prompts = values.slice(4).filter(p => p.trim() !== '');
+      // Get all prompts from columns 5 onwards and normalize them
+      const prompts = values.slice(4)
+        .filter(p => p.trim() !== '')
+        .map(p => normalizeFieldValue(p));
       
       templates.push({
         category: values[0],
@@ -106,6 +114,25 @@ export function parseImportCSV(csvText: string): ExportableTemplate[] {
   }
   
   return templates;
+}
+
+/**
+ * Normalize field values by fixing common encoding issues
+ */
+function normalizeFieldValue(value: string): string {
+  return value
+    // Fix common encoding issues
+    .replace(/â€œ/g, '"')    // Fix â€œ to "
+    .replace(/â€/g, '"')     // Fix â€ to "
+    .replace(/â€™/g, "'")    // Fix â€™ to '
+    .replace(/â€˜/g, "'")    // Fix â€˜ to '
+    .replace(/â€"/g, '—')    // Fix â€" to em dash
+    .replace(/â€"/g, '–')    // Fix â€" to en dash
+    .replace(/Â/g, '')       // Remove stray Â characters
+    // Normalize different quote types
+    .replace(/[""]/g, '"')   // Replace smart quotes
+    .replace(/['']/g, "'")   // Replace smart apostrophes
+    .trim();
 }
 
 export function validateImportData(templates: ExportableTemplate[]): { valid: boolean; errors: string[] } {

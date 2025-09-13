@@ -186,14 +186,29 @@ const getCellBackgroundColor = (cellData: CellData): string => {
   const isError = value.startsWith('Error:');
   const isNotPresent = value === NOT_PRESENT_VALUE;
   
-  // No background for Ground Truth cells or pending/error states
-  if (modelName === 'Ground Truth' || isPending || isNotPresent) {
+  // No background for Ground Truth cells
+  if (modelName === 'Ground Truth') {
+    return '';
+  }
+  
+  // No background for pending states
+  if (isPending) {
     return '';
   }
   
   // Error state background
   if (isError) {
     return 'bg-red-100/60 dark:bg-red-900/30';
+  }
+  
+  // Handle "Not Present" cases
+  if (isNotPresent) {
+    // If there's ground truth but model returned "Not Present", it's a mismatch
+    if (groundTruth && groundTruth.trim() !== '' && groundTruth !== NOT_PRESENT_VALUE) {
+      return 'bg-red-100/80 dark:bg-red-900/30'; // Red for mismatches
+    }
+    // If no ground truth or ground truth is also "Not Present", no special background
+    return '';
   }
   
   // Comparison-based background colors
@@ -248,6 +263,16 @@ const ModelValueCell = ({
   const getComparisonClasses = (comparison: ComparisonResult) => {
     // Never apply styling to Ground Truth cells
     if (modelName === 'Ground Truth') {
+      return '';
+    }
+    
+    // Handle "Not Present" cases first
+    if (isNotPresent) {
+      // If there's ground truth but model returned "Not Present", it's a mismatch
+      if (groundTruth && groundTruth.trim() !== '' && groundTruth !== NOT_PRESENT_VALUE) {
+        return 'bg-red-100/80 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+      }
+      // If no ground truth or ground truth is also "Not Present", no special styling
       return '';
     }
     
@@ -754,6 +779,17 @@ export default function TanStackExtractionTable({
                           return groundTruthValue && groundTruthValue.trim() !== '' && groundTruthValue !== '-';
                         });
 
+                        // Check if there are actual model extraction results (not just Ground Truth)
+                        // This indicates that "Run Comparison" has been executed
+                        const hasModelResults = results.some(result => {
+                          const modelValue = result.fields[field.key]?.[modelName];
+                          return modelValue && 
+                                 modelValue.trim() !== '' && 
+                                 modelValue !== '-' && 
+                                 !modelValue.startsWith('Pending') &&
+                                 !modelValue.startsWith('Error:');
+                        });
+
                           return (
                             <td
                               key={`${modelName}-avg`}
@@ -764,7 +800,7 @@ export default function TanStackExtractionTable({
                               )}
                             >
                               <div className="relative w-full h-full flex items-center justify-center">
-                                {!hasGroundTruth ? (
+                                {!hasGroundTruth || !hasModelResults ? (
                                   <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
                                     TBD
                                   </div>

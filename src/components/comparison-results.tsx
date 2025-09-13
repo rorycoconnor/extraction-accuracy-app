@@ -1,4 +1,6 @@
 import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Eye } from 'lucide-react';
 import TanStackExtractionTable from './tanstack-extraction-table';
 import type { AccuracyData, AccuracyField } from '@/lib/types';
 
@@ -13,6 +15,7 @@ interface ComparisonResultsProps {
   recentlyChangedPrompts?: Set<string>;
   isExtracting?: boolean;
   extractingFields?: Set<string>;
+  onOpenSummary?: () => void;
 }
 
 export default function ComparisonResults({
@@ -25,7 +28,8 @@ export default function ComparisonResults({
   onRunSingleFieldForFile,
   recentlyChangedPrompts = new Set(),
   isExtracting = false,
-  extractingFields = new Set()
+  extractingFields = new Set(),
+  onOpenSummary
 }: ComparisonResultsProps) {
   // Auto-determine showMetrics like the original implementation
   const shouldShowMetrics = React.useMemo(() => {
@@ -38,18 +42,59 @@ export default function ComparisonResults({
     });
   }, [accuracyData]);
 
+  // Determine if we should show the Summary button
+  const shouldShowSummaryButton = React.useMemo(() => {
+    if (!accuracyData || !onOpenSummary) return false;
+    
+    // Check if there's ground truth data
+    const hasGroundTruth = accuracyData.results.some(result => 
+      Object.values(result.fields).some(fieldData => 
+        fieldData['Ground Truth'] && fieldData['Ground Truth'].trim() !== ''
+      )
+    );
+    
+    // Check if comparison has been run (there are model results)
+    const hasComparisonResults = accuracyData.results.some(result =>
+      Object.values(result.fields).some(fieldData =>
+        Object.keys(fieldData).some(modelName => 
+          modelName !== 'Ground Truth' && 
+          fieldData[modelName] && 
+          fieldData[modelName].trim() !== '' &&
+          !fieldData[modelName].startsWith('Pending') &&
+          !fieldData[modelName].startsWith('Error:')
+        )
+      )
+    );
+    
+    return hasGroundTruth && hasComparisonResults;
+  }, [accuracyData, onOpenSummary]);
+
   return (
     <div className="flex flex-col h-full">
-      {/* Header text with inline legend */}
-      <div className="px-4 md:px-8 py-3 flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground mb-1">Model Comparison Analysis</h2>
-          <p className="text-sm text-muted-foreground">
-            Select <strong>Compare Models</strong> to add & remove models. You can also edit the <strong>prompts</strong>.
-          </p>
+      {/* Header area with fixed height to prevent table movement */}
+      <div className="px-4 md:px-8 flex justify-between h-[72px] py-3">
+        <div className="flex items-start h-full">
+          {!shouldShowSummaryButton && (
+            <div className="flex flex-col justify-start h-full">
+              <h2 className="text-lg font-semibold text-foreground mb-1">Model Comparison Analysis</h2>
+              <p className="text-sm text-muted-foreground">
+                Select <strong>Compare Models</strong> to add & remove models. You can also edit the <strong>prompts</strong>.
+              </p>
+            </div>
+          )}
+          
+          {/* Show Summary button positioned at top left when conditions are met */}
+          {shouldShowSummaryButton && (
+            <div className="flex items-start justify-start h-full pt-1">
+              <Button variant="outline" onClick={onOpenSummary}>
+                <Eye className="mr-2 h-4 w-4" />
+                Show Summary
+              </Button>
+            </div>
+          )}
         </div>
         
-        {/* Legend for comparison results - moved 0.5 inch left */}
+        {/* Legend for comparison results - restored to center alignment */}
         <div className="flex items-center gap-4 text-xs mr-9">
           <span className="font-medium text-muted-foreground">Legend:</span>
           <div className="flex items-center gap-1">

@@ -753,13 +753,16 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
 
           newTemplates.push(newTemplate);
         } else {
-          // Update existing template
+          // Update existing template - preserve field order from import
           const existingTemplate = newTemplates[existingTemplateIndex];
           
+          // Build new fields array in the order from the import
+          const newFieldsArray: Field[] = [];
+          
           importTemplate.fields.forEach(importField => {
-            const existingFieldIndex = existingTemplate.fields.findIndex(f => f.name === importField.name);
+            const existingField = existingTemplate.fields.find(f => f.name === importField.name);
             
-            if (existingFieldIndex === -1) {
+            if (!existingField) {
               // Add new field to existing template
               fieldsCreated++;
               const fieldId = `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -785,20 +788,26 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
                 });
               });
 
-              existingTemplate.fields.push(newField);
+              newFieldsArray.push(newField);
             } else {
-              // Add prompts to existing field
-              const existingField = existingTemplate.fields[existingFieldIndex];
+              // Update existing field and preserve its ID and existing prompts
+              const updatedField: Field = {
+                id: existingField.id, // Keep original ID
+                name: importField.name,
+                type: importField.type,
+                prompts: [...existingField.prompts] // Start with existing prompts
+              };
               
+              // Add new prompts from import
               importField.prompts.forEach(importPrompt => {
                 // Check if prompt already exists
-                const promptExists = existingField.prompts.some(p => p.text.trim() === importPrompt.text.trim());
+                const promptExists = updatedField.prompts.some(p => p.text.trim() === importPrompt.text.trim());
                 
                 if (!promptExists) {
                   promptsCreated++;
                   const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptsCreated}`;
                   
-                  existingField.prompts.unshift({
+                  updatedField.prompts.unshift({
                     id: promptId,
                     text: importPrompt.text,
                     up: 0,
@@ -807,8 +816,13 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
                   });
                 }
               });
+              
+              newFieldsArray.push(updatedField);
             }
           });
+          
+          // Replace the entire fields array to preserve the import order
+          existingTemplate.fields = newFieldsArray;
         }
       });
 

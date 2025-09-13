@@ -184,7 +184,7 @@ const MainPage: React.FC = () => {
   });
 
   // ===== DATA HANDLERS HOOK =====
-  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, updatePromptVersionMetrics } = useDataHandlers({
+  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, updatePromptVersionMetrics } = useDataHandlers({
     accuracyData,
     setAccuracyData,
     selectedCellForEdit,
@@ -395,6 +395,7 @@ const MainPage: React.FC = () => {
              shownColumns={shownColumns}
              onOpenPromptStudio={handleOpenPromptStudio}
              onOpenInlineEditor={handleOpenInlineEditor}
+             onOpenSummary={openPerformanceModal}
            />
          ) : (
            <div className="p-4 md:p-8">
@@ -415,6 +416,7 @@ const MainPage: React.FC = () => {
          onUpdatePrompt={handleUpdatePrompt}
          onUsePromptVersion={handleUsePromptVersion}
          onToggleFavorite={handleToggleFavorite}
+         onDeletePromptVersion={handleDeletePromptVersion}
          isInlineEditorOpen={isInlineEditorOpen}
          selectedCellForEdit={selectedCellForEdit}
          selectedTemplate={selectedTemplate}
