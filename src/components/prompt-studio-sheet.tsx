@@ -295,7 +295,7 @@ export default function PromptStudioSheet({
                                     <div className="flex items-center gap-2">
                                         <CardTitle className="text-base font-medium flex items-center gap-2">
                                             Active Prompt
-                                            <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded font-normal">Current</span>
+                                            <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-full font-normal">Current</span>
                                         </CardTitle>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -309,15 +309,18 @@ export default function PromptStudioSheet({
                                                 </>
                                             }
                                         />
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={handleGeneratePrompt}
-                                            disabled={!canGenerate}
-                                        >
-                                            {buttonContent.icon}
-                                            {buttonContent.text}
-                                        </Button>
+                                        {/* Only show Generate Prompt button when NOT in improvement mode */}
+                                        {!isImprovementMode && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={handleGeneratePrompt}
+                                                disabled={!canGenerate}
+                                            >
+                                                <Sparkles className="mr-2 h-4 w-4" />
+                                                Generate Prompt
+                                            </Button>
+                                        )}
                                         <Button 
                                             onClick={handleSaveChanges} 
                                             size="sm"
@@ -350,17 +353,32 @@ export default function PromptStudioSheet({
                                     {/* Improvement Instructions Field - Show when there's existing prompt */}
                                     {hasExistingPrompt && (
                                       <div className="space-y-3 pt-3">
-                                        <div className="space-y-2">
+                                        <div className="flex items-center justify-between h-[40px]">
                                           <Label htmlFor="improvement-instructions" className="text-sm font-medium">
                                             What do you need this prompt to do better?
                                           </Label>
-                                          <Textarea
-                                            id="improvement-instructions"
-                                            value={improvementInstructions}
-                                            onChange={(e) => setImprovementInstructions(e.target.value)}
-                                            className="min-h-[60px] text-sm"
-                                          />
+                                          {/* Fixed height container to prevent any layout shift */}
+                                          <div className="flex items-center justify-end w-[140px] h-[40px]">
+                                            {improvementInstructions.trim().length > 0 && (
+                                              <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={handleGeneratePrompt}
+                                                disabled={!canGenerate}
+                                              >
+                                                <Wand2 className="mr-2 h-4 w-4" />
+                                                Improve Prompt
+                                              </Button>
+                                            )}
+                                          </div>
                                         </div>
+                                        <Textarea
+                                          id="improvement-instructions"
+                                          value={improvementInstructions}
+                                          onChange={(e) => setImprovementInstructions(e.target.value)}
+                                          className="min-h-[60px] text-sm"
+                                          placeholder="Describe what you want to improve about this prompt..."
+                                        />
                                       </div>
                                     )}
                                 </CardContent>
@@ -403,8 +421,8 @@ export default function PromptStudioSheet({
                                             <div className="flex items-center gap-2">
                                                 <h4 className="text-base font-medium flex items-center gap-2">
                                                     Version {versionNumber}
-                                                    {isLatestVersion && <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">Latest</span>}
-                                                    {isCurrentVersion && <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">Same as Active</span>}
+                                                    {isLatestVersion && <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">Latest</span>}
+                                                    {isCurrentVersion && <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Same as Active</span>}
                                                 </h4>
                                                 {performanceIndicator}
                                             </div>
@@ -455,7 +473,7 @@ export default function PromptStudioSheet({
                                             <div className="space-y-3">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-sm font-medium">Performance Metrics</span>
-                                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">
                                                         Updated {format(new Date(version.metrics.lastRunAt), 'MMM d, h:mm a')}
                                                     </span>
                                                 </div>
@@ -495,15 +513,15 @@ export default function PromptStudioSheet({
                                                                         </div>
                                                                         {index === 0 && (
                                                                             <div className="flex items-center gap-1">
-                                                                                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded font-medium">
-                                                                                    🏆 Best
+                                                                                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                                                                                    Best
                                                                                 </span>
                                                                             </div>
                                                                         )}
                                                                         {index === 1 && (
                                                                             <div className="flex items-center gap-1">
-                                                                                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded font-medium">
-                                                                                    🥈 2nd Best
+                                                                                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">
+                                                                                    2nd Best
                                                                                 </span>
                                                                             </div>
                                                                         )}

@@ -67,7 +67,7 @@ export function SearchBar() {
             placeholder="Search for categories, templates, fields, prompts, etc."
             value={searchFilters.searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-11 pr-10 bg-white dark:bg-gray-800"
+            className="h-11 pr-10 bg-white dark:bg-gray-800 rounded-full" style={{paddingLeft: '26px'}}
           />
           {searchFilters.searchTerm && (
             <button
@@ -86,7 +86,7 @@ export function SearchBar() {
             value={searchFilters.category || ALL_CATEGORIES} 
             onValueChange={(value) => setSelectedCategory(value === ALL_CATEGORIES ? null : value)}
           >
-            <SelectTrigger className="h-11 bg-white dark:bg-gray-800">
+            <SelectTrigger className="h-11 bg-white dark:bg-gray-800 rounded-full" style={{paddingLeft: '26px'}}>
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-gray-800">
@@ -106,7 +106,7 @@ export function SearchBar() {
             value={searchFilters.template || ALL_TEMPLATES} 
             onValueChange={(value) => setSelectedTemplate(value === ALL_TEMPLATES ? null : value)}
           >
-            <SelectTrigger className="h-11 bg-white dark:bg-gray-800">
+            <SelectTrigger className="h-11 bg-white dark:bg-gray-800 rounded-full" style={{paddingLeft: '26px'}}>
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-gray-800">

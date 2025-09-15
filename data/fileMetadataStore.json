@@ -1445,5 +1445,39 @@
       "assetType": "Image",
       "subAssetType": "Stock"
     }
+  },
+  "1982351923064": {
+    "templateKey": "i9",
+    "groundTruth": {
+      "employee_name": "Carla A Montrose",
+      "employeeAddress": "123 Main Street, Apt 4B, Springfield, CA 90210",
+      "dateOfBirth": "undefined",
+      "citizenshipOrImmigrationStatusAttestation": "A citizen of the United States",
+      "signatureDate": "undefined",
+      "socialSecurityNumber": "889337777",
+      "documentVerification": "Passport",
+      "idDetails": "Issuing Authority: U.S. Department of State, Document Number: 457614876, Expiration Date: 12/15/2032",
+      "firstDayOfEmployment": "undefined",
+      "employerAuthorizedRepresentativesNameAndTitle": "Callahan, Rebecca, Title: Processing Manager",
+      "employersBusinessName": "Insurance Star",
+      "employersBusinessAddress": "2450 Hawthorne Avenue, Des Moines, IA 50310"
+    }
+  },
+  "1982383678901": {
+    "templateKey": "i9",
+    "groundTruth": {
+      "employee_name": "Chris A Monty",
+      "employeeAddress": "848 2nd Street, San Jose, CA 90110",
+      "dateOfBirth": "1968-01-15",
+      "citizenshipOrImmigrationStatusAttestation": "A citizen of the United States",
+      "signatureDate": "2025-09-05",
+      "socialSecurityNumber": "789339965",
+      "documentVerification": "Drivers License",
+      "idDetails": "Issuing Authority: California DMV, Document Number: 777614876, Expiration Date: 12/15/2029",
+      "firstDayOfEmployment": "2025-09-10",
+      "employerAuthorizedRepresentativesNameAndTitle": "Spencer Laura Title: Engineering Manager",
+      "employersBusinessName": "Chips Industries",
+      "employersBusinessAddress": "25488 Silicon Way, San Jose, CA 90110"
+    }
   }
 }

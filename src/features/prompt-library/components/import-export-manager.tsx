@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
-import { exportTemplatesToCSV, parseImportCSV, validateImportData, downloadCSV } from '../utils/csv-import-export';
+import { exportTemplatesToCSV, parseImportCSV, validateImportData, downloadCSV, parseOptionsFromCSV } from '../utils/csv-import-export';
 import type { Database, Template, Field, Prompt, FieldType } from '../types';
 
 interface ImportExportManagerProps {
@@ -176,58 +176,51 @@ export function ImportExportManager({
         const templateKey = `${finalCategory}:${templateName}`;
         
         if (!templateMap.has(templateKey)) {
-          // Check if template already exists
-          let existingTemplate = database.templates.find(t => 
-            t.name === templateName && t.category === finalCategory
-          );
-          
-          if (!existingTemplate) {
-            // Create new template structure
-            const templateId = `template-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            existingTemplate = {
-              id: templateId,
-              name: templateName,
-              category: finalCategory,
-              fields: []
-            };
-          }
+          // Create template structure for import (don't reference existing templates)
+          const templateId = `import-temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          const templateStructure = {
+            id: templateId,
+            name: templateName,
+            category: finalCategory,
+            fields: []
+          };
           
           templateMap.set(templateKey, {
-            template: existingTemplate,
+            template: templateStructure,
             fieldsMap: new Map()
           });
         }
 
         const templateData = templateMap.get(templateKey)!;
         
-        // Add field if it doesn't exist
+        // Parse options from CSV
+        const parsedOptions = parseOptionsFromCSV(row.options);
+
+        // Add field if it doesn't exist, or update existing field
         if (!templateData.fieldsMap.has(row.fieldName)) {
-          // Check if field already exists in template
-          let existingField = templateData.template.fields.find(f => f.name === row.fieldName);
+          // Create new field with csvPrompts and order
+          const fieldId = `import-field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          const newField: FieldWithImportData = {
+            id: fieldId,
+            name: row.fieldName,
+            type: (row.fieldType as FieldType) || 'text',
+            prompts: [],
+            csvPrompts: [],
+            csvOrder: row.fieldOrder,
+            // Add options for dropdown/taxonomy fields
+            options: parsedOptions.length > 0 ? parsedOptions : undefined,
+            optionsPaste: parsedOptions.length > 0 ? parsedOptions.join('\n') : undefined
+          };
           
-          if (!existingField) {
-            // Create new field with csvPrompts and order
-            const fieldId = `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-            const newField: FieldWithImportData = {
-              id: fieldId,
-              name: row.fieldName,
-              type: (row.fieldType as FieldType) || 'text',
-              prompts: [],
-              csvPrompts: [],
-              csvOrder: row.fieldOrder
-            };
-            existingField = newField;
-          } else {
-            // Add csvPrompts property and order to existing field
-            const extendedField: FieldWithImportData = {
-              ...existingField,
-              csvPrompts: [],
-              csvOrder: row.fieldOrder
-            };
-            existingField = extendedField;
-          }
           
-          templateData.fieldsMap.set(row.fieldName, existingField as FieldWithImportData);
+          templateData.fieldsMap.set(row.fieldName, newField);
+        } else {
+          // Update existing field with options and type from CSV
+          const existingField = templateData.fieldsMap.get(row.fieldName)!;
+          existingField.type = (row.fieldType as FieldType) || existingField.type;
+          existingField.options = parsedOptions.length > 0 ? parsedOptions : undefined;
+          existingField.optionsPaste = parsedOptions.length > 0 ? parsedOptions.join('\n') : undefined;
+          
         }
 
         // Add prompts to the field
@@ -253,7 +246,7 @@ export function ImportExportManager({
         
         // Build template with fields and prompts
         const templateToImport: Template = {
-          id: template.id,
+          id: template.id, // Use the temporary import ID
           name: template.name,
           category: template.category,
           fields: []
@@ -279,8 +272,12 @@ export function ImportExportManager({
               up: 0,
               down: 0,
               createdAt: Date.now() - index
-            }))
+            })),
+            // Include options in the final field
+            options: fieldData.options,
+            optionsPaste: fieldData.optionsPaste
           };
+          
           
           templateToImport.fields.push(field);
         }
@@ -288,10 +285,19 @@ export function ImportExportManager({
         templatesToImport.push(templateToImport);
       }
 
+      // Deduplicate templates by name and category (safety check)
+      const uniqueTemplates = templatesToImport.filter((template, index, array) => {
+        return array.findIndex(t => t.name === template.name && t.category === template.category) === index;
+      });
+
+      if (uniqueTemplates.length !== templatesToImport.length) {
+        console.warn(`🚨 CSV Import: Removed ${templatesToImport.length - uniqueTemplates.length} duplicate templates`);
+      }
+
       // Use the batch import function
       batchImport({
         categories: categoriesToImport,
-        templates: templatesToImport
+        templates: uniqueTemplates
       });
 
       // Reset form

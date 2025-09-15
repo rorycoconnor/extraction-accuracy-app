@@ -688,9 +688,12 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
   }, [toast]);
 
   const batchImport = useCallback((importData: { categories: string[], templates: Template[] }) => {
-    let templatesCreated = 0;
-    let fieldsCreated = 0;
-    let promptsCreated = 0;
+    // Count templates and fields from import data directly (user-friendly counting)
+    const templatesProcessed = importData.templates.length;
+    const fieldsProcessed = importData.templates.reduce((total, template) => total + template.fields.length, 0);
+    const promptsProcessed = importData.templates.reduce((total, template) => 
+      total + template.fields.reduce((fieldTotal, field) => fieldTotal + field.prompts.length, 0), 0
+    );
 
     setDatabase(prev => {
       const newCategories = [...prev.categories];
@@ -712,7 +715,6 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
 
         if (existingTemplateIndex === -1) {
           // Create new template
-          templatesCreated++;
           const templateId = `template-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
           
           const newTemplate: Template = {
@@ -723,28 +725,28 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
           };
 
           // Process fields
-          importTemplate.fields.forEach(importField => {
-            fieldsCreated++;
+          importTemplate.fields.forEach((importField, fieldIndex) => {
             const fieldId = `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
             
             const newField: Field = {
               id: fieldId,
               name: importField.name,
               type: importField.type,
-              prompts: []
+              prompts: [],
+              options: importField.options,
+              optionsPaste: importField.optionsPaste
             };
 
             // Process prompts
-            importField.prompts.forEach(importPrompt => {
-              promptsCreated++;
-              const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptsCreated}`;
+            importField.prompts.forEach((importPrompt, promptIndex) => {
+              const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptIndex}`;
               
               newField.prompts.push({
                 id: promptId,
                 text: importPrompt.text,
                 up: 0,
                 down: 0,
-                createdAt: Date.now() - promptsCreated
+                createdAt: Date.now() - promptIndex
               });
             });
 
@@ -764,27 +766,27 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
             
             if (!existingField) {
               // Add new field to existing template
-              fieldsCreated++;
               const fieldId = `field-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
               
               const newField: Field = {
                 id: fieldId,
                 name: importField.name,
                 type: importField.type,
-                prompts: []
+                prompts: [],
+                options: importField.options,
+                optionsPaste: importField.optionsPaste
               };
 
               // Process prompts
-              importField.prompts.forEach(importPrompt => {
-                promptsCreated++;
-                const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptsCreated}`;
+              importField.prompts.forEach((importPrompt, promptIndex) => {
+                const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptIndex}`;
                 
                 newField.prompts.push({
                   id: promptId,
                   text: importPrompt.text,
                   up: 0,
                   down: 0,
-                  createdAt: Date.now() - promptsCreated
+                  createdAt: Date.now() - promptIndex
                 });
               });
 
@@ -795,24 +797,25 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
                 id: existingField.id, // Keep original ID
                 name: importField.name,
                 type: importField.type,
-                prompts: [...existingField.prompts] // Start with existing prompts
+                prompts: [...existingField.prompts], // Start with existing prompts
+                options: importField.options,
+                optionsPaste: importField.optionsPaste
               };
               
               // Add new prompts from import
-              importField.prompts.forEach(importPrompt => {
+              importField.prompts.forEach((importPrompt, promptIndex) => {
                 // Check if prompt already exists
                 const promptExists = updatedField.prompts.some(p => p.text.trim() === importPrompt.text.trim());
                 
                 if (!promptExists) {
-                  promptsCreated++;
-                  const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptsCreated}`;
+                  const promptId = `prompt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${promptIndex}`;
                   
                   updatedField.prompts.unshift({
                     id: promptId,
                     text: importPrompt.text,
                     up: 0,
                     down: 0,
-                    createdAt: Date.now() - promptsCreated
+                    createdAt: Date.now() - promptIndex
                   });
                 }
               });
@@ -836,7 +839,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     setTimeout(() => {
       toast({
         title: 'Import Complete',
-        description: `Successfully imported ${templatesCreated} template(s), ${fieldsCreated} field(s), and ${promptsCreated} prompt(s).`,
+        description: `Successfully imported ${templatesProcessed} template(s), ${fieldsProcessed} field(s), and ${promptsProcessed} prompt(s).`,
       });
     }, 100);
   }, [toast]);

@@ -331,7 +331,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
               className={cn(
                 'flex items-center gap-2 text-xs px-3 py-1.5',
                 viewMode === 'stack' 
-                  ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100' 
+                  ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100' 
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100'
               )}
             >
@@ -345,7 +345,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
               className={cn(
                 'flex items-center gap-2 text-xs px-3 py-1.5',
                 viewMode === 'side-by-side' 
-                  ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100' 
+                  ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100' 
                   : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100'
               )}
             >

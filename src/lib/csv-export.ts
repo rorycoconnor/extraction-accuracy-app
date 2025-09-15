@@ -147,6 +147,7 @@ function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: Expo
   console.log('  - Has averages data:', !!accuracyData.averages);
   console.log('  - Number of fields:', accuracyData.fields?.length || 0);
   console.log('  - Number of models:', summaryData.modelsCompared.length);
+  console.log('  - Averages object keys:', accuracyData.averages ? Object.keys(accuracyData.averages) : 'none');
 
   if (!summaryData.hasGroundTruthData || !accuracyData.averages) {
     console.log('❌ CSV Export: Cannot generate Accuracy scores - missing ground truth or averages data');
@@ -158,13 +159,30 @@ function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: Expo
   }
 
   const rows: any[][] = [
-    ['FIELD AVERAGES (Accuracy Scores)'],
-    ['']
+    // Removed explicit section title row per request
   ];
 
-  // Header row
-  const headerRow = ['Field', ...summaryData.modelsCompared.map(model => formatModelName(model))];
+  // Header row: Field, per-model Accuracy columns, then Prompt
+  const headerRow = ['Field', ...summaryData.modelsCompared.map(model => formatModelName(model)), 'Prompt'];
   rows.push(headerRow);
+
+  // Insert overall model accuracies row (matches UI badges)
+  try {
+    const modelSummaries = calculateModelSummaries(summaryData.modelsCompared, accuracyData.fields, accuracyData.averages);
+    // No need to assign ranks; we only need overallAccuracy
+    const overallRow: any[] = ['Overall Average (Accuracy)'];
+    summaryData.modelsCompared.forEach(modelName => {
+      const summary = modelSummaries.find(ms => ms.modelName === modelName);
+      const acc = summary ? summary.overallAccuracy : NaN;
+      overallRow.push(Number.isNaN(acc) ? 'N/A' : `${(acc * 100).toFixed(1)}%`);
+    });
+    // For the trailing column (Prompt), leave blank in this overall row
+    overallRow.push('');
+    rows.push(overallRow);
+    rows.push(['']);
+  } catch (e) {
+    console.warn('⚠️ CSV Export: Failed to compute overall model accuracies for header row', e);
+  }
 
   // Data rows for each field
   let fieldsWithData = 0;
@@ -172,22 +190,21 @@ function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: Expo
     const fieldAverages = accuracyData.averages[field.key];
     if (fieldAverages) {
       fieldsWithData++;
-      const row = [
-        field.name,
-        ...summaryData.modelsCompared.map(model => {
-          const avg = fieldAverages[model];
-          if (avg && typeof avg.accuracy === 'number') {
-            return `${(avg.accuracy * 100).toFixed(1)}%`;
-          } else {
-            console.warn(`  - Missing Accuracy data for field "${field.key}", model "${model}":`, avg);
-            return 'N/A';
-          }
-        })
-      ];
-      rows.push(row);
-    } else {
-      console.warn(`  - No averages data for field "${field.key}"`);
     }
+    const row = [
+      field.name,
+      ...summaryData.modelsCompared.map(model => {
+        const avg = fieldAverages ? fieldAverages[model] : undefined;
+        if (avg && typeof avg.accuracy === 'number') {
+          return `${(avg.accuracy * 100).toFixed(1)}%`;
+        } else {
+          console.warn(`  - Missing Accuracy data for field "${field.key}", model "${model}":`, avg);
+          return 'N/A';
+        }
+      }),
+      field.prompt || '' // Add the prompt column
+    ];
+    rows.push(row);
   });
 
   console.log(`✅ CSV Export: Generated Accuracy scores for ${fieldsWithData}/${accuracyData.fields.length} fields`);

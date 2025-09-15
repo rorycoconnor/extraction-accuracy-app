@@ -45,6 +45,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { Field, Template, FieldType } from '../types';
 import { usePromptLibrary } from '../hooks/use-prompt-library';
+import { parseOptionsFlexible } from '../utils/csv-import-export';
 
 type FieldDetailsSheetProps = {
   isOpen: boolean;
@@ -131,8 +132,8 @@ export function FieldDetailsSheet({
 
     try {
       if (hasUnsavedChanges) {
-        // Parse options from textarea
-        const parsedOptions = parseOptions(optionsPaste);
+        // Parse options from textarea using flexible parser
+        const parsedOptions = parseOptionsFlexible(optionsPaste);
         
         // Build updates object
         const updates: Partial<Field> = {};
@@ -276,7 +277,7 @@ export function FieldDetailsSheet({
                     <Textarea
                       value={optionsPaste}
                       onChange={(e) => setOptionsPaste(e.target.value)}
-                      placeholder={`Enter values (one per line or comma-separated):\n\nExample:\nPending\nApproved\nPaid\n\nOr: Pending, Approved, Paid`}
+                      placeholder={`Enter values (comma-separated):\n\nExample:\nPending, Approved, Paid`}
                       className="min-h-[182px] resize-y focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0 bg-white dark:bg-gray-800"
                       rows={9}
                     />
@@ -350,27 +351,4 @@ export function FieldDetailsSheet({
   );
 }
 
-// Helper function to parse options from textarea
-function parseOptions(input: string): string[] {
-  if (!input.trim()) return [];
-  
-  // First try splitting by newlines
-  let options = input.split('\n')
-    .map(line => line.trim())
-    .filter(line => line);
-  
-  // If we only got one line, try splitting by commas
-  if (options.length === 1 && options[0].includes(',')) {
-    options = options[0].split(',')
-      .map(item => item.trim())
-      .filter(item => item);
-  }
-  
-  // Remove duplicates while preserving order
-  const seen = new Set<string>();
-  return options.filter(option => {
-    if (seen.has(option)) return false;
-    seen.add(option);
-    return true;
-  });
-} 
+// Note: parseOptions function replaced with parseOptionsFlexible import from csv-import-export 

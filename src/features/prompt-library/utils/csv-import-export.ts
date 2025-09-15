@@ -5,15 +5,68 @@ export interface ExportableTemplate {
   templateName: string;
   fieldName: string;
   fieldType: string;
+  options: string;
   prompts: string[];
   fieldOrder?: number;
+}
+
+// Field type mapping for CSV export - converts internal types to display names
+const FIELD_TYPE_EXPORT_MAPPING: Record<string, string> = {
+  'text': 'Text',
+  'number': 'Number',
+  'date': 'Date',
+  'dropdown_single': 'Dropdown',
+  'dropdown_multi': 'Dropdown (Multi-select)',
+  'taxonomy': 'Taxonomy',
+};
+
+function getDisplayFieldType(fieldType: string): string {
+  return FIELD_TYPE_EXPORT_MAPPING[fieldType] || fieldType;
+}
+
+function formatOptionsForCSV(field: Field): string {
+  // Only export options for dropdown and taxonomy fields
+  if (field.type !== 'dropdown_single' && field.type !== 'dropdown_multi' && field.type !== 'taxonomy') {
+    return '';
+  }
+
+  let options: string[] = [];
+  
+  // Get options from field.options or field.optionsPaste
+  if (field.options && field.options.length > 0) {
+    options = field.options;
+  } else if (field.optionsPaste) {
+    // Parse from optionsPaste - support both comma and newline separated
+    options = parseOptionsFlexible(field.optionsPaste);
+  }
+
+  if (options.length === 0) {
+    return '';
+  }
+
+  // Use comma separator - simple and universal
+  return options.join(', ');
+}
+
+// Flexible options parser - handles comma-separated, newline-separated, or mixed
+export function parseOptionsFlexible(input: string): string[] {
+  if (!input || input.trim() === '') {
+    return [];
+  }
+
+  // First split by newlines, then by commas, then clean up
+  return input
+    .split(/[\n,]/) // Split by newlines OR commas
+    .map(option => option.trim())
+    .filter(option => option !== '')
+    .filter((option, index, array) => array.indexOf(option) === index); // Remove duplicates
 }
 
 export function exportTemplatesToCSV(database: Database, selectedTemplateIds: string[]): string {
   const rows: string[] = [];
   
   // Add header
-  rows.push('Category,Template,Field,Type,Prompt 1,Prompt 2,Prompt 3');
+  rows.push('Category,Template,Field,Type,Options,Prompt 1,Prompt 2,Prompt 3');
   
   // Filter templates to export
   const templatesToExport = selectedTemplateIds.includes('all') 
@@ -32,12 +85,17 @@ export function exportTemplatesToCSV(database: Database, selectedTemplateIds: st
         prompts.push(sortedPrompts[i]?.text || '');
       }
       
+      // Get formatted options for this field
+      const formattedOptions = formatOptionsForCSV(field);
+      
       // Create CSV row with proper escaping
       const row = [
         template.category,
         template.name,
         field.name,
-        field.type,
+        getDisplayFieldType(field.type),
+        // Always quote options if they contain commas or quotes (since we use comma-separated format)
+        formattedOptions.includes(',') || formattedOptions.includes('"') ? `"${formattedOptions.replace(/"/g, '""')}"` : formattedOptions,
         ...prompts.map(p => p.includes(',') || p.includes('"') ? `"${p.replace(/"/g, '""')}"` : p)
       ];
       
@@ -46,6 +104,62 @@ export function exportTemplatesToCSV(database: Database, selectedTemplateIds: st
   }
   
   return rows.join('\n');
+}
+
+// Field type mapping for CSV import - handles both display names and internal types
+const FIELD_TYPE_IMPORT_MAPPING: Record<string, string> = {
+  // Display names (what users see in UI and CSV export)
+  'Text': 'text',
+  'Number': 'number', 
+  'Date': 'date',
+  'Dropdown': 'dropdown_single', // Default dropdown to single select
+  'Dropdown (Multi-select)': 'dropdown_multi', // New export format
+  'Taxonomy': 'taxonomy',
+  
+  // Internal types (for backwards compatibility)
+  'text': 'text',
+  'number': 'number',
+  'date': 'date', 
+  'dropdown_single': 'dropdown_single',
+  'dropdown_multi': 'dropdown_multi',
+  'taxonomy': 'taxonomy',
+  
+  // Common variations users might type
+  'dropdown': 'dropdown_single',
+  'dropdown multi-select': 'dropdown_multi',
+  'dropdown (multi-select)': 'dropdown_multi',
+  'dropdown multiselect': 'dropdown_multi',
+  'multi-select': 'dropdown_multi',
+  'multiselect': 'dropdown_multi',
+  'multi select': 'dropdown_multi',
+  'string': 'text', // Box API type
+  'float': 'number', // Box API type
+  'enum': 'dropdown_single', // Box API type
+  'multiSelect': 'dropdown_multi', // Box API type
+};
+
+function normalizeFieldType(fieldType: string): string {
+  const trimmed = fieldType.trim();
+  // Try exact match first (case sensitive)
+  if (FIELD_TYPE_IMPORT_MAPPING[trimmed]) {
+    return FIELD_TYPE_IMPORT_MAPPING[trimmed];
+  }
+  
+  // Try case-insensitive match
+  const lowerCase = trimmed.toLowerCase();
+  for (const [key, value] of Object.entries(FIELD_TYPE_IMPORT_MAPPING)) {
+    if (key.toLowerCase() === lowerCase) {
+      return value;
+    }
+  }
+
+  // Default to 'text' if no match found
+  console.warn(`Unknown field type "${fieldType}" in CSV import, defaulting to 'text'`);
+  return 'text';
+}
+
+export function parseOptionsFromCSV(optionsString: string): string[] {
+  return parseOptionsFlexible(optionsString);
 }
 
 export function parseImportCSV(csvText: string): ExportableTemplate[] {
@@ -96,9 +210,9 @@ export function parseImportCSV(csvText: string): ExportableTemplate[] {
     // Add the last value
     values.push(normalizeFieldValue(currentValue.trim()));
     
-    if (values.length >= 4) {
-      // Get all prompts from columns 5 onwards and normalize them
-      const prompts = values.slice(4)
+    if (values.length >= 5) {
+      // Get all prompts from columns 6 onwards and normalize them
+      const prompts = values.slice(5)
         .filter(p => p.trim() !== '')
         .map(p => normalizeFieldValue(p));
       
@@ -106,7 +220,8 @@ export function parseImportCSV(csvText: string): ExportableTemplate[] {
         category: values[0],
         templateName: values[1],
         fieldName: values[2],
-        fieldType: values[3],
+        fieldType: normalizeFieldType(values[3]),
+        options: values[4] || '', // Options column (5th column, index 4)
         prompts,
         fieldOrder: i - 1 // Use CSV row order for field ordering
       });

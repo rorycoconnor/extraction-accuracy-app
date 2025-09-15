@@ -13,21 +13,240 @@
     "lastModified": "2025-07-22T04:28:58.305Z"
   },
   "terminationForConvenience": {
-    "activePrompt": "Extract the Termination for Convenience from this contracts. If not directly stated, look for related information or alternative expressions.",
+    "activePrompt": "Search for a \"Termination for Convenience\" clause or any clause permitting termination without cause or for any reason. For Non-Disclosure Agreements (NDAs), do not confuse the agreement's natural expiration or term limit with a true right to terminate for convenience. If such a right exists for either party, extract \"Yes\"; otherwise, extract \"No\".",
     "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "Search for a \"Termination for Convenience\" clause or any clause permitting termination without cause or for any reason. For Non-Disclosure Agreements (NDAs), do not confuse the agreement's natural expiration or term limit with a true right to terminate for convenience. If such a right exists for either party, extract \"Yes\"; otherwise, extract \"No\".",
+        "savedAt": "2025-09-13T03:57:56.353Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Search the document for a \"Termination for Convenience\" clause, or any clause permitting termination without cause, for any reason, or at will. If such a right is present for either party, extract \"Yes\"; otherwise, extract \"No\".",
+        "savedAt": "2025-09-13T03:43:11.855Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0.875,
+              "accuracy": 0.875,
+              "precision": 0.875,
+              "recall": 0.875
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-09-13T03:44:05.225Z"
+        }
+      },
       {
         "id": "v1",
         "prompt": "Extract the Termination for Convenience from this contracts. If not directly stated, look for related information or alternative expressions.",
-        "savedAt": "2025-07-22T04:29:31.431Z"
+        "savedAt": "2025-07-22T04:29:31.431Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0.375,
+              "accuracy": 0.375,
+              "precision": 0.375,
+              "recall": 0.375
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0.25,
+              "accuracy": 0.25,
+              "precision": 0.25,
+              "recall": 0.25
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-09-13T03:37:32.961Z"
+        }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 1,
-    "lastModified": "2025-07-22T04:29:31.433Z"
+    "usageCount": 3,
+    "lastModified": "2025-09-13T03:57:56.359Z"
   },
   "terminationForCause": {
-    "activePrompt": "Extract the Termination for Cause from this contracts. If not directly stated, look for related information or alternative expressions.",
+    "activePrompt": "Analyze the document for a \"Termination for Cause\" clause, looking for common reasons like breach of contract or insolvency and related phrases. If such a clause or similar language is present, output 'Yes'; otherwise, output 'No'.",
     "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Analyze the document for a \"Termination for Cause\" clause, looking for common reasons like breach of contract or insolvency and related phrases. If such a clause or similar language is present, output 'Yes'; otherwise, output 'No'.",
+        "savedAt": "2025-09-13T05:33:17.627Z"
+      },
       {
         "id": "v1",
         "prompt": "Extract the Termination for Cause from this contracts. If not directly stated, look for related information or alternative expressions.",
@@ -35,8 +254,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 1,
-    "lastModified": "2025-07-22T04:29:44.246Z"
+    "usageCount": 2,
+    "lastModified": "2025-09-13T05:33:17.628Z"
   },
   "governingLaw": {
     "activePrompt": "Extract the “Governing Law” from this contract",
@@ -205,233 +424,9 @@
         "savedAt": "2025-08-07T07:35:00.940Z"
       },
       {
-        "id": "v6",
-        "prompt": "",
-        "savedAt": "2025-08-07T06:12:56.674Z",
-        "metrics": {
-          "modelMetrics": {
-            "google__gemini_2_0_flash_001": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "google__gemini_2_0_flash_001_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "google__gemini_2_5_pro": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "google__gemini_2_5_pro_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "enhanced_extract_agent": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "enhanced_extract_agent_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "aws__claude_3_7_sonnet": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "aws__claude_3_7_sonnet_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "aws__claude_4_sonnet": {
-              "f1": 0,
-              "accuracy": 0.125,
-              "precision": 0,
-              "recall": 0
-            },
-            "aws__claude_4_sonnet_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "azure__openai__gpt_4_1": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "azure__openai__gpt_4_1_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "azure__openai__gpt_4_1_mini": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "azure__openai__gpt_4_1_mini_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "openai__o3": {
-              "f1": 0,
-              "accuracy": 0.125,
-              "precision": 0,
-              "recall": 0
-            },
-            "openai__o3_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            }
-          },
-          "filesCount": 8,
-          "lastRunAt": "2025-08-07T07:22:06.654Z"
-        }
-      },
-      {
         "id": "v5",
         "prompt": "Extract the contract's end date (termination/expiration date), formatted as YYYY-MM-DD. If the end date is not explicitly stated, calculate it using the contract's term and start date, using the last signature date as the start date if it is not specified.",
         "savedAt": "2025-08-07T03:21:27.636Z"
-      },
-      {
-        "id": "v4",
-        "prompt": "",
-        "savedAt": "2025-08-07T03:15:00.432Z"
-      },
-      {
-        "id": "v3",
-        "prompt": "Extract the \"End Date\" from the document and format it as YYYY-MM-DD; if no end date is found, calculate it using the start date and term; if the start date is missing but can be inferred from the last signature date, use that as the start date for calculation.",
-        "savedAt": "2025-07-23T03:25:56.405Z",
-        "metrics": {
-          "modelMetrics": {
-            "google__gemini_2_0_flash_001": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "google__gemini_2_0_flash_001_no_prompt": {
-              "f1": 0,
-              "accuracy": 0.125,
-              "precision": 0,
-              "recall": 0
-            },
-            "google__gemini_2_5_pro": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "google__gemini_2_5_pro_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "enhanced_extract_agent": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "enhanced_extract_agent_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "aws__claude_3_7_sonnet": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "aws__claude_3_7_sonnet_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "aws__claude_4_sonnet": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "aws__claude_4_sonnet_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "azure__openai__gpt_4_1": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "azure__openai__gpt_4_1_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "azure__openai__gpt_4_1_mini": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "azure__openai__gpt_4_1_mini_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "openai__o3": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            },
-            "openai__o3_no_prompt": {
-              "f1": 0,
-              "accuracy": 0,
-              "precision": 0,
-              "recall": 0
-            }
-          },
-          "filesCount": 8,
-          "lastRunAt": "2025-08-07T03:12:43.927Z"
-        }
-      },
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-07-23T01:57:34.195Z"
       },
       {
         "id": "v1",
@@ -482,8 +477,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 9,
-    "lastModified": "2025-08-08T00:33:14.384Z"
+    "usageCount": 13,
+    "lastModified": "2025-09-15T15:20:45.166Z"
   },
   "effectiveDate": {
     "activePrompt": "Extract the Effective Date from this contracts. Format as YYYY-MM-DD. If not explicitly stated, look for signature dates or document dates.",
@@ -1292,5 +1287,164 @@
     "lastUsedTemplate": "digitalAssets",
     "usageCount": 7,
     "lastModified": "2025-09-13T00:52:39.901Z"
+  },
+  "dateOfBirth": {
+    "activePrompt": "Extract the \"Date of birth\" from the document and format it as MM/DD/YYYY.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the \"Date of birth\" from the document and format it as MM/DD/YYYY.",
+        "savedAt": "2025-09-13T05:51:12.921Z"
+      }
+    ],
+    "lastUsedTemplate": "i9",
+    "usageCount": 1,
+    "lastModified": "2025-09-13T05:51:12.924Z"
+  },
+  "signatureDate": {
+    "activePrompt": "From the employee signature block in Section 1 of the I-9 form, extract the date and format it as MM/DD/YYYY.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "From the employee signature block in Section 1 of the I-9 form, extract the date and format it as MM/DD/YYYY.",
+        "savedAt": "2025-09-13T05:53:49.334Z"
+      }
+    ],
+    "lastUsedTemplate": "i9",
+    "usageCount": 1,
+    "lastModified": "2025-09-13T05:53:49.337Z"
+  },
+  "socialSecurityNumber": {
+    "activePrompt": "Extract the 9-digit Social Security number, which may be labeled as SSN.  Format number as: XXX-XX-XXXX",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the 9-digit Social Security number, which may be labeled as SSN.  Format number as: XXX-XX-XXXX",
+        "savedAt": "2025-09-13T06:03:07.998Z"
+      },
+      {
+        "id": "v1",
+        "prompt": "Extract the 9-digit Social Security number, which may be labeled as SSN or formatted as XXX-XX-XXXX.",
+        "savedAt": "2025-09-13T05:55:02.811Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0.5,
+              "accuracy": 0.5,
+              "precision": 0.5,
+              "recall": 0.5
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 2,
+          "lastRunAt": "2025-09-13T05:58:49.711Z"
+        }
+      }
+    ],
+    "lastUsedTemplate": "i9",
+    "usageCount": 2,
+    "lastModified": "2025-09-13T06:03:08.001Z"
+  },
+  "firstDayOfEmployment": {
+    "activePrompt": "Extract the first day of employment and format the date as MM-DD-YYYY. ",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the first day of employment and format the date as MM-DD-YYYY. ",
+        "savedAt": "2025-09-13T05:56:05.069Z"
+      }
+    ],
+    "lastUsedTemplate": "i9",
+    "usageCount": 1,
+    "lastModified": "2025-09-13T05:56:05.071Z"
   }
 }

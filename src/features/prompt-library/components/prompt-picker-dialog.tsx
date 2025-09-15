@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Pin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -107,6 +107,10 @@ export function PromptPickerDialog({ fieldName, onSelectPrompt, triggerButtonCon
                 {currentPrompt.text}
               </p>
               <div className="flex items-center gap-3 mt-3 text-sm text-muted-foreground">
+                {/* Show blue pin icon if prompt is pinned */}
+                {currentPrompt.isPinned && (
+                  <Pin className="h-4 w-4 text-blue-600 fill-current" />
+                )}
                 <span>👍 {currentPrompt.up}</span>
                 <span>👎 {currentPrompt.down}</span>
               </div>
