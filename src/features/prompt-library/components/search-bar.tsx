@@ -45,13 +45,13 @@ export function SearchBar() {
       {/* Title Row */}
       <div className="flex gap-4">
         <div className="flex-[2]">
-          <label className="text-sm font-medium text-gray-900 dark:text-gray-100">What are you looking for?</label>
+          <label className="text-sm font-medium text-gray-900 dark:text-gray-100" style={{paddingLeft: '21px'}}>What are you looking for?</label>
         </div>
         <div className="flex-1">
-          <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Categories</label>
+          <label className="text-sm font-medium text-gray-900 dark:text-gray-100" style={{paddingLeft: '21px'}}>Categories</label>
         </div>
         <div className="flex-1">
-          <label className="text-sm font-medium text-gray-900 dark:text-gray-100">Templates</label>
+          <label className="text-sm font-medium text-gray-900 dark:text-gray-100" style={{paddingLeft: '21px'}}>Templates</label>
         </div>
         <div className="w-32">
           {/* Empty space for clear button alignment */}

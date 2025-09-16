@@ -312,7 +312,7 @@ export function PromptLibraryMain() {
 
         {/* Dynamic Title */}
         <div className="mb-2">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100" style={{paddingLeft: '22px'}}>
             {getDisplayTitle()}
           </h2>
         </div>
