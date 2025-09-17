@@ -190,6 +190,21 @@ export function FieldDetailsSheet({
   };
 
   const handleFieldTypeChange = (value: string) => {
+    console.log('🔍 Field type change:', {
+      oldType: fieldType,
+      newType: value,
+      fieldName: field?.name,
+      currentOptionsPaste: optionsPaste,
+      fieldOptionsPaste: field?.optionsPaste,
+      fieldOptions: field?.options,
+      fieldPrompts: field?.prompts?.map(p => ({ id: p.id, text: p.text }))
+    });
+    
+    // 🚨 POTENTIAL BUG DETECTOR: Check if optionsPaste contains prompt-like text
+    if (field?.optionsPaste && field.optionsPaste.length > 100) {
+      console.warn('🚨 POTENTIAL BUG: optionsPaste looks like prompt text:', field.optionsPaste);
+    }
+    
     if (value === 'dropdown') {
       // Default to single select when dropdown is selected
       setFieldType(allowMultipleSelections ? 'dropdown_multi' : 'dropdown_single');

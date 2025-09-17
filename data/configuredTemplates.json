@@ -334,7 +334,7 @@
         "key": "limitationOfLiability",
         "displayName": "Limitation of Liability",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "eda7bb6a-a04c-4c85-8c2b-f094bb765716",
@@ -342,7 +342,7 @@
         "key": "warrantyPeriodMonths",
         "displayName": "Warranty Period (Months)",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "f8ba5953-19a8-4a72-a7e2-6db5a8f336a7",
@@ -368,7 +368,7 @@
             "key": "Not Specified"
           }
         ],
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "fba637e6-1128-4047-bdc1-fafef536005c",
@@ -386,7 +386,7 @@
             "key": "Nol"
           }
         ],
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "7e3df744-bfe8-4732-bec0-e99f0f29146e",
@@ -394,7 +394,7 @@
         "key": "confidentialityDuration",
         "displayName": "Confidentiality Duration",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "d15a1891-3f69-40d1-80c8-f3f734ae61c2",
@@ -402,7 +402,7 @@
         "key": "paymentTerms",
         "displayName": "Payment Terms",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "b423de43-a9c3-4d66-9c66-17eb1479ceb4",
@@ -428,7 +428,7 @@
             "key": "No Specified"
           }
         ],
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "cdc9e5cb-2810-4752-a5c9-330f93f2c5bb",
@@ -436,7 +436,7 @@
         "key": "keyObligationsSummary",
         "displayName": "Key Obligations Summary",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "dcc0383a-770a-427d-8d2f-81b7226134f2",
@@ -836,6 +836,139 @@
           "multiSelect": true
         },
         "isActive": false
+      }
+    ]
+  },
+  {
+    "id": "f5fc15a5-f480-4bb9-80a5-5992c54a52fc",
+    "type": "metadata_template",
+    "templateKey": "i9",
+    "scope": "enterprise_1218697394",
+    "displayName": "i9",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "42670016-ed40-4a9f-9768-0047438a061c",
+        "type": "string",
+        "key": "employee_name",
+        "displayName": "Employee name",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "6b8b31dd-f476-4bd7-b587-813a1ad85f16",
+        "type": "string",
+        "key": "employeeAddress",
+        "displayName": "Employee address",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "42f60f3e-0b0f-4a6a-b4a5-0472a8835d08",
+        "type": "date",
+        "key": "dateOfBirth",
+        "displayName": "Date of birth",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "a70edcf8-13fc-4026-8529-b8e7e5c00bbf",
+        "type": "string",
+        "key": "citizenshipOrImmigrationStatusAttestation",
+        "displayName": "Citizenship or immigration status attestation",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "17c2cdb4-0dcd-40fc-bb72-75d1d6367560",
+        "type": "date",
+        "key": "signatureDate",
+        "displayName": "Signature date",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "db3407d9-4d0a-475e-bae3-13c34b6c82c0",
+        "type": "string",
+        "key": "socialSecurityNumber",
+        "displayName": "Social Security number",
+        "hidden": false,
+        "description": "format social security number like this XXX-XX-XXXX",
+        "isActive": true
+      },
+      {
+        "id": "7ffdabcb-eceb-43bf-ae0a-180c0f613e62",
+        "type": "enum",
+        "key": "documentVerification",
+        "displayName": "Document verification",
+        "hidden": false,
+        "description": "",
+        "options": [
+          {
+            "id": "f0dbc434-3262-4fe3-bfe9-4fda4ad1c416",
+            "key": "Passport"
+          },
+          {
+            "id": "17bc146a-d4bf-4e43-88fc-4a99e9064356",
+            "key": "Drivers License"
+          },
+          {
+            "id": "c99c5996-78a8-4aa8-8e4f-01cb19439fcf",
+            "key": "State ID"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "ed0af020-445a-45e8-aca4-e0759eb9af5d",
+        "type": "string",
+        "key": "idDetails",
+        "displayName": "ID Details",
+        "hidden": false,
+        "description": "Output information as ID expiration date,  ID Number.   Example output: Exp Date: 12/03/2023, ID #123456789",
+        "isActive": true
+      },
+      {
+        "id": "02b5f41c-5546-409d-a8d2-f2d135694f0c",
+        "type": "date",
+        "key": "firstDayOfEmployment",
+        "displayName": "First day of employment",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "077d0af3-0398-4e3a-af47-6ae172e13935",
+        "type": "string",
+        "key": "employerAuthorizedRepresentativesNameAndTitle",
+        "displayName": "Employer / authorized representative’s name and title",
+        "hidden": false,
+        "description": "Name on i9 will list last name first.  Output with First name first followed by title",
+        "isActive": true
+      },
+      {
+        "id": "c475adbc-db36-4b27-9242-4930b2961593",
+        "type": "string",
+        "key": "employersBusinessName",
+        "displayName": "Employer’s business name",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "d85910fb-17f4-4692-a9af-d2f9879bdd8c",
+        "type": "string",
+        "key": "employersBusinessAddress",
+        "displayName": "Employer’s business address",
+        "hidden": false,
+        "description": "",
+        "isActive": true
       }
     ]
   }

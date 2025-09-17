@@ -10,14 +10,22 @@ import {
   FileText, 
   Database, 
   Settings,
-  BookOpen
+  BookOpen,
+  ExternalLink
 } from 'lucide-react'
 
 interface SidebarProps {
   collapsed?: boolean
 }
 
-const navigation = [
+interface NavigationItem {
+  name: string
+  href: string
+  icon: any
+  external?: boolean
+}
+
+const navigation: NavigationItem[] = [
   {
     name: 'Home',
     href: '/',
@@ -37,6 +45,12 @@ const navigation = [
     name: 'Library',
     href: '/library',
     icon: BookOpen,
+  },
+  {
+    name: 'Link to PPP',
+    href: 'https://pcboxdemo.github.io/metadata/index_oauth.html',
+    icon: ExternalLink,
+    external: true,
   },
   {
     name: 'Settings',
@@ -75,21 +89,19 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 px-2 pb-4 space-y-1">
         {navigation.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                'group flex transition-all duration-200 rounded-md',
-                collapsed 
-                  ? 'flex-col items-center px-2 py-3 text-xs' 
-                  : 'items-center px-3 py-3 text-sm',
-                isActive
-                  ? 'bg-white/20 text-white shadow-sm'
-                  : 'text-white/90 hover:bg-white/10 hover:text-white'
-              )}
-            >
+          const isActive = pathname === item.href && !item.external
+          const linkClassName = cn(
+            'group flex transition-all duration-200 rounded-md',
+            collapsed 
+              ? 'flex-col items-center px-2 py-3 text-xs' 
+              : 'items-center px-3 py-3 text-sm',
+            isActive
+              ? 'bg-white/20 text-white shadow-sm'
+              : 'text-white/90 hover:bg-white/10 hover:text-white'
+          )
+          
+          const content = (
+            <>
               <item.icon 
                 className={cn(
                   'flex-shrink-0 text-white',
@@ -102,6 +114,26 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
               )}>
                 {item.name}
               </span>
+            </>
+          )
+
+          return item.external ? (
+            <a
+              key={item.name}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={linkClassName}
+            >
+              {content}
+            </a>
+          ) : (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={linkClassName}
+            >
+              {content}
             </Link>
           )
         })}
