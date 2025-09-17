@@ -56,6 +56,16 @@ function SettingsContent() {
   const [isSaving, setIsSaving] = React.useState(false);
   const [isConnectingOAuth, setIsConnectingOAuth] = React.useState(false);
   const [oauthStatus, setOauthStatus] = React.useState<'connected' | 'disconnected' | 'checking'>('checking');
+  const [userInfo, setUserInfo] = React.useState<{
+    id: string;
+    name: string;
+    login: string;
+    enterprise?: {
+      id: string;
+      name: string;
+    } | null;
+  } | null>(null);
+  const [userLoading, setUserLoading] = React.useState(true);
   console.log('Environment variables', process.env)
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
@@ -113,6 +123,31 @@ function SettingsContent() {
     checkOAuthStatus();
   }, []);
 
+  // Fetch user information
+  React.useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        setUserLoading(true);
+        const response = await fetch('/api/auth/box/user');
+        const data = await response.json();
+        
+        if (data.success && data.user) {
+          setUserInfo(data.user);
+        } else {
+          console.log('No user info available:', data.error);
+          setUserInfo(null);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user info:', error);
+        setUserInfo(null);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+    
+    fetchUserInfo();
+  }, [oauthStatus]); // Refetch when OAuth status changes
+
   React.useEffect(() => {
     const logAccessToken = async () => {
       try {
@@ -161,6 +196,29 @@ function SettingsContent() {
           ? 'OAuth2.0 authentication is now active.' 
           : 'Your Box configuration has been updated successfully.',
       });
+      
+      // Refresh user information after saving settings
+      setTimeout(() => {
+        const fetchUserInfo = async () => {
+          try {
+            setUserLoading(true);
+            const response = await fetch('/api/auth/box/user');
+            const data = await response.json();
+            
+            if (data.success && data.user) {
+              setUserInfo(data.user);
+            } else {
+              setUserInfo(null);
+            }
+          } catch (error) {
+            console.error('Failed to refresh user info:', error);
+          } finally {
+            setUserLoading(false);
+          }
+        };
+        fetchUserInfo();
+      }, 500); // Small delay to allow settings to be saved
+      
       if (values.authMethod === 'service-account') {
         form.reset({ authMethod: 'service-account', boxConfigJson: '' });
       } else if (values.authMethod === 'developer-token') {
@@ -203,6 +261,7 @@ function SettingsContent() {
       
       if (response.ok) {
         setOauthStatus('disconnected');
+        setUserInfo(null); // Clear user info when disconnected
         toast({
           title: 'OAuth Disconnected',
           description: 'Your Box account has been disconnected successfully.',
@@ -232,11 +291,50 @@ function SettingsContent() {
 
       {/* User Information Card */}
       <Card>
-        <CardContent className="pt-6">
-          <div className="text-sm">
-            <span className="font-medium">Login:</span> <span className="font-mono">mlane@box.com</span>
-            <span className="ml-6 font-medium">EID:</span> <span className="font-mono">12345678</span>
-          </div>
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <User className="h-5 w-5" />
+            <span>User Information</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {userLoading ? (
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Loading user information...</span>
+            </div>
+          ) : userInfo ? (
+            <div className="space-y-2 text-sm">
+              <div>
+                <span className="font-medium">Login:</span> 
+                <span className="font-mono ml-2">{userInfo.login}</span>
+              </div>
+              <div>
+                <span className="font-medium">Name:</span> 
+                <span className="ml-2">{userInfo.name}</span>
+              </div>
+              <div>
+                <span className="font-medium">User ID:</span> 
+                <span className="font-mono ml-2">{userInfo.id}</span>
+              </div>
+              {userInfo.enterprise && (
+                <div>
+                  <span className="font-medium">Enterprise ID:</span> 
+                  <span className="font-mono ml-2">{userInfo.enterprise.id}</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">
+              <div className="flex items-center space-x-2 text-orange-600">
+                <XCircle className="h-4 w-4" />
+                <span>No user information available</span>
+              </div>
+              <p className="mt-1 text-xs">
+                Please configure Box authentication to view user details.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
