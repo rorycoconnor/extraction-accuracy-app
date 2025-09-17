@@ -13,8 +13,13 @@
     "lastModified": "2025-07-22T04:28:58.305Z"
   },
   "terminationForConvenience": {
-    "activePrompt": "Search for a \"Termination for Convenience\" clause or any clause permitting termination without cause or for any reason. For Non-Disclosure Agreements (NDAs), do not confuse the agreement's natural expiration or term limit with a true right to terminate for convenience. If such a right exists for either party, extract \"Yes\"; otherwise, extract \"No\".",
+    "activePrompt": "Determine whether the agreement includes a termination for convenience right. Treat synonyms like “without cause,” “for any reason,” “at its option/sole discretion” as convenience. Exclude termination for cause/breach, non-renewal at term end, suspension, insolvency, or regulatory termination unless the clause explicitly states convenience.",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "Determine whether the agreement includes a termination for convenience right. Treat synonyms like “without cause,” “for any reason,” “at its option/sole discretion” as convenience. Exclude termination for cause/breach, non-renewal at term end, suspension, insolvency, or regulatory termination unless the clause explicitly states convenience.",
+        "savedAt": "2025-09-17T13:37:24.468Z"
+      },
       {
         "id": "v3",
         "prompt": "Search for a \"Termination for Convenience\" clause or any clause permitting termination without cause or for any reason. For Non-Disclosure Agreements (NDAs), do not confuse the agreement's natural expiration or term limit with a true right to terminate for convenience. If such a right exists for either party, extract \"Yes\"; otherwise, extract \"No\".",
@@ -236,12 +241,17 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 3,
-    "lastModified": "2025-09-13T03:57:56.359Z"
+    "usageCount": 4,
+    "lastModified": "2025-09-17T13:37:24.471Z"
   },
   "terminationForCause": {
-    "activePrompt": "Analyze the document for a \"Termination for Cause\" clause, looking for common reasons like breach of contract or insolvency and related phrases. If such a clause or similar language is present, output 'Yes'; otherwise, output 'No'.",
+    "activePrompt": "Determine whether this agreement includes termination for cause at the agreement level. Count Yes if a party may terminate the agreement for material/uncured breach, default/non-payment after any cure period, insolvency/bankruptcy, or other explicitly listed “cause” events; treat synonyms such as “for default,” “for material breach,” “uncured breach” as cause. Count No if the document offers only termination for convenience, non-renewal at term end, suspension, or order/SOW-only termination that does not terminate the agreement. If this document adopts termination-for-cause from a referenced master and says it applies here, return Yes.",
     "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "Determine whether this agreement includes termination for cause at the agreement level. Count Yes if a party may terminate the agreement for material/uncured breach, default/non-payment after any cure period, insolvency/bankruptcy, or other explicitly listed “cause” events; treat synonyms such as “for default,” “for material breach,” “uncured breach” as cause. Count No if the document offers only termination for convenience, non-renewal at term end, suspension, or order/SOW-only termination that does not terminate the agreement. If this document adopts termination-for-cause from a referenced master and says it applies here, return Yes.",
+        "savedAt": "2025-09-17T13:37:48.838Z"
+      },
       {
         "id": "v2",
         "prompt": "Analyze the document for a \"Termination for Cause\" clause, looking for common reasons like breach of contract or insolvency and related phrases. If such a clause or similar language is present, output 'Yes'; otherwise, output 'No'.",
@@ -254,12 +264,17 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 2,
-    "lastModified": "2025-09-13T05:33:17.628Z"
+    "usageCount": 3,
+    "lastModified": "2025-09-17T13:37:48.843Z"
   },
   "governingLaw": {
-    "activePrompt": "Extract the “Governing Law” from this contract",
+    "activePrompt": "Extract the governing law from the document, focusing on US states, Canadian provinces, or European countries that match the single best match from the predefined enum options for this field.",
     "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "Extract the governing law from the document, focusing on US states, Canadian provinces, or European countries that match the single best match from the predefined enum options for this field.",
+        "savedAt": "2025-09-17T13:36:35.484Z"
+      },
       {
         "id": "v2",
         "prompt": "Extract the “Governing Law” from this contract",
@@ -272,12 +287,17 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 2,
-    "lastModified": "2025-08-01T18:11:14.409Z"
+    "usageCount": 3,
+    "lastModified": "2025-09-17T13:36:35.489Z"
   },
   "venue": {
-    "activePrompt": "Extract the “Venue” from this contract",
+    "activePrompt": "Extract the legal dispute venue, identifying the city and its corresponding state (US), province (Canada), or country (Europe).  List City first.  Output Example: San Francisco, California",
     "promptHistory": [
+      {
+        "id": "v5",
+        "prompt": "Extract the legal dispute venue, identifying the city and its corresponding state (US), province (Canada), or country (Europe).  List City first.  Output Example: San Francisco, California",
+        "savedAt": "2025-09-17T13:36:50.183Z"
+      },
       {
         "id": "v4",
         "prompt": "Extract the “Venue” from this contract",
@@ -300,8 +320,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 5,
-    "lastModified": "2025-08-01T18:11:53.454Z"
+    "usageCount": 6,
+    "lastModified": "2025-09-17T13:36:50.188Z"
   },
   "endDate": {
     "activePrompt": "Extract the contract's end date as YYYY-MM-DD; if not explicitly stated, calculate it by adding the contract term to the start date (or last signature date if the start is missing) and then subtracting one day.",
@@ -481,8 +501,18 @@
     "lastModified": "2025-09-15T15:20:45.166Z"
   },
   "effectiveDate": {
-    "activePrompt": "Extract the Effective Date from this contracts. Format as YYYY-MM-DD. If not explicitly stated, look for signature dates or document dates.",
+    "activePrompt": "Identify this document’s effective start date. Apply this order: (1) an explicit clause stating “Effective Date,” “Effective as of,” “Commencement Date,” or “Term begins on”; (2) if it says “effective upon full execution,” use the latest party signature date in this document; (3) if neither is present, use the document date on the title/first page.",
     "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "Identify this document’s effective start date. Apply this order: (1) an explicit clause stating “Effective Date,” “Effective as of,” “Commencement Date,” or “Term begins on”; (2) if it says “effective upon full execution,” use the latest party signature date in this document; (3) if neither is present, use the document date on the title/first page.",
+        "savedAt": "2025-09-17T00:22:28.353Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Extract the effective start date from this contracts. If not explicitly stated, look for signature dates or document dates.",
+        "savedAt": "2025-09-17T00:17:24.532Z"
+      },
       {
         "id": "v1",
         "prompt": "Extract the Effective Date from this contracts. Format as YYYY-MM-DD. If not explicitly stated, look for signature dates or document dates.",
@@ -490,8 +520,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 1,
-    "lastModified": "2025-07-22T04:32:17.792Z"
+    "usageCount": 3,
+    "lastModified": "2025-09-17T00:22:28.359Z"
   },
   "contractTerm": {
     "activePrompt": "Extract the Contract Term from this contracts. If not directly stated, look for related information or alternative expressions.",
@@ -507,7 +537,7 @@
     "lastModified": "2025-07-22T04:32:34.843Z"
   },
   "counterPartyName": {
-    "activePrompt": "Extract the name of the counter party, which may be a person or company, but exclude our company name, IBM, Inc.",
+    "activePrompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will be other then our company name which is Increo, Inc. ",
     "promptHistory": [
       {
         "id": "v5",
@@ -676,7 +706,7 @@
     ],
     "lastUsedTemplate": "contracts",
     "usageCount": 6,
-    "lastModified": "2025-09-13T00:55:47.976Z"
+    "lastModified": "2025-09-16T17:35:28.683Z"
   },
   "counterPartyAddress": {
     "activePrompt": "Extract the Counter Party address from this contracts. The counter party address will be other then Increo, Inc. company address.",
@@ -739,13 +769,8 @@
     "lastModified": "2025-07-31T17:07:38.615Z"
   },
   "contractType": {
-    "activePrompt": "Extract the \"Contract Type\" from the document, mapping \"Master Server Agreement\" to \"Master Agreement,\" and ensure the value matches one of the predefined enum choices provided by the system. ",
+    "activePrompt": "Extract the \"Contract Type\" from the document, mapping \"Master Server Agreement\" to \"Master Agreement,\" and ensure the value matches one of the predefined enum choices provided by the system.",
     "promptHistory": [
-      {
-        "id": "v4",
-        "prompt": "Extract the \"Contract Type\" from the document, mapping \"Master Server Agreement\" to \"Master Agreement,\" and ensure the value matches one of the predefined enum choices provided by the system. ",
-        "savedAt": "2025-08-08T00:30:10.767Z"
-      },
       {
         "id": "v3",
         "prompt": "Extract the \"Contract Type\" from the document, mapping \"Master Server Agreement\" to \"Master Agreement,\" and ensure the value matches one of the predefined enum choices provided by the system.",
@@ -855,12 +880,17 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 6,
-    "lastModified": "2025-09-13T00:53:39.670Z"
+    "usageCount": 9,
+    "lastModified": "2025-09-17T05:15:46.742Z"
   },
   "limitationOfLiability": {
-    "activePrompt": "Specifies the maximum amount a party can be held financially responsible for under the contract, often expressed as a multiple of contract value (e.g., 1x = contract value, 3x = three times contract value) or as \"Unlimited\" (no cap) or \"None\" (no liability limit specified).",
+    "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
     "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
+        "savedAt": "2025-09-17T13:52:01.845Z"
+      },
       {
         "id": "v1",
         "prompt": "Specifies the maximum amount a party can be held financially responsible for under the contract, often expressed as a multiple of contract value (e.g., 1x = contract value, 3x = three times contract value) or as \"Unlimited\" (no cap) or \"None\" (no liability limit specified).",
@@ -868,8 +898,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 1,
-    "lastModified": "2025-07-29T05:47:26.869Z"
+    "usageCount": 2,
+    "lastModified": "2025-09-17T13:52:01.850Z"
   },
   "warrantyPeriodMonths": {
     "activePrompt": "The duration, in months, for which the vendor guarantees the performance or quality of goods/services provided under the contract.",
@@ -924,8 +954,13 @@
     "lastModified": "2025-07-29T05:50:13.991Z"
   },
   "contractValue": {
-    "activePrompt": "Extract the total contract value (or synonyms like total amount, total price, or consideration) and format the output as US currency, including the dollar sign and commas (e.g., $10,000.00). If no monetary value is found, leave the field blank.",
+    "activePrompt": "Extract the stated total price for the agreement’s initial term (synonyms: “Total Contract Value,” “Total Fees,” “Total Subscription Fees,” “Total Consideration,” “Committed Value”). Return the number only; ignore taxes, shipping, late fees, penalties, and service credits. If only a cap is provided (NTE), leave this blank and use NTE Cap Amount. If value appears only in a referenced Order Form/SOW that controls fees, use that.",
     "promptHistory": [
+      {
+        "id": "v6",
+        "prompt": "Extract the stated total price for the agreement’s initial term (synonyms: “Total Contract Value,” “Total Fees,” “Total Subscription Fees,” “Total Consideration,” “Committed Value”). Return the number only; ignore taxes, shipping, late fees, penalties, and service credits. If only a cap is provided (NTE), leave this blank and use NTE Cap Amount. If value appears only in a referenced Order Form/SOW that controls fees, use that.",
+        "savedAt": "2025-09-17T13:38:12.876Z"
+      },
       {
         "id": "v5",
         "prompt": "Extract the total contract value (or synonyms like total amount, total price, or consideration) and format the output as US currency, including the dollar sign and commas (e.g., $10,000.00). If no monetary value is found, leave the field blank.",
@@ -1259,8 +1294,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 5,
-    "lastModified": "2025-08-06T22:19:47.964Z"
+    "usageCount": 6,
+    "lastModified": "2025-09-17T13:38:12.881Z"
   },
   "assetType": {
     "activePrompt": "Extract the 'Asset Type' from the document, ensuring the value is one of the predefined choices. If no asset type is mentioned or if the value does not match a predefined choice, return 'null'.",
@@ -1446,5 +1481,31 @@
     "lastUsedTemplate": "i9",
     "usageCount": 1,
     "lastModified": "2025-09-13T05:56:05.071Z"
+  },
+  "renewalType": {
+    "activePrompt": "Extract the renewal type from the contract. Select the single best match from the predefined enum options for this field.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the renewal type from the contract. Select the single best match from the predefined enum options for this field.",
+        "savedAt": "2025-09-17T13:36:02.998Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-09-17T13:36:03.003Z"
+  },
+  "disputeResolution": {
+    "activePrompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",
+        "savedAt": "2025-09-17T13:51:07.751Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 1,
+    "lastModified": "2025-09-17T13:51:07.758Z"
   }
 }
