@@ -47,17 +47,18 @@ const navigation: NavigationItem[] = [
     icon: BookOpen,
   },
   {
-    name: 'Link to PPP',
-    href: 'https://pcboxdemo.github.io/metadata/index_oauth.html',
-    icon: ExternalLink,
-    external: true,
-  },
-  {
     name: 'Settings',
     href: '/settings',
     icon: Settings,
   },
 ]
+
+// External link moved to separate section
+const externalLink = {
+  name: 'Link to PPP',
+  href: 'https://pcboxdemo.github.io/metadata/index_oauth.html',
+  icon: ExternalLink,
+}
 
 export function Sidebar({ collapsed = false }: SidebarProps) {
   const pathname = usePathname()
@@ -86,10 +87,10 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
         </div>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-2 pb-4 space-y-1">
+      {/* Main Navigation */}
+      <nav className="flex-1 px-2 pt-2 space-y-1">
         {navigation.map((item) => {
-          const isActive = pathname === item.href && !item.external
+          const isActive = pathname === item.href
           const linkClassName = cn(
             'group flex transition-all duration-200 rounded-md',
             collapsed 
@@ -117,17 +118,7 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
             </>
           )
 
-          return item.external ? (
-            <a
-              key={item.name}
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={linkClassName}
-            >
-              {content}
-            </a>
-          ) : (
+          return (
             <Link
               key={item.name}
               href={item.href}
@@ -138,6 +129,40 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
           )
         })}
       </nav>
+
+      {/* Separator */}
+      <div className="px-4 py-2">
+        <div className="border-t border-white/20"></div>
+      </div>
+
+      {/* External Links Section */}
+      <div className="px-2 pb-4">
+        <a
+          href={externalLink.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            'group flex transition-all duration-200 rounded-md',
+            collapsed 
+              ? 'flex-col items-center px-2 py-3 text-xs' 
+              : 'items-center px-3 py-3 text-sm',
+            'text-white/90 hover:bg-white/10 hover:text-white'
+          )}
+        >
+          <ExternalLink 
+            className={cn(
+              'flex-shrink-0 text-white',
+              collapsed ? 'h-5 w-5 mb-1' : 'h-5 w-5 mr-3'
+            )} 
+          />
+          <span className={cn(
+            'font-medium text-white',
+            collapsed ? 'text-xs text-center leading-tight whitespace-normal break-words' : 'text-sm'
+          )}>
+            {externalLink.name}
+          </span>
+        </a>
+      </div>
     </div>
   )
 } 
