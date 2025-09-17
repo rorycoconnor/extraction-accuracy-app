@@ -57,6 +57,7 @@ type TanStackExtractionTableProps = {
   recentlyChangedPrompts?: Set<string>;
   isExtracting?: boolean;
   extractingFields?: Set<string>;
+  onToggleFieldMetrics?: (fieldKey: string, include: boolean) => void;
 };
 
 // Custom header components
@@ -68,38 +69,70 @@ const FieldHeaderGroup = ({
   field, 
   recentlyChangedPrompts = new Set(), 
   onOpenPromptStudio,
-  onRunSingleField
+  onRunSingleField,
+  includeInMetrics = true,
+  onToggleMetrics
 }: { 
   field: AccuracyField;
   recentlyChangedPrompts?: Set<string>;
   onOpenPromptStudio: (field: AccuracyField) => void;
   onRunSingleField?: (field: AccuracyField) => void;
-}) => (
-  <div className="flex items-center justify-center gap-2">
-    <span>{field.name}</span>
-    {recentlyChangedPrompts.has(field.key) && (
-      <Clock className="h-3 w-3 text-orange-500 animate-pulse" />
-    )}
-    {onRunSingleField && (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
-            onClick={(e) => {
-              e.stopPropagation();
-              onRunSingleField(field);
-            }}
-          >
-            <Play className="h-3 w-3" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">Run extraction for {field.name}</TooltipContent>
-      </Tooltip>
-    )}
-  </div>
-);
+  includeInMetrics?: boolean;
+  onToggleMetrics?: (include: boolean) => void;
+}) => {
+  
+  return (
+    <div className="relative px-4 py-2">
+      {/* Centered label with equal side padding = toggle width (44px) + gap */}
+      <div className="flex justify-center">
+        <div className="px-14 text-center whitespace-normal break-words hyphens-auto">
+          <div className="flex items-center justify-center gap-2 font-semibold">
+            {field.name}
+            {recentlyChangedPrompts.has(field.key) && (
+              <Clock className="h-3 w-3 text-orange-500 animate-pulse" />
+            )}
+            {onRunSingleField && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRunSingleField(field);
+                    }}
+                  >
+                    <Play className="h-3 w-3" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Run extraction for {field.name}</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Toggle fixed to the right, vertically centered */}
+      {onToggleMetrics && (
+        <button
+          type="button"
+          onClick={() => onToggleMetrics(!includeInMetrics)}
+          className={`absolute right-4 top-1/2 -translate-y-1/2 inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 cursor-pointer ${
+            includeInMetrics ? 'bg-blue-600' : 'bg-gray-200'
+          }`}
+          aria-label={`Toggle ${field.name} metrics ${includeInMetrics ? 'off' : 'on'}`}
+        >
+          <span 
+            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
+              includeInMetrics ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
+        </button>
+      )}
+    </div>
+  );
+};
 
 const PromptHeader = ({ 
   field, 
@@ -351,12 +384,14 @@ export default function TanStackExtractionTable({
   onRunSingleFieldForFile,
   recentlyChangedPrompts = new Set(),
   isExtracting = false,
-  extractingFields = new Set()
+  extractingFields = new Set(),
+  onToggleFieldMetrics
 }: TanStackExtractionTableProps) {
   
   const { fields, results, averages } = data;
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+  
   
   // Add a force refresh counter to trigger re-renders when Ground Truth changes
   const [refreshCounter, setRefreshCounter] = React.useState(0);
@@ -474,6 +509,8 @@ export default function TanStackExtractionTable({
             recentlyChangedPrompts={recentlyChangedPrompts}
             onOpenPromptStudio={onOpenPromptStudio}
             onRunSingleField={onRunSingleField}
+            includeInMetrics={data.fieldSettings?.[field.key]?.includeInMetrics ?? true}
+            onToggleMetrics={(include) => onToggleFieldMetrics?.(field.key, include)}
           />
         ),
         columns: fieldColumns,
@@ -650,6 +687,8 @@ export default function TanStackExtractionTable({
                         recentlyChangedPrompts={recentlyChangedPrompts}
                         onOpenPromptStudio={onOpenPromptStudio}
                         onRunSingleField={onRunSingleField}
+                        includeInMetrics={data.fieldSettings?.[field.key]?.includeInMetrics ?? true}
+                        onToggleMetrics={(include) => onToggleFieldMetrics?.(field.key, include)}
                       />
                     </th>
                   );
@@ -770,6 +809,9 @@ export default function TanStackExtractionTable({
                             );
                           }
 
+                        // Check if field is included in metrics calculation
+                        const isFieldIncluded = data.fieldSettings?.[field.key]?.includeInMetrics !== false;
+                        
                         const metrics = averages[field.key]?.[modelName] ?? { accuracy: 0, precision: 0, recall: 0, f1: 0 };
                         const accuracy = metrics.accuracy;
                         
@@ -800,7 +842,11 @@ export default function TanStackExtractionTable({
                               )}
                             >
                               <div className="relative w-full h-full flex items-center justify-center">
-                                {!hasGroundTruth || !hasModelResults ? (
+                                {!isFieldIncluded ? (
+                                  <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                    not included
+                                  </div>
+                                ) : !hasGroundTruth || !hasModelResults ? (
                                   <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
                                     TBD
                                   </div>

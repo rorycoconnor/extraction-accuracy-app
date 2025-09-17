@@ -13,7 +13,11 @@ export interface ExportSummaryData {
 /**
  * Calculate summary statistics from accuracy data
  */
-function calculateSummaryStats(accuracyData: AccuracyData, shownColumns: Record<string, boolean>): ExportSummaryData {
+function calculateSummaryStats(
+  accuracyData: AccuracyData, 
+  shownColumns: Record<string, boolean>,
+  fieldSettings?: Record<string, { includeInMetrics: boolean }>
+): ExportSummaryData {
   const hasGroundTruthData = accuracyData.results.some(result => 
     Object.values(result.fields).some(field => 
       field['Ground Truth'] && field['Ground Truth'].trim() !== ''
@@ -34,7 +38,7 @@ function calculateSummaryStats(accuracyData: AccuracyData, shownColumns: Record<
   if (accuracyData.averages && accuracyData.fields && hasGroundTruthData) {
     try {
       // Calculate model summaries and rank them
-      const modelSummaries = calculateModelSummaries(visibleModels, accuracyData.fields, accuracyData.averages);
+      const modelSummaries = calculateModelSummaries(visibleModels, accuracyData.fields, accuracyData.averages, fieldSettings);
       assignRanks(modelSummaries);
       
       // Extract the model names in order of performance (best first)
@@ -59,7 +63,7 @@ function calculateSummaryStats(accuracyData: AccuracyData, shownColumns: Record<
     templateName: accuracyData.templateKey || 'Unknown Template',
     numberOfFilesProcessed: accuracyData.results.length,
     hasGroundTruthData,
-    totalFields: accuracyData.fields.length,
+    totalFields: accuracyData.fields.length, // Show total fields, but note which are included
     modelsCompared
   };
 }
@@ -96,7 +100,9 @@ function arrayToCSV(data: any[][]): string {
  */
 function generateSummaryRows(
   summaryData: ExportSummaryData, 
-  processingTime?: { start?: Date; end?: Date; durationMs?: number }
+  processingTime?: { start?: Date; end?: Date; durationMs?: number },
+  fieldSettings?: Record<string, { includeInMetrics: boolean }>,
+  accuracyData?: AccuracyData
 ): any[][] {
   const summaryRows: any[][] = [
     ['Accuracy App - Comparison Results Export'],
@@ -110,6 +116,20 @@ function generateSummaryRows(
     ['Ground Truth Available', summaryData.hasGroundTruthData ? 'Yes' : 'No'],
     ['']
   ];
+
+  // Add field inclusion information
+  if (accuracyData && fieldSettings) {
+    const enabledFields = accuracyData.fields.filter(field => 
+      fieldSettings[field.key]?.includeInMetrics !== false
+    ).length;
+    const disabledFields = accuracyData.fields.length - enabledFields;
+    
+    summaryRows.splice(-1, 0, // Insert before the empty row
+      ['Fields Included in Metrics', enabledFields],
+      ['Fields Excluded from Metrics', disabledFields],
+      ['Note', 'Fields marked "not included" were excluded from accuracy calculations']
+    );
+  }
 
   // Add processing time information if available
   if (processingTime) {
@@ -141,7 +161,11 @@ function generateSummaryRows(
 /**
  * Generate field averages section (F1 scores only)
  */
-function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: ExportSummaryData): any[][] {
+function generateFieldAveragesRows(
+  accuracyData: AccuracyData, 
+  summaryData: ExportSummaryData,
+  fieldSettings?: Record<string, { includeInMetrics: boolean }>
+): any[][] {
   console.log('🔍 CSV Export: Generating Accuracy scores section...');
   console.log('  - Has ground truth data:', summaryData.hasGroundTruthData);
   console.log('  - Has averages data:', !!accuracyData.averages);
@@ -168,7 +192,7 @@ function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: Expo
 
   // Insert overall model accuracies row (matches UI badges)
   try {
-    const modelSummaries = calculateModelSummaries(summaryData.modelsCompared, accuracyData.fields, accuracyData.averages);
+    const modelSummaries = calculateModelSummaries(summaryData.modelsCompared, accuracyData.fields, accuracyData.averages, fieldSettings);
     // No need to assign ranks; we only need overallAccuracy
     const overallRow: any[] = ['Overall Average (Accuracy)'];
     summaryData.modelsCompared.forEach(modelName => {
@@ -184,16 +208,23 @@ function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: Expo
     console.warn('⚠️ CSV Export: Failed to compute overall model accuracies for header row', e);
   }
 
-  // Data rows for each field
+  // Data rows for each field (show all fields, mark disabled ones)
   let fieldsWithData = 0;
   accuracyData.fields.forEach(field => {
     const fieldAverages = accuracyData.averages[field.key];
+    const isFieldIncluded = fieldSettings?.[field.key]?.includeInMetrics !== false;
+    
     if (fieldAverages) {
       fieldsWithData++;
     }
+    
     const row = [
       field.name,
       ...summaryData.modelsCompared.map(model => {
+        if (!isFieldIncluded) {
+          return 'not included';
+        }
+        
         const avg = fieldAverages ? fieldAverages[model] : undefined;
         if (avg && typeof avg.accuracy === 'number') {
           return `${(avg.accuracy * 100).toFixed(1)}%`;
@@ -219,7 +250,8 @@ function generateFieldAveragesRows(accuracyData: AccuracyData, summaryData: Expo
 function generateComparisonTableRows(
   accuracyData: AccuracyData, 
   summaryData: ExportSummaryData,
-  shownColumns: Record<string, boolean>
+  shownColumns: Record<string, boolean>,
+  fieldSettings?: Record<string, { includeInMetrics: boolean }>
 ): any[][] {
   const rows: any[][] = [
     ['DETAILED COMPARISON RESULTS'],
@@ -236,7 +268,7 @@ function generateComparisonTableRows(
     shownColumns[model] !== false
   );
 
-  // Build header row
+  // Build header row (show all fields)
   const headerRow: string[] = ['File Name'];
   
   accuracyData.fields.forEach(field => {
@@ -250,12 +282,13 @@ function generateComparisonTableRows(
 
   rows.push(headerRow);
 
-  // Build data rows
+  // Build data rows (show all fields, mark disabled ones)
   accuracyData.results.forEach(result => {
     const row: any[] = [result.fileName]; // Use fileName instead of name
 
     accuracyData.fields.forEach(field => {
       const fieldData = result.fields[field.key];
+      const isFieldIncluded = fieldSettings?.[field.key]?.includeInMetrics !== false;
       
       if (fieldData) {
         // Ground Truth column
@@ -265,7 +298,11 @@ function generateComparisonTableRows(
         
         // Model columns
         visibleModels.forEach(model => {
-          row.push(fieldData[model] || '');
+          if (!isFieldIncluded) {
+            row.push('not included');
+          } else {
+            row.push(fieldData[model] || '');
+          }
         });
       } else {
         // Fill with empty cells if field data is missing
@@ -273,7 +310,11 @@ function generateComparisonTableRows(
           row.push('');
         }
         visibleModels.forEach(() => {
-          row.push('');
+          if (!isFieldIncluded) {
+            row.push('not included');
+          } else {
+            row.push('');
+          }
         });
       }
     });
@@ -290,20 +331,21 @@ function generateComparisonTableRows(
 export function exportToCSV(
   accuracyData: AccuracyData,
   shownColumns: Record<string, boolean>,
-  processingTime?: { start?: Date; end?: Date; durationMs?: number }
+  processingTime?: { start?: Date; end?: Date; durationMs?: number },
+  fieldSettings?: Record<string, { includeInMetrics: boolean }>
 ): void {
   try {
-    const summaryData = calculateSummaryStats(accuracyData, shownColumns);
+    const summaryData = calculateSummaryStats(accuracyData, shownColumns, fieldSettings);
     const allRows: any[][] = [];
 
     // Add summary information
-    allRows.push(...generateSummaryRows(summaryData, processingTime));
+    allRows.push(...generateSummaryRows(summaryData, processingTime, fieldSettings, accuracyData));
 
     // Add field averages (F1 scores)
-    allRows.push(...generateFieldAveragesRows(accuracyData, summaryData));
+    allRows.push(...generateFieldAveragesRows(accuracyData, summaryData, fieldSettings));
 
     // Add main comparison table
-    allRows.push(...generateComparisonTableRows(accuracyData, summaryData, shownColumns));
+    allRows.push(...generateComparisonTableRows(accuracyData, summaryData, shownColumns, fieldSettings));
 
     // Convert to CSV string
     const csvContent = arrayToCSV(allRows);
@@ -341,7 +383,8 @@ export function exportToCSV(
 export function quickExportToCSV(
   accuracyData: AccuracyData,
   shownColumns: Record<string, boolean>,
-  processingTime?: { start?: Date; end?: Date; durationMs?: number }
+  processingTime?: { start?: Date; end?: Date; durationMs?: number },
+  fieldSettings?: Record<string, { includeInMetrics: boolean }>
 ): void {
-  exportToCSV(accuracyData, shownColumns, processingTime);
+  exportToCSV(accuracyData, shownColumns, processingTime, fieldSettings);
 } 

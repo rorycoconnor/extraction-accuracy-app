@@ -67,14 +67,14 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
   // Calculate model summaries with memoization for performance
   const modelSummaries: ModelSummary[] = useMemo(() => {
     // Calculate initial summaries
-    const summaries = calculateModelSummaries(visibleModels, fields, averages);
+    const summaries = calculateModelSummaries(visibleModels, fields, averages, data.fieldSettings);
     
     // Determine winners and assign ranks
-    determineFieldWinners(summaries, fields);
+    determineFieldWinners(summaries, fields, data.fieldSettings);
     assignRanks(summaries);
     
     return summaries;
-  }, [visibleModels, fields, averages]);
+  }, [visibleModels, fields, averages, data.fieldSettings]);
   
   /**
    * Returns the appropriate icon for a model's rank
@@ -176,11 +176,13 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                   key={field.fieldKey}
                   className={cn(
                     'flex items-center justify-between p-2 rounded text-xs',
-                    field.isWinner
-                      ? field.isSharedVictory
-                        ? 'bg-blue-100 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800'
-                        : 'bg-green-100 dark:bg-green-950/30 border border-green-200 dark:border-green-800'
-                      : 'bg-red-100 dark:bg-red-950/30 border border-red-200 dark:border-red-800'
+                    field.isIncludedInMetrics === false
+                      ? 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
+                      : field.isWinner
+                        ? field.isSharedVictory
+                          ? 'bg-blue-100 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800'
+                          : 'bg-green-100 dark:bg-green-950/30 border border-green-200 dark:border-green-800'
+                        : 'bg-red-100 dark:bg-red-950/30 border border-red-200 dark:border-red-800'
                   )}
                 >
                   <div className="flex items-center gap-1">
@@ -188,9 +190,13 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                       {field.fieldName}
                     </span>
                   </div>
-                  <span className="font-bold">
-                    {(field.accuracy * 100).toFixed(0)}%
-                  </span>
+                  {field.isIncludedInMetrics === false ? (
+                    <span className="text-muted-foreground text-xs">not included</span>
+                  ) : (
+                    <span className="font-bold">
+                      {(field.accuracy * 100).toFixed(0)}%
+                    </span>
+                  )}
                 </div>
               ))}
             </div>
@@ -278,19 +284,25 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                       key={field.fieldKey}
                       className={cn(
                         'flex items-center justify-between p-2 rounded text-xs',
-                        field.isWinner
-                          ? field.isSharedVictory
-                            ? 'bg-blue-100 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800'
-                            : 'bg-green-100 dark:bg-green-950/30 border border-green-200 dark:border-green-800'
-                          : 'bg-red-100 dark:bg-red-950/30 border border-red-200 dark:border-red-800'
+                        field.isIncludedInMetrics === false
+                          ? 'bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
+                          : field.isWinner
+                            ? field.isSharedVictory
+                              ? 'bg-blue-100 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800'
+                              : 'bg-green-100 dark:bg-green-950/30 border border-green-200 dark:border-green-800'
+                            : 'bg-red-100 dark:bg-red-950/30 border border-red-200 dark:border-red-800'
                       )}
                     >
                       <span className="font-medium truncate" title={field.fieldName}>
                         {field.fieldName}
                       </span>
-                      <span className="font-bold">
-                        {(field.accuracy * 100).toFixed(0)}%
-                      </span>
+                      {field.isIncludedInMetrics === false ? (
+                        <span className="text-muted-foreground text-xs">not included</span>
+                      ) : (
+                        <span className="font-bold">
+                          {(field.accuracy * 100).toFixed(0)}%
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>

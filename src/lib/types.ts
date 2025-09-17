@@ -92,6 +92,9 @@ export type AccuracyData = {
   fields: AccuracyField[];
   results: Array<FileResult>;
   averages: Record<string, ModelAverages>;
+  fieldSettings?: Record<string, {
+    includeInMetrics: boolean;
+  }>;
 };
 
 export type BoxTemplateField = {

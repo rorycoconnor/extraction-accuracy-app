@@ -27,6 +27,7 @@ export interface ModelSummary {
     recall: number;
     isWinner: boolean;
     isSharedVictory?: boolean;
+    isIncludedInMetrics?: boolean;
   }>;
 }
 
@@ -36,11 +37,13 @@ export interface ModelSummary {
 export function calculateModelSummaries(
   visibleModels: string[],
   fields: AccuracyData['fields'],
-  averages: AccuracyData['averages']
+  averages: AccuracyData['averages'],
+  fieldSettings?: Record<string, { includeInMetrics: boolean }>
 ): ModelSummary[] {
   return visibleModels.map(modelName => {
     const fieldPerformance = fields.map(field => {
       const fieldAvg = averages[field.key]?.[modelName] || { accuracy: 0, precision: 0, recall: 0, f1: 0 };
+      const isIncluded = fieldSettings?.[field.key]?.includeInMetrics !== false;
       return {
         fieldName: field.name,
         fieldKey: field.key,
@@ -49,23 +52,29 @@ export function calculateModelSummaries(
         precision: fieldAvg.precision,
         recall: fieldAvg.recall,
         isWinner: false,
-        isSharedVictory: false
+        isSharedVictory: false,
+        isIncludedInMetrics: isIncluded
       };
     });
     
-    // Calculate overall metrics (macro averaging - average across all fields)
-    // Include ALL fields in the average, even those with 0% scores
-    const overallF1 = fieldPerformance.length > 0 
-      ? fieldPerformance.reduce((sum, fp) => sum + fp.f1, 0) / fieldPerformance.length 
+    // Calculate overall metrics (macro averaging - average across ENABLED fields only)
+    // Filter to only include fields that are enabled for metrics
+    const enabledFields = fieldPerformance.filter((_, index) => {
+      const field = fields[index];
+      return fieldSettings?.[field.key]?.includeInMetrics !== false;
+    });
+    
+    const overallF1 = enabledFields.length > 0 
+      ? enabledFields.reduce((sum, fp) => sum + fp.f1, 0) / enabledFields.length 
       : 0;
-    const overallAccuracy = fieldPerformance.length > 0 
-      ? fieldPerformance.reduce((sum, fp) => sum + fp.accuracy, 0) / fieldPerformance.length 
+    const overallAccuracy = enabledFields.length > 0 
+      ? enabledFields.reduce((sum, fp) => sum + fp.accuracy, 0) / enabledFields.length 
       : 0;
-    const overallPrecision = fieldPerformance.length > 0 
-      ? fieldPerformance.reduce((sum, fp) => sum + fp.precision, 0) / fieldPerformance.length 
+    const overallPrecision = enabledFields.length > 0 
+      ? enabledFields.reduce((sum, fp) => sum + fp.precision, 0) / enabledFields.length 
       : 0;
-    const overallRecall = fieldPerformance.length > 0 
-      ? fieldPerformance.reduce((sum, fp) => sum + fp.recall, 0) / fieldPerformance.length 
+    const overallRecall = enabledFields.length > 0 
+      ? enabledFields.reduce((sum, fp) => sum + fp.recall, 0) / enabledFields.length 
       : 0;
     
     // VALIDATION: Check if macro-averaged metrics satisfy F1 formula
@@ -81,9 +90,9 @@ export function calculateModelSummaries(
         console.warn(`   Expected F1 from formula: ${(expectedF1 * 100).toFixed(1)}%`);
         console.warn(`   Difference: ${(f1Diff * 100).toFixed(1)}%`);
         
-        // Log field-level details for debugging
-        console.warn(`   Field details:`);
-        fieldPerformance.forEach(fp => {
+        // Log field-level details for debugging (enabled fields only)
+        console.warn(`   Enabled field details:`);
+        enabledFields.forEach(fp => {
           console.warn(`     ${fp.fieldName}: F1=${(fp.f1*100).toFixed(1)}%, P=${(fp.precision*100).toFixed(1)}%, R=${(fp.recall*100).toFixed(1)}%`);
         });
       } else {
@@ -91,12 +100,12 @@ export function calculateModelSummaries(
       }
     }
     
-    // VALIDATION: Check for impossible Precision=100% with field failures
+    // VALIDATION: Check for impossible Precision=100% with field failures (enabled fields only)
     if (overallPrecision >= 0.999) {
-      const failedFields = fieldPerformance.filter(fp => fp.f1 < 0.999);
-      if (failedFields.length > 0) {
-        console.warn(`🚨 ${modelName} - Precision=100% but ${failedFields.length} fields have F1 < 100%:`);
-        failedFields.forEach(fp => {
+      const failedEnabledFields = enabledFields.filter(fp => fp.f1 < 0.999);
+      if (failedEnabledFields.length > 0) {
+        console.warn(`🚨 ${modelName} - Precision=100% but ${failedEnabledFields.length} enabled fields have F1 < 100%:`);
+        failedEnabledFields.forEach(fp => {
           console.warn(`     ${fp.fieldName}: F1=${(fp.f1*100).toFixed(1)}%, P=${(fp.precision*100).toFixed(1)}%, R=${(fp.recall*100).toFixed(1)}%`);
         });
       }
@@ -109,7 +118,7 @@ export function calculateModelSummaries(
       overallPrecision,
       overallRecall,
       fieldsWon: 0,
-      totalFields: fields.length,
+      totalFields: enabledFields.length, // 🔧 FIX: Count only enabled fields
       rank: 0,
       fieldPerformance
     };
@@ -124,10 +133,16 @@ export function calculateModelSummaries(
  */
 export function determineFieldWinners(
   modelSummaries: ModelSummary[],
-  fields: AccuracyData['fields']
+  fields: AccuracyData['fields'],
+  fieldSettings?: Record<string, { includeInMetrics: boolean }>
 ): void {
   
   fields.forEach((field, fieldIndex) => {
+    // Skip winner determination for disabled fields
+    if (fieldSettings?.[field.key]?.includeInMetrics === false) {
+      return;
+    }
+    
     // Find the best accuracy for this field
     const performances = modelSummaries.map(summary => summary.fieldPerformance[fieldIndex]);
     const bestAccuracy = Math.max(...performances.map(p => p.accuracy));
