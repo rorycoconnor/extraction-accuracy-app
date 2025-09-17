@@ -837,7 +837,7 @@
   "1929684088720": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "",
+      "vendor": "BERTROM SUPPLY CO.",
       "invoiceDate": "2008-09-30",
       "amountDue": "487",
       "dueDate": "2008-10-30",
@@ -852,7 +852,7 @@
   "1929687659095": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "",
+      "vendor": "TEEK METER INC",
       "invoiceDate": "2008-03-22",
       "amountDue": "8757.5",
       "dueDate": "2008-04-21",
@@ -867,7 +867,7 @@
   "1929689644561": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "",
+      "vendor": "Center Hoist Co.",
       "invoiceDate": "2008-10-16",
       "amountDue": "1038.7",
       "dueDate": "2008-11-05",
@@ -882,7 +882,7 @@
   "1929689207336": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "",
+      "vendor": "Expo Corp.",
       "invoiceDate": "2008-05-24",
       "amountDue": "270.8",
       "dueDate": "2008-06-08",
@@ -897,7 +897,7 @@
   "1929685089260": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "",
+      "vendor": "BEST BERRY COMPANY",
       "invoiceDate": "2014-03-23",
       "amountDue": "10369",
       "dueDate": "2014-04-02",

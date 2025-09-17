@@ -334,7 +334,7 @@
         "key": "limitationOfLiability",
         "displayName": "Limitation of Liability",
         "hidden": false,
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "eda7bb6a-a04c-4c85-8c2b-f094bb765716",
@@ -342,7 +342,7 @@
         "key": "warrantyPeriodMonths",
         "displayName": "Warranty Period (Months)",
         "hidden": false,
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "f8ba5953-19a8-4a72-a7e2-6db5a8f336a7",
@@ -368,7 +368,7 @@
             "key": "Not Specified"
           }
         ],
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "fba637e6-1128-4047-bdc1-fafef536005c",
@@ -386,7 +386,7 @@
             "key": "Nol"
           }
         ],
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "7e3df744-bfe8-4732-bec0-e99f0f29146e",
@@ -394,7 +394,7 @@
         "key": "confidentialityDuration",
         "displayName": "Confidentiality Duration",
         "hidden": false,
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "d15a1891-3f69-40d1-80c8-f3f734ae61c2",
@@ -402,7 +402,7 @@
         "key": "paymentTerms",
         "displayName": "Payment Terms",
         "hidden": false,
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "b423de43-a9c3-4d66-9c66-17eb1479ceb4",
@@ -428,7 +428,7 @@
             "key": "No Specified"
           }
         ],
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "cdc9e5cb-2810-4752-a5c9-330f93f2c5bb",
@@ -436,7 +436,7 @@
         "key": "keyObligationsSummary",
         "displayName": "Key Obligations Summary",
         "hidden": false,
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "dcc0383a-770a-427d-8d2f-81b7226134f2",
@@ -968,6 +968,105 @@
         "displayName": "Employer’s business address",
         "hidden": false,
         "description": "",
+        "isActive": true
+      }
+    ]
+  },
+  {
+    "id": "fe4fb0a9-cf3e-42d1-b340-83ae04762116",
+    "type": "metadata_template",
+    "templateKey": "invoice",
+    "scope": "enterprise_1218697394",
+    "displayName": "Invoice",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "39f86638-19b0-45f2-8428-a2c723e9574f",
+        "type": "string",
+        "key": "vendor",
+        "displayName": "Vendor",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "37356873-bc47-4558-bdd2-514f1d94f1ab",
+        "type": "string",
+        "key": "description",
+        "displayName": "Description",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "1ff089cb-660e-49c0-bca1-dd0ce08037c6",
+        "type": "date",
+        "key": "invoiceDate",
+        "displayName": "Invoice Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "874e74b1-4035-4ca3-974a-fc1f46c7d6a1",
+        "type": "float",
+        "key": "amountDue",
+        "displayName": "Amount Due",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "77c69232-dabb-4816-872d-100df588d061",
+        "type": "date",
+        "key": "dueDate",
+        "displayName": "Due Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "6461e4c9-a8aa-4974-85d1-dc1ccb990f85",
+        "type": "string",
+        "key": "items",
+        "displayName": "Items",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "7bf366cf-83c4-4098-9dae-a009643711aa",
+        "type": "string",
+        "key": "term",
+        "displayName": "Term",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "fa5f84e6-5863-49d9-b98c-a19fcb41ed25",
+        "type": "string",
+        "key": "poNumber",
+        "displayName": "PO Number",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "eefcc9f0-e41f-4675-89b6-c538707f734a",
+        "type": "float",
+        "key": "salesAmountNumber",
+        "displayName": "Sales Amount Number",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "2950d96a-33b6-4f60-a46e-355564628631",
+        "type": "float",
+        "key": "salesTax",
+        "displayName": "Sales Tax",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "c768044f-69f2-4076-9bd6-98aafc6fd581",
+        "type": "float",
+        "key": "freightAmount",
+        "displayName": "Freight Amount",
+        "hidden": false,
         "isActive": true
       }
     ]
