@@ -119,8 +119,11 @@ const FieldHeaderGroup = ({
           type="button"
           onClick={() => onToggleMetrics(!includeInMetrics)}
           className={`absolute right-4 top-1/2 -translate-y-1/2 inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 cursor-pointer ${
-            includeInMetrics ? 'bg-gray-700' : 'bg-gray-200'
+            includeInMetrics ? '' : 'bg-gray-200'
           }`}
+          style={{
+            backgroundColor: includeInMetrics ? '#828282' : undefined
+          }}
           aria-label={`Toggle ${field.name} metrics ${includeInMetrics ? 'off' : 'on'}`}
         >
           <span 
