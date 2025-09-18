@@ -100,19 +100,42 @@ export const useDataHandlers = ({
     const success = await saveGroundTruth(fileId, templateKey, fieldKey, newValue);
     
     if (success) {
-      // Update component state to reflect the change
-      const updatedAccuracyData = { ...accuracyData };
-      const fileResult = updatedAccuracyData.results.find(r => r.id === fileId);
-      
-      if (fileResult) {
-        if (!fileResult.fields[fieldKey]) {
-          fileResult.fields[fieldKey] = {};
+      // Update component state to reflect the change with deep copying
+      const updatedResults = accuracyData.results.map(result => {
+        if (result.id === fileId) {
+          // Deep copy the file result and its fields
+          return {
+            ...result,
+            fields: {
+              ...result.fields,
+              [fieldKey]: {
+                ...result.fields[fieldKey],
+                [UI_LABELS.GROUND_TRUTH]: newValue
+              }
+            }
+          };
         }
-        fileResult.fields[fieldKey][UI_LABELS.GROUND_TRUTH] = newValue;
-      }
+        return result;
+      });
+      
+      const updatedAccuracyData = {
+        ...accuracyData,
+        results: updatedResults
+      };
+      
+      console.log('💾 handleSaveInlineGroundTruth: Updated accuracy data for', fileId, fieldKey, newValue);
       
       setAccuracyData(updatedAccuracyData);
       saveAccuracyData(updatedAccuracyData);
+      
+      // Close the inline editor after successful save
+      setIsInlineEditorOpen(false);
+      setSelectedCellForEdit(null);
+      
+      toast({
+        title: 'Ground Truth Updated',
+        description: `Successfully updated ${fieldKey} for ${fileId}`,
+      });
     }
   };
 
