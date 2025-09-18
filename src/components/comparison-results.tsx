@@ -16,6 +16,7 @@ interface ComparisonResultsProps {
   isExtracting?: boolean;
   extractingFields?: Set<string>;
   onOpenSummary?: () => void;
+  onToggleFieldMetrics?: (fieldKey: string, include: boolean) => void;
 }
 
 export default function ComparisonResults({
@@ -29,7 +30,8 @@ export default function ComparisonResults({
   recentlyChangedPrompts = new Set(),
   isExtracting = false,
   extractingFields = new Set(),
-  onOpenSummary
+  onOpenSummary,
+  onToggleFieldMetrics
 }: ComparisonResultsProps) {
   // Auto-determine showMetrics like the original implementation
   const shouldShowMetrics = React.useMemo(() => {
@@ -128,6 +130,7 @@ export default function ComparisonResults({
           recentlyChangedPrompts={recentlyChangedPrompts}
           isExtracting={isExtracting}
           extractingFields={extractingFields}
+          onToggleFieldMetrics={onToggleFieldMetrics}
         />
       </div>
     </div>

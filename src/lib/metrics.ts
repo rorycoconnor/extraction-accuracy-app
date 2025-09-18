@@ -57,10 +57,11 @@ export function isDateLike(text: string): boolean {
   const datePatterns = [
     // ISO format: 2025-05-07, 2025/05/07
     /^\d{4}[-\/]\d{1,2}[-\/]\d{1,2}$/,
-    // US format: 05/07/2025, 5/7/2025
-    /^\d{1,2}[-\/]\d{1,2}[-\/]\d{4}$/,
-    // European format: 07/05/2025, 7/5/2025
-    /^\d{1,2}[-\/]\d{1,2}[-\/]\d{4}$/,
+    // US format: 05/07/2025, 5/7/2025, 05/07/25, 5/7/25
+    /^\d{1,2}[-\/]\d{1,2}[-\/]\d{2,4}$/,
+    // European format: 07/05/2025, 7/5/2025 (same pattern as US)
+    // Abbreviated month formats: MAR-22-08, Mar-22-2008, etc.
+    /^[A-Za-z]{3}[-\/]\d{1,2}[-\/]\d{2,4}$/,
     // Written format: May 7, 2025; May 7 2025; 7 May 2025
     /^[A-Za-z]{3,9}\s+\d{1,2},?\s+\d{4}$/,
     /^\d{1,2}\s+[A-Za-z]{3,9}\s+\d{4}$/,
@@ -73,23 +74,156 @@ export function isDateLike(text: string): boolean {
 }
 
 /**
- * Compares two date strings for equality.
+ * Compares two date strings for equality using enhanced parsing.
+ * Handles multiple date formats including abbreviated months and 2-digit years.
  */
 export function compareDates(date1: string, date2: string): boolean {
   try {
-    const d1 = new Date(date1);
-    const d2 = new Date(date2);
+    const parsedDate1 = parseFlexibleDate(date1);
+    const parsedDate2 = parseFlexibleDate(date2);
     
-    // Check if both are valid dates
-    if (isNaN(d1.getTime()) || isNaN(d2.getTime())) return false;
+    // Check if both parsed successfully
+    if (!parsedDate1 || !parsedDate2) return false;
     
-    // Compare dates using ISO date strings (ignoring time and timezone issues)
-    const iso1 = d1.toISOString().split('T')[0];
-    const iso2 = d2.toISOString().split('T')[0];
+    // Compare using ISO date strings (ignoring time)
+    const iso1 = parsedDate1.toISOString().split('T')[0];
+    const iso2 = parsedDate2.toISOString().split('T')[0];
     
     return iso1 === iso2;
   } catch {
     return false;
+  }
+}
+
+/**
+ * Enhanced date parser that handles multiple formats including:
+ * - 2008-09-30, 2008/09/30
+ * - 09/30/08, 09-30-08
+ * - MAR-22-08, Mar-22-08
+ * - 30/09/2008 (European)
+ * - May 7, 2025, etc.
+ */
+function parseFlexibleDate(dateStr: string): Date | null {
+  if (!dateStr || typeof dateStr !== 'string') return null;
+  
+  const trimmed = dateStr.trim();
+  
+  // Month abbreviations mapping (case insensitive)
+  const monthMap: Record<string, number> = {
+    'jan': 0, 'january': 0,
+    'feb': 1, 'february': 1,
+    'mar': 2, 'march': 2,
+    'apr': 3, 'april': 3,
+    'may': 4,
+    'jun': 5, 'june': 5,
+    'jul': 6, 'july': 6,
+    'aug': 7, 'august': 7,
+    'sep': 8, 'september': 8,
+    'oct': 9, 'october': 9,
+    'nov': 10, 'november': 10,
+    'dec': 11, 'december': 11
+  };
+  
+  // Try various date patterns
+  const patterns = [
+    // YYYY-MM-DD, YYYY/MM/DD
+    {
+      regex: /^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/,
+      parse: (match: RegExpMatchArray) => new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]))
+    },
+    
+    // MM/DD/YY, MM-DD-YY (2-digit year)
+    {
+      regex: /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2})$/,
+      parse: (match: RegExpMatchArray) => {
+        const year = parseInt(match[3]);
+        const fullYear = year < 50 ? 2000 + year : 1900 + year; // 49 and below = 20xx, 50+ = 19xx
+        return new Date(fullYear, parseInt(match[1]) - 1, parseInt(match[2]));
+      }
+    },
+    
+    // MM/DD/YYYY, MM-DD-YYYY (4-digit year)
+    {
+      regex: /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/,
+      parse: (match: RegExpMatchArray) => new Date(parseInt(match[3]), parseInt(match[1]) - 1, parseInt(match[2]))
+    },
+    
+    // MON-DD-YY format (e.g., MAR-22-08)
+    {
+      regex: /^([a-z]{3})[-\/](\d{1,2})[-\/](\d{2})$/i,
+      parse: (match: RegExpMatchArray) => {
+        const monthNum = monthMap[match[1].toLowerCase()];
+        if (monthNum === undefined) return null;
+        const year = parseInt(match[3]);
+        const fullYear = year < 50 ? 2000 + year : 1900 + year;
+        return new Date(fullYear, monthNum, parseInt(match[2]));
+      }
+    },
+    
+    // MON-DD-YYYY format (e.g., MAR-22-2008)
+    {
+      regex: /^([a-z]{3})[-\/](\d{1,2})[-\/](\d{4})$/i,
+      parse: (match: RegExpMatchArray) => {
+        const monthNum = monthMap[match[1].toLowerCase()];
+        if (monthNum === undefined) return null;
+        return new Date(parseInt(match[3]), monthNum, parseInt(match[2]));
+      }
+    },
+    
+    // Month Name DD, YYYY (e.g., March 22, 2008)
+    {
+      regex: /^([a-z]+)\s+(\d{1,2}),?\s+(\d{4})$/i,
+      parse: (match: RegExpMatchArray) => {
+        const monthNum = monthMap[match[1].toLowerCase()];
+        if (monthNum === undefined) return null;
+        return new Date(parseInt(match[3]), monthNum, parseInt(match[2]));
+      }
+    },
+    
+    // DD/MM/YYYY (European format - be careful with ambiguous dates)
+    {
+      regex: /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/,
+      parse: (match: RegExpMatchArray) => {
+        // This is the same as MM/DD/YYYY pattern, so we need context
+        // For now, we'll try both interpretations if one fails
+        const day = parseInt(match[1]);
+        const month = parseInt(match[2]);
+        const year = parseInt(match[3]);
+        
+        // If day > 12, it must be DD/MM format
+        if (day > 12) {
+          return new Date(year, month - 1, day);
+        }
+        // If month > 12, it must be MM/DD format  
+        if (month > 12) {
+          return new Date(year, day - 1, month);
+        }
+        // Ambiguous case - default to MM/DD (US format)
+        return new Date(year, month - 1, day);
+      }
+    }
+  ];
+  
+  for (const pattern of patterns) {
+    const match = trimmed.match(pattern.regex);
+    if (match) {
+      try {
+        const date = pattern.parse(match);
+        if (date && !isNaN(date.getTime())) {
+          return date;
+        }
+      } catch (e) {
+        // Continue to next pattern
+      }
+    }
+  }
+  
+  // Fallback to JavaScript's Date constructor for other formats
+  try {
+    const fallbackDate = new Date(trimmed);
+    return !isNaN(fallbackDate.getTime()) ? fallbackDate : null;
+  } catch {
+    return null;
   }
 }
 

@@ -223,7 +223,7 @@ const MainPage: React.FC = () => {
     }
 
     try {
-      quickExportToCSV(accuracyData, shownColumns);
+      quickExportToCSV(accuracyData, shownColumns, undefined, accuracyData.fieldSettings);
       toast({
         title: "Export Successful",
         description: "CSV file has been downloaded to your computer.",
@@ -242,6 +242,27 @@ const MainPage: React.FC = () => {
    * Handle running AI comparison across selected models - ENHANCED VERSION
    */
   const handleRunComparison = enhancedRunner.handleRunComparison;
+
+  /**
+   * Handle toggling field inclusion in metrics calculation
+   */
+  const handleToggleFieldMetrics = (fieldKey: string, include: boolean) => {
+    if (!accuracyData) {
+      console.log('❌ No accuracy data to update');
+      return;
+    }
+    
+    const updatedData = {
+      ...accuracyData,
+      fieldSettings: {
+        ...accuracyData.fieldSettings,
+        [fieldKey]: { includeInMetrics: include }
+      }
+    };
+    
+    // 🔧 FIX: Use direct object instead of callback for unified store
+    setAccuracyData(updatedData);
+  };
 
   /**
    * Handle copying Enhanced Extract results to ground truth
@@ -390,13 +411,14 @@ const MainPage: React.FC = () => {
        
        <div className="flex-1 min-h-0">
          {accuracyData && accuracyData.results && accuracyData.results.length > 0 ? (
-           <ComparisonResults
-             accuracyData={accuracyData}
-             shownColumns={shownColumns}
-             onOpenPromptStudio={handleOpenPromptStudio}
-             onOpenInlineEditor={handleOpenInlineEditor}
-             onOpenSummary={openPerformanceModal}
-           />
+          <ComparisonResults
+            accuracyData={accuracyData}
+            shownColumns={shownColumns}
+            onOpenPromptStudio={handleOpenPromptStudio}
+            onOpenInlineEditor={handleOpenInlineEditor}
+            onOpenSummary={openPerformanceModal}
+            onToggleFieldMetrics={handleToggleFieldMetrics}
+          />
          ) : (
            <div className="p-4 md:p-8">
              <EmptyState />

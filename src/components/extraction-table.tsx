@@ -102,7 +102,7 @@ export default function ExtractionTable({
         
         if (hasGroundTruthData) {
           // Calculate model summaries and rank them
-          const modelSummaries = calculateModelSummaries(models, fields, averages);
+          const modelSummaries = calculateModelSummaries(models, fields, averages, data.fieldSettings);
           assignRanks(modelSummaries);
           
           // Extract the model names in order of performance (best first)
