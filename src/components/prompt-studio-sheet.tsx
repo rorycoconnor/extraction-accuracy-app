@@ -222,29 +222,6 @@ export default function PromptStudioSheet({
     setDeleteConfirmation({ isOpen: false, versionId: '', versionNumber: 0 });
   };
 
-  // Determine button text and icon
-  const getButtonContent = () => {
-    if (isGenerating) {
-      return {
-        icon: <Loader2 className="mr-2 h-4 w-4 animate-spin" />,
-        text: isImprovementMode ? "Improving..." : hasExistingPrompt ? "Improving..." : "Generating..."
-      };
-    }
-    
-    if (hasExistingPrompt) {
-      return {
-        icon: <Wand2 className="mr-2 h-4 w-4" />,
-        text: "Improve Prompt"
-      };
-    } else {
-      return {
-        icon: <Sparkles className="mr-2 h-4 w-4" />,
-        text: "Generate Prompt"
-      };
-    }
-  };
-
-  const buttonContent = getButtonContent();
   
   // Button is enabled when:
   // 1. Not generating AND has field name AND
@@ -317,8 +294,12 @@ export default function PromptStudioSheet({
                                                 onClick={handleGeneratePrompt}
                                                 disabled={!canGenerate}
                                             >
-                                                <Sparkles className="mr-2 h-4 w-4" />
-                                                Generate Prompt
+                                                {isGenerating ? (
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <Sparkles className="mr-2 h-4 w-4" />
+                                                )}
+                                                {isGenerating ? "Generating..." : "Generate Prompt"}
                                             </Button>
                                         )}
                                         <Button 
@@ -366,8 +347,12 @@ export default function PromptStudioSheet({
                                                 onClick={handleGeneratePrompt}
                                                 disabled={!canGenerate}
                                               >
-                                                <Wand2 className="mr-2 h-4 w-4" />
-                                                Improve Prompt
+                                                {isGenerating ? (
+                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <Wand2 className="mr-2 h-4 w-4" />
+                                                )}
+                                                {isGenerating ? "Improving..." : "Improve Prompt"}
                                               </Button>
                                             )}
                                           </div>

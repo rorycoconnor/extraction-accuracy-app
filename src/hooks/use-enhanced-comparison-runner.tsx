@@ -258,6 +258,44 @@ export const useEnhancedComparisonRunner = (
     detailedProgress
   ]);
 
+  /**
+   * Formats multi-select field values by adding spaces after commas
+   */
+  const formatMultiSelectValue = (value: string): string => {
+    if (!value || typeof value !== 'string') return value;
+    
+    // Check if it's a comma-separated list without proper spacing
+    if (value.includes(',') && !value.includes(', ')) {
+      // Split by comma, trim each value, and rejoin with proper spacing
+      return value.split(',')
+        .map(item => item.trim())
+        .filter(item => item.length > 0) // Remove any empty items
+        .join(', ');
+    }
+    
+    return value;
+  };
+
+  /**
+   * Checks if a field is a multi-select type based on various indicators
+   */
+  const isMultiSelectField = (field: AccuracyField, fieldKey: string): boolean => {
+    // Check various field type indicators
+    const fieldType = field.type;
+    
+    // Direct multiSelect type check (from Box API types)
+    if (fieldType === 'multiSelect') return true;
+    
+    // UI field types that map to multiSelect
+    if (fieldType === 'dropdown_multi' || fieldType === 'taxonomy') return true;
+    
+    // Fallback: Check if field name suggests multi-select
+    const fieldName = (field.name || fieldKey).toLowerCase();
+    if (fieldName.includes('multi') || fieldName.includes('dropdown') || fieldName.includes('select')) return true;
+    
+    return false;
+  };
+
   // Helper function to process extraction results atomically
   const processExtractionResults = async (
     accuracyData: AccuracyData,
@@ -300,7 +338,16 @@ export const useEnhancedComparisonRunner = (
               }
               
               if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
-                fieldData[modelName] = String(extractedValue).trim();
+                let formattedValue = String(extractedValue).trim();
+                
+                // Check if this is a multi-select field and format accordingly
+                const field = accuracyData.fields.find(f => f.key === fieldKey);
+                if (field && isMultiSelectField(field, fieldKey)) {
+                  formattedValue = formatMultiSelectValue(formattedValue);
+                  console.log(`🔧 Formatted multi-select value for ${fieldKey}: "${extractedValue}" → "${formattedValue}"`);
+                }
+                
+                fieldData[modelName] = formattedValue;
               } else {
                 fieldData[modelName] = NOT_PRESENT_VALUE;
               }

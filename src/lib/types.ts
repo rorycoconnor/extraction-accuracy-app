@@ -80,10 +80,10 @@ export type PromptVersion = {
 export type AccuracyField = {
   name: string;
   key: string;
-  type: 'string' | 'date' | 'enum' | 'number';
+  type: 'string' | 'date' | 'enum' | 'number' | 'multiSelect' | 'dropdown_multi' | 'taxonomy';
   prompt: string; // This is the active prompt
   promptHistory: PromptVersion[];
-  options?: { key: string }[]; // Enum options persisted from template
+  options?: { key: string }[]; // Enum/multiSelect options persisted from template
 };
 
 export type AccuracyData = {

@@ -324,12 +324,119 @@
     "lastModified": "2025-09-17T13:36:50.188Z"
   },
   "endDate": {
-    "activePrompt": "Extract the contract's end date as YYYY-MM-DD; if not explicitly stated, calculate it by adding the contract term to the start date (or last signature date if the start is missing) and then subtracting one day.",
+    "activePrompt": "Extract the \"End Date\" formatted as YYYY-MM-DD, calculating it by adding the term to the start date (or to the last signed date if the start date is missing) if not explicitly stated. If a date cannot be found or calculated, infer it from context like a project completion date. If no date can be found, calculated, or inferred, return \"null\".",
     "promptHistory": [
+      {
+        "id": "v6",
+        "prompt": "Extract the \"End Date\" formatted as YYYY-MM-DD, calculating it by adding the term to the start date (or to the last signed date if the start date is missing) if not explicitly stated. If a date cannot be found or calculated, infer it from context like a project completion date. If no date can be found, calculated, or inferred, return \"null\".",
+        "savedAt": "2025-09-23T17:38:10.012Z"
+      },
       {
         "id": "v9",
         "prompt": "Extract the contract's end date as YYYY-MM-DD; if not explicitly stated, calculate it by adding the contract term to the start date (or last signature date if the start is missing) and then subtracting one day.",
-        "savedAt": "2025-08-08T00:33:14.379Z"
+        "savedAt": "2025-08-08T00:33:14.379Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0.25,
+              "accuracy": 0.25,
+              "precision": 0.25,
+              "recall": 0.25
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-09-23T16:15:49.704Z"
+        }
       },
       {
         "id": "v8",
@@ -497,8 +604,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 13,
-    "lastModified": "2025-09-15T15:20:45.166Z"
+    "usageCount": 14,
+    "lastModified": "2025-09-23T17:38:10.017Z"
   },
   "effectiveDate": {
     "activePrompt": "Identify this document’s effective start date. Apply this order: (1) an explicit clause stating “Effective Date,” “Effective as of,” “Commencement Date,” or “Term begins on”; (2) if it says “effective upon full execution,” use the latest party signature date in this document; (3) if neither is present, use the document date on the title/first page.",
@@ -1507,5 +1614,245 @@
     "lastUsedTemplate": "contracts",
     "usageCount": 1,
     "lastModified": "2025-09-17T13:51:07.758Z"
+  },
+  "poNumber": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-09-18T01:41:44.689Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Extract the Purchase Order Number, prioritizing values found in a table to the right of a label like \"PO Number\" or \"Order #\", especially if the table is in the top right of the document. If not found in a table, extract the alphanumeric string located near the terms \"PO Number\", \"Order #\", or \"Purchase Order\".",
+        "savedAt": "2025-09-18T01:36:54.325Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0.8000000000000002,
+              "accuracy": 0.8,
+              "precision": 0.8,
+              "recall": 0.8
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0.8000000000000002,
+              "accuracy": 0.8,
+              "precision": 0.8,
+              "recall": 0.8
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 5,
+          "lastRunAt": "2025-09-18T01:38:47.268Z"
+        }
+      },
+      {
+        "id": "v1",
+        "prompt": "Extract the Purchase Order Number, often labeled as \"PO Number\" or \"Order #\". If no explicit PO Number is found, identify any alphanumeric string near the term \"Purchase Order\". ",
+        "savedAt": "2025-09-18T01:32:53.617Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0.8000000000000002,
+              "accuracy": 0.8,
+              "precision": 0.8,
+              "recall": 0.8
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0.8000000000000002,
+              "accuracy": 0.8,
+              "precision": 0.8,
+              "recall": 0.8
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 5,
+          "lastRunAt": "2025-09-18T01:34:35.873Z"
+        }
+      }
+    ],
+    "lastUsedTemplate": "invoice",
+    "usageCount": 3,
+    "lastModified": "2025-09-18T01:41:44.692Z"
+  },
+  "dueDate": {
+    "activePrompt": "Extract the due date from the document and format it as YYYY-MM-DD.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the due date from the document and format it as YYYY-MM-DD.",
+        "savedAt": "2025-09-18T01:45:27.766Z"
+      }
+    ],
+    "lastUsedTemplate": "invoice",
+    "usageCount": 1,
+    "lastModified": "2025-09-18T01:45:27.769Z"
   }
 }

@@ -224,12 +224,13 @@ export default function GroundTruthPage() {
       setIsEditorOpen(false);
       
       // Then refresh the files to update status
-      // Add a small delay to ensure the unified ground truth system has processed all changes
+      // Add sufficient delay to ensure the unified ground truth system has processed all changes
       setTimeout(() => {
         if (selectedFiles.length > 0) {
+          console.log('🔄 Refreshing files after ground truth edit...');
           loadSelectedFiles(selectedFiles); // Refresh the current files to update status
         }
-      }, 100);
+      }, 750);
       
       toast({
         title: 'Ground Truth Saved',
@@ -299,9 +300,7 @@ export default function GroundTruthPage() {
       
       // Use selected files directly
       const allFiles = selectedFiles.map(file => ({
-        file,
-        path: 'Selected Files', // Since these are from the file picker
-        folderId: 'selected'
+        file
       }));
       
       // Get ground truth data
@@ -328,8 +327,6 @@ export default function GroundTruthPage() {
       const headers = [
         'box_file_id',
         'file_name', 
-        'folder_path',
-        'folder_id',
         'template_key',
         ...activeFields.map(f => f.key)
       ];
@@ -344,8 +341,6 @@ export default function GroundTruthPage() {
           const row = [
             `="${fileInfo.file.id}"`, // Force as string
             `"${fileInfo.file.name}"`, // Quote file name to handle commas
-            `"${fileInfo.path}"`,
-            `="${fileInfo.folderId}"`, // Force as string
             selectedTemplateForExport,
             ...activeFields.map(field => {
               // Handle files that might not have ground truth data yet
@@ -561,7 +556,7 @@ export default function GroundTruthPage() {
       }
 
       // Get field columns (excluding metadata columns)
-      const metadataColumns = ['box_file_id', 'file_name', 'folder_path', 'folder_id', 'template_key'];
+      const metadataColumns = ['box_file_id', 'file_name', 'template_key'];
       const fieldColumns = Object.keys(rows[0]).filter(col => !metadataColumns.includes(col));
       console.log('🐛 DEBUG: Metadata columns:', metadataColumns);
       console.log('🐛 DEBUG: Field columns:', fieldColumns);
@@ -620,17 +615,24 @@ export default function GroundTruthPage() {
       
       // Refresh ground truth system
       console.log('🐛 DEBUG: Refreshing ground truth system...');
-      refreshGroundTruth();
+      
+      // Wait for ground truth data to be refreshed before updating UI
+      await new Promise(resolve => {
+        refreshGroundTruth();
+        // Give time for the async loadGroundTruthData to complete
+        setTimeout(resolve, 750);
+      });
       
       // Refresh current files to update UI
-      console.log('🐛 DEBUG: Refreshing files...');
+      console.log('🔄 DEBUG: Refreshing files to update status...');
       if (selectedFiles.length > 0) {
-        loadSelectedFiles(selectedFiles);
+        await loadSelectedFiles(selectedFiles);
+        console.log('✅ DEBUG: Files refreshed, status should be updated');
       }
 
       toast({
         title: 'Import Completed',
-        description: `Updated ${updatedCount} files, skipped ${skippedCount} files.${errors.length > 0 ? ` ${errors.length} errors occurred.` : ''}`,
+        description: `Updated ${updatedCount} files, skipped ${skippedCount} files. Status updated.${errors.length > 0 ? ` ${errors.length} errors occurred.` : ''}`,
         variant: errors.length > 0 ? 'destructive' : 'default',
       });
 

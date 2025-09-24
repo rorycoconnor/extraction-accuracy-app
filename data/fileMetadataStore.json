@@ -112,7 +112,7 @@
       "comments": "",
       "assignee": "",
       "contractType": "NDA",
-      "counterPartyName": "Copper State Fabrication",
+      "counterPartyName": "Test",
       "counterPartyAddress": "2450 W Industrial Ave Phoenix, AZ 85009",
       "effectiveDate": "2024-04-05",
       "contractTerm": "1 Year",
@@ -121,7 +121,7 @@
       "noticePeriod": "Not Present",
       "terminationForConvenience": "No",
       "terminationForCause": "No",
-      "governingLaw": "Delaware",
+      "governingLaw": "Not Present",
       "venue": "Nevada",
       "contractValue": "Not Present",
       "requestor": "",
@@ -129,15 +129,15 @@
       "submissionDate": "",
       "companySignerEmail": "",
       "counterPartySignerEmail": "",
-      "ndaStatus": "Pending...",
-      "limitationOfLiability": "Pending...",
-      "warrantyPeriodMonths": "Pending...",
-      "indemnification": "Pending...",
-      "confidentiality": "Pending...",
-      "confidentialityDuration": "Pending...",
-      "paymentTerms": "Pending...",
-      "disputeResolution": "Pending...",
-      "keyObligationsSummary": "Pending..."
+      "ndaStatus": "",
+      "limitationOfLiability": "",
+      "warrantyPeriodMonths": "",
+      "indemnification": "",
+      "confidentiality": "",
+      "confidentialityDuration": "",
+      "paymentTerms": "",
+      "disputeResolution": "",
+      "keyObligationsSummary": ""
     }
   },
   "1918922486299": {
@@ -837,76 +837,81 @@
   "1929684088720": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "BERTROM SUPPLY CO.",
-      "invoiceDate": "2008-09-30",
-      "amountDue": "487",
-      "dueDate": "2008-10-30",
-      "items": "TECH CART",
-      "term": "NET 30",
-      "poNumber": "477-929",
-      "salesAmountNumber": "432",
-      "salesTax": "0",
-      "freightAmount": "55"
+      "vendor": "",
+      "invoiceDate": "undefined",
+      "amountDue": "",
+      "dueDate": "undefined",
+      "items": "",
+      "term": "",
+      "poNumber": "",
+      "salesAmountNumber": "",
+      "salesTax": "",
+      "freightAmount": "",
+      "description": ""
     }
   },
   "1929687659095": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "TEEK METER INC",
-      "invoiceDate": "2008-03-22",
-      "amountDue": "8757.5",
-      "dueDate": "2008-04-21",
-      "items": "LSP62 SCANNER\n37 PIN D- SUB37 SCREW TERMINAL BLOCK",
-      "term": "NET 30 INV DATE",
-      "poNumber": "42P07001704",
-      "salesAmountNumber": "8757.5",
-      "salesTax": "0",
-      "freightAmount": "0"
+      "vendor": "",
+      "invoiceDate": "undefined",
+      "amountDue": "",
+      "dueDate": "undefined",
+      "items": "",
+      "term": "",
+      "poNumber": "",
+      "salesAmountNumber": "",
+      "salesTax": "",
+      "freightAmount": "",
+      "description": ""
     }
   },
   "1929689644561": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "Center Hoist Co.",
-      "invoiceDate": "2008-10-16",
-      "amountDue": "1038.7",
-      "dueDate": "2008-11-05",
-      "items": "H14508U-610-610-27IN WEATHERHEAD HOSE ASSEMBLY\nC5405X6X8 STEEL 90 DEGREE MALE ELBOW 3/8\" OD TUBE TO 1/2\" NPT\nH14508U-608-610-23IN WEATHERHEAD HOSE ASSEMBLY\nH24504U-606-606-23IN WEATHERHEAD HOSE ASSEMBLY",
-      "term": "Net 20 Days",
-      "poNumber": "0401-0000009992",
-      "salesAmountNumber": "1038.7",
-      "salesTax": "0",
-      "freightAmount": "0"
+      "vendor": "",
+      "invoiceDate": "undefined",
+      "amountDue": "",
+      "dueDate": "undefined",
+      "items": "",
+      "term": "",
+      "poNumber": "",
+      "salesAmountNumber": "",
+      "salesTax": "",
+      "freightAmount": "",
+      "description": ""
     }
   },
   "1929689207336": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "Expo Corp.",
-      "invoiceDate": "2008-05-24",
-      "amountDue": "270.8",
-      "dueDate": "2008-06-08",
-      "items": "MAINTENANCE KIT 4000N\n13\" x 19\" sheet premium color printing paper 24# 500sheet/box for color laser printer",
-      "term": "NET 15 DAYS",
-      "poNumber": "92504087",
-      "salesAmountNumber": "261.59",
-      "salesTax": "0",
-      "freightAmount": "9.21"
+      "vendor": "",
+      "invoiceDate": "undefined",
+      "amountDue": "",
+      "dueDate": "undefined",
+      "items": "",
+      "term": "",
+      "poNumber": "",
+      "salesAmountNumber": "",
+      "salesTax": "",
+      "freightAmount": "",
+      "description": ""
     }
   },
   "1929685089260": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "BEST BERRY COMPANY",
-      "invoiceDate": "2014-03-23",
-      "amountDue": "10369",
-      "dueDate": "2014-04-02",
-      "items": "STRAWBERRIES\nTECTROL\nRASPBERRIES",
-      "term": "NET 10 DAYS",
-      "poNumber": "Not Present",
-      "salesAmountNumber": "10369",
-      "salesTax": "Not Present",
-      "freightAmount": "Not Present"
+      "vendor": "",
+      "invoiceDate": "undefined",
+      "amountDue": "",
+      "dueDate": "undefined",
+      "items": "",
+      "term": "",
+      "poNumber": "",
+      "salesAmountNumber": "",
+      "salesTax": "",
+      "freightAmount": "",
+      "description": ""
     }
   },
   "1931400311733": {
@@ -1478,6 +1483,230 @@
       "employerAuthorizedRepresentativesNameAndTitle": "Spencer Laura Title: Engineering Manager",
       "employersBusinessName": "Chips Industries",
       "employersBusinessAddress": "25488 Silicon Way, San Jose, CA 90110"
+    }
+  },
+  "1993906916702": {
+    "templateKey": "contracts",
+    "groundTruth": {
+      "contractType": "NDA",
+      "counterPartyName": "Copper State Fabrication",
+      "counterPartyAddress": "2450 W Industrial Ave Phoenix, AZ 85009",
+      "effectiveDate": "4/5/24",
+      "contractTerm": "1 Year",
+      "endDate": "4/4/25",
+      "renewalType": "Manual Renewal",
+      "noticePeriod": "Not Present",
+      "governingLaw": "Delaware",
+      "venue": "Nevada",
+      "terminationForConvenience": "No",
+      "terminationForCause": "No",
+      "contractValue": "Not Present"
+    }
+  },
+  "1993917339683": {
+    "templateKey": "contracts",
+    "groundTruth": {
+      "contractType": "Master Agreement",
+      "counterPartyName": "Great Lakes Precision Metals",
+      "counterPartyAddress": "15840 Commerce Drive Novi, MI 48375",
+      "effectiveDate": "3/26/25",
+      "contractTerm": "1 Year",
+      "endDate": "3/25/26",
+      "renewalType": "Autorenewal",
+      "noticePeriod": "60 Days",
+      "governingLaw": "Delaware",
+      "venue": "New York",
+      "terminationForConvenience": "Yes",
+      "terminationForCause": "Yes",
+      "contractValue": "Not Present"
+    }
+  },
+  "1993912806453": {
+    "templateKey": "contracts",
+    "groundTruth": {
+      "contractType": "Master Agreement",
+      "counterPartyName": "NewTron Technologies",
+      "counterPartyAddress": "44 Space Port, Cape Canaveral, Florida 32920",
+      "effectiveDate": "5/7/25",
+      "contractTerm": "1 Year",
+      "endDate": "5/6/26",
+      "renewalType": "Manual Renewal",
+      "noticePeriod": "30 Days",
+      "governingLaw": "Florida",
+      "venue": "Florida",
+      "terminationForConvenience": "Yes",
+      "terminationForCause": "Yes",
+      "contractValue": "Not Present"
+    }
+  },
+  "1993913912509": {
+    "templateKey": "contracts",
+    "groundTruth": {
+      "contractType": "Master Agreement",
+      "counterPartyName": "Noko Industies",
+      "counterPartyAddress": "8945 Industrial Park, Houston, TX 78701",
+      "effectiveDate": "10/27/24",
+      "contractTerm": "1 Year",
+      "endDate": "10/26/25",
+      "renewalType": "Autorenewal",
+      "noticePeriod": "60 Days",
+      "governingLaw": "Delaware",
+      "venue": "New York",
+      "terminationForConvenience": "Yes",
+      "terminationForCause": "Yes",
+      "contractValue": "Not Present"
+    }
+  },
+  "1993912340672": {
+    "templateKey": "contracts",
+    "groundTruth": {
+      "contractType": "Master Agreement",
+      "counterPartyName": "PlainsTech Manufacturing Co.",
+      "counterPartyAddress": "1525 Steel Ridge Road Fremont, NE 68025",
+      "effectiveDate": "3/31/25",
+      "contractTerm": "1 Year",
+      "endDate": "3/30/26",
+      "renewalType": "Autorenewal",
+      "noticePeriod": "60 Days",
+      "governingLaw": "Delaware",
+      "venue": "New York",
+      "terminationForConvenience": "Yes",
+      "terminationForCause": "Yes",
+      "contractValue": "Not Present"
+    }
+  },
+  "1993907788199": {
+    "templateKey": "contracts",
+    "groundTruth": {
+      "contractType": "Master Agreement",
+      "counterPartyName": "Precision Plastics Co.",
+      "counterPartyAddress": "410 Polymer Road, Columbus, OH 43215",
+      "effectiveDate": "2/8/24",
+      "contractTerm": "1 Year",
+      "endDate": "2/7/25",
+      "renewalType": "Autorenewal",
+      "noticePeriod": "60 Days",
+      "governingLaw": "Delaware",
+      "venue": "New York",
+      "terminationForConvenience": "Yes",
+      "terminationForCause": "Yes",
+      "contractValue": "Not Present"
+    }
+  },
+  "1993908169776": {
+    "templateKey": "contracts",
+    "groundTruth": {
+      "contractType": "NDA",
+      "counterPartyName": "Techstar, Inc.",
+      "counterPartyAddress": "1 Market Street, San Jose, CA 95432",
+      "effectiveDate": "3/12/24",
+      "contractTerm": "1 Year",
+      "endDate": "3/11/25",
+      "renewalType": "Manual Renewal",
+      "noticePeriod": "Not Present",
+      "governingLaw": "Delaware",
+      "venue": "Nevada",
+      "terminationForConvenience": "No",
+      "terminationForCause": "No",
+      "contractValue": "Not Present"
+    }
+  },
+  "1993909100480": {
+    "templateKey": "contracts",
+    "groundTruth": {
+      "contractType": "NDA",
+      "counterPartyName": "VoltEdge Power Systems, Inc.",
+      "counterPartyAddress": "34875 Edison Drive, Novi, MI 48375",
+      "effectiveDate": "5/24/24",
+      "contractTerm": "1 Year",
+      "endDate": "5/23/25",
+      "renewalType": "Manual Renewal",
+      "noticePeriod": "Not Present",
+      "governingLaw": "Delaware",
+      "venue": "Nevada",
+      "terminationForConvenience": "No",
+      "terminationForCause": "No",
+      "contractValue": "Not Present"
+    }
+  },
+  "1994856865257": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "BERTROM SUPPLY CO.",
+      "description": "TECH CART",
+      "invoiceDate": "2008-09-30",
+      "amountDue": "487",
+      "dueDate": "2008-10-30",
+      "items": "TECH CART",
+      "term": "NET 30",
+      "poNumber": "477-929",
+      "salesAmountNumber": "432",
+      "salesTax": "0",
+      "freightAmount": "55"
+    }
+  },
+  "1994862887752": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "TEEK METER INC",
+      "description": "LSP62 SCANNER, 37 PIN D- SUB37 SCREW TERMINAL BLOCK",
+      "invoiceDate": "2008-03-22",
+      "amountDue": "8757.5",
+      "dueDate": "2008-04-21",
+      "items": "LD-092-713 LSP62 SCANNER\nLD-199-812 37 PIN D- SUB37 SCREW TERMINAL BLOCK",
+      "term": "NET 30 INV DATE",
+      "poNumber": "42P07001704",
+      "salesAmountNumber": "8757.5",
+      "salesTax": "0",
+      "freightAmount": "0"
+    }
+  },
+  "1994862150058": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "Center Hoist Co.",
+      "description": "Hydraulic Equipment",
+      "invoiceDate": "2008-10-16",
+      "amountDue": "1038.7",
+      "dueDate": "2008-11-05",
+      "items": "WEATHERHEAD HOSE ASSEMBLY\nSTEEL 90 DEGREE MALE ELBOW\nWEATHERHEAD HOSE ASSEMBLY\nWEATHERHEAD HOSE ASSEMBLY",
+      "term": "Net 20 Days",
+      "poNumber": "0401-0000009992",
+      "salesAmountNumber": "1038.7",
+      "salesTax": "0",
+      "freightAmount": "0"
+    }
+  },
+  "1994855113882": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "Expo Corp.",
+      "description": "MAINTENANCE KIT 4000N\nLaser toner and drum cartridge AO (ALL IN ONE )\nMini-disc 80 minute with sleeve type jewel case 5/pack\nMaintenance Kit 110V fuser assembly MP roli for use in the LaserJet 4V and 4MV laser printers.\nToner for FS-1500A Monochrome Laser Printers\nCD-RW 700MB 80 minute branded surface rewritable 4X with slim jewel case.\n13\" x 19\" sheet premium color printing paper 24# 500sheet/box for color laser printer",
+      "invoiceDate": "2008-05-24",
+      "amountDue": "270.8",
+      "dueDate": "2008-06-08",
+      "items": "MAINTENANCE KIT 4000N\nLaser toner and drum cartridge AO (ALL IN ONE )\nMini-disc 80 minute with sleeve type jewel case 5/pack\nMaintenance Kit 110V fuser assembly MP roli for use in the LaserJet 4V and 4MV laser printers.\nToner for FS-1500A Monochrome Laser Printers\nCD-RW 700MB 80 minute branded surface rewritable 4X with slim jewel case.\n13\" x 19\" sheet premium color printing paper 24# 500sheet/box for color laser printer",
+      "term": "NET 15 DAYS",
+      "poNumber": "92504087",
+      "salesAmountNumber": "261.59",
+      "salesTax": "0",
+      "freightAmount": "9.21"
+    }
+  },
+  "1994857802015": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "BEST BERRY COMPANY",
+      "description": "Sale of berries",
+      "invoiceDate": "2014-03-23",
+      "amountDue": "10369",
+      "dueDate": "2014-04-02",
+      "items": "STRAWBERRIES\nTECTROL\nRASPBERRIES",
+      "term": "NET 10 DAYS",
+      "poNumber": "Not Present",
+      "salesAmountNumber": "10369",
+      "salesTax": "Not Present",
+      "freightAmount": "Not Present"
     }
   }
 }

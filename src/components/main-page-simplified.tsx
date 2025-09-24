@@ -325,11 +325,22 @@ const MainPage: React.FC = () => {
           if (extractedValue && extractedValue !== '' && extractedValue !== null && extractedValue !== undefined) {
             console.log(`  💾 Saving ${fieldKey} = "${extractedValue}"`);
             
+            // 🔧 Normalize date format to match manual ground truth editor format
+            let valueToSave = extractedValue;
+            if (fieldConfig.type === 'date') {
+              const parsedDate = new Date(extractedValue);
+              if (!isNaN(parsedDate.getTime())) {
+                // Convert to ISO format (YYYY-MM-DD) to match ground truth editor
+                valueToSave = parsedDate.toISOString().split('T')[0];
+                console.log(`  📅 Normalized date for ${fieldKey}: "${extractedValue}" → "${valueToSave}"`);
+              }
+            }
+            
             const success = await saveGroundTruth(
               fileResult.id,
               selectedTemplate.templateKey,
               fieldKey,
-              extractedValue
+              valueToSave
             );
             
             console.log(`  ${success ? '✅' : '❌'} Save result for ${fieldKey}:`, success);
