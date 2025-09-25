@@ -140,7 +140,6 @@ export function associateFilesToTemplate(fileIds: string[], templateKey: string)
 }
 
 export function saveGroundTruthForFile(fileId: string, templateKey: string, data: Record<string, string>) {
-    console.log('💾 saveGroundTruthForFile called for file:', fileId);
     const store = getFileMetadataStore();
     
     // ✅ FIXED: Merge with existing ground truth data instead of overwriting
@@ -150,16 +149,29 @@ export function saveGroundTruthForFile(fileId: string, templateKey: string, data
       ...data
     };
     
+    // 🧹 CLEANUP: Remove empty/invalid fields instead of storing them
+    const cleanedGroundTruth: Record<string, string> = {};
+    Object.entries(mergedGroundTruth).forEach(([key, value]) => {
+      // Simpler validation that matches status calculation
+      const trimmedValue = String(value).trim();
+      if (value !== undefined && 
+          value !== null && 
+          trimmedValue !== '') {
+        cleanedGroundTruth[key] = trimmedValue;
+      }
+    });
+    
+    
     store[fileId] = {
       templateKey: templateKey,
-      groundTruth: mergedGroundTruth,
+      groundTruth: cleanedGroundTruth,
     };
     
     // Save to localStorage for immediate UI updates
     saveFileMetadataStore(store);
     
     // Background sync to JSON file for persistent storage
-    saveGroundTruthAction(fileId, templateKey, mergedGroundTruth).catch(console.error);
+    saveGroundTruthAction(fileId, templateKey, cleanedGroundTruth).catch(console.error);
     console.log('✅ saveGroundTruthForFile completed');
 }
 

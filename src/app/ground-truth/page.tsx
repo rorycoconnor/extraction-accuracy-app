@@ -24,6 +24,7 @@ import {
   saveGroundTruthForFile,
   getFileMetadataStore,
   getGroundTruthData,
+  getGroundTruthForFile,
 } from '@/lib/mock-data';
 import type { BoxFile, BoxFolder, BoxTemplate, FileMetadataStore } from '@/lib/types';
 import { Database, Pencil, Terminal, Folder, Download, Upload, CheckCircle } from 'lucide-react';
@@ -142,11 +143,15 @@ export default function GroundTruthPage() {
         if (associatedTemplate) {
           const activeFields = associatedTemplate.fields.filter(f => f.isActive);
           total = activeFields.length;
-          const groundTruth = getGroundTruth(file.id);
+          
+          // 🔧 FIX: Read directly from localStorage instead of React state for accurate status
+          const groundTruth = getGroundTruthForFile(file.id);
+          
           completed = activeFields.filter(f => {
             const value = groundTruth[f.key];
-            const hasValue = value !== undefined && value !== null && String(value).trim() !== '';
-            return hasValue;
+            return value !== undefined && 
+                   value !== null && 
+                   String(value).trim() !== '';
           }).length;
         }
 
@@ -193,12 +198,6 @@ export default function GroundTruthPage() {
     fileId: string,
     data: Record<string, string>
   ) => {
-    console.log('🚀 Ground Truth Page handleSaveGroundTruth called:', {
-      fileId,
-      data,
-      selectedFile: selectedFile?.name,
-      template: selectedFile?.template?.templateKey
-    });
     
     if (!selectedFile || !selectedFile.template) {
       console.error('❌ No selected file or template');
@@ -214,23 +213,24 @@ export default function GroundTruthPage() {
       saveGroundTruthForFile(fileId, templateKey, data);
       console.log('✅ All ground truth saved successfully');
       
-      // Refresh the unified ground truth system to pick up the changes
-      // This ensures the home page will see the changes immediately
+      // Refresh the unified ground truth system for other pages (like home page)
       refreshGroundTruth();
-      console.log('🔄 Refreshed unified ground truth system');
       
-      console.log('🎉 All ground truth saves successful, closing editor and refreshing folder contents...');
       // Close the editor FIRST to prevent form reset from prop changes
       setIsEditorOpen(false);
       
-      // Then refresh the files to update status
-      // Add sufficient delay to ensure the unified ground truth system has processed all changes
-      setTimeout(() => {
-        if (selectedFiles.length > 0) {
-          console.log('🔄 Refreshing files after ground truth edit...');
-          loadSelectedFiles(selectedFiles); // Refresh the current files to update status
-        }
-      }, 750);
+      // Refresh files to update status
+      if (selectedFiles.length > 0) {
+        await loadSelectedFiles(selectedFiles);
+      } else if (filesWithStatus.length > 0) {
+        // Fallback: Use current displayed files if selectedFiles is empty
+        const currentFiles: BoxFile[] = filesWithStatus.map(f => ({
+          id: f.id,
+          name: f.name,
+          type: 'file' as const
+        }));
+        await loadSelectedFiles(currentFiles);
+      }
       
       toast({
         title: 'Ground Truth Saved',
@@ -610,24 +610,21 @@ export default function GroundTruthPage() {
         }
       }
 
-      console.log('🐛 DEBUG: Import processing completed.');
-      console.log('🐛 DEBUG: Final counts - updated:', updatedCount, 'skipped:', skippedCount, 'errors:', errors.length);
       
-      // Refresh ground truth system
-      console.log('🐛 DEBUG: Refreshing ground truth system...');
+      // Refresh ground truth system for other pages
+      refreshGroundTruth();
       
-      // Wait for ground truth data to be refreshed before updating UI
-      await new Promise(resolve => {
-        refreshGroundTruth();
-        // Give time for the async loadGroundTruthData to complete
-        setTimeout(resolve, 750);
-      });
-      
-      // Refresh current files to update UI
-      console.log('🔄 DEBUG: Refreshing files to update status...');
+      // Refresh current files to update status
       if (selectedFiles.length > 0) {
         await loadSelectedFiles(selectedFiles);
-        console.log('✅ DEBUG: Files refreshed, status should be updated');
+      } else if (filesWithStatus.length > 0) {
+        // Fallback: Use current displayed files if selectedFiles is empty
+        const currentFiles: BoxFile[] = filesWithStatus.map(f => ({
+          id: f.id,
+          name: f.name,
+          type: 'file' as const
+        }));
+        await loadSelectedFiles(currentFiles);
       }
 
       toast({

@@ -18,7 +18,7 @@ interface GroundTruthContextType {
   groundTruthData: GroundTruthData;
   getGroundTruth: (fileId: string) => Record<string, string>;
   saveGroundTruth: (fileId: string, templateKey: string, fieldKey: string, value: string) => Promise<boolean>;
-  refreshGroundTruth: () => void;
+  refreshGroundTruth: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
   clearError: () => void;
@@ -183,7 +183,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
   // Refresh ground truth data
   const refreshGroundTruth = useCallback(() => {
     console.log('🔄 Refreshing ground truth data...');
-    loadGroundTruthData().catch(console.error);
+    return loadGroundTruthData(); // Return promise so callers can await
   }, [loadGroundTruthData]);
 
   // Clear error

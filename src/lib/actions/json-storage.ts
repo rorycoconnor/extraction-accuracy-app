@@ -54,9 +54,21 @@ export async function saveGroundTruthAction(fileId: string, templateKey: string,
     ...data
   };
   
+  // 🧹 CLEANUP: Remove empty/invalid fields (same logic as localStorage version)
+  const cleanedGroundTruth: Record<string, string> = {};
+  Object.entries(mergedGroundTruth).forEach(([key, value]) => {
+    // Simpler validation that matches status calculation
+    const trimmedValue = String(value).trim();
+    if (value !== undefined && 
+        value !== null && 
+        trimmedValue !== '') {
+      cleanedGroundTruth[key] = trimmedValue;
+    }
+  });
+  
   store[fileId] = {
     templateKey: templateKey,
-    groundTruth: mergedGroundTruth,
+    groundTruth: cleanedGroundTruth,
   };
   await saveData('fileMetadataStore', store);
 }

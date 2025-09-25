@@ -1632,11 +1632,11 @@
   "1994856865257": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "BERTROM SUPPLY CO.",
+      "vendor": "test",
       "description": "TECH CART",
-      "invoiceDate": "2008-09-30",
+      "invoiceDate": "undefined",
       "amountDue": "487",
-      "dueDate": "2008-10-30",
+      "dueDate": "undefined",
       "items": "TECH CART",
       "term": "NET 30",
       "poNumber": "477-929",
@@ -1707,6 +1707,37 @@
       "salesAmountNumber": "10369",
       "salesTax": "Not Present",
       "freightAmount": "Not Present"
+    }
+  },
+  "1997271985438": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "vend"
+    }
+  },
+  "1997256691134": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "vend"
+    }
+  },
+  "1997236847445": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "vend",
+      "description": "descrpt"
+    }
+  },
+  "1997273038900": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "vend"
+    }
+  },
+  "1997282187839": {
+    "templateKey": "invoice",
+    "groundTruth": {
+      "vendor": "vend"
     }
   }
 }
