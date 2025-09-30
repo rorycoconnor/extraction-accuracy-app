@@ -218,7 +218,10 @@ export function FieldDetailsSheet({
   return (
     <>
       <Sheet open={isOpen} onOpenChange={onClose}>
-        <SheetContent className="!w-[1218px] max-w-[95vw] flex flex-col">
+        <SheetContent 
+          className="!w-[1218px] max-w-[95vw] flex flex-col"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <SheetHeader className="flex-shrink-0">
             <SheetTitle className="text-xl">Field Details</SheetTitle>
             <SheetDescription className="text-base">

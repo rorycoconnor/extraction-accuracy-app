@@ -157,7 +157,7 @@ const MainPage: React.FC = () => {
   const { runExtractions, apiDebugData, apiRequestDebugData } = useModelExtractionRunner();
 
   // ===== LOCAL STATE =====
-  // Modal state management
+  // Modal state management with defensive initialization
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPromptStudioOpen, setIsPromptStudioOpen] = useState(false);
   const [selectedFieldForPromptStudio, setSelectedFieldForPromptStudio] = useState<AccuracyField | null>(null);
@@ -169,6 +169,29 @@ const MainPage: React.FC = () => {
   } | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<BoxTemplate | null>(null);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  
+  // 🔧 DEFENSIVE: Force close all modals handler (recovery mechanism)
+  const forceCloseAllModals = () => {
+    console.log('🛡️ Force closing all modals (recovery mode)');
+    setIsModalOpen(false);
+    setIsPromptStudioOpen(false);
+    setIsInlineEditorOpen(false);
+    setShowResetDialog(false);
+  };
+  
+  // 🔧 DEFENSIVE: Add keyboard escape handler for recovery
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isModalOpen && !isPromptStudioOpen && !isInlineEditorOpen && !showResetDialog) {
+        // If Escape is pressed but no modal thinks it's open, we might be in a stuck state
+        console.log('🔍 Escape pressed with no modal open - checking for stuck overlays');
+        forceCloseAllModals();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscapeKey);
+    return () => window.removeEventListener('keydown', handleEscapeKey);
+  }, [isModalOpen, isPromptStudioOpen, isInlineEditorOpen, showResetDialog]);
   
   // ===== ENHANCED COMPARISON RUNNER =====
   const enhancedRunner = useEnhancedComparisonRunner(selectedTemplate);
@@ -406,12 +429,21 @@ const MainPage: React.FC = () => {
  return (
      <div className="flex flex-col h-full">
        <ControlBar
-         accuracyData={accuracyData}
-         isExtracting={enhancedRunner.isExtracting}
-         progress={enhancedRunner.progress}
-         shownColumns={shownColumns}
-         onSelectDocuments={() => setIsModalOpen(true)}
-         onRunComparison={handleRunComparison}
+        accuracyData={accuracyData}
+        isExtracting={enhancedRunner.isExtracting}
+        progress={enhancedRunner.progress}
+        shownColumns={shownColumns}
+        onSelectDocuments={() => {
+          console.log('📂 Select Documents button clicked');
+          try {
+            setIsModalOpen(true);
+          } catch (error) {
+            console.error('Error opening modal:', error);
+            forceCloseAllModals();
+            setTimeout(() => setIsModalOpen(true), 100);
+          }
+        }}
+        onRunComparison={handleRunComparison}
          onAutoPopulateGroundTruth={handleAutoPopulateGroundTruth}
          onOpenSummary={openPerformanceModal}
          onClearResults={clearResults}
@@ -438,10 +470,13 @@ const MainPage: React.FC = () => {
        </div>
        
        <ModalContainer 
-         isExtractionModalOpen={isModalOpen}
-         configuredTemplates={configuredTemplates}
-         onCloseExtractionModal={() => setIsModalOpen(false)}
-         onRunExtraction={handleRunExtraction}
+        isExtractionModalOpen={isModalOpen}
+        configuredTemplates={configuredTemplates}
+        onCloseExtractionModal={() => {
+          console.log('🔒 Closing extraction modal');
+          setIsModalOpen(false);
+        }}
+        onRunExtraction={handleRunExtraction}
          isPromptStudioOpen={isPromptStudioOpen}
          selectedFieldForPromptStudio={selectedFieldForPromptStudio}
          selectedTemplateName={selectedTemplate?.displayName}

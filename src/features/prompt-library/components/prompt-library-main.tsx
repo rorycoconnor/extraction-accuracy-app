@@ -51,7 +51,7 @@ import { transformToBoxTemplate, validateBoxTemplate } from '../utils/box-transf
 import { createMetadataTemplate, checkTemplateExists } from '@/services/box';
 
 export function PromptLibraryMain() {
-  const { filteredFields, isLoading, error, database, searchFilters, addCategory, addTemplate, deleteTemplate, renameTemplate, addField, addPrompt, deletePrompt, reorderFields, batchImport } = usePromptLibrary();
+  const { filteredFields, isLoading, error, database, searchFilters, setSelectedTemplate, addCategory, addTemplate, deleteTemplate, renameTemplate, addField, addPrompt, deletePrompt, reorderFields, batchImport } = usePromptLibrary();
   const { toast } = useToast();
 
   // Generate dynamic title based on current filters
@@ -123,6 +123,8 @@ export function PromptLibraryMain() {
     if (!selectedTemplate) return;
 
     deleteTemplate(selectedTemplate.id);
+    // Reset template filter to "All" after deletion
+    setSelectedTemplate(null);
     setDeleteTemplateDialogOpen(false);
   };
 
