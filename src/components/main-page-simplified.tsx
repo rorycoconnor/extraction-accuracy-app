@@ -13,7 +13,7 @@
  */
 
 // ===== REACT & HOOKS IMPORTS =====
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccuracyData } from '@/hooks/use-accuracy-data';
 import { useExtractionProgress } from '@/hooks/use-extraction-progress';
@@ -27,6 +27,7 @@ import ControlBar from '@/components/control-bar';
 import ComparisonResults from '@/components/comparison-results';
 import EmptyState from '@/components/empty-state';
 import ModalContainer from '@/components/modal-container';
+import { DashboardSidebar } from '@/components/dashboard-sidebar';
 
 // ===== AI & BUSINESS LOGIC IMPORTS =====
 import { calculateFieldMetrics, calculateFieldMetricsWithDebug } from '@/lib/metrics';
@@ -43,7 +44,8 @@ import {
   saveGroundTruthForFile, 
   clearAllGroundTruthData,
   getGroundTruthData,
-  saveAccuracyData
+  saveAccuracyData,
+  getFileMetadataStore
 } from '@/lib/mock-data';
 
 // ===== CONSTANTS & UTILITIES IMPORTS =====
@@ -151,10 +153,47 @@ const MainPage: React.FC = () => {
 
   const { toast } = useToast();
   const { autoPopulateGroundTruth } = useGroundTruthPopulator();
-  const { refreshGroundTruth, saveGroundTruth } = useGroundTruth();
+  const { refreshGroundTruth, saveGroundTruth, getGroundTruth } = useGroundTruth();
   
   // ===== MODEL EXTRACTION RUNNER HOOK =====
   const { runExtractions, apiDebugData, apiRequestDebugData } = useModelExtractionRunner();
+  
+  // ===== AUTHENTICATION STATE (for dashboard) =====
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [isBoxAuthenticated, setIsBoxAuthenticated] = useState(false);
+
+  // Check authentication by trying to fetch user info from API
+  const [authMethod, setAuthMethod] = useState<string>('');
+  
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/box/user');
+        const data = await response.json();
+        setIsBoxAuthenticated(data.success && data.user);
+        
+        // Determine auth method
+        if (data.success && data.user) {
+          // Check if OAuth is connected by looking for oauth cookies
+          const isOAuth = document.cookie.includes('box_oauth_access_token');
+          if (isOAuth) {
+            setAuthMethod('OAuth 2.0');
+          } else {
+            // Could be Developer Token or Service Account
+            // Since we can't easily distinguish, just show "Connected"
+            setAuthMethod('');
+          }
+        }
+        console.log('🔐 Authentication check:', data.success && data.user ? 'Authenticated' : 'Not authenticated');
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        setIsBoxAuthenticated(false);
+      } finally {
+        setIsAuthChecking(false);
+      }
+    };
+    checkAuth();
+  }, []);
 
   // ===== LOCAL STATE =====
   // Modal state management with defensive initialization
@@ -424,6 +463,41 @@ const MainPage: React.FC = () => {
     }
   };
 
+  // ===== DASHBOARD DATA PREPARATION =====
+
+  // Calculate ground truth stats
+  const groundTruthStats = useMemo(() => {
+    if (!accuracyData || !accuracyData.results || accuracyData.results.length === 0) {
+      return undefined;
+    }
+
+    const groundTruthData = getGroundTruthData();
+    const totalFiles = accuracyData.results.length;
+    const filesWithGroundTruth = accuracyData.results.filter(result => {
+      const gtData = groundTruthData[result.id];
+      return gtData && Object.keys(gtData.groundTruth || {}).length > 0;
+    }).length;
+
+    return {
+      totalFiles,
+      filesWithGroundTruth,
+      completionPercentage: totalFiles > 0 ? Math.round((filesWithGroundTruth / totalFiles) * 100) : 0
+    };
+  }, [accuracyData]);
+
+  // Get last activity info
+  const lastActivity = useMemo(() => {
+    if (!accuracyData || !accuracyData.results || accuracyData.results.length === 0) {
+      return null;
+    }
+
+    return {
+      type: 'Comparison',
+      date: new Date(), // Could be enhanced to store actual run date
+      filesProcessed: accuracyData.results.length
+    };
+  }, [accuracyData]);
+
  // ===== COMPONENT RENDER =====
  
  return (
@@ -463,8 +537,21 @@ const MainPage: React.FC = () => {
             onToggleFieldMetrics={handleToggleFieldMetrics}
           />
          ) : (
-           <div className="p-4 md:p-8">
-             <EmptyState />
+           <div className="p-4 md:p-8 h-full flex gap-6">
+             {/* Empty State - 70% width */}
+             <div className="flex-[7] min-w-[400px]">
+               <EmptyState />
+             </div>
+
+             {/* Dashboard Cards - 30% width */}
+             <div className="flex-[3] overflow-y-auto max-h-full">
+               <DashboardSidebar
+                 isAuthenticated={isBoxAuthenticated}
+                 authMethod={authMethod}
+                 metadataTemplates={configuredTemplates}
+                 groundTruthStats={groundTruthStats}
+               />
+             </div>
            </div>
          )}
        </div>
