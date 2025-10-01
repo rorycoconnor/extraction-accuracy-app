@@ -170,29 +170,34 @@ const MainPage: React.FC = () => {
       try {
         const response = await fetch('/api/auth/box/user');
         const data = await response.json();
-        setIsBoxAuthenticated(data.success && data.user);
+        const isAuthenticated = data.success && data.user;
         
-        // Determine auth method
-        if (data.success && data.user) {
-          // Check if OAuth is connected by looking for oauth cookies
-          const isOAuth = document.cookie.includes('box_oauth_access_token');
-          if (isOAuth) {
-            setAuthMethod('OAuth 2.0');
-          } else {
-            // Could be Developer Token or Service Account
-            // Since we can't easily distinguish, just show "Connected"
-            setAuthMethod('');
-          }
+        setIsBoxAuthenticated(isAuthenticated);
+        
+        // Use auth method from API response
+        if (isAuthenticated && data.authMethod) {
+          setAuthMethod(data.authMethod);
+          console.log('🔐 Authentication check: Authenticated with', data.authMethod);
+        } else {
+          setAuthMethod('');
+          console.log('🔐 Authentication check: Not authenticated');
         }
-        console.log('🔐 Authentication check:', data.success && data.user ? 'Authenticated' : 'Not authenticated');
       } catch (error) {
         console.error('Auth check failed:', error);
         setIsBoxAuthenticated(false);
+        setAuthMethod('');
       } finally {
         setIsAuthChecking(false);
       }
     };
+    
+    // Check immediately on mount
     checkAuth();
+    
+    // Re-check periodically (every 30 seconds) to catch authentication changes
+    const interval = setInterval(checkAuth, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   // ===== LOCAL STATE =====

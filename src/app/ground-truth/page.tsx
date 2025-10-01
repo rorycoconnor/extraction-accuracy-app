@@ -765,15 +765,15 @@ export default function GroundTruthPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex gap-2">
-                <Button variant="default" size="sm" onClick={handleSelectFilesClick}>
+                <Button variant="default" onClick={handleSelectFilesClick}>
                   <Folder className="mr-2 h-4 w-4" />
                   Select Files
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleExportClick}>
+                <Button variant="outline" onClick={handleExportClick}>
                   <Download className="mr-2 h-4 w-4" />
                   Export CSV
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleImportClick}>
+                <Button variant="outline" onClick={handleImportClick}>
                   <Upload className="mr-2 h-4 w-4" />
                   Import CSV
                 </Button>

@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
         
         return NextResponse.json({
           success: true,
+          authMethod: 'OAuth 2.0',
           user: {
             id: userInfo.id,
             name: userInfo.name,
@@ -52,6 +53,7 @@ export async function GET(request: NextRequest) {
         if (adminUser) {
           return NextResponse.json({
             success: true,
+            authMethod: 'Service Account',
             user: {
               id: adminUser.id,
               name: adminUser.name,
@@ -84,6 +86,7 @@ export async function GET(request: NextRequest) {
         
         return NextResponse.json({
           success: true,
+          authMethod: 'Developer Token',
           user: {
             id: userInfo.id,
             name: userInfo.name,

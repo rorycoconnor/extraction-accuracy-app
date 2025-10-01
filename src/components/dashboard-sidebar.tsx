@@ -93,8 +93,7 @@ export function DashboardSidebar({
       {/* Metadata Templates Card */}
       <Card className="border border-gray-200">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <FileText className="h-4 w-4" />
+          <CardTitle className="text-base font-semibold">
             Metadata Templates
           </CardTitle>
         </CardHeader>
@@ -134,9 +133,11 @@ export function DashboardSidebar({
                 );
               })}
               {metadataTemplates.length > 5 && (
-                <p className="text-xs text-center text-muted-foreground pt-2">
-                  +{metadataTemplates.length - 5} more
-                </p>
+                <Link href="/templates">
+                  <p className="text-xs text-center text-muted-foreground pt-2 hover:text-primary cursor-pointer transition-colors">
+                    +{metadataTemplates.length - 5} more
+                  </p>
+                </Link>
               )}
             </div>
           )}
