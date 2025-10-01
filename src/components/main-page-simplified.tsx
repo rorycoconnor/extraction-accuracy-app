@@ -168,22 +168,48 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('/api/auth/box/user');
+        console.log('🔐 Starting authentication check...');
+        const response = await fetch('/api/auth/box/user', {
+          method: 'GET',
+          cache: 'no-store', // Don't cache auth checks
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        console.log('🔐 Auth API response status:', response.status);
+        
+        if (!response.ok) {
+          console.warn('🔐 Auth API returned non-OK status:', response.status);
+          const errorText = await response.text();
+          console.warn('🔐 Error response:', errorText);
+          setIsBoxAuthenticated(false);
+          setAuthMethod('');
+          return;
+        }
+        
         const data = await response.json();
-        const isAuthenticated = data.success && data.user;
+        console.log('🔐 Auth API response data:', {
+          success: data.success,
+          hasUser: !!data.user,
+          authMethod: data.authMethod,
+          error: data.error
+        });
+        
+        const isAuthenticated = data.success === true && !!data.user;
         
         setIsBoxAuthenticated(isAuthenticated);
         
         // Use auth method from API response
         if (isAuthenticated && data.authMethod) {
           setAuthMethod(data.authMethod);
-          console.log('🔐 Authentication check: Authenticated with', data.authMethod);
+          console.log('✅ Authentication check: Authenticated with', data.authMethod);
         } else {
           setAuthMethod('');
-          console.log('🔐 Authentication check: Not authenticated');
+          console.log('❌ Authentication check: Not authenticated', data.error || '');
         }
       } catch (error) {
-        console.error('Auth check failed:', error);
+        console.error('❌ Auth check failed with exception:', error);
         setIsBoxAuthenticated(false);
         setAuthMethod('');
       } finally {

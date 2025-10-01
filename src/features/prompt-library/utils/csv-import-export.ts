@@ -276,13 +276,20 @@ function normalizeFieldValue(value: string): string {
   return value
     // First decode HTML entities
     .replace(/&[#\w]+;/g, (entity) => decodeHTMLEntities(entity))
-    // Fix common encoding issues
+    // Fix replacement character (�) - common when UTF-8 is misread
+    .replace(/�/g, "'")      // Replace � with apostrophe (most common case)
+    // Fix common UTF-8 misreading patterns (Windows-1252 → UTF-8)
     .replace(/â€œ/g, '"')    // Fix â€œ to "
     .replace(/â€/g, '"')     // Fix â€ to "
     .replace(/â€™/g, "'")    // Fix â€™ to '
     .replace(/â€˜/g, "'")    // Fix â€˜ to '
     .replace(/â€"/g, '—')    // Fix â€" to em dash
     .replace(/â€"/g, '–')    // Fix â€" to en dash
+    .replace(/Ã©/g, 'é')     // Fix Ã© to é
+    .replace(/Ã¨/g, 'è')     // Fix Ã¨ to è
+    .replace(/Ã /g, 'à')     // Fix Ã  to à
+    .replace(/Ã§/g, 'ç')     // Fix Ã§ to ç
+    .replace(/Ã±/g, 'ñ')     // Fix Ã± to ñ
     .replace(/Â/g, '')       // Remove stray Â characters
     // Normalize different quote types
     .replace(/[""]/g, '"')   // Replace smart quotes
