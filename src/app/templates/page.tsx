@@ -147,25 +147,24 @@ export default function TemplatesPage() {
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-headline text-3xl font-bold tracking-tight">
-              Templates
-            </h1>
-            <p className="text-muted-foreground">Manage your metadata templates.</p>
-          </div>
-          <Button onClick={() => setIsDialogOpen(true)}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            New Template
-          </Button>
+        <div>
+          <h1 className="font-headline text-3xl font-bold tracking-tight">
+            Templates
+          </h1>
+          <p className="text-muted-foreground">Manage your metadata templates.</p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Existing Templates</CardTitle>
-            <CardDescription>
-              Click on a metadata field to activate or deactivate it for extraction.
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <Button onClick={() => setIsDialogOpen(true)}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                New Template
+              </Button>
+              <CardDescription>
+                Click on a metadata field to activate or deactivate it for extraction.
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent>
             <div className="relative w-full overflow-auto">

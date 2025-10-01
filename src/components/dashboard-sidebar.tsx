@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useToast } from '@/hooks/use-toast';
 import { 
   CheckCircle2, 
   FileText,
@@ -25,6 +26,7 @@ interface DashboardSidebarProps {
     filesWithGroundTruth: number;
     completionPercentage: number;
   };
+  isLoading?: boolean;
   onNavigateToSettings?: () => void;
 }
 
@@ -33,8 +35,10 @@ export function DashboardSidebar({
   authMethod,
   metadataTemplates,
   groundTruthStats,
+  isLoading = false,
   onNavigateToSettings,
 }: DashboardSidebarProps) {
+  const { toast } = useToast();
   
   return (
     <div className="flex-shrink-0 space-y-4 min-w-[320px]">
@@ -49,7 +53,12 @@ export function DashboardSidebar({
           </div>
         </CardHeader>
         <CardContent>
-          {isAuthenticated ? (
+          {isLoading ? (
+            <div className="space-y-2">
+              <div className="h-6 bg-gray-100 rounded animate-pulse" />
+              <div className="h-4 bg-gray-100 rounded animate-pulse w-2/3" />
+            </div>
+          ) : isAuthenticated ? (
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -90,7 +99,12 @@ export function DashboardSidebar({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {metadataTemplates.length === 0 ? (
+          {isLoading ? (
+            <div className="space-y-2">
+              <div className="h-10 bg-gray-100 rounded animate-pulse" />
+              <div className="h-10 bg-gray-100 rounded animate-pulse" />
+            </div>
+          ) : metadataTemplates.length === 0 ? (
             <Alert className="border-red-200 bg-red-50">
               <AlertTriangle className="h-4 w-4 text-red-600" />
               <AlertDescription className="text-sm text-red-800">
@@ -183,6 +197,10 @@ export function DashboardSidebar({
             size="sm"
             onClick={() => {
               navigator.clipboard.writeText('https://cloud.box.com/s/8yxlyqj2ud16k8q9ortql7fw4chsl06y');
+              toast({
+                description: "📋 Link copied to clipboard",
+                duration: 2000,
+              });
             }}
           >
             Copy Link

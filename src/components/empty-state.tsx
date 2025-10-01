@@ -25,21 +25,18 @@ const EmptyState: React.FC = () => {
               <span className="font-semibold text-gray-800 dark:text-gray-200">
                 files
               </span>
-              .
             </p>
             <p>
               Then select{' '}
               <span className="font-semibold text-gray-800 dark:text-gray-200">
                 "Compare Models"
               </span>
-              .
             </p>
             <p>
               Then select{' '}
               <span className="font-semibold text-gray-800 dark:text-gray-200">
                 "Run Comparison"
               </span>
-              .
             </p>
           </div>
         </div>

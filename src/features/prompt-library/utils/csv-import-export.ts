@@ -232,10 +232,50 @@ export function parseImportCSV(csvText: string): ExportableTemplate[] {
 }
 
 /**
+ * Decode HTML entities to their proper characters
+ */
+function decodeHTMLEntities(text: string): string {
+  const entities: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&apos;': "'",
+    '&#39;': "'",
+    '&#x27;': "'",
+    '&rsquo;': "'",
+    '&lsquo;': "'",
+    '&ldquo;': '"',
+    '&rdquo;': '"',
+    '&ndash;': '–',
+    '&mdash;': '—',
+  };
+  
+  let decoded = text;
+  
+  // Replace named entities
+  for (const [entity, char] of Object.entries(entities)) {
+    decoded = decoded.replace(new RegExp(entity, 'g'), char);
+  }
+  
+  // Replace numeric entities (&#39; or &#x27;)
+  decoded = decoded.replace(/&#(\d+);/g, (match, dec) => {
+    return String.fromCharCode(parseInt(dec, 10));
+  });
+  decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => {
+    return String.fromCharCode(parseInt(hex, 16));
+  });
+  
+  return decoded;
+}
+
+/**
  * Normalize field values by fixing common encoding issues
  */
 function normalizeFieldValue(value: string): string {
   return value
+    // First decode HTML entities
+    .replace(/&[#\w]+;/g, (entity) => decodeHTMLEntities(entity))
     // Fix common encoding issues
     .replace(/â€œ/g, '"')    // Fix â€œ to "
     .replace(/â€/g, '"')     // Fix â€ to "

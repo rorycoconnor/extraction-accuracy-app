@@ -550,6 +550,7 @@ const MainPage: React.FC = () => {
                  authMethod={authMethod}
                  metadataTemplates={configuredTemplates}
                  groundTruthStats={groundTruthStats}
+                 isLoading={isAuthChecking}
                />
              </div>
            </div>
