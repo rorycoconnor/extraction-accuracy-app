@@ -159,57 +159,68 @@ const MainPage: React.FC = () => {
   const { runExtractions, apiDebugData, apiRequestDebugData } = useModelExtractionRunner();
   
   // ===== AUTHENTICATION STATE (for dashboard) =====
+  // Use the same two-step approach as the Settings page for reliable auth detection
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const [isBoxAuthenticated, setIsBoxAuthenticated] = useState(false);
-
-  // Check authentication by trying to fetch user info from API
   const [authMethod, setAuthMethod] = useState<string>('');
+  const [oauthStatus, setOauthStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
   
+  // Step 1: Check OAuth status (same as Settings page)
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkOAuthStatus = async () => {
       try {
-        console.log('🔐 Starting authentication check...');
-        const response = await fetch('/api/auth/box/user', {
-          method: 'GET',
-          cache: 'no-store', // Don't cache auth checks
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        
-        console.log('🔐 Auth API response status:', response.status);
-        
-        if (!response.ok) {
-          console.warn('🔐 Auth API returned non-OK status:', response.status);
-          const errorText = await response.text();
-          console.warn('🔐 Error response:', errorText);
-          setIsBoxAuthenticated(false);
-          setAuthMethod('');
-          return;
-        }
-        
+        console.log('🔐 Step 1: Checking OAuth status...');
+        const response = await fetch('/api/auth/box/status');
         const data = await response.json();
-        console.log('🔐 Auth API response data:', {
+        
+        if (data.success) {
+          const status = data.status.isConnected ? 'connected' : 'disconnected';
+          setOauthStatus(status);
+          console.log('🔐 OAuth status:', status);
+        } else {
+          setOauthStatus('disconnected');
+          console.log('🔐 OAuth status: disconnected (no data)');
+        }
+      } catch (error) {
+        console.error('❌ Failed to check OAuth status:', error);
+        setOauthStatus('disconnected');
+      }
+    };
+    
+    checkOAuthStatus();
+    
+    // Re-check periodically (every 30 seconds)
+    const interval = setInterval(checkOAuthStatus, 30000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Step 2: Fetch user info based on OAuth status (same as Settings page)
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        setIsAuthChecking(true);
+        console.log('🔐 Step 2: Fetching user info...');
+        
+        const response = await fetch('/api/auth/box/user');
+        const data = await response.json();
+        
+        console.log('🔐 User info response:', {
           success: data.success,
           hasUser: !!data.user,
           authMethod: data.authMethod,
-          error: data.error
         });
         
-        const isAuthenticated = data.success === true && !!data.user;
-        
-        setIsBoxAuthenticated(isAuthenticated);
-        
-        // Use auth method from API response
-        if (isAuthenticated && data.authMethod) {
-          setAuthMethod(data.authMethod);
-          console.log('✅ Authentication check: Authenticated with', data.authMethod);
+        if (data.success && data.user) {
+          setIsBoxAuthenticated(true);
+          setAuthMethod(data.authMethod || '');
+          console.log('✅ Authentication confirmed:', data.authMethod);
         } else {
+          setIsBoxAuthenticated(false);
           setAuthMethod('');
-          console.log('❌ Authentication check: Not authenticated', data.error || '');
+          console.log('❌ Not authenticated:', data.error);
         }
       } catch (error) {
-        console.error('❌ Auth check failed with exception:', error);
+        console.error('❌ Failed to fetch user info:', error);
         setIsBoxAuthenticated(false);
         setAuthMethod('');
       } finally {
@@ -217,14 +228,8 @@ const MainPage: React.FC = () => {
       }
     };
     
-    // Check immediately on mount
-    checkAuth();
-    
-    // Re-check periodically (every 30 seconds) to catch authentication changes
-    const interval = setInterval(checkAuth, 30000);
-    
-    return () => clearInterval(interval);
-  }, []);
+    fetchUserInfo();
+  }, [oauthStatus]); // Refetch when OAuth status changes (same as Settings page!)
 
   // ===== LOCAL STATE =====
   // Modal state management with defensive initialization
