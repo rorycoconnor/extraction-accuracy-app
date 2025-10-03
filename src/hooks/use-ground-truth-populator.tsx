@@ -23,8 +23,8 @@ interface UseGroundTruthPopulatorReturn {
   ) => Promise<boolean>;
 }
 
-// Premium model identifier
-const PREMIUM_MODEL = 'enhanced_extract_agent';
+// Import centralized constants
+import { PREMIUM_MODEL } from '@/lib/main-page-constants';
 
 // Toast Messages
 const TOAST_MESSAGES = {

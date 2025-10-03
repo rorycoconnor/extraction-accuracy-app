@@ -10,36 +10,8 @@ import {
 import { calculateFieldMetricsWithDebug } from '@/lib/metrics';
 import type { AccuracyData, AccuracyField, BoxTemplate, BoxFile, FieldResult, ModelAverages } from '@/lib/types';
 
-// Define model constants - Updated to match the actual models used in the app
-const AVAILABLE_MODELS = [
-  // Google Gemini Models
-  'google__gemini_2_0_flash_001',
-  'google__gemini_2_0_flash_001_no_prompt',
-  'google__gemini_2_5_pro',
-  'google__gemini_2_5_pro_no_prompt',
-
-  // Enhanced Extract Agent
-  'enhanced_extract_agent',
-  'enhanced_extract_agent_no_prompt',
-
-  // AWS Claude Models
-  'aws__claude_3_7_sonnet',
-  'aws__claude_3_7_sonnet_no_prompt',
-  'aws__claude_4_sonnet',
-  'aws__claude_4_sonnet_no_prompt',
-
-  // Azure OpenAI Models (GPT)
-  'azure__openai__gpt_4_1',
-  'azure__openai__gpt_4_1_no_prompt',
-  'azure__openai__gpt_4_1_mini',
-  'azure__openai__gpt_4_1_mini_no_prompt',
-
-  // OpenAI Models (Customer-enabled)
-  'openai__o3',
-  'openai__o3_no_prompt',
-];
-
-const ALL_MODELS = ['Ground Truth', ...AVAILABLE_MODELS];
+// Import centralized model constants
+import { AVAILABLE_MODELS, ALL_MODELS, UI_LABELS } from '@/lib/main-page-constants';
 
 function generateInitialPromptForField(field: any): string {
   return `Extract the ${field.displayName} from this document. Return only the exact value without any additional text or formatting.`;

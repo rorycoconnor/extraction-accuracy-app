@@ -1,8 +1,15 @@
 /**
- * Constants for the Main Page Component
+ * FULL Model Constants - All Available Box AI Models
  * 
- * This file contains all the constants used in the main page component
- * to improve maintainability and reduce file size.
+ * This file contains ALL models from the official Box AI documentation
+ * for developers who want to use the complete model list.
+ * 
+ * To switch to the full model list:
+ * 1. Rename main-page-constants.ts to main-page-constants-streamlined.ts
+ * 2. Rename this file to main-page-constants.ts
+ * 3. Restart the dev server
+ * 
+ * Based on: https://developer.box.com/guides/box-ai/ai-models/
  */
 
 // UI Labels (most frequently used strings)
@@ -139,7 +146,7 @@ export interface ModelConfig {
   isMultiModal: boolean;
 }
 
-// Models supported by the Box AI extract_structured endpoint
+// ALL Models supported by the Box AI extract_structured endpoint
 // Based on official Box AI documentation: https://developer.box.com/guides/box-ai/ai-models/
 export const MODEL_CONFIGS: ModelConfig[] = [
   // Google Gemini Models
@@ -158,6 +165,20 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     isMultiModal: true
   },
   {
+    id: 'google__gemini_2_0_flash_lite_preview',
+    name: 'Google 2.0 Flash Lite',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_2_0_flash_lite_preview_no_prompt',
+    name: 'Google 2.0 Flash Lite (no prompt)',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
     id: 'google__gemini_2_5_pro',
     name: 'Gemini 2.5 Pro',
     vendor: 'Google',
@@ -169,6 +190,34 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     name: 'Gemini 2.5 Pro (no prompt)',
     vendor: 'Google',
     isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_1_5_pro_001',
+    name: 'Gemini 1.5 Pro',
+    vendor: 'Google',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_1_5_pro_001_no_prompt',
+    name: 'Gemini 1.5 Pro (no prompt)',
+    vendor: 'Google',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_1_5_flash',
+    name: 'Gemini 1.5 Flash',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_1_5_flash_no_prompt',
+    name: 'Gemini 1.5 Flash (no prompt)',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
     isMultiModal: true
   },
   // Enhanced Extract Agent (Box's custom model)
@@ -188,6 +237,48 @@ export const MODEL_CONFIGS: ModelConfig[] = [
   },
 
   // AWS Claude Models
+  {
+    id: 'aws__claude_3_haiku',
+    name: 'Claude 3 Haiku',
+    vendor: 'Anthropic',
+    isPremium: false, // Standard tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_haiku_no_prompt',
+    name: 'Claude 3 Haiku (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: false, // Standard tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_sonnet',
+    name: 'Claude 3 Sonnet',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_sonnet_no_prompt',
+    name: 'Claude 3 Sonnet (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_5_sonnet',
+    name: 'Claude 3.5 Sonnet',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_5_sonnet_no_prompt',
+    name: 'Claude 3.5 Sonnet (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
   {
     id: 'aws__claude_3_7_sonnet',
     name: 'Claude 3.7 Sonnet',
@@ -230,6 +321,20 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     isPremium: true, // Premium tier
     isMultiModal: false
   },
+  {
+    id: 'aws__titan_text_lite',
+    name: 'AWS Titan Text Lite',
+    vendor: 'AWS',
+    isPremium: false, // Standard tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__titan_text_lite_no_prompt',
+    name: 'AWS Titan Text Lite (no prompt)',
+    vendor: 'AWS',
+    isPremium: false, // Standard tier
+    isMultiModal: false
+  },
   // Azure OpenAI Models (GPT)
   {
     id: 'azure__openai__gpt_4_1',
@@ -260,19 +365,41 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     isMultiModal: true
   },
   {
-    id: 'openai__gpt_5_reasoning_alpha',
-    name: 'GPT-5',
-    vendor: 'OpenAI',
+    id: 'azure__openai__gpt_4o',
+    name: 'GPT-4o',
+    vendor: 'Azure',
     isPremium: true, // Premium tier
     isMultiModal: true
   },
   {
-    id: 'openai__gpt_5_reasoning_alpha_no_prompt',
-    name: 'GPT-5 (no prompt)',
-    vendor: 'OpenAI',
+    id: 'azure__openai__gpt_4o_no_prompt',
+    name: 'GPT-4o (no prompt)',
+    vendor: 'Azure',
     isPremium: true, // Premium tier
     isMultiModal: true
   },
+  {
+    id: 'azure__openai__gpt_4o_mini',
+    name: 'GPT-4o Mini',
+    vendor: 'Azure',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'azure__openai__gpt_4o_mini_no_prompt',
+    name: 'GPT-4o Mini (no prompt)',
+    vendor: 'Azure',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'azure__openai__text_embedding_ada_002',
+    name: 'Text Embedding Ada 002',
+    vendor: 'Azure',
+    isPremium: false, // Standard tier
+    isMultiModal: false // Embeddings only
+  },
+  // OpenAI Models (Customer-enabled)
   {
     id: 'openai__gpt_o3',
     name: 'OpenAI O3',
@@ -287,6 +414,78 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     isPremium: true, // Premium tier (Beta)
     isMultiModal: true
   },
+  {
+    id: 'openai__gpt_5_reasoning_alpha',
+    name: 'OpenAI GPT-5',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_reasoning_alpha_no_prompt',
+    name: 'OpenAI GPT-5 (no prompt)',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  // IBM Models
+  {
+    id: 'ibm__llama_3_2_90b_vision_instruct',
+    name: 'IBM Llama 3.2 Vision',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'ibm__llama_3_2_90b_vision_instruct_no_prompt',
+    name: 'IBM Llama 3.2 Vision (no prompt)',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'ibm__llama_4_scout',
+    name: 'IBM Llama 4 Scout',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'ibm__llama_4_scout_no_prompt',
+    name: 'IBM Llama 4 Scout (no prompt)',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  // Customer-enabled models (xAI Grok)
+  {
+    id: 'xai__grok_3_beta',
+    name: 'Grok 3 Beta',
+    vendor: 'xAI',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'xai__grok_3_beta_no_prompt',
+    name: 'Grok 3 Beta (no prompt)',
+    vendor: 'xAI',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'xai__grok_3_mini_reasoning_beta',
+    name: 'Grok 3 Mini Reasoning Beta',
+    vendor: 'xAI',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'xai__grok_3_mini_reasoning_beta_no_prompt',
+    name: 'Grok 3 Mini Reasoning Beta (no prompt)',
+    vendor: 'xAI',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  }
 
 ];
 
@@ -314,4 +513,4 @@ export const isPremiumModel = (modelId: string): boolean => {
 export const isMultiModalModel = (modelId: string): boolean => {
   const config = getModelConfig(modelId);
   return config?.isMultiModal || false;
-}; 
+};

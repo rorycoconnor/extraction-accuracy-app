@@ -17,6 +17,7 @@ import type { AccuracyData, AccuracyField } from '@/lib/types';
 import { cn, formatModelName, NOT_PRESENT_VALUE } from '@/lib/utils';
 import { compareValues, type ComparisonResult } from '@/lib/metrics';
 import { MousePointer2, Play, RotateCcw, Clock } from 'lucide-react';
+import { ModelPill } from '@/components/model-pill';
 import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
 import { ImageThumbnailHover } from '@/components/image-thumbnail-hover';
 
@@ -188,7 +189,6 @@ const ModelHeader = ({
           (no prompt)
         </span>
       )}
-
     </div>
   );
 };
