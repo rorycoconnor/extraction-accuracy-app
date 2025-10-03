@@ -16,6 +16,7 @@ import type { AccuracyData, AccuracyField } from '@/lib/types';
 import { cn, formatModelName, NOT_PRESENT_VALUE } from '@/lib/utils';
 import { compareValues, type ComparisonResult } from '@/lib/metrics';
 import { MousePointer2, Play, RotateCcw, Clock } from 'lucide-react';
+import { ModelPill } from '@/components/model-pill';
 import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
 
 type ExtractionTableProps = {
@@ -382,11 +383,13 @@ export default function ExtractionTable({
                           colIndex === visibleColumns.length - 1 && fieldIndex < fields.length - 1 ? 'thick-border-right' : ''
                       )}
                       >
-                      <div className="flex items-center justify-center gap-1">
-                        {formatModelName(colName)}
-                        {colName === 'Ground Truth' && onOpenInlineEditor && (
-                          <MousePointer2 className="h-3 w-3 text-muted-foreground" />
-                        )}
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <div className="flex items-center justify-center gap-1">
+                          {formatModelName(colName)}
+                          {colName === 'Ground Truth' && onOpenInlineEditor && (
+                            <MousePointer2 className="h-3 w-3 text-muted-foreground" />
+                          )}
+                        </div>
                       </div>
                     </TableHead>
                   ))}

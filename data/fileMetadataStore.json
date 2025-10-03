@@ -1739,5 +1739,14 @@
     "groundTruth": {
       "vendor": "vend"
     }
+  },
+  "1807674057288": {
+    "templateKey": "anInvoice",
+    "groundTruth": {
+      "totalAmount": "8742",
+      "accountNumber": "1234",
+      "invoiceId": "8742",
+      "invoiceTotalAmount": "1002000"
+    }
   }
 }
