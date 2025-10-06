@@ -55,7 +55,8 @@ export function EditPromptDialog({ open, onOpenChange, initialText, onSave, fiel
               onChange={(e) => setText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Enter your prompt text..."
-              className="min-h-[100px]"
+              className="min-h-[280px] resize-y"
+              rows={10}
               autoFocus
             />
           </div>

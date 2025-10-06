@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -22,11 +22,15 @@ import {
   Columns3,
   Copy,
   Download,
-  MoreHorizontal
+  MoreHorizontal,
+  Crown,
+  FileImage
 } from 'lucide-react';
 import { formatModelName } from '@/lib/utils';
 import type { AccuracyData } from '@/lib/types';
-import { AVAILABLE_MODELS } from '@/lib/main-page-constants';
+import { AVAILABLE_MODELS, isPremiumModel, isMultiModalModel } from '@/lib/main-page-constants';
+import { ModelIcon, ModelPill } from '@/components/model-pill';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ControlBarProps {
   accuracyData: AccuracyData | null;
@@ -78,6 +82,41 @@ const ControlBar: React.FC<ControlBarProps> = ({
       .sort();
   }, [accuracyData]);
 
+  // Filter state for pills
+  const [premiumFilter, setPremiumFilter] = useState<'all' | 'premium' | 'standard'>('all');
+  const [showMultiModalOnly, setShowMultiModalOnly] = useState(false);
+
+  // Filter available models based on pill selections
+  const filteredModels = useMemo(() => {
+    let filtered = availableModels;
+    
+    if (premiumFilter === 'premium') {
+      filtered = filtered.filter(model => isPremiumModel(model));
+    } else if (premiumFilter === 'standard') {
+      filtered = filtered.filter(model => !isPremiumModel(model));
+    }
+    
+    if (showMultiModalOnly) {
+      filtered = filtered.filter(model => isMultiModalModel(model));
+    }
+    
+    return filtered;
+  }, [availableModels, premiumFilter, showMultiModalOnly]);
+
+  const handlePremiumClick = () => {
+    if (premiumFilter === 'all') {
+      setPremiumFilter('premium');
+    } else if (premiumFilter === 'premium') {
+      setPremiumFilter('standard');
+    } else {
+      setPremiumFilter('all');
+    }
+  };
+
+  const handleMultiModalClick = () => {
+    setShowMultiModalOnly(!showMultiModalOnly);
+  };
+
   return (
     <div className="flex items-center gap-2 px-6 py-4 mb-2">
       <Button onClick={onSelectDocuments} variant="outline" className="bg-gray-700 text-white hover:bg-gray-600 hover:text-white border-gray-700">
@@ -95,28 +134,73 @@ const ControlBar: React.FC<ControlBarProps> = ({
             </Badge>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="w-80 max-w-none">
-          <DropdownMenuLabel>Visible Models</DropdownMenuLabel>
+        <DropdownMenuContent align="start" className="w-96 max-w-none max-h-[80vh] overflow-y-auto">
+          <DropdownMenuLabel className="flex items-center gap-2 sticky top-0 bg-background z-10 border-b">
+            <span>Visible Models</span>
+            <div className="flex gap-1">
+              <button
+                onClick={handlePremiumClick}
+                className={`flex items-center gap-1 text-xs px-1.5 py-0.5 border rounded-full transition-all cursor-pointer ${
+                  premiumFilter === 'all'
+                    ? 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-150'
+                    : premiumFilter === 'premium'
+                    ? 'bg-amber-200 text-amber-900 border-amber-300 font-bold'
+                    : 'bg-green-200 text-green-900 border-green-300 font-bold'
+                }`}
+              >
+                <Crown className="h-3 w-3" />
+                {premiumFilter === 'all' ? 'Premium' : premiumFilter === 'premium' ? 'Premium Only' : 'Standard Only'}
+              </button>
+              <button
+                onClick={handleMultiModalClick}
+                className={`flex items-center gap-1 text-xs px-1.5 py-0.5 border rounded-full transition-all cursor-pointer ${
+                  showMultiModalOnly 
+                    ? 'bg-blue-200 text-blue-900 border-blue-300 font-bold' 
+                    : 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-150'
+                }`}
+              >
+                <FileImage className="h-3 w-3" />
+                Multimodal
+              </button>
+            </div>
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuCheckboxItem
             key="Ground Truth"
             checked={shownColumns['Ground Truth']}
             onCheckedChange={(checked) => onColumnToggle('Ground Truth', !!checked)}
             onSelect={(event) => event.preventDefault()}
-            className="whitespace-nowrap"
+            className="whitespace-nowrap py-1.5"
           >
             {formatModelName('Ground Truth')}
           </DropdownMenuCheckboxItem>
           <DropdownMenuSeparator />
-          {availableModels.map(modelName => (
+          {filteredModels.map(modelName => (
             <DropdownMenuCheckboxItem
               key={modelName}
               checked={shownColumns[modelName]}
               onCheckedChange={(checked) => onColumnToggle(modelName, !!checked)}
               onSelect={(event) => event.preventDefault()}
-              className="whitespace-nowrap"
+              className="whitespace-nowrap py-1.5"
             >
-              {formatModelName(modelName)}
+              <div className="flex items-center gap-2 w-full">
+                <span>{formatModelName(modelName)}</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div>
+                        <ModelIcon modelId={modelName} size="sm" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="text-xs">
+                        {isPremiumModel(modelName) && <div>👑 Premium Model</div>}
+                        {isMultiModalModel(modelName) && <div>📄 Multimodal Model</div>}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
             </DropdownMenuCheckboxItem>
           ))}
         </DropdownMenuContent>
@@ -125,8 +209,8 @@ const ControlBar: React.FC<ControlBarProps> = ({
       <Button 
         onClick={onRunComparison} 
         disabled={isExtracting || !accuracyData}
-        className={accuracyData?.results?.length > 0 ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
-        variant={accuracyData?.results?.length > 0 ? "default" : "outline"}
+        className={accuracyData?.results && accuracyData.results.length > 0 ? "bg-blue-600 hover:bg-blue-700 text-white" : ""}
+        variant={accuracyData?.results && accuracyData.results.length > 0 ? "default" : "outline"}
       >
         {isExtracting ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -232,17 +232,64 @@ export function parseImportCSV(csvText: string): ExportableTemplate[] {
 }
 
 /**
+ * Decode HTML entities to their proper characters
+ */
+function decodeHTMLEntities(text: string): string {
+  const entities: Record<string, string> = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&apos;': "'",
+    '&#39;': "'",
+    '&#x27;': "'",
+    '&rsquo;': "'",
+    '&lsquo;': "'",
+    '&ldquo;': '"',
+    '&rdquo;': '"',
+    '&ndash;': '–',
+    '&mdash;': '—',
+  };
+  
+  let decoded = text;
+  
+  // Replace named entities
+  for (const [entity, char] of Object.entries(entities)) {
+    decoded = decoded.replace(new RegExp(entity, 'g'), char);
+  }
+  
+  // Replace numeric entities (&#39; or &#x27;)
+  decoded = decoded.replace(/&#(\d+);/g, (match, dec) => {
+    return String.fromCharCode(parseInt(dec, 10));
+  });
+  decoded = decoded.replace(/&#x([0-9a-fA-F]+);/g, (match, hex) => {
+    return String.fromCharCode(parseInt(hex, 16));
+  });
+  
+  return decoded;
+}
+
+/**
  * Normalize field values by fixing common encoding issues
  */
 function normalizeFieldValue(value: string): string {
   return value
-    // Fix common encoding issues
+    // First decode HTML entities
+    .replace(/&[#\w]+;/g, (entity) => decodeHTMLEntities(entity))
+    // Fix replacement character (�) - common when UTF-8 is misread
+    .replace(/�/g, "'")      // Replace � with apostrophe (most common case)
+    // Fix common UTF-8 misreading patterns (Windows-1252 → UTF-8)
     .replace(/â€œ/g, '"')    // Fix â€œ to "
     .replace(/â€/g, '"')     // Fix â€ to "
     .replace(/â€™/g, "'")    // Fix â€™ to '
     .replace(/â€˜/g, "'")    // Fix â€˜ to '
     .replace(/â€"/g, '—')    // Fix â€" to em dash
     .replace(/â€"/g, '–')    // Fix â€" to en dash
+    .replace(/Ã©/g, 'é')     // Fix Ã© to é
+    .replace(/Ã¨/g, 'è')     // Fix Ã¨ to è
+    .replace(/Ã /g, 'à')     // Fix Ã  to à
+    .replace(/Ã§/g, 'ç')     // Fix Ã§ to ç
+    .replace(/Ã±/g, 'ñ')     // Fix Ã± to ñ
     .replace(/Â/g, '')       // Remove stray Â characters
     // Normalize different quote types
     .replace(/[""]/g, '"')   // Replace smart quotes

@@ -11,29 +11,34 @@ const EmptyState: React.FC = () => {
           <h3 className="font-headline text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
             Hello! Let's get started
           </h3>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Click{' '}
-            <span className="font-semibold text-gray-800 dark:text-gray-200">
-              "Select Documents"
-            </span>{' '}
-            and choose your{' '}
-            <span className="font-semibold text-gray-800 dark:text-gray-200">
-              template
-            </span>{' '}
-            &amp;{' '}
-            <span className="font-semibold text-gray-800 dark:text-gray-200">
-              files
-            </span>
-            .{' '}
-            <span className="font-semibold text-gray-800 dark:text-gray-200">
-              "Compare Models"
-            </span>
-            . Then select{' '}
-            <span className="font-semibold text-gray-800 dark:text-gray-200">
-              "Run Comparison"
-            </span>
-            .
-          </p>
+          <div className="mt-4 space-y-2 text-gray-600 dark:text-gray-400">
+            <p>
+              Click{' '}
+              <span className="font-semibold text-gray-800 dark:text-gray-200">
+                "Select Documents"
+              </span>{' '}
+              and choose your{' '}
+              <span className="font-semibold text-gray-800 dark:text-gray-200">
+                template
+              </span>{' '}
+              &{' '}
+              <span className="font-semibold text-gray-800 dark:text-gray-200">
+                files
+              </span>
+            </p>
+            <p>
+              Then select{' '}
+              <span className="font-semibold text-gray-800 dark:text-gray-200">
+                "Compare Models"
+              </span>
+            </p>
+            <p>
+              Then select{' '}
+              <span className="font-semibold text-gray-800 dark:text-gray-200">
+                "Run Comparison"
+              </span>
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>

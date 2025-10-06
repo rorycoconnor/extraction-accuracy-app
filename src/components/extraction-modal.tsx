@@ -220,7 +220,18 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
   }, [isOpen]);
 
   const handleClose = () => {
-    onClose();
+    try {
+      // Clear any pending state before closing
+      setGlobalFileSelection({});
+      setSearchQuery('');
+      
+      // Call the parent close handler
+      onClose();
+    } catch (error) {
+      console.error('Error closing extraction modal:', error);
+      // Force close even if there's an error
+      onClose();
+    }
   };
 
   const handleRunExtraction = () => {

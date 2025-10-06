@@ -738,7 +738,7 @@ export default function GroundTruthPage() {
               <Folder className="h-8 w-8 text-muted-foreground/50" />
               <div className="text-lg font-medium">No files selected</div>
               <div className="text-sm">
-                Use the "Select Files" button above to choose files from your Box account for ground truth editing.
+                Use the "Select Files" button above to choose files from multiple box folder in order to edit ground truth or export, import csv tiles.
               </div>
             </div>
           </TableCell>
@@ -764,22 +764,16 @@ export default function GroundTruthPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Ground Truth Files</CardTitle>
-                <CardDescription>
-                  Use <span className="font-semibold text-foreground">Select Files</span> to choose files from any Box folder for ground truth editing. Selected files will appear in the table below where you can manage their ground truth data.
-                </CardDescription>
-              </div>
               <div className="flex gap-2">
-                <Button variant="default" size="sm" onClick={handleSelectFilesClick}>
+                <Button variant="default" onClick={handleSelectFilesClick}>
                   <Folder className="mr-2 h-4 w-4" />
                   Select Files
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleExportClick}>
+                <Button variant="outline" onClick={handleExportClick}>
                   <Download className="mr-2 h-4 w-4" />
                   Export CSV
                 </Button>
-                <Button variant="outline" size="sm" onClick={handleImportClick}>
+                <Button variant="outline" onClick={handleImportClick}>
                   <Upload className="mr-2 h-4 w-4" />
                   Import CSV
                 </Button>

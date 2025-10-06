@@ -13,7 +13,7 @@
  */
 
 // ===== REACT & HOOKS IMPORTS =====
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccuracyData } from '@/hooks/use-accuracy-data';
 import { useExtractionProgress } from '@/hooks/use-extraction-progress';
@@ -27,6 +27,7 @@ import ControlBar from '@/components/control-bar';
 import ComparisonResults from '@/components/comparison-results';
 import EmptyState from '@/components/empty-state';
 import ModalContainer from '@/components/modal-container';
+import { DashboardSidebar } from '@/components/dashboard-sidebar';
 
 // ===== AI & BUSINESS LOGIC IMPORTS =====
 import { calculateFieldMetrics, calculateFieldMetricsWithDebug } from '@/lib/metrics';
@@ -43,7 +44,8 @@ import {
   saveGroundTruthForFile, 
   clearAllGroundTruthData,
   getGroundTruthData,
-  saveAccuracyData
+  saveAccuracyData,
+  getFileMetadataStore
 } from '@/lib/mock-data';
 
 // ===== CONSTANTS & UTILITIES IMPORTS =====
@@ -151,13 +153,86 @@ const MainPage: React.FC = () => {
 
   const { toast } = useToast();
   const { autoPopulateGroundTruth } = useGroundTruthPopulator();
-  const { refreshGroundTruth, saveGroundTruth } = useGroundTruth();
+  const { refreshGroundTruth, saveGroundTruth, getGroundTruth } = useGroundTruth();
   
   // ===== MODEL EXTRACTION RUNNER HOOK =====
   const { runExtractions, apiDebugData, apiRequestDebugData } = useModelExtractionRunner();
+  
+  // ===== AUTHENTICATION STATE (for dashboard) =====
+  // Use the same two-step approach as the Settings page for reliable auth detection
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const [isBoxAuthenticated, setIsBoxAuthenticated] = useState(false);
+  const [authMethod, setAuthMethod] = useState<string>('');
+  const [oauthStatus, setOauthStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
+  
+  // Step 1: Check OAuth status (same as Settings page)
+  useEffect(() => {
+    const checkOAuthStatus = async () => {
+      try {
+        console.log('🔐 Step 1: Checking OAuth status...');
+        const response = await fetch('/api/auth/box/status');
+        const data = await response.json();
+        
+        if (data.success) {
+          const status = data.status.isConnected ? 'connected' : 'disconnected';
+          setOauthStatus(status);
+          console.log('🔐 OAuth status:', status);
+        } else {
+          setOauthStatus('disconnected');
+          console.log('🔐 OAuth status: disconnected (no data)');
+        }
+      } catch (error) {
+        console.error('❌ Failed to check OAuth status:', error);
+        setOauthStatus('disconnected');
+      }
+    };
+    
+    checkOAuthStatus();
+    
+    // Re-check periodically (every 30 seconds)
+    const interval = setInterval(checkOAuthStatus, 30000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Step 2: Fetch user info based on OAuth status (same as Settings page)
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        setIsAuthChecking(true);
+        console.log('🔐 Step 2: Fetching user info...');
+        
+        const response = await fetch('/api/auth/box/user');
+        const data = await response.json();
+        
+        console.log('🔐 User info response:', {
+          success: data.success,
+          hasUser: !!data.user,
+          authMethod: data.authMethod,
+        });
+        
+        if (data.success && data.user) {
+          setIsBoxAuthenticated(true);
+          setAuthMethod(data.authMethod || '');
+          console.log('✅ Authentication confirmed:', data.authMethod);
+        } else {
+          setIsBoxAuthenticated(false);
+          setAuthMethod('');
+          console.log('❌ Not authenticated:', data.error);
+        }
+      } catch (error) {
+        console.error('❌ Failed to fetch user info:', error);
+        setIsBoxAuthenticated(false);
+        setAuthMethod('');
+      } finally {
+        setIsAuthChecking(false);
+      }
+    };
+    
+    fetchUserInfo();
+  }, [oauthStatus]); // Refetch when OAuth status changes (same as Settings page!)
 
   // ===== LOCAL STATE =====
-  // Modal state management
+  // Modal state management with defensive initialization
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPromptStudioOpen, setIsPromptStudioOpen] = useState(false);
   const [selectedFieldForPromptStudio, setSelectedFieldForPromptStudio] = useState<AccuracyField | null>(null);
@@ -169,6 +244,29 @@ const MainPage: React.FC = () => {
   } | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<BoxTemplate | null>(null);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  
+  // 🔧 DEFENSIVE: Force close all modals handler (recovery mechanism)
+  const forceCloseAllModals = () => {
+    console.log('🛡️ Force closing all modals (recovery mode)');
+    setIsModalOpen(false);
+    setIsPromptStudioOpen(false);
+    setIsInlineEditorOpen(false);
+    setShowResetDialog(false);
+  };
+  
+  // 🔧 DEFENSIVE: Add keyboard escape handler for recovery
+  useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isModalOpen && !isPromptStudioOpen && !isInlineEditorOpen && !showResetDialog) {
+        // If Escape is pressed but no modal thinks it's open, we might be in a stuck state
+        console.log('🔍 Escape pressed with no modal open - checking for stuck overlays');
+        forceCloseAllModals();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscapeKey);
+    return () => window.removeEventListener('keydown', handleEscapeKey);
+  }, [isModalOpen, isPromptStudioOpen, isInlineEditorOpen, showResetDialog]);
   
   // ===== ENHANCED COMPARISON RUNNER =====
   const enhancedRunner = useEnhancedComparisonRunner(selectedTemplate);
@@ -401,17 +499,61 @@ const MainPage: React.FC = () => {
     }
   };
 
+  // ===== DASHBOARD DATA PREPARATION =====
+
+  // Calculate ground truth stats
+  const groundTruthStats = useMemo(() => {
+    if (!accuracyData || !accuracyData.results || accuracyData.results.length === 0) {
+      return undefined;
+    }
+
+    const groundTruthData = getGroundTruthData();
+    const totalFiles = accuracyData.results.length;
+    const filesWithGroundTruth = accuracyData.results.filter(result => {
+      const gtData = groundTruthData[result.id];
+      return gtData && Object.keys(gtData.groundTruth || {}).length > 0;
+    }).length;
+
+    return {
+      totalFiles,
+      filesWithGroundTruth,
+      completionPercentage: totalFiles > 0 ? Math.round((filesWithGroundTruth / totalFiles) * 100) : 0
+    };
+  }, [accuracyData]);
+
+  // Get last activity info
+  const lastActivity = useMemo(() => {
+    if (!accuracyData || !accuracyData.results || accuracyData.results.length === 0) {
+      return null;
+    }
+
+    return {
+      type: 'Comparison',
+      date: new Date(), // Could be enhanced to store actual run date
+      filesProcessed: accuracyData.results.length
+    };
+  }, [accuracyData]);
+
  // ===== COMPONENT RENDER =====
  
  return (
      <div className="flex flex-col h-full">
        <ControlBar
-         accuracyData={accuracyData}
-         isExtracting={enhancedRunner.isExtracting}
-         progress={enhancedRunner.progress}
-         shownColumns={shownColumns}
-         onSelectDocuments={() => setIsModalOpen(true)}
-         onRunComparison={handleRunComparison}
+        accuracyData={accuracyData}
+        isExtracting={enhancedRunner.isExtracting}
+        progress={enhancedRunner.progress}
+        shownColumns={shownColumns}
+        onSelectDocuments={() => {
+          console.log('📂 Select Documents button clicked');
+          try {
+            setIsModalOpen(true);
+          } catch (error) {
+            console.error('Error opening modal:', error);
+            forceCloseAllModals();
+            setTimeout(() => setIsModalOpen(true), 100);
+          }
+        }}
+        onRunComparison={handleRunComparison}
          onAutoPopulateGroundTruth={handleAutoPopulateGroundTruth}
          onOpenSummary={openPerformanceModal}
          onClearResults={clearResults}
@@ -431,17 +573,34 @@ const MainPage: React.FC = () => {
             onToggleFieldMetrics={handleToggleFieldMetrics}
           />
          ) : (
-           <div className="p-4 md:p-8">
-             <EmptyState />
+           <div className="p-4 md:p-8 h-full flex gap-6">
+             {/* Empty State - 70% width */}
+             <div className="flex-[7] min-w-[400px]">
+               <EmptyState />
+             </div>
+
+             {/* Dashboard Cards - 30% width */}
+             <div className="flex-[3] overflow-y-auto max-h-full">
+               <DashboardSidebar
+                 isAuthenticated={isBoxAuthenticated}
+                 authMethod={authMethod}
+                 metadataTemplates={configuredTemplates}
+                 groundTruthStats={groundTruthStats}
+                 isLoading={isAuthChecking}
+               />
+             </div>
            </div>
          )}
        </div>
        
        <ModalContainer 
-         isExtractionModalOpen={isModalOpen}
-         configuredTemplates={configuredTemplates}
-         onCloseExtractionModal={() => setIsModalOpen(false)}
-         onRunExtraction={handleRunExtraction}
+        isExtractionModalOpen={isModalOpen}
+        configuredTemplates={configuredTemplates}
+        onCloseExtractionModal={() => {
+          console.log('🔒 Closing extraction modal');
+          setIsModalOpen(false);
+        }}
+        onRunExtraction={handleRunExtraction}
          isPromptStudioOpen={isPromptStudioOpen}
          selectedFieldForPromptStudio={selectedFieldForPromptStudio}
          selectedTemplateName={selectedTemplate?.displayName}
