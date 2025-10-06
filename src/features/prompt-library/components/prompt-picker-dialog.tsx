@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; 
 import { Star, ChevronLeft, ChevronRight, Pin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {

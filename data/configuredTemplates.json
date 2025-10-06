@@ -543,7 +543,7 @@
         "displayName": "AI Number of People in Image",
         "hidden": false,
         "description": "How many people are in the image? Only list the number like 0, 1, 2 ,3 etc. ",
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "d70f189e-351b-4926-bad0-3651bd7a3d55",
@@ -679,7 +679,7 @@
             "key": "Normal"
           }
         ],
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "f52bdb9b-774f-49ff-a71e-70f63dc5defe",
@@ -840,6 +840,294 @@
     ]
   },
   {
+    "id": "9ab888a4-b22a-4a31-804d-dcea915ff2ba",
+    "type": "metadata_template",
+    "templateKey": "hrRecords",
+    "scope": "enterprise_1218697394",
+    "displayName": "HR Records",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "482a3424-561c-42d5-9e80-3483379f6849",
+        "type": "enum",
+        "key": "status",
+        "displayName": "Status",
+        "hidden": false,
+        "options": [
+          {
+            "id": "c05218f8-5ee3-4b93-8092-0d96f289be1a",
+            "key": "Active"
+          },
+          {
+            "id": "8e7c6d34-c8ae-4e3e-a91d-763a8fbd3a8a",
+            "key": "In Active"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "7e2756e1-8b1a-46a6-acac-ec2cf2b1657b",
+        "type": "string",
+        "key": "employeeName1",
+        "displayName": "Employee Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "a081980d-a0a8-4cd8-afc0-8b939e3e1126",
+        "type": "enum",
+        "key": "employeeType",
+        "displayName": "Employee Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "49c80c84-6616-4edb-aa46-173b9e9d7d85",
+            "key": "Full Time"
+          },
+          {
+            "id": "e22df9b1-5335-488e-b254-4203286de7ba",
+            "key": "Part Time"
+          },
+          {
+            "id": "fb071755-d1b7-493a-84b9-e46c8a29fd6a",
+            "key": "Contractor"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "dbbf9786-15a0-479b-9bff-ec49fed2b533",
+        "type": "string",
+        "key": "employeeAddress",
+        "displayName": "Employee Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "f55c319e-19c3-4a72-a24c-ead76abb860f",
+        "type": "enum",
+        "key": "documentType",
+        "displayName": "Document Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "6e98dfc0-cf7a-4be7-a9a6-aaf2e7e1834b",
+            "key": "ID"
+          },
+          {
+            "id": "31579936-72ba-48bd-b384-4fd396b8bdc8",
+            "key": "Resume"
+          },
+          {
+            "id": "dba4bdf1-53be-4de2-abdd-0494ec78cc31",
+            "key": "Employment Agreement"
+          },
+          {
+            "id": "929dc202-f0c5-4dea-89a2-db0449da4fe5",
+            "key": "Offer Letter"
+          },
+          {
+            "id": "fe158732-3da5-4177-9686-d03c0dbe43f1",
+            "key": "Handbook"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "326bdde5-5f74-4550-b53d-868fca0fe75e",
+        "type": "date",
+        "key": "hireDate",
+        "displayName": "Hire Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "b14e07c9-2591-4e62-a306-3fc2091b6530",
+        "type": "date",
+        "key": "endDate",
+        "displayName": "End Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "eda78780-0532-4c2f-8279-5a9fa6022945",
+        "type": "string",
+        "key": "comments",
+        "displayName": "Comments",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "7d5c7cab-cbed-41cc-93cd-2d19002b58a5",
+        "type": "enum",
+        "key": "signedOff",
+        "displayName": "Signed Off",
+        "hidden": false,
+        "options": [
+          {
+            "id": "2ab3790f-f9ed-4cb2-b22d-b51ad0b7e9ee",
+            "key": "Yes"
+          },
+          {
+            "id": "e264cbd9-fdba-4237-9ae3-7bb5a6b3d5c9",
+            "key": "No"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "75de0631-01ca-4411-8a17-f02236d98ae8",
+        "type": "string",
+        "key": "employeeId",
+        "displayName": "Employee ID",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "eb2e4fd7-b376-4b9e-b8e7-6755766b83a9",
+        "type": "string",
+        "key": "licenseId",
+        "displayName": "License ID",
+        "hidden": false,
+        "isActive": true
+      }
+    ]
+  },
+  {
+    "id": "f5fc15a5-f480-4bb9-80a5-5992c54a52fc",
+    "type": "metadata_template",
+    "templateKey": "i9",
+    "scope": "enterprise_1218697394",
+    "displayName": "i9",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "42670016-ed40-4a9f-9768-0047438a061c",
+        "type": "string",
+        "key": "employee_name",
+        "displayName": "Employee name",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "6b8b31dd-f476-4bd7-b587-813a1ad85f16",
+        "type": "string",
+        "key": "employeeAddress",
+        "displayName": "Employee address",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "42f60f3e-0b0f-4a6a-b4a5-0472a8835d08",
+        "type": "date",
+        "key": "dateOfBirth",
+        "displayName": "Date of birth",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "a70edcf8-13fc-4026-8529-b8e7e5c00bbf",
+        "type": "string",
+        "key": "citizenshipOrImmigrationStatusAttestation",
+        "displayName": "Citizenship or immigration status attestation",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "17c2cdb4-0dcd-40fc-bb72-75d1d6367560",
+        "type": "date",
+        "key": "signatureDate",
+        "displayName": "Signature date",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "db3407d9-4d0a-475e-bae3-13c34b6c82c0",
+        "type": "string",
+        "key": "socialSecurityNumber",
+        "displayName": "Social Security number",
+        "hidden": false,
+        "description": "format social security number like this XXX-XX-XXXX",
+        "isActive": true
+      },
+      {
+        "id": "7ffdabcb-eceb-43bf-ae0a-180c0f613e62",
+        "type": "enum",
+        "key": "documentVerification",
+        "displayName": "Document verification",
+        "hidden": false,
+        "description": "",
+        "options": [
+          {
+            "id": "f0dbc434-3262-4fe3-bfe9-4fda4ad1c416",
+            "key": "Passport"
+          },
+          {
+            "id": "17bc146a-d4bf-4e43-88fc-4a99e9064356",
+            "key": "Drivers License"
+          },
+          {
+            "id": "c99c5996-78a8-4aa8-8e4f-01cb19439fcf",
+            "key": "State ID"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "ed0af020-445a-45e8-aca4-e0759eb9af5d",
+        "type": "string",
+        "key": "idDetails",
+        "displayName": "ID Details",
+        "hidden": false,
+        "description": "Output information as ID expiration date,  ID Number.   Example output: Exp Date: 12/03/2023, ID #123456789",
+        "isActive": true
+      },
+      {
+        "id": "02b5f41c-5546-409d-a8d2-f2d135694f0c",
+        "type": "date",
+        "key": "firstDayOfEmployment",
+        "displayName": "First day of employment",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "077d0af3-0398-4e3a-af47-6ae172e13935",
+        "type": "string",
+        "key": "employerAuthorizedRepresentativesNameAndTitle",
+        "displayName": "Employer / authorized representative’s name and title",
+        "hidden": false,
+        "description": "Name on i9 will list last name first.  Output with First name first followed by title",
+        "isActive": true
+      },
+      {
+        "id": "c475adbc-db36-4b27-9242-4930b2961593",
+        "type": "string",
+        "key": "employersBusinessName",
+        "displayName": "Employer’s business name",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "d85910fb-17f4-4692-a9af-d2f9879bdd8c",
+        "type": "string",
+        "key": "employersBusinessAddress",
+        "displayName": "Employer’s business address",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      }
+    ]
+  },
+  {
     "id": "fe4fb0a9-cf3e-42d1-b340-83ae04762116",
     "type": "metadata_template",
     "templateKey": "invoice",
@@ -934,6 +1222,473 @@
         "key": "freightAmount",
         "displayName": "Freight Amount",
         "hidden": false,
+        "isActive": true
+      }
+    ]
+  },
+  {
+    "id": "a562e07b-61d0-40ed-bfd7-ad301ff3a45a",
+    "type": "metadata_template",
+    "templateKey": "paystub",
+    "scope": "enterprise_1218697394",
+    "displayName": "Paystub",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "eaefcd6a-78da-47df-b7dc-21cd214dbf3a",
+        "type": "enum",
+        "key": "document_type",
+        "displayName": "Document Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "f74e6227-d1dd-42ae-8a0b-b7c376399b07",
+            "key": "Paystub"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "49c11810-13af-4cb1-8668-3b98d38476d4",
+        "type": "string",
+        "key": "document_id",
+        "displayName": "Document ID",
+        "hidden": false,
+        "description": "Extract the unique identifier printed on the pay statement (e.g., \"Pay Statement #\", \"Statement No.\", \"Stub #\", or \"Check #\"); prefer a pay statement/stub number over a check or employee number; exclude account and routing numbers.",
+        "isActive": true
+      },
+      {
+        "id": "7946238e-0127-4f14-a53f-0b106c689ca2",
+        "type": "string",
+        "key": "employer_name",
+        "displayName": "Employer Name",
+        "hidden": false,
+        "description": "Extract the employer's legal name as shown on the pay statement header; ignore payroll provider names (e.g., ADP, Paychex) and bank names.",
+        "isActive": true
+      },
+      {
+        "id": "da51f327-3fa8-4a9f-a51e-4b4e9ce79ed9",
+        "type": "string",
+        "key": "employer_address",
+        "displayName": "Employer Address",
+        "hidden": false,
+        "description": "Extract the employer's mailing address block near the employer name; include street, city, state, and ZIP; ignore employee and bank addresses.",
+        "isActive": true
+      },
+      {
+        "id": "4ef46a91-7100-4246-b9ad-e1b6370bad65",
+        "type": "string",
+        "key": "employee_name",
+        "displayName": "Employee Name",
+        "hidden": false,
+        "description": "Extract the employee's full name from the pay statement; prefer the labeled employee/payee field; ignore approvers and HR contacts.",
+        "isActive": true
+      },
+      {
+        "id": "d36b8fc9-7cd1-4e61-a8f3-a675e14a8f2e",
+        "type": "string",
+        "key": "employee_address",
+        "displayName": "Employee Address",
+        "hidden": false,
+        "description": "Extract the employee's home address block adjacent to the employee name; include street, city, state, and ZIP; ignore employer and bank addresses.",
+        "isActive": true
+      },
+      {
+        "id": "4a5640da-eb78-4e75-a703-6307e3930168",
+        "type": "string",
+        "key": "employee_id",
+        "displayName": "Employee ID",
+        "hidden": false,
+        "description": "Extract the employee identifier labeled Employee ID/Emp ID/Associate ID; if multiple IDs appear, choose the one explicitly tied to the employee record; do not return SSN or partial SSN.",
+        "isActive": true
+      },
+      {
+        "id": "3f60893c-d7cd-4ba0-a3b8-b71f5b304e56",
+        "type": "enum",
+        "key": "marital_status",
+        "displayName": "Marital Status",
+        "hidden": false,
+        "description": "From the tax/withholding section, select marital status from the allowed list; map common variants (e.g., \"M\"_Married, \"S\"_Single, \"HOH\"_Head of Household; \"Exempt\" when explicitly marked); if unclear, choose Unknown.",
+        "options": [
+          {
+            "id": "b2d3135f-6b89-4703-9b5d-56d81e9f285e",
+            "key": "Single"
+          },
+          {
+            "id": "81d49e1e-e238-4301-9922-a833d60f374c",
+            "key": "Married"
+          },
+          {
+            "id": "0012e31d-812e-49e5-922c-0963952d1d86",
+            "key": "Head of Household"
+          },
+          {
+            "id": "296cb689-3e3e-4643-a513-c177dbd98f81",
+            "key": "Exempt"
+          },
+          {
+            "id": "7dfa4701-e688-430d-b752-6e7cff5cb349",
+            "key": "Unknown"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "c8d174a3-c381-4872-9b03-8ac04960289a",
+        "type": "string",
+        "key": "exemptions",
+        "displayName": "Exemptions",
+        "hidden": false,
+        "description": "From the withholding section, extract the claimed allowances/exemptions (e.g., \"Allowances: 2\", \"Dependents: 3\" or an \"Exempt\" flag); include the value as written without calculating.",
+        "isActive": true
+      },
+      {
+        "id": "e31e18dc-970f-4d1a-b985-20f2c086e14c",
+        "type": "date",
+        "key": "pay_period_start",
+        "displayName": "Pay Period Start",
+        "hidden": false,
+        "description": "Extract the start date of the pay period; if a range is shown (e.g., 08/01'08/15/2025), return the earlier date; prefer labels like \"Period Start\"/\"From\".",
+        "isActive": true
+      },
+      {
+        "id": "d05afce6-e77b-4d3e-ba39-b6dcf86fbada",
+        "type": "date",
+        "key": "pay_period_end",
+        "displayName": "Pay Period End",
+        "hidden": false,
+        "description": "Extract the end date of the pay period; if a range is shown, return the later date; prefer labels like \"Period End\"/\"To\".",
+        "isActive": true
+      },
+      {
+        "id": "0f25c193-1300-4fcf-9559-63f47781d51b",
+        "type": "date",
+        "key": "pay_date",
+        "displayName": "Pay Date",
+        "hidden": false,
+        "description": "Extract the pay date/check date labeled \"Pay Date\"/\"Check Date\"; if both appear, prefer \"Pay Date\".",
+        "isActive": true
+      },
+      {
+        "id": "57eda072-9a96-4a1d-82c3-45b1ec31564b",
+        "type": "multiSelect",
+        "key": "earning_type_line_item",
+        "displayName": "Earning Type (Line Item)",
+        "hidden": false,
+        "description": "For each earnings line, select the earning type from the allowed list; map common abbreviations (REG, OT, DT, HOL, VAC, PTO, SCK, BON, COMM, TIPS, SD, RETRO); if none match, select Other.",
+        "options": [
+          {
+            "id": "92f34142-d398-4d36-bd26-3ed21d764adf",
+            "key": "Regular"
+          },
+          {
+            "id": "c15cfef9-99c7-4f33-baa1-2903aa9a2292",
+            "key": "Overtime"
+          },
+          {
+            "id": "d1018335-4b6e-473f-b1fb-1d1d3ca4126b",
+            "key": "Double Time"
+          },
+          {
+            "id": "9dc11ff8-5587-470e-a5fe-69cfdbf0e48f",
+            "key": "Holiday"
+          },
+          {
+            "id": "d733af4a-bb9a-4230-bc28-b94f71bd1ae1",
+            "key": "Vacation"
+          },
+          {
+            "id": "d354bd55-8222-4ba2-be1f-ac9307f448da",
+            "key": "PTO"
+          },
+          {
+            "id": "c218a037-c2b3-4da2-a801-2f7d67252fc1",
+            "key": "Sick"
+          },
+          {
+            "id": "8cce3851-69b5-478e-98cf-6cd72b3aaf24",
+            "key": "Bonus"
+          },
+          {
+            "id": "1692be2a-dfd3-4803-a0f4-1cb2f9aee4a0",
+            "key": "Commission"
+          },
+          {
+            "id": "7787e4ca-5d75-444e-8fd7-6db9a6658185",
+            "key": "Cash Tips"
+          },
+          {
+            "id": "9ae2044a-98ab-4a70-9df2-ee098ff58950",
+            "key": "Credit Tips"
+          },
+          {
+            "id": "76d78c95-4bd9-4745-a744-64449808b908",
+            "key": "Shift Differential"
+          },
+          {
+            "id": "72b94a90-7a44-43f2-af69-fd65d953d790",
+            "key": "Retro Pay"
+          },
+          {
+            "id": "916e621a-e762-45ad-80ef-65c8062cb2bf",
+            "key": "Back Pay"
+          },
+          {
+            "id": "aa67e681-0db8-4976-81b4-f15cd40838ca",
+            "key": "On-Call"
+          },
+          {
+            "id": "954a819a-f1c9-483d-83e1-7735e0e555ed",
+            "key": "Standby"
+          },
+          {
+            "id": "69a135f1-8e95-40fb-8d63-9f968be2c710",
+            "key": "Bereavement"
+          },
+          {
+            "id": "6e71d48e-9000-4603-8b9e-20a0eba8d06a",
+            "key": "Jury Duty"
+          },
+          {
+            "id": "16e9567a-4110-424b-8bb1-c5495abdc4ab",
+            "key": "Severance"
+          },
+          {
+            "id": "fb302a2e-ebc5-48e8-b2a7-9976f4d61109",
+            "key": "Other"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "e4548530-8e67-47b7-9719-d417ebe8a645",
+        "type": "string",
+        "key": "rate_line_item",
+        "displayName": "Rate (Line Item)",
+        "hidden": false,
+        "description": "For each earnings line, extract the stated rate (e.g., hourly rate, shift differential, per-day); if salaried and no hourly rate is shown, capture the listed rate for that line without converting.",
+        "isActive": true
+      },
+      {
+        "id": "d57c74c3-e88f-42e7-8b03-f1a83e5a0be6",
+        "type": "string",
+        "key": "hours_line_item",
+        "displayName": "Hours (Line Item)",
+        "hidden": false,
+        "description": "For each earnings line, extract the quantity/hours/units value; prefer the column labeled Hours/Qty/Units; do not infer for salaried lines if not shown.",
+        "isActive": true
+      },
+      {
+        "id": "9ba1f844-2644-4432-b19f-86acc0af57a1",
+        "type": "string",
+        "key": "current_amount_earning_line",
+        "displayName": "Current Amount (Earning Line)",
+        "hidden": false,
+        "description": "For each earnings line, extract the current period amount (not YTD) from the Amount/Current column for that line.",
+        "isActive": true
+      },
+      {
+        "id": "18a9ed8c-d383-4d1b-bfe3-ce0edfe9cd74",
+        "type": "multiSelect",
+        "key": "deduction_type_line_item",
+        "displayName": "Deduction Type (Line Item)",
+        "hidden": false,
+        "description": "For each deduction line, select the type from the allowed list; map common codes (FIT_Federal Income Tax, FICA-SS_Social Security, FICA-MED_Medicare, SIT/LIT_State/Local Tax, SDI_State Disability Insurance, PFL_Paid Family Leave, 401K/ROTH_401(k), HSA/FSA/DC_respective plans); use the closest match.",
+        "options": [
+          {
+            "id": "5ce2ebf4-ee76-4bce-8627-af1b0ee31f6a",
+            "key": "Federal Income Tax"
+          },
+          {
+            "id": "001485a8-08bd-419d-9156-81c235398999",
+            "key": "Social Security"
+          },
+          {
+            "id": "e0f8505d-9680-4d4a-b2e8-88e1190d264b",
+            "key": "Medicare"
+          },
+          {
+            "id": "691fec92-6c2f-4e39-9fae-490599556cba",
+            "key": "State Income Tax"
+          },
+          {
+            "id": "a025ed20-1180-47d5-bc63-9205fe771b58",
+            "key": "Local Tax"
+          },
+          {
+            "id": "22c408b3-f32f-414b-bf72-8afad6481291",
+            "key": "State Disability Insurance"
+          },
+          {
+            "id": "d76b801e-a377-40ca-838f-ddfd1527f87f",
+            "key": "Paid Family Leave"
+          },
+          {
+            "id": "2c6ed7d8-d793-4bcf-a6cd-d630281d682f",
+            "key": "401(k) Pre-Tax"
+          },
+          {
+            "id": "1c4c4e8d-5575-4d51-9fba-93c21672272e",
+            "key": "401(k) Roth"
+          },
+          {
+            "id": "4736d2dc-e7d5-476e-ab21-32e4c556c09a",
+            "key": "403(b)"
+          },
+          {
+            "id": "200ea7a5-ac8b-4067-9e07-86848cd7e0a6",
+            "key": "457(b)"
+          },
+          {
+            "id": "0ba11f97-fc38-4232-bccc-260089c07646",
+            "key": "HSA"
+          },
+          {
+            "id": "2cf5160c-e291-4079-9121-b9b46c1a6536",
+            "key": "FSA Health"
+          },
+          {
+            "id": "c3d89ce4-1c52-4ab3-a783-d5f9ce693e41",
+            "key": "FSA Dependent Care"
+          },
+          {
+            "id": "fa47c044-95ad-493a-85e0-0fd37b16291a",
+            "key": "Medical Premium"
+          },
+          {
+            "id": "f9f145aa-414d-45cf-b0b4-1838cc58fc16",
+            "key": "Dental Premium"
+          },
+          {
+            "id": "5b8aca3a-4171-420e-86b6-6826d789d785",
+            "key": "Vision Premium"
+          },
+          {
+            "id": "cc133132-5e1f-48bb-bdf4-384e456ac302",
+            "key": "Life Insurance"
+          },
+          {
+            "id": "66916cc4-0de2-40cd-bd38-8dbecc39cdac",
+            "key": "Disability Insurance"
+          },
+          {
+            "id": "bb26214a-14c1-4a9c-a302-d945cdcaf0f8",
+            "key": "Commuter"
+          },
+          {
+            "id": "452c6257-3d79-46b9-93c6-8e72fee17895",
+            "key": "Parking"
+          },
+          {
+            "id": "f7a83555-ea74-4feb-8ef3-895e9fdc1efe",
+            "key": "Transit"
+          },
+          {
+            "id": "95534af9-ffca-4a86-a5f2-d0a5aef18fe7",
+            "key": "Union Dues"
+          },
+          {
+            "id": "56290bde-09d0-4030-b232-436c4af95643",
+            "key": "Garnishment Child Support"
+          },
+          {
+            "id": "c01eade2-b665-4d2e-a9a5-bf5f3dcf98f5",
+            "key": "Garnishment Tax Levy"
+          },
+          {
+            "id": "8a447c26-bb7c-4726-9149-84b4771e73d8",
+            "key": "Garnishment Other"
+          },
+          {
+            "id": "766ce5ea-0c46-4a07-9802-80e7d51f1b7b",
+            "key": "Loan Repayment"
+          },
+          {
+            "id": "879b641a-6d31-48d7-b646-ac130751b7a8",
+            "key": "Advance Repayment"
+          },
+          {
+            "id": "f2744f25-e2ee-4c06-bcfe-14ddec669e98",
+            "key": "Charitable Donations"
+          },
+          {
+            "id": "41b78ab8-a587-4a10-9160-e435e07cd770",
+            "key": "Miscellaneous Post-Tax"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "a127bac2-ece2-4fed-b068-cbeb43f2ef66",
+        "type": "string",
+        "key": "current_amount_deduction_line",
+        "displayName": "Current Amount (Deduction Line)",
+        "hidden": false,
+        "description": "For each deduction line, extract the current period amount from the Amount/Current column for that line.",
+        "isActive": true
+      },
+      {
+        "id": "38e1a2f2-1a92-47ec-bab3-a83e3660c9ed",
+        "type": "string",
+        "key": "year-to-date_amount_deduction_line",
+        "displayName": "Year-to-Date Amount (Deduction Line)",
+        "hidden": false,
+        "description": "For each deduction line, extract the year-to-date amount from the YTD column for that line.",
+        "isActive": true
+      },
+      {
+        "id": "c4189ad4-706f-4735-a551-57c0cd6951e5",
+        "type": "string",
+        "key": "year-to-date_gross",
+        "displayName": "Year-to-Date Gross",
+        "hidden": false,
+        "description": "Extract the total YTD gross pay; prefer labels like \"YTD Gross\", \"Total Gross YTD\", or summary totals; do not sum manually.",
+        "isActive": true
+      },
+      {
+        "id": "523df6aa-23a1-4a32-a5bc-f968d355b083",
+        "type": "string",
+        "key": "year-to-date_deductions",
+        "displayName": "Year-to-Date Deductions",
+        "hidden": false,
+        "description": "Extract the total YTD deductions; prefer labeled YTD totals in the summary section; do not sum manually.",
+        "isActive": true
+      },
+      {
+        "id": "0a9b876a-7464-4d81-9f2a-7b196a50ab64",
+        "type": "string",
+        "key": "year-to-date_net_pay",
+        "displayName": "Year-to-Date Net Pay",
+        "hidden": false,
+        "description": "Extract the total YTD net pay from the YTD summary; ignore per-account net pay distributions.",
+        "isActive": true
+      },
+      {
+        "id": "b81d32fa-ecc4-4181-9151-12656e4aaad7",
+        "type": "string",
+        "key": "earnings_current_total",
+        "displayName": "Earnings Current Total",
+        "hidden": false,
+        "description": "Extract the current period total earnings/gross (e.g., \"Current Gross\", \"Total Earnings\"); ensure it represents the period, not YTD.",
+        "isActive": true
+      },
+      {
+        "id": "5c2e53d2-9f74-4b0f-ba62-cf3e6eaf0d31",
+        "type": "string",
+        "key": "current_deductions",
+        "displayName": "Current Deductions",
+        "hidden": false,
+        "description": "Extract the current period total deductions (e.g., \"Current Deductions\", \"Total Deductions\"); ensure it represents the period, not YTD.",
+        "isActive": true
+      },
+      {
+        "id": "0d939d11-600b-460d-8d36-848c45854c34",
+        "type": "string",
+        "key": "net_pay",
+        "displayName": "Net Pay",
+        "hidden": false,
+        "description": "Extract the current period net pay; prefer the summary line labeled \"Net Pay\"/\"Net Amount\"; ignore bank account split amounts and deposit memos.",
         "isActive": true
       }
     ]

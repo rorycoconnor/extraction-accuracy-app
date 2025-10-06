@@ -324,8 +324,120 @@
     "lastModified": "2025-09-17T13:36:50.188Z"
   },
   "endDate": {
-    "activePrompt": "Extract the \"End Date\" formatted as YYYY-MM-DD, calculating it by adding the term to the start date (or to the last signed date if the start date is missing) if not explicitly stated. If a date cannot be found or calculated, infer it from context like a project completion date. If no date can be found, calculated, or inferred, return \"null\".",
+    "activePrompt": "Extract the contract's end date, termination date, or expiration date and format as YYYY-MM-DD; if an explicit end date is not found, calculate it by adding the contract term to the start date or, if unavailable, the date the contract was signed. If no date can be found or calculated, return \"null\".",
     "promptHistory": [
+      {
+        "id": "v8",
+        "prompt": "Extract the contract's end date, termination date, or expiration date and format as YYYY-MM-DD; if an explicit end date is not found, calculate it by adding the contract term to the start date or, if unavailable, the date the contract was signed. If no date can be found or calculated, return \"null\".",
+        "savedAt": "2025-10-02T19:24:21.574Z"
+      },
+      {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-10-02T15:34:12.876Z",
+        "metrics": {
+          "modelMetrics": {
+            "google__gemini_2_0_flash_001": {
+              "f1": 0.125,
+              "accuracy": 0.125,
+              "precision": 0.125,
+              "recall": 0.125
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0.125,
+              "accuracy": 0.125,
+              "precision": 0.125,
+              "recall": 0.125
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0.875,
+              "accuracy": 0.875,
+              "precision": 0.875,
+              "recall": 0.875
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0.125,
+              "accuracy": 0.125,
+              "precision": 0.125,
+              "recall": 0.125
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-10-02T18:58:25.784Z"
+        }
+      },
       {
         "id": "v6",
         "prompt": "Extract the \"End Date\" formatted as YYYY-MM-DD, calculating it by adding the term to the start date (or to the last signed date if the start date is missing) if not explicitly stated. If a date cannot be found or calculated, infer it from context like a project completion date. If no date can be found, calculated, or inferred, return \"null\".",
@@ -604,8 +716,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 14,
-    "lastModified": "2025-09-23T17:38:10.017Z"
+    "usageCount": 2,
+    "lastModified": "2025-10-02T19:24:21.579Z"
   },
   "effectiveDate": {
     "activePrompt": "Identify this document’s effective start date. Apply this order: (1) an explicit clause stating “Effective Date,” “Effective as of,” “Commencement Date,” or “Term begins on”; (2) if it says “effective upon full execution,” use the latest party signature date in this document; (3) if neither is present, use the document date on the title/first page.",
