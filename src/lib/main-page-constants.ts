@@ -260,14 +260,14 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     isMultiModal: true
   },
   {
-    id: 'openai__gpt_5_reasoning_alpha',
+    id: 'openai__gpt_5',
     name: 'GPT-5',
     vendor: 'OpenAI',
     isPremium: true, // Premium tier
     isMultiModal: true
   },
   {
-    id: 'openai__gpt_5_reasoning_alpha_no_prompt',
+    id: 'openai__gpt_5_no_prompt',
     name: 'GPT-5 (no prompt)',
     vendor: 'OpenAI',
     isPremium: true, // Premium tier

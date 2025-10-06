@@ -188,11 +188,7 @@ const MainPage: React.FC = () => {
     };
     
     checkOAuthStatus();
-    
-    // Re-check periodically (every 30 seconds)
-    const interval = setInterval(checkOAuthStatus, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  }, []); // Check once on mount only, just like Settings page
   
   // Step 2: Fetch user info based on OAuth status (same as Settings page)
   useEffect(() => {
