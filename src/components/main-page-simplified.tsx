@@ -187,7 +187,22 @@ const MainPage: React.FC = () => {
       }
     };
     
+    // Check on mount
     checkOAuthStatus();
+    
+    // Re-check when page becomes visible (user navigates back to home)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('🔐 Page visible again, re-checking auth status...');
+        checkOAuthStatus();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []); // Check once on mount only, just like Settings page
   
   // Step 2: Fetch user info based on OAuth status (same as Settings page)
