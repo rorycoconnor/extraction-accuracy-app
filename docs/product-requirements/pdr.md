@@ -164,30 +164,30 @@ Currently, there is no streamlined way for business analysts, legal tech profess
 
 ## 9. Screenshots Reference
 
-The application screenshots demonstrating the current implementation are located in the `../Product Screenshots/` directory:
+The application screenshots demonstrating the current implementation are located in the `../screenshots/` directory:
 
 ### Core Functionality
-- ![Home Page](../Product Screenshots/Home Page.png) - Main dashboard with extraction results
-- ![Run Comparison](../Product Screenshots/Run Comparison.png) - Document processing workflow
-- ![Select Documents Form](../Product Screenshots/Select Documents Form.png) - File selection interface
-- ![Files added to Grid with Metadata Fields](../Product Screenshots/Files added to Grid with Metadata Fields.png) - Results display
+- ![Home Page](../screenshots/Home Page.png) - Main dashboard with extraction results
+- ![Run Comparison](../screenshots/Run Comparison.png) - Document processing workflow
+- ![Select Documents Form](../screenshots/Select Documents Form.png) - File selection interface
+- ![Files added to Grid with Metadata Fields](../screenshots/Files added to Grid with Metadata Fields.png) - Results display
 
 ### Template Management
-- ![View Templates](../Product Screenshots/View Templates.png) - Template listing
-- ![Add new template from Box](../Product Screenshots/Add new template from Box.png) - Template creation
+- ![View Templates](../screenshots/View Templates.png) - Template listing
+- ![Add new template from Box](../screenshots/Add new template from Box.png) - Template creation
 
 ### Ground Truth Management
-- ![Ground Truth Page - List Files from Box](../Product Screenshots/Grount Truth Page - List Files from Box.png) - Ground truth interface
-- ![Edit Ground Truth](../Product Screenshots/Edit Ground Truth.png) - Ground truth editing
+- ![Ground Truth Page - List Files from Box](../screenshots/Grount Truth Page - List Files from Box.png) - Ground truth interface
+- ![Edit Ground Truth](../screenshots/Edit Ground Truth.png) - Ground truth editing
 
 ### Prompt Engineering
-- ![Generate a new prompt](../Product Screenshots/Geneate a new prompt.png) - Prompt generation
-- ![Edit Prompt](../Product Screenshots/Edit Prompt.png) - Prompt editing interface
+- ![Generate a new prompt](../screenshots/Geneate a new prompt.png) - Prompt generation
+- ![Edit Prompt](../screenshots/Edit Prompt.png) - Prompt editing interface
 
 ### Settings & Configuration
-- ![Settings - Developer Token](../Product Screenshots/Settings - Developer Token.png) - Developer token configuration
-- ![Setting - Service Account](../Product Screenshots/Setting - Service Account.png) - Service account setup
+- ![Settings - Developer Token](../screenshots/Settings - Developer Token.png) - Developer token configuration
+- ![Setting - Service Account](../screenshots/Setting - Service Account.png) - Service account setup
 
 ### Analytics & Metrics
-- ![View Metrics - F1 Score](../Product Screenshots/View Metrics - F1 Score.png) - Performance metrics display
-- ![Select Models to run](../Product Screenshots/Select Models to run.png) - Model selection interface 
+- ![View Metrics - F1 Score](../screenshots/View Metrics - F1 Score.png) - Performance metrics display
+- ![Select Models to run](../screenshots/Select Models to run.png) - Model selection interface 

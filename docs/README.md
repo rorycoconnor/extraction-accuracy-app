@@ -7,6 +7,8 @@
 - **[Box AI Extraction System](./box-ai-extraction-system.md)**: 🆕 Comprehensive technical guide for the dual-mode extraction architecture
 - **[Metrics Specification](./metrics-specification.md)**: Performance measurement and calculation details
 - **[Next Priorities](./NEXT_PRIORITIES.md)**: Development roadmap and upcoming features
+- **[Changelog](./CHANGELOG.md)**: Version history and release notes
+- **[Environment Setup](./ENVIRONMENT.md)**: Environment configuration and setup guide
 
 ### **Product Requirements**
 - **[Product Requirements](./product-requirements/README.md)**: Complete product specification
@@ -17,6 +19,29 @@
 ### **Design Assets**
 - **[Mockups](./product-requirements/mockups/)**: UI/UX designs and wireframes
 - **[Design System](./product-requirements/mockups/design-system/)**: Component library and style guide
+- **[Screenshots](./screenshots/)**: Current application screenshots and product demos
+
+### **Testing Documentation**
+- **[Testing Strategy](./testing/TESTING_STRATEGY.md)**: Overall testing approach and methodology
+- **[Testing Implementation Plan](./testing/TESTING_IMPLEMENTATION_PLAN.md)**: Detailed testing implementation
+- **[Testing Migration Baseline](./testing/TESTING_MIGRATION_BASELINE.md)**: Testing migration status
+- **[Frontend Testing Plan](./testing/FRONTEND_TESTING_PLAN.md)**: Frontend-specific testing plan
+- **[Critical Testing Gaps](./testing/CRITICAL_TESTING_GAPS.md)**: Known gaps and priorities
+
+### **Feature Documentation**
+- **[Dashboard Sidebar Feature](./features/DASHBOARD_SIDEBAR_FEATURE.md)**: Dashboard sidebar implementation
+- **[Prompt Library Upgrade Plan](./features/PROMPT_LIBRARY_UPGRADE_PLAN.md)**: Prompt library enhancement plan
+- **[Modal State Debug Guide](./features/MODAL_STATE_DEBUG_GUIDE.md)**: Troubleshooting modal state issues
+
+### **Implementation Documentation**
+- **[TanStack Migration Plan](./implementation/TANSTACK_MIGRATION_PLAN.md)**: Migration to TanStack Table
+- **[TanStack Implementation Summary](./implementation/TANSTACK_IMPLEMENTATION_SUMMARY.md)**: Implementation status
+- **[Migration Ready Status](./implementation/MIGRATION_READY_STATUS.md)**: Overall migration readiness
+
+### **Meta Documentation**
+- **[Documentation Organization](./ORGANIZATION.md)**: 🆕 Project structure and documentation organization guide
+- **[Documentation Summary](./meta/DOCUMENTATION_SUMMARY.md)**: Overview of all documentation
+- **[Documentation Update Summary](./meta/DOCUMENTATION_UPDATE_SUMMARY.md)**: Recent documentation changes
 
 ## 🚀 **Latest Updates**
 

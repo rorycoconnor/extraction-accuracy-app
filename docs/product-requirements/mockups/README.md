@@ -5,7 +5,7 @@ This directory contains design mockups, wireframes, and visual assets for the Bo
 ## Structure
 
 ### Current Implementation Screenshots
-- Located in `../../Product Screenshots/` (root level)
+- Located in `../../screenshots/` (within docs directory)
 - These show the current working implementation
 - Used for reference in PDR documentation
 
@@ -21,7 +21,7 @@ This directory contains design mockups, wireframes, and visual assets for the Bo
 - Place new mockups and design iterations here
 - Organize by feature area or user flow
 - Include design rationale and specifications
-- **Note:** Current implementation screenshots stay in `Product Screenshots/`
+- **Note:** Current implementation screenshots stay in `docs/screenshots/`
 
 ### For Developers
 - Reference for implementation details
@@ -53,7 +53,7 @@ When referencing mockups in the PDR documentation:
 
 ```markdown
 # Current implementation
-![Current Home Page](../Product Screenshots/Home Page.png)
+![Current Home Page](../screenshots/Home Page.png)
 
 # Future designs
 ![Proposed Dashboard](./mockups/ui-mockups/home-dashboard-v2.png)
