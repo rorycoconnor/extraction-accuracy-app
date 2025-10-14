@@ -179,6 +179,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🆘 Support
 
 - Check the [documentation](./docs/) for detailed guides
+  - [Testing Documentation](./docs/testing/) - Testing strategy and implementation
+  - [Feature Documentation](./docs/features/) - Feature-specific guides
+  - [Implementation Guides](./docs/implementation/) - Migration and implementation plans
 - Report issues in the GitHub Issues section
 - Contact the development team for enterprise support
 

@@ -11,7 +11,7 @@ This directory contains the Product Design Requirements documentation for the Bo
 
 ## Screenshots Reference
 
-The application screenshots demonstrating the current implementation are located in the `Product Screenshots/` directory and include:
+The application screenshots demonstrating the current implementation are located in the `../screenshots/` directory and include:
 
 ### Core Functionality
 - `Home Page.png` - Main dashboard with extraction results
@@ -51,14 +51,14 @@ The `mockups/` directory contains design assets organized by type:
 
 ### Usage
 When referencing screenshots in the PDR document, use relative paths like:
-- Current implementation: `../Product Screenshots/[filename].png`
+- Current implementation: `../screenshots/[filename].png`
 - Design mockups: `./mockups/[category]/[filename].png`
 
 ## Documentation Integration
 
 ### In PDR Documents
 ```markdown
-![Current Implementation](../Product Screenshots/Home Page.png)
+![Current Implementation](../screenshots/Home Page.png)
 ![Design Mockup](./mockups/ui-mockups/home-dashboard-v2.png)
 ![User Flow](./mockups/user-flows/priya-ground-truth-flow.png)
 ```
