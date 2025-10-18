@@ -233,7 +233,7 @@ export function FieldDetailsSheet({
             <div className="space-y-6 pr-4">
               {/* Field Name */}
               <div className="space-y-3">
-                <Label htmlFor="field-name" className="text-sm font-medium text-gray-700">
+                <Label htmlFor="field-name" className="text-sm font-medium text-foreground">
                   Field Name
                 </Label>
                   <Input
@@ -241,18 +241,18 @@ export function FieldDetailsSheet({
                     value={fieldName}
                     onChange={(e) => setFieldName(e.target.value)}
                     placeholder="Enter field name"
-                    className="h-11 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0 bg-white dark:bg-gray-800"
+                    className="h-11 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0 bg-background"
                   />
               </div>
               
               {/* Field Type */}
               <div className="space-y-3">
-                <Label className="text-sm font-medium text-gray-700">Field Type</Label>
+                <Label className="text-sm font-medium text-foreground">Field Type</Label>
                 <Select value={getFieldTypeDisplayValue()} onValueChange={handleFieldTypeChange}>
-                  <SelectTrigger className="h-11 focus:ring-0 focus:ring-offset-0 bg-white dark:bg-gray-800">
+                  <SelectTrigger className="h-11 focus:ring-0 focus:ring-offset-0 bg-background">
                     <SelectValue placeholder="Select field type" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-800">
+                  <SelectContent className="bg-popover">
                     <SelectItem value="text">Text</SelectItem>
                     <SelectItem value="number">Number</SelectItem>
                     <SelectItem value="date">Date</SelectItem>
@@ -278,10 +278,10 @@ export function FieldDetailsSheet({
                     }}
                     disabled={fieldType === 'taxonomy'} // Taxonomy is always multi-select
                   />
-                  <Label htmlFor="multiple-selections" className="text-sm font-medium text-gray-700">
+                  <Label htmlFor="multiple-selections" className="text-sm font-medium text-foreground">
                     Allow Multiple Selections
                     {fieldType === 'taxonomy' && (
-                      <span className="text-xs text-gray-500 ml-2">(Always enabled for taxonomy)</span>
+                      <span className="text-xs text-muted-foreground ml-2">(Always enabled for taxonomy)</span>
                     )}
                   </Label>
                 </div>
@@ -290,13 +290,13 @@ export function FieldDetailsSheet({
               {/* Values Section for Dropdown Fields */}
               {showDropdownOptions && (
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium text-gray-700">Values</Label>
+                  <Label className="text-sm font-medium text-foreground">Values</Label>
                   <div className="space-y-3">
                     <Textarea
                       value={optionsPaste}
                       onChange={(e) => setOptionsPaste(e.target.value)}
                       placeholder={`Enter values (comma-separated):\n\nExample:\nPending, Approved, Paid`}
-                      className="min-h-[182px] resize-y focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0 bg-white dark:bg-gray-800"
+                      className="min-h-[182px] resize-y focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary focus:ring-0 bg-background"
                       rows={9}
                     />
                   </div>

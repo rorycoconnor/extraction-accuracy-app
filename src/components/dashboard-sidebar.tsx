@@ -16,6 +16,7 @@ import {
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import type { BoxTemplate } from '@/lib/types';
+import { ThemeCard } from './theme-card';
 
 interface DashboardSidebarProps {
   isAuthenticated: boolean;
@@ -43,7 +44,7 @@ export function DashboardSidebar({
   return (
     <div className="flex-shrink-0 space-y-4 min-w-[320px]">
       {/* Authentication Status Card */}
-      <Card className="border border-gray-200">
+      <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base font-semibold">Authentication</CardTitle>
@@ -90,8 +91,11 @@ export function DashboardSidebar({
         </CardContent>
       </Card>
 
+      {/* Theme / Appearance Card */}
+      <ThemeCard />
+
       {/* Metadata Templates Card */}
-      <Card className="border border-gray-200">
+      <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold">
             Metadata Templates
@@ -146,7 +150,7 @@ export function DashboardSidebar({
 
       {/* Ground Truth Progress Card */}
       {groundTruthStats && (
-        <Card className="border border-gray-200">
+        <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -183,7 +187,7 @@ export function DashboardSidebar({
       )}
 
       {/* Getting Started Card */}
-      <Card className="border border-gray-200 bg-blue-50 dark:bg-blue-950/20">
+      <Card className="bg-blue-50 dark:bg-blue-950/20">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold">
             Getting Started

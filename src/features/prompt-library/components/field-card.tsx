@@ -34,14 +34,14 @@ export function FieldCard({ field, template }: FieldCardProps) {
 
   const getFieldTypeColor = (type: string) => {
     const colors = {
-      Text: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-      Date: 'bg-yellow-200 text-yellow-900 dark:bg-yellow-900/30 dark:text-yellow-300',
-      DropdownSingle: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
-      DropdownMulti: 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400',
-      TaxonomySingle: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-      TaxonomyMulti: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+      Text: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      Date: 'bg-yellow-200 text-yellow-900 dark:bg-yellow-900 dark:text-yellow-200',
+      DropdownSingle: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+      DropdownMulti: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+      TaxonomySingle: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      TaxonomyMulti: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
     };
-    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800 dark:bg-gray-800/20 dark:text-gray-400';
+    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
   };
 
   const handleAddPrompt = () => {
@@ -129,7 +129,7 @@ export function FieldCard({ field, template }: FieldCardProps) {
                     value={newPromptText}
                     onChange={(e) => setNewPromptText(e.target.value)}
                     onKeyDown={handleKeyDown}
-                    className="min-h-[120px] resize-none font-mono text-sm bg-white dark:bg-gray-800"
+                    className="min-h-[120px] resize-none font-mono text-sm bg-background"
                     autoFocus
                   />
                 </div>
@@ -148,7 +148,7 @@ export function FieldCard({ field, template }: FieldCardProps) {
             <Button 
               variant="outline" 
               size="sm" 
-              className="px-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+              className="px-3"
               onClick={() => setIsFieldDetailsOpen(true)}
             >
               <Settings className="h-3 w-3" />

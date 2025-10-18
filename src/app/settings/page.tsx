@@ -422,14 +422,14 @@ function SettingsContent() {
                 
                 {/* Warning if environment variables are not set */}
                 {!process.env.NEXT_PUBLIC_BOX_CLIENT_ID && (
-                  <div className="p-3 bg-yellow-100 border border-yellow-200 rounded-md text-sm text-yellow-800">
+                  <div className="p-3 bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/30 rounded-md text-sm text-yellow-800 dark:text-yellow-200">
                     <div className="font-semibold mb-1">⚠️ Configuration Required</div>
-                    <div>OAuth2.0 is not properly configured. Please set the following environment variables in your <code>.env.local</code> file:</div>
-                    <div className="mt-2 font-mono text-xs">
+                    <div>OAuth2.0 is not properly configured. Please set the following environment variables in your <code className="px-1 py-0.5 bg-yellow-200 dark:bg-yellow-900/40 rounded text-xs">.env.local</code> file:</div>
+                    <div className="mt-2 font-mono text-xs bg-yellow-50 dark:bg-yellow-950/30 p-2 rounded border border-yellow-200 dark:border-yellow-800/20">
                       <div>NEXT_PUBLIC_BOX_CLIENT_ID=your_box_client_id</div>
                       <div>NEXT_PUBLIC_APP_URL=http://localhost:9002</div>
                     </div>
-                    <div className="mt-2 text-xs">After adding these variables, restart your development server.</div>
+                    <div className="mt-2 text-xs opacity-90">After adding these variables, restart your development server.</div>
                   </div>
                 )}
                 

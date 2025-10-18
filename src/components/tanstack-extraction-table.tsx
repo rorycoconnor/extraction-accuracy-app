@@ -119,18 +119,19 @@ const FieldHeaderGroup = ({
         <button
           type="button"
           onClick={() => onToggleMetrics(!includeInMetrics)}
-          className={`absolute right-4 top-1/2 -translate-y-1/2 inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 cursor-pointer ${
-            includeInMetrics ? '' : 'bg-gray-200'
-          }`}
-          style={{
-            backgroundColor: includeInMetrics ? '#828282' : undefined
-          }}
+          className={cn(
+            'absolute right-4 top-1/2 -translate-y-1/2 inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 cursor-pointer',
+            includeInMetrics
+              ? 'bg-gray-600 dark:bg-gray-500'  // ON: brighter gray
+              : 'bg-gray-200 dark:bg-gray-700'  // OFF: dimmer gray
+          )}
           aria-label={`Toggle ${field.name} metrics ${includeInMetrics ? 'off' : 'on'}`}
         >
           <span 
-            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
+            className={cn(
+              'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200',
               includeInMetrics ? 'translate-x-6' : 'translate-x-1'
-            }`}
+            )}
           />
         </button>
       )}
@@ -234,14 +235,14 @@ const getCellBackgroundColor = (cellData: CellData): string => {
   
   // Error state background
   if (isError) {
-    return 'bg-red-100/60 dark:bg-red-900/30';
+    return 'bg-red-100/60 dark:bg-red-900/55';
   }
   
   // Handle "Not Present" cases
   if (isNotPresent) {
     // If there's ground truth but model returned "Not Present", it's a mismatch
     if (groundTruth && groundTruth.trim() !== '' && groundTruth !== NOT_PRESENT_VALUE) {
-      return 'bg-red-100/80 dark:bg-red-900/30'; // Red for mismatches
+      return 'bg-red-100/80 dark:bg-red-900/55'; // Red for mismatches
     }
     // If no ground truth or ground truth is also "Not Present", no special background
     return '';
@@ -260,17 +261,17 @@ const getCellBackgroundColor = (cellData: CellData): string => {
     if (!value || value.trim() === '' || value === '-') {
       return '';
     }
-    return 'bg-red-100/80 dark:bg-red-900/30';
+    return 'bg-red-100/80 dark:bg-red-900/55';
   }
   
   switch (comparison.matchType) {
     case 'exact':
     case 'normalized':
-      return 'bg-green-100/80 dark:bg-green-900/30';
+      return 'bg-green-100/80 dark:bg-green-900/55';
     case 'partial':
-      return 'bg-blue-100/80 dark:bg-blue-900/30';
+      return 'bg-blue-100/80 dark:bg-blue-900/55';
     case 'date_format':
-      return 'bg-yellow-100/80 dark:bg-yellow-900/30';
+      return 'bg-yellow-100/80 dark:bg-yellow-900/55';
     default:
       return '';
   }
@@ -306,7 +307,7 @@ const ModelValueCell = ({
     if (isNotPresent) {
       // If there's ground truth but model returned "Not Present", it's a mismatch
       if (groundTruth && groundTruth.trim() !== '' && groundTruth !== NOT_PRESENT_VALUE) {
-        return 'bg-red-100/80 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+        return 'bg-red-100/80 text-red-800 dark:bg-red-900/55 dark:text-red-50';
       }
       // If no ground truth or ground truth is also "Not Present", no special styling
       return '';
@@ -322,17 +323,17 @@ const ModelValueCell = ({
       if (!value || value.trim() === '' || value === '-') {
         return '';
       }
-      return 'bg-red-100/80 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+      return 'bg-red-100/80 text-red-800 dark:bg-red-900/55 dark:text-red-50';
     }
     
     switch (comparison.matchType) {
       case 'exact':
       case 'normalized':
-        return 'bg-green-100/80 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+        return 'bg-green-100/80 text-green-800 dark:bg-green-900/55 dark:text-green-50';
       case 'partial':
-        return 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300';
+        return 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/55 dark:text-blue-50';
       case 'date_format':
-        return 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+        return 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/55 dark:text-yellow-50';
       default:
         return '';
     }
@@ -648,7 +649,6 @@ export default function TanStackExtractionTable({
             position: sticky !important;
             left: 0 !important;
             z-index: 70 !important;
-            background: white !important;
           }
           .field-averages-text {
             position: relative !important;
@@ -667,7 +667,7 @@ export default function TanStackExtractionTable({
               <tr>
                 <th 
                   rowSpan={3}
-                  className="sticky-header-column file-name-cell text-center font-semibold text-foreground bg-white"
+                  className="sticky-header-column file-name-cell text-center font-semibold text-foreground bg-background"
                 >
                   <div className="flex items-center justify-center h-full">
                     File Name
@@ -681,7 +681,7 @@ export default function TanStackExtractionTable({
                       colSpan={visibleColumns.length || 1}
                       className={cn(
                         'header-cell text-center align-middle font-semibold text-foreground px-2 py-3',
-                        groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
+                        groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
                         fieldIndex < fields.length - 1 ? 'border-r' : ''
                       )}
                     >
@@ -708,7 +708,7 @@ export default function TanStackExtractionTable({
                       colSpan={visibleColumns.length || 1}
                       className={cn(
                         'header-cell align-top text-xs font-normal text-muted-foreground whitespace-normal text-left px-2 py-2',
-                        groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
+                        groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
                         fieldIndex < fields.length - 1 ? 'border-r' : ''
                       )}
                     >
@@ -729,7 +729,7 @@ export default function TanStackExtractionTable({
                           key={`${field.key}-${modelName}`}
                                                       className={cn(
                               'header-cell text-center align-middle font-medium text-muted-foreground px-1 py-2',
-                              groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
+                              groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
                               colIndex === visibleColumns.length - 1 && fieldIndex < fields.length - 1 ? 'border-r' : ''
                             )}
                         >
@@ -767,12 +767,12 @@ export default function TanStackExtractionTable({
                       <td
                         key={cell.id}
                         className={cn(
-                          isFirstColumn ? "sticky-column file-name-cell bg-white" : "result-cell",
+                          isFirstColumn ? "sticky-column file-name-cell bg-background" : "result-cell",
                           !isFirstColumn && isGroupRightEdge && "border-r",
                           // Apply comparison background colors or alternating field colors
                           !isFirstColumn && (
                             cellBgColor || 
-                            (groupIdx >= 0 && (groupIdx % 2 === 0 ? "bg-white" : "bg-slate-50"))
+                            (groupIdx >= 0 && (groupIdx % 2 === 0 ? "bg-background" : "bg-muted/30"))
                           )
                         )}
                         style={{
@@ -789,7 +789,7 @@ export default function TanStackExtractionTable({
               {/* Field Averages Row - only show when metrics are available */}
               {showMetrics && (
                 <tr className="border-t sticky bottom-0 z-50">
-                  <td className="sticky-column file-name-cell field-averages-cell bg-white font-bold border-t">
+                  <td className="sticky-column file-name-cell field-averages-cell bg-background font-bold border-t">
                     <div className="p-3 text-center font-semibold field-averages-text">Field Averages</div>
                   </td>
                   {fields.map((field, fieldIndex) => {
@@ -805,7 +805,7 @@ export default function TanStackExtractionTable({
                                 key={`${modelName}-avg`}
                                                               className={cn(
                                 'result-cell border-t sticky bottom-0 z-30',
-                                groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
+                                groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
                                 isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r' : ''
                               )}
                               />
@@ -840,7 +840,7 @@ export default function TanStackExtractionTable({
                               key={`${modelName}-avg`}
                               className={cn(
                                 'result-cell border-t text-center font-semibold sticky bottom-0 z-30',
-                                groupIdx % 2 === 0 ? 'bg-white' : 'bg-slate-50',
+                                groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
                                 isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r' : ''
                               )}
                             >
@@ -850,15 +850,15 @@ export default function TanStackExtractionTable({
                                     not included
                                   </div>
                                 ) : !hasGroundTruth || !hasModelResults ? (
-                                  <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
+                                  <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                                     TBD
                                   </div>
                                 ) : (
                                   <div className={cn(
                                     "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold",
-                                    accuracy >= 0.9 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 
-                                    accuracy >= 0.7 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' : 
-                                    'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                    accuracy >= 0.9 ? 'bg-green-100 text-green-700 dark:bg-green-900/55 dark:text-green-100' : 
+                                    accuracy >= 0.7 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/55 dark:text-yellow-100' : 
+                                    'bg-red-100 text-red-700 dark:bg-red-900/55 dark:text-red-100'
                                   )}>
                                     Accuracy {accuracy > 0 ? `${(accuracy * 100).toFixed(0)}%` : '0%'}
                                   </div>

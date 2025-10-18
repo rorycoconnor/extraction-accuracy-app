@@ -419,8 +419,14 @@ const AccuracyDataContext = createContext<{
 export const AccuracyDataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(accuracyDataReducer, initialState);
 
-  // Load data on mount
+  // Load data on mount (client-side only)
   useEffect(() => {
+    // Extra SSR guard - only run on client
+    if (typeof window === 'undefined') {
+      console.log('⚠️ AccuracyDataProvider: Still on server, skipping load');
+      return;
+    }
+
     const loadData = async () => {
       dispatch({ type: 'LOAD_DATA_START' });
       

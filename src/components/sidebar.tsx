@@ -66,7 +66,7 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
   return (
     <div className={cn(
       'flex flex-col h-full transition-all duration-300 ease-in-out border-r border-border',
-      'bg-[#0061d5]', // Box blue background
+      'bg-[#0061d5] dark:bg-[#0a1929]', // Box blue background, darker navy in dark mode
       collapsed ? 'w-24' : 'w-64'
     )}>
       {/* Header with Logo */}

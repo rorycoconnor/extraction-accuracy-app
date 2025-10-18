@@ -125,6 +125,12 @@ function createInitialSeedData(): Database {
 export const PromptLibraryStorage = {
   // Load data from localStorage with automatic migration
   load(): Database {
+    // SSR guard - return empty data structure on server
+    if (typeof window === 'undefined') {
+      console.log('⚠️ PromptLibraryStorage.load(): Server-side, returning empty database');
+      return { categories: [], templates: [] };
+    }
+
     // First, attempt automatic migration if needed
     const migratedData = autoMigrateIfNeeded();
     if (migratedData) {
@@ -152,6 +158,12 @@ export const PromptLibraryStorage = {
 
   // Save data to localStorage
   save(data: Database): void {
+    // SSR guard
+    if (typeof window === 'undefined') {
+      console.log('⚠️ PromptLibraryStorage.save(): Server-side, skipping save');
+      return;
+    }
+
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
@@ -161,6 +173,12 @@ export const PromptLibraryStorage = {
 
   // Clear all data
   clear(): void {
+    // SSR guard
+    if (typeof window === 'undefined') {
+      console.log('⚠️ PromptLibraryStorage.clear(): Server-side, skipping clear');
+      return;
+    }
+
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {

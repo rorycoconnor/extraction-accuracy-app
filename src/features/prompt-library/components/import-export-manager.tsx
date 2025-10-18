@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Download, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,6 +64,30 @@ export function ImportExportManager({
   const [importTemplateName, setImportTemplateName] = useState('');
   const [newImportCategoryName, setNewImportCategoryName] = useState('');
   const [newImportTemplateName, setNewImportTemplateName] = useState('');
+
+  // Refs for auto-focusing inputs
+  const newCategoryInputRef = useRef<HTMLInputElement>(null);
+  const newTemplateInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus new category input when it appears
+  useEffect(() => {
+    if (importCategory === '__new_category__' && newCategoryInputRef.current) {
+      // Small delay to ensure Select dropdown has closed
+      setTimeout(() => {
+        newCategoryInputRef.current?.focus();
+      }, 100);
+    }
+  }, [importCategory]);
+
+  // Auto-focus new template input when it appears
+  useEffect(() => {
+    if (importTemplateName === '__new_template__' && newTemplateInputRef.current) {
+      // Small delay to ensure Select dropdown has closed
+      setTimeout(() => {
+        newTemplateInputRef.current?.focus();
+      }, 100);
+    }
+  }, [importTemplateName]);
 
   const handleExportTemplates = () => {
     if (selectedTemplatesForExport.length === 0) {
@@ -445,10 +469,10 @@ export function ImportExportManager({
               </Select>
               {importCategory === '__new_category__' && (
                 <Input
+                  ref={newCategoryInputRef}
                   placeholder="Enter new category name"
                   value={newImportCategoryName}
                   onChange={(e) => setNewImportCategoryName(e.target.value)}
-                  autoFocus
                 />
               )}
             </div>
@@ -475,10 +499,10 @@ export function ImportExportManager({
               </Select>
               {importTemplateName === '__new_template__' && (
                 <Input
+                  ref={newTemplateInputRef}
                   placeholder="Enter new template name"
                   value={newImportTemplateName}
                   onChange={(e) => setNewImportTemplateName(e.target.value)}
-                  autoFocus
                 />
               )}
             </div>

@@ -85,6 +85,11 @@ export function migrateLegacyData(legacyData: LegacyDatabase): Database {
  * Check if data needs migration
  */
 export function needsMigration(): boolean {
+  // SSR guard
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
   try {
     const oldData = localStorage.getItem('prompt-library-db-v1');
     const newData = localStorage.getItem('prompt-library-db-v2');
@@ -99,6 +104,12 @@ export function needsMigration(): boolean {
  * Perform automatic migration if needed
  */
 export function autoMigrateIfNeeded(): Database | null {
+  // SSR guard
+  if (typeof window === 'undefined') {
+    console.log('⚠️ autoMigrateIfNeeded(): Server-side, skipping migration');
+    return null;
+  }
+
   if (!needsMigration()) {
     return null;
   }

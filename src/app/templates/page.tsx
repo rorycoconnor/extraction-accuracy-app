@@ -117,7 +117,7 @@ export default function TemplatesPage() {
             <TableCell>
               <div className="flex flex-wrap gap-2">
                 {template.fields.map(field => (
-                  <button key={field.id} onClick={() => handleToggleField(template.id, field.id)} className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2">
+                  <button key={field.id} onClick={() => handleToggleField(template.id, field.id)} className="rounded-full focus:outline-none focus:ring-2 focus:ring-ring">
                     <Badge
                       variant={field.isActive ? 'default' : 'secondary'}
                       className={cn(

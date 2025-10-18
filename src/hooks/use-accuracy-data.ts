@@ -116,8 +116,14 @@ export function useAccuracyData() {
     }
   }, [accuracyData, getGroundTruth]);
 
-  // Load accuracy data on mount
+  // Load accuracy data on mount (client-side only)
   useEffect(() => {
+    // Extra SSR guard - only run on client
+    if (typeof window === 'undefined') {
+      console.log('⚠️ use-accuracy-data: Still on server, skipping load');
+      return;
+    }
+
     const savedAccuracyData = getAccuracyData();
     if (savedAccuracyData) {
       // 🔧 HYDRATION: Populate missing enum options from template

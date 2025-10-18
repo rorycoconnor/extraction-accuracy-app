@@ -285,16 +285,16 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
         </DialogHeader>
         <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto">
           {/* Step 1: Template Selection */}
-          <div className="space-y-3 p-4 rounded-lg border bg-white">
+          <div className="space-y-3 p-4 rounded-lg border bg-card">
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold bg-gray-600 text-white">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold bg-primary text-primary-foreground">
                 1
               </div>
               <div className="flex items-center gap-2">
                 {selectedTemplateKey ? (
-                  <CheckCircle className="h-5 w-5 text-gray-600" />
+                  <CheckCircle className="h-5 w-5 text-primary" />
                 ) : (
-                  <Circle className="h-5 w-5 text-gray-600" />
+                  <Circle className="h-5 w-5 text-muted-foreground" />
                 )}
                 <Label className="text-base font-medium">Choose Template</Label>
                 <span className="text-sm text-muted-foreground">(Required)</span>
@@ -302,7 +302,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
             </div>
             <div className="ml-11">
               <Select onValueChange={setSelectedTemplateKey} value={selectedTemplateKey} disabled={templates.length === 0}>
-                <SelectTrigger className="h-12 bg-white dark:bg-gray-800 rounded-full">
+                <SelectTrigger className="h-12 bg-background rounded-full">
                                     <SelectValue placeholder={
                       <div className="flex items-center gap-2 text-muted-foreground">
                           <FileText className="h-4 w-4" />
@@ -310,7 +310,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
                       </div>
                   } />
                 </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-gray-800">
+                <SelectContent className="bg-popover">
                     {templates.map((template) => (
                       <SelectItem key={template.id} value={template.templateKey}>
                          <div className="flex items-center gap-2">
@@ -326,18 +326,18 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
 
           {/* Step 2: File Selection */}
           <div className={cn(
-            "space-y-3 p-4 rounded-lg border bg-white",
+            "space-y-3 p-4 rounded-lg border bg-card",
             !selectedTemplateKey && "opacity-60"
           )}>
             <div className="flex items-center gap-3">
-              <div className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold bg-gray-600 text-white">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold bg-primary text-primary-foreground">
                 2
               </div>
               <div className="flex items-center gap-2">
                 {totalSelectedCount > 0 ? (
-                  <CheckCircle className="h-5 w-5 text-gray-600" />
+                  <CheckCircle className="h-5 w-5 text-primary" />
                 ) : (
-                  <Circle className="h-5 w-5 text-gray-600" />
+                  <Circle className="h-5 w-5 text-muted-foreground" />
                 )}
                 <Label className="text-base font-medium">Select Documents</Label>
                 {totalSelectedCount > 0 && (
@@ -399,7 +399,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
               {/* Selected Files Title */}
               <div className="lg:col-span-4">
                 <div className="flex items-center justify-between px-1 py-2">
-                  <h4 className="text-sm font-medium text-black">Selected Files</h4>
+                  <h4 className="text-sm font-medium text-foreground">Selected Files</h4>
                   {totalSelectedCount > 0 && (
                     <Button 
                       variant="outline" 
@@ -420,7 +420,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
               <div className="lg:col-span-6">
                 
                                                   {/* File/Folder Browser */}
-                 <div className="border rounded-md bg-white h-[320px] flex flex-col">
+                 <div className="border rounded-md bg-card h-[320px] flex flex-col">
                 {isLoadingFiles ? (
                        <div className="flex items-center justify-center h-full">
                         <Loader2 className="h-8 w-8 animate-spin" />
@@ -510,15 +510,15 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
                                 <button
                                   key={`folder-${folder.id}`} 
                                   onClick={() => navigateToFolder(folder)}
-                                  className="w-full flex items-center space-x-3 rounded-md bg-blue-50 dark:bg-blue-950/20 hover:bg-blue-100 dark:hover:bg-blue-950/30 transition-colors"
+                                  className="w-full flex items-center space-x-3 rounded-md bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
                                 >
                                     <div className="flex-shrink-0 px-3">
                                       <div className="w-4 h-4" /> {/* Spacer where checkbox would be */}
                                     </div>
                                     <div className="py-3 text-left overflow-hidden flex-1">
                                         <div className="flex items-center gap-2">
-                                            <Folder className="h-4 w-4 text-blue-600 flex-shrink-0" />
-                                            <span className="truncate text-sm font-medium">{folder.name}</span>
+                                            <Folder className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                                            <span className="truncate text-sm font-medium text-foreground">{folder.name}</span>
                                             <span className="text-xs text-muted-foreground">(folder)</span>
                                             <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto" />
                                         </div>
@@ -541,7 +541,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
                                             <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                                             <span className="block truncate text-sm">{file.name}</span>
                                             {globalFileSelection[file.id] && (
-                                              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                                              <span className="text-xs text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 px-2 py-1 rounded-full">
                                                 Selected
                                               </span>
                                             )}
@@ -560,7 +560,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
               {/* Right Column: Selected Files Panel */}
               <div className="lg:col-span-4">
                 <div className="sticky top-0">
-                  <div className="border rounded-md bg-white h-[320px] flex flex-col">
+                  <div className="border rounded-md bg-card h-[320px] flex flex-col">
                     {/* Scrollable files area - takes remaining space */}
                     <div className="flex-1 overflow-hidden">
                       {totalSelectedCount === 0 ? (
@@ -575,7 +575,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
                           <div className="space-y-2">
                             {Object.values(globalFileSelection).map((item) => (
                               <div key={item.file.id} className="group relative w-full">
-                                <div className="flex items-start gap-2 p-2 rounded-md border bg-white hover:bg-gray-50 transition-colors h-16 w-full max-w-full overflow-hidden">
+                                <div className="flex items-start gap-2 p-2 rounded-md border bg-card hover:bg-accent transition-colors h-16 w-full max-w-full overflow-hidden">
                                   <FileText className="h-4 w-4 text-muted-foreground mt-1 flex-shrink-0" />
                                   <div className="flex-1 min-w-0 py-1 pr-8">
                                     <div className="text-xs font-medium truncate leading-tight" title={item.file.name}>
@@ -602,7 +602,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
                     </div>
                     
                     {/* Fixed footer area - always present to maintain consistent height */}
-                    <div className="flex-shrink-0 h-12 border-t bg-gray-50 flex items-center justify-center rounded-b-md">
+                    <div className="flex-shrink-0 h-12 border-t bg-muted/30 flex items-center justify-center rounded-b-md">
                       <div className="text-xs text-muted-foreground text-center">
                         {totalSelectedCount === 0 
                           ? "No files selected" 

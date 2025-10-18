@@ -61,8 +61,14 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
   
   const { toast } = useToast();
 
-  // Load data on mount
+  // Load data on mount (client-side only)
   useEffect(() => {
+    // Extra SSR guard - only run on client
+    if (typeof window === 'undefined') {
+      console.log('⚠️ PromptLibraryProvider: Still on server, skipping load');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const data = PromptLibraryStorage.load();
