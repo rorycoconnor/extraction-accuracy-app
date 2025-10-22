@@ -291,12 +291,143 @@
     "lastModified": "2025-09-17T13:36:35.489Z"
   },
   "venue": {
-    "activePrompt": "Extract the legal dispute venue, identifying the city and its corresponding state (US), province (Canada), or country (Europe).  List City first.  Output Example: San Francisco, California",
+    "activePrompt": "From the governing law or venue clause, extract the name of the US state or Canadian province. Exclude any city or country names from the output. For example, if the text specifies \"courts of Santa Clara, California\", extract only \"California\".",
     "promptHistory": [
+      {
+        "id": "v6",
+        "prompt": "From the governing law or venue clause, extract the name of the US state or Canadian province. Exclude any city or country names from the output. For example, if the text specifies \"courts of Santa Clara, California\", extract only \"California\".",
+        "savedAt": "2025-10-22T20:48:33.266Z"
+      },
       {
         "id": "v5",
         "prompt": "Extract the legal dispute venue, identifying the city and its corresponding state (US), province (Canada), or country (Europe).  List City first.  Output Example: San Francisco, California",
-        "savedAt": "2025-09-17T13:36:50.183Z"
+        "savedAt": "2025-09-17T13:36:50.183Z",
+        "metrics": {
+          "modelMetrics": {
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_opus": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_opus_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 1,
+              "accuracy": 1,
+              "precision": 1,
+              "recall": 1
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_0_flash_001": {
+              "f1": 0.5,
+              "accuracy": 0.5,
+              "precision": 0.5,
+              "recall": 0.5
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__gpt_5": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__gpt_5_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__gpt_o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__gpt_o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-10-22T19:48:04.779Z"
+        }
       },
       {
         "id": "v4",
@@ -320,8 +451,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 6,
-    "lastModified": "2025-09-17T13:36:50.188Z"
+    "usageCount": 7,
+    "lastModified": "2025-10-22T20:48:33.273Z"
   },
   "endDate": {
     "activePrompt": "Extract the contract's end date, termination date, or expiration date and format as YYYY-MM-DD; if an explicit end date is not found, calculate it by adding the contract term to the start date or, if unavailable, the date the contract was signed. If no date can be found or calculated, return \"null\".",

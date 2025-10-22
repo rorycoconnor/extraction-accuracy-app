@@ -34,7 +34,7 @@ import { generateInitialPrompt, improvePrompt } from '@/ai/flows/generate-initia
 import { PromptPickerDialog } from '@/features/prompt-library/components/prompt-picker-dialog';
 import { extractMetadata } from '@/ai/flows/metadata-extraction';
 import { compareValues } from '@/lib/metrics';
-import { cn } from '@/lib/utils';
+import { cn, findFieldValue, formatModelName } from '@/lib/utils';
 
 type PromptStudioSheetProps = {
   isOpen: boolean;
@@ -299,6 +299,23 @@ export default function PromptStudioSheet({
     setDeleteConfirmation({ isOpen: false, versionId: '', versionNumber: 0 });
   };
 
+  // Helper function to format date values (remove timestamp from ISO dates)
+  const formatDateValue = (value: string): string => {
+    if (!value || typeof value !== 'string') return value;
+    
+    // Check if it's an ISO 8601 date with timestamp
+    // Handles: "2025-04-04T00:00:00Z", "2025-04-04T00:00:00", "2026-03-26T00:00:00Z"
+    const isoDatePattern = /^(\d{4}-\d{2}-\d{2})T[\d:.]+(Z)?$/;
+    const match = value.match(isoDatePattern);
+    
+    if (match) {
+      // Return just the date portion (YYYY-MM-DD)
+      return match[1];
+    }
+    
+    return value;
+  };
+
   const handleOpenFileSelection = () => {
     if (!field || !accuracyData || !accuracyData.results || accuracyData.results.length === 0) {
       toast({
@@ -408,8 +425,15 @@ export default function PromptStudioSheet({
             templateKey: accuracyData.templateKey
           });
 
-          // Store the extracted value
-          testResultsData[job.fileIndex].fields[field.key][job.modelName] = result.data[field.key] || '';
+          // Store the extracted value using the same field matching logic as home page
+          const extractedValue = findFieldValue(result.data, field.key);
+          let formattedValue = '';
+          if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
+            formattedValue = String(extractedValue).trim();
+            // Format date values to remove timestamps
+            formattedValue = formatDateValue(formattedValue);
+          }
+          testResultsData[job.fileIndex].fields[field.key][job.modelName] = formattedValue;
           
           const duration = ((Date.now() - startTime) / 1000).toFixed(1);
           console.log(`✅ Completed: ${job.modelName} for file ${job.fileIndex + 1} in ${duration}s`);
@@ -802,7 +826,7 @@ export default function PromptStudioSheet({
                             .filter(model => shownColumns[model] && model !== 'Ground Truth' && !model.endsWith('_no_prompt'))
                             .map(modelName => (
                               <th key={modelName} className="border-b border-r px-4 py-3 text-center text-sm font-semibold">
-                                {modelName.replace('openai-', '').replace('anthropic-', '').replace('google-', '').replace('GOOGLE_', '').replace('ENHANCED_', '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                                {formatModelName(modelName)}
                               </th>
                             ))}
                         </tr>
@@ -917,7 +941,7 @@ export default function PromptStudioSheet({
                           variant="outline"
                           size="sm"
                           onClick={handleOpenFileSelection}
-                          disabled={isTesting}
+                          disabled={isTesting || showFileSelection || showTestResults}
                         >
                           <FlaskConical className="mr-2 h-4 w-4" />
                           Test

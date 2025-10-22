@@ -46,6 +46,9 @@ export default function ComparisonResults({
 
   // Determine if we should show the Summary button
   const shouldShowSummaryButton = React.useMemo(() => {
+    // Don't show summary button while extraction is in progress
+    if (isExtracting) return false;
+    
     if (!accuracyData || !onOpenSummary) return false;
     
     // Check if there's ground truth data
@@ -69,7 +72,7 @@ export default function ComparisonResults({
     );
     
     return hasGroundTruth && hasComparisonResults;
-  }, [accuracyData, onOpenSummary]);
+  }, [accuracyData, onOpenSummary, isExtracting]);
 
   return (
     <div className="flex flex-col h-full">

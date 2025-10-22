@@ -681,7 +681,7 @@ export default function TanStackExtractionTable({
                       colSpan={visibleColumns.length || 1}
                       className={cn(
                         'header-cell text-center align-middle font-semibold text-foreground px-2 py-3',
-                        groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
+                        groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted',
                         fieldIndex < fields.length - 1 ? 'border-r' : ''
                       )}
                     >
@@ -708,7 +708,7 @@ export default function TanStackExtractionTable({
                       colSpan={visibleColumns.length || 1}
                       className={cn(
                         'header-cell align-top text-xs font-normal text-muted-foreground whitespace-normal text-left px-2 py-2',
-                        groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
+                        groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted',
                         fieldIndex < fields.length - 1 ? 'border-r' : ''
                       )}
                     >
@@ -729,7 +729,7 @@ export default function TanStackExtractionTable({
                           key={`${field.key}-${modelName}`}
                                                       className={cn(
                               'header-cell text-center align-middle font-medium text-muted-foreground px-1 py-2',
-                              groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
+                              groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted',
                               colIndex === visibleColumns.length - 1 && fieldIndex < fields.length - 1 ? 'border-r' : ''
                             )}
                         >
@@ -805,7 +805,7 @@ export default function TanStackExtractionTable({
                                 key={`${modelName}-avg`}
                                                               className={cn(
                                 'result-cell border-t sticky bottom-0 z-30',
-                                groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
+                                groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted',
                                 isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r' : ''
                               )}
                               />
@@ -840,7 +840,7 @@ export default function TanStackExtractionTable({
                               key={`${modelName}-avg`}
                               className={cn(
                                 'result-cell border-t text-center font-semibold sticky bottom-0 z-30',
-                                groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted/30',
+                                groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted',
                                 isLastColumnInGroup && fieldIndex < fields.length - 1 ? 'border-r' : ''
                               )}
                             >
@@ -849,7 +849,7 @@ export default function TanStackExtractionTable({
                                   <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                                     not included
                                   </div>
-                                ) : !hasGroundTruth || !hasModelResults ? (
+                                ) : isExtracting || !hasGroundTruth || !hasModelResults ? (
                                   <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                                     TBD
                                   </div>

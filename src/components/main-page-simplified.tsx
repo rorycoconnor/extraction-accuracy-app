@@ -582,6 +582,7 @@ const MainPage: React.FC = () => {
             onOpenInlineEditor={handleOpenInlineEditor}
             onOpenSummary={openPerformanceModal}
             onToggleFieldMetrics={handleToggleFieldMetrics}
+            isExtracting={enhancedRunner.isExtracting}
           />
          ) : (
            <div className="p-4 md:p-8 h-full flex gap-6">

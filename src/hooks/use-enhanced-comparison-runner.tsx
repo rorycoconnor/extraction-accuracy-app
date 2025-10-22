@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccuracyDataStore, useCurrentSession } from '@/store/AccuracyDataStore';
 import { useModelExtractionRunner } from '@/hooks/use-model-extraction-runner';
@@ -85,6 +85,9 @@ export const useEnhancedComparisonRunner = (
     resetProgress,
     isCurrentRun,
   } = useExtractionProgress();
+  
+  // Use a ref to track the latest data during extraction for real-time updates
+  const currentDataRef = useRef<AccuracyData | null>(null);
 
   const handleRunComparison = useCallback(async () => {
     if (!state.data) {
@@ -98,6 +101,9 @@ export const useEnhancedComparisonRunner = (
 
     const accuracyData = state.data;
     const shownColumns = accuracyData.shownColumns;
+    
+    // Initialize ref with current data
+    currentDataRef.current = accuracyData;
 
     // Start a new comparison run
     const runId = uuidv4();
@@ -167,6 +173,16 @@ export const useEnhancedComparisonRunner = (
             modelsCompleted: [...detailedProgress.modelsCompleted, `${job.fileResult.id}-${job.modelName}`],
             lastUpdateTime: new Date()
           });
+          
+          // 🎨 Real-time update: Process this single result and update the table immediately
+          // Update only the results, not the averages
+          if (currentDataRef.current) {
+            const updatedData = processSingleResult(currentDataRef.current, job, result);
+            currentDataRef.current = updatedData; // Update ref for next iteration
+            
+            // Dispatch the update with results only, preserving existing averages
+            dispatch({ type: 'SET_ACCURACY_DATA', payload: updatedData });
+          }
         }
       );
 
@@ -269,6 +285,61 @@ export const useEnhancedComparisonRunner = (
     if (fieldName.includes('multi') || fieldName.includes('dropdown') || fieldName.includes('select')) return true;
     
     return false;
+  };
+
+  // Helper function to process a single extraction result in real-time
+  const processSingleResult = (
+    currentData: AccuracyData,
+    job: { fileResult: FileResult; modelName: string },
+    result: ApiExtractionResult
+  ): AccuracyData => {
+    // Create a deep copy to avoid mutations
+    const updatedData = JSON.parse(JSON.stringify(currentData)) as AccuracyData;
+    
+    // Find the file result to update
+    const fileResult = updatedData.results.find(r => r.id === job.fileResult.id);
+    if (!fileResult) return updatedData;
+    
+    // Get fresh ground truth data
+    const refreshedGroundTruth = getGroundTruthData();
+    
+    // Update each field for this file/model combination
+    Object.keys(fileResult.fields).forEach(fieldKey => {
+      // Initialize field data if it doesn't exist
+      if (!fileResult.fields[fieldKey]) {
+        fileResult.fields[fieldKey] = {};
+      }
+      
+      // Ensure ground truth is preserved
+      const refreshedGroundTruthValue = refreshedGroundTruth[fileResult.id]?.groundTruth?.[fieldKey] || 
+                                        fileResult.fields[fieldKey][UI_LABELS.GROUND_TRUTH] || '';
+      fileResult.fields[fieldKey][UI_LABELS.GROUND_TRUTH] = refreshedGroundTruthValue;
+      
+      // Update ONLY this specific model's result (preserve all other models)
+      if (result.success) {
+        const extractedValue = findFieldValue(result.extractedMetadata as Record<string, any>, fieldKey);
+        
+        if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
+          let formattedValue = String(extractedValue).trim();
+          
+          // Check if this is a multi-select field and format accordingly
+          const field = updatedData.fields.find(f => f.key === fieldKey);
+          if (field && isMultiSelectField(field, fieldKey)) {
+            formattedValue = formatMultiSelectValue(formattedValue);
+          }
+          
+          fileResult.fields[fieldKey][job.modelName] = formattedValue;
+        } else {
+          fileResult.fields[fieldKey][job.modelName] = NOT_PRESENT_VALUE;
+        }
+      } else {
+        const errorMessage = result.error?.userMessage || result.error?.message || UI_LABELS.UNKNOWN_ERROR;
+        const conciseError = extractConciseErrorDescription(errorMessage);
+        fileResult.fields[fieldKey][job.modelName] = `Error: ${conciseError}`;
+      }
+    });
+    
+    return updatedData;
   };
 
   // Helper function to process extraction results atomically
