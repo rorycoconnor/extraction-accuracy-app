@@ -105,6 +105,8 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
         onToggleFavorite={onToggleFavorite}
         onDeletePromptVersion={onDeletePromptVersion}
         selectedFileIds={accuracyData?.results?.map(r => r.id) ?? []}
+        accuracyData={accuracyData}
+        shownColumns={shownColumns}
       />
       
       {/* Inline Ground Truth Editor */}
