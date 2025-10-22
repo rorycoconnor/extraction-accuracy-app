@@ -489,9 +489,12 @@ export default function PromptStudioSheet({
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent 
         className={cn(
-          "!p-0 gap-0 flex flex-col",
+          "!p-0 gap-0 flex flex-col transition-all duration-500 ease-in-out",
           (showTestResults || showFileSelection) ? "!w-screen !max-w-none" : "!w-[50vw] !max-w-[50vw]"
         )}
+        style={{ 
+          scrollbarGutter: 'stable'
+        }}
       >
         {/* Fixed Header */}
         <div className="shrink-0 px-6 pt-6 pb-4">
@@ -512,10 +515,10 @@ export default function PromptStudioSheet({
         </div>
         
         {/* Flexible Content Area */}
-        <div className="flex-1 flex gap-6 px-6 py-4 overflow-hidden" style={{ minHeight: 0 }}>
+        <div className="flex-1 flex gap-6 px-6 py-4 overflow-hidden transition-all duration-500 ease-in-out" style={{ minHeight: 0 }}>
           {/* File Selection Panel (shown when Test button is clicked) */}
           {showFileSelection && (
-            <div className="flex flex-col" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
+            <div className="flex flex-col transition-all duration-500 ease-in-out" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
               <div className="shrink-0 flex items-center justify-between mb-4 h-8">
                 <div className="flex items-center gap-3">
                   <FlaskConical className="h-5 w-5 text-blue-600" />
@@ -534,7 +537,7 @@ export default function PromptStudioSheet({
                 </Button>
               </div>
               <div className="border rounded-lg flex-1 min-h-0 flex flex-col">
-                <div className="overflow-auto flex-1 p-4">
+                <div className="overflow-auto flex-1 p-4" style={{ scrollbarGutter: 'stable' }}>
                   <div className="space-y-2">
               {/* Mismatches */}
               {categorizedFiles.mismatches.length > 0 && (
@@ -762,7 +765,7 @@ export default function PromptStudioSheet({
 
           {/* Test Results Panel */}
           {showTestResults && (
-            <div className="flex flex-col" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
+            <div className="flex flex-col transition-all duration-500 ease-in-out" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
               <div className="shrink-0 flex items-center justify-between mb-4 h-8">
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="h-5 w-5 text-green-600" />
@@ -784,7 +787,7 @@ export default function PromptStudioSheet({
                 </Button>
               </div>
               <div className="border rounded-lg flex-1 min-h-0 flex flex-col">
-                <div className="overflow-auto flex-1">
+                <div className="overflow-auto flex-1" style={{ scrollbarGutter: 'stable' }}>
                   {testResults && testResults.length > 0 ? (
                     <table className="w-full border-collapse">
                       <thead>
@@ -866,23 +869,23 @@ export default function PromptStudioSheet({
           )}
           
           {/* Prompt Studio Panel */}
-          <div className="flex flex-col" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
+          <div className="flex flex-col transition-all duration-500 ease-in-out" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
             <div className="shrink-0 flex items-center gap-2 mb-4 h-8">
                     <History className="h-5 w-5" />
               <h3 className="font-semibold">Prompt Versions</h3>
                 </div>
-            <div className="overflow-y-auto pr-2" style={{ flex: 1, minHeight: 0 }}>
+            <div className="overflow-y-auto pr-2" style={{ flex: 1, minHeight: 0, scrollbarGutter: 'stable' }}>
                         <div className="space-y-4 pb-4">
                             {/* Active Prompt Card */}
                             <Card className="border-2 border-primary bg-primary/5">
-                                <CardHeader className="flex flex-row items-center justify-between pb-3">
+                                <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2 pb-3">
                                     <div className="flex items-center gap-2">
                                         <CardTitle className="text-base font-medium flex items-center gap-2">
                                             Active Prompt
                                             <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded-full font-normal">Current</span>
                                         </CardTitle>
                                     </div>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center flex-wrap gap-2">
                                         <PromptPickerDialog
                                             fieldName={field.name}
                                             onSelectPrompt={(promptText) => setActivePromptText(promptText)}
