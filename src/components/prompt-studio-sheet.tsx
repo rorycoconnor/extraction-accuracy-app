@@ -375,9 +375,17 @@ export default function PromptStudioSheet({
       console.log('🧪 Testing files:', filesToTest.map(r => r.fileName));
 
       // Create a test field with the current prompt
+      // Note: Map AccuracyField types to BoxAIField types (which is more restrictive)
+      const boxAIFieldType = field.type === 'dropdown_multi' || field.type === 'taxonomy' 
+        ? 'multiSelect' as const 
+        : field.type;
+      
       const testField = {
-        ...field,
-        prompt: activePromptText
+        key: field.key,
+        type: boxAIFieldType,
+        displayName: field.name,  // BoxAIField requires displayName, AccuracyField uses name
+        prompt: activePromptText,
+        options: field.options
       };
 
       // Initialize results with placeholders (only for selected files)
@@ -398,7 +406,7 @@ export default function PromptStudioSheet({
       let currentOperation = 0;
 
       // Create extraction jobs only for selected files
-      const extractionJobs = [];
+      const extractionJobs: Array<{ fileIndex: number; fileId: string; modelName: string }> = [];
       for (let i = 0; i < filesToTest.length; i++) {
         const fileResult = filesToTest[i];
         for (const modelName of modelsToTest) {
@@ -731,7 +739,7 @@ export default function PromptStudioSheet({
               {categorizedFiles.mismatches.length === 0 && 
                categorizedFiles.partialMatches.length === 0 && 
                categorizedFiles.differentFormats.length === 0 && 
-               categorizedFiles.matches.length === 0 && (
+               categorizedFiles.matches.length === 0 && accuracyData && (
                 <div>
                   <div className="text-xs font-medium text-muted-foreground mb-1 px-2">
                     All Files ({accuracyData.results.length})

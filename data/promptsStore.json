@@ -1833,17 +1833,148 @@
     "lastModified": "2025-09-13T05:56:05.071Z"
   },
   "renewalType": {
-    "activePrompt": "Extract the renewal type from the contract. Select the single best match from the predefined enum options for this field.",
+    "activePrompt": "Extract the renewal type from the contract. Select the single best match from the predefined enum options for this field. ",
     "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the renewal type from the contract. Select the single best match from the predefined enum options for this field. ",
+        "savedAt": "2025-10-23T00:16:04.463Z"
+      },
       {
         "id": "v1",
         "prompt": "Extract the renewal type from the contract. Select the single best match from the predefined enum options for this field.",
-        "savedAt": "2025-09-17T13:36:02.998Z"
+        "savedAt": "2025-09-17T13:36:02.998Z",
+        "metrics": {
+          "modelMetrics": {
+            "aws__claude_3_7_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_3_7_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_opus": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_opus_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "aws__claude_4_sonnet_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_mini_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "azure__openai__gpt_4_1_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "enhanced_extract_agent_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_0_flash_001": {
+              "f1": 0.625,
+              "accuracy": 0.625,
+              "precision": 0.625,
+              "recall": 0.625
+            },
+            "google__gemini_2_0_flash_001_no_prompt": {
+              "f1": 0.75,
+              "accuracy": 0.75,
+              "precision": 0.75,
+              "recall": 0.75
+            },
+            "google__gemini_2_5_pro": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "google__gemini_2_5_pro_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__gpt_5": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__gpt_5_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__gpt_o3": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            },
+            "openai__gpt_o3_no_prompt": {
+              "f1": 0,
+              "accuracy": 0,
+              "precision": 0,
+              "recall": 0
+            }
+          },
+          "filesCount": 8,
+          "lastRunAt": "2025-10-23T00:08:57.125Z"
+        }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 1,
-    "lastModified": "2025-09-17T13:36:03.003Z"
+    "usageCount": 2,
+    "lastModified": "2025-10-23T00:16:04.471Z"
   },
   "disputeResolution": {
     "activePrompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",

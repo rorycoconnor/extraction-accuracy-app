@@ -107,6 +107,7 @@ export function ImportExportManager({
       toast({
         title: 'Export Complete',
         description: `Successfully exported ${selectedTemplatesForExport.length === 1 && selectedTemplatesForExport[0] === 'all' ? database.templates.length : selectedTemplatesForExport.length} template(s) to CSV.`,
+        duration: 3000,
       });
       
       setExportDialogOpen(false);

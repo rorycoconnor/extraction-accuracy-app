@@ -26,7 +26,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ExternalLink, CheckCircle, XCircle, User } from 'lucide-react';
+import { Loader2, ExternalLink, CheckCircle, XCircle } from 'lucide-react';
 import { updateBoxSettings } from '@/lib/actions/settings';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
@@ -292,10 +292,7 @@ function SettingsContent() {
       {/* User Information Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <User className="h-5 w-5" />
-            <span>User Information</span>
-          </CardTitle>
+          <CardTitle>User Information</CardTitle>
         </CardHeader>
         <CardContent>
           {userLoading ? (
@@ -403,27 +400,17 @@ function SettingsContent() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {oauthStatus === 'connected' ? (
+                {oauthStatus === 'connected' && (
                   <div className="flex items-center space-x-2 text-green-600">
                     <CheckCircle className="h-5 w-5" />
                     <span className="font-medium">Connected to Box</span>
-                  </div>
-                ) : oauthStatus === 'disconnected' ? (
-                  <div className="flex items-center space-x-2 text-red-600">
-                    <XCircle className="h-5 w-5" />
-                    <span className="font-medium">Not connected to Box</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>Checking connection status...</span>
                   </div>
                 )}
                 
                 {/* Warning if environment variables are not set */}
                 {!process.env.NEXT_PUBLIC_BOX_CLIENT_ID && (
                   <div className="p-3 bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800/30 rounded-md text-sm text-yellow-800 dark:text-yellow-200">
-                    <div className="font-semibold mb-1">⚠️ Configuration Required</div>
+                    <div className="font-semibold mb-1">Configuration Required</div>
                     <div>OAuth2.0 is not properly configured. Please set the following environment variables in your <code className="px-1 py-0.5 bg-yellow-200 dark:bg-yellow-900/40 rounded text-xs">.env.local</code> file:</div>
                     <div className="mt-2 font-mono text-xs bg-yellow-50 dark:bg-yellow-950/30 p-2 rounded border border-yellow-200 dark:border-yellow-800/20">
                       <div>NEXT_PUBLIC_BOX_CLIENT_ID=your_box_client_id</div>
@@ -552,12 +539,14 @@ function SettingsContent() {
             </Card>
         )}
 
-          <div className="flex">
-            <Button type="submit" disabled={isSaving || authMethod === 'oauth2'}>
-              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {authMethod === 'oauth2' ? 'OAuth2.0 Active' : 'Save Changes'}
-            </Button>
-          </div>
+          {authMethod !== 'oauth2' && (
+            <div className="flex">
+              <Button type="submit" disabled={isSaving}>
+                {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
+            </div>
+          )}
         </form>
       </Form>
     </div>

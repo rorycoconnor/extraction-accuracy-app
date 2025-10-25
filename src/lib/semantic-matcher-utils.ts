@@ -16,6 +16,7 @@ import {
   DEFAULT_SEMANTIC_CONFIG,
   type SemanticMatchConfig
 } from './semantic-matcher';
+import { logger } from './logger';
 
 // ==========================================
 // EASY MANAGEMENT FUNCTIONS
@@ -35,7 +36,7 @@ export function addMultipleExpansions(
     addAcronymExpansion(acronym, expList);
   });
   
-  console.log(`✅ Added ${expansions.length} acronym expansions`);
+  logger.info('Added acronym expansions', { count: expansions.length });
 }
 
 /**
@@ -47,20 +48,20 @@ export function addExpansion(acronym: string, expansions: string | string[]): bo
     
     // Basic validation
     if (!acronym || !expArray.length) {
-      console.error('❌ Invalid acronym or expansions provided');
+      logger.error('Invalid acronym or expansions provided', new Error('Validation failed'));
       return false;
     }
     
     if (acronym.length > 10) {
-      console.error('❌ Acronym too long (max 10 characters)');
+      logger.error('Acronym too long (max 10 characters)', new Error('Validation failed'));
       return false;
     }
     
     addAcronymExpansion(acronym, expArray);
-    console.log(`✅ Added expansion: ${acronym} → ${expArray.join(', ')}`);
+    logger.info('Added expansion', { acronym, expansions: expArray.join(', ') });
     return true;
   } catch (error) {
-    console.error('❌ Failed to add expansion:', error);
+    logger.error('Failed to add expansion', error as Error);
     return false;
   }
 }
@@ -74,15 +75,15 @@ export function removeExpansion(acronym: string): boolean {
     const upperAcronym = acronym.toUpperCase();
     
     if (!allExpansions[upperAcronym]) {
-      console.warn(`⚠️  Acronym "${upperAcronym}" not found`);
+      logger.warn('Acronym not found', { acronym: upperAcronym });
       return false;
     }
     
     removeAcronymExpansion(acronym);
-    console.log(`✅ Removed expansion: ${upperAcronym}`);
+    logger.info('Removed expansion', { acronym: upperAcronym });
     return true;
   } catch (error) {
-    console.error('❌ Failed to remove expansion:', error);
+    logger.error('Failed to remove expansion', error as Error);
     return false;
   }
 }
@@ -94,14 +95,14 @@ export function listAllExpansions(): void {
   const expansions = getAllExpansions();
   const stats = getSemanticMatchingStats();
   
-  console.log('\n📚 SEMANTIC MATCHING STATUS');
-  console.log(`Status: ${stats.enabled ? '🟢 Enabled' : '🔴 Disabled'}`);
-  console.log(`Total Acronyms: ${stats.totalAcronyms}`);
-  console.log(`Total Expansions: ${stats.totalExpansions}`);
-  console.log('\n📝 CURRENT EXPANSIONS:');
+  logger.info('=== SEMANTIC MATCHING STATUS ===');
+  logger.info(`Status: ${stats.enabled ? 'Enabled' : 'Disabled'}`);
+  logger.info('Total Acronyms', { count: stats.totalAcronyms });
+  logger.info('Total Expansions', { count: stats.totalExpansions });
+  logger.info('Current Expansions:');
   
   Object.entries(expansions).forEach(([acronym, expList]) => {
-    console.log(`${acronym}: ${expList.join(' | ')}`);
+    logger.info(`  ${acronym}: ${expList.join(' | ')}`);
   });
 }
 
@@ -113,7 +114,7 @@ export function enableSemanticMatching(debug: boolean = false): void {
   if (debug) {
     setSemanticDebugMode(true);
   }
-  console.log(`🟢 Semantic matching enabled${debug ? ' (debug mode on)' : ''}`);
+  logger.info(`Semantic matching enabled${debug ? ' (debug mode on)' : ''}`);
 }
 
 /**
@@ -122,7 +123,7 @@ export function enableSemanticMatching(debug: boolean = false): void {
 export function disableSemanticMatching(): void {
   setSemanticMatchingEnabled(false);
   setSemanticDebugMode(false);
-  console.log('🔴 Semantic matching disabled');
+  logger.info('Semantic matching disabled');
 }
 
 /**
@@ -131,7 +132,7 @@ export function disableSemanticMatching(): void {
 export function toggleSemanticMatching(): boolean {
   const currentState = isSemanticMatchingEnabled();
   setSemanticMatchingEnabled(!currentState);
-  console.log(`${!currentState ? '🟢' : '🔴'} Semantic matching ${!currentState ? 'enabled' : 'disabled'}`);
+  logger.info(`Semantic matching ${!currentState ? 'enabled' : 'disabled'}`);
   return !currentState;
 }
 
@@ -140,8 +141,8 @@ export function toggleSemanticMatching(): boolean {
  */
 export function resetToDefaults(): void {
   // This would require reloading the module, so for now just log a warning
-  console.warn('⚠️  To reset to defaults, restart the application');
-  console.log('💡 Tip: Remove individual expansions using removeExpansion() instead');
+  logger.warn('To reset to defaults, restart the application');
+  logger.info('Tip: Remove individual expansions using removeExpansion() instead');
 }
 
 /**
@@ -235,7 +236,7 @@ export function setupForContracts(): void {
   ];
   
   addMultipleExpansions(contractExpansions);
-  console.log('✅ Contract/Legal preset applied');
+  logger.info('Contract/Legal preset applied');
 }
 
 /**
@@ -250,7 +251,7 @@ export function setupForInsurance(): void {
   ];
   
   addMultipleExpansions(insuranceExpansions);
-  console.log('✅ Insurance preset applied');
+  logger.info('Insurance preset applied');
 }
 
 /**
@@ -265,14 +266,14 @@ export function setupForHR(): void {
   ];
   
   addMultipleExpansions(hrExpansions);
-  console.log('✅ HR/Employment preset applied');
+  logger.info('HR/Employment preset applied');
 } 
 
 /**
  * Quick test function for number formatting feature
  */
 export function testNumberFormatting(): void {
-  console.log('🔢 TESTING NUMBER FORMATTING FEATURE\n');
+  logger.info('=== TESTING NUMBER FORMATTING FEATURE ===');
   
   const { findSemanticMatch } = require('./semantic-matcher');
   
@@ -286,25 +287,25 @@ export function testNumberFormatting(): void {
   let passed = 0;
   
   numberTests.forEach((test, index) => {
-    console.log(`Test ${index + 1}: "${test.pattern}" in "${test.text}"`);
+    logger.debug(`Test ${index + 1}: "${test.pattern}" in "${test.text}"`);
     
     const result = findSemanticMatch(test.pattern, test.text);
     
     if (result && result.matchedText === test.expected) {
-      console.log(`✅ PASS - Found: "${result.matchedText}"`);
+      logger.debug(`PASS - Found: "${result.matchedText}"`);
       passed++;
     } else {
-      console.log(`❌ FAIL - Expected: "${test.expected}", Got: ${result ? result.matchedText : 'null'}`);
+      logger.warn(`FAIL - Expected: "${test.expected}", Got: ${result ? result.matchedText : 'null'}`);
     }
-    console.log('');
+    // Empty log line removed
   });
   
-  console.log(`📊 Number formatting tests: ${passed}/${numberTests.length} passed`);
+  logger.info(`Number formatting tests: ${passed}/${numberTests.length} passed`);
   
   if (passed === numberTests.length) {
-    console.log('🎉 Number formatting is working correctly!');
-    console.log('💡 Try your own: Ground truth "4000000" should now match "4,000,000" in documents');
+    logger.info('Number formatting is working correctly!');
+    logger.info('Try your own: Ground truth "4000000" should now match "4,000,000" in documents');
   } else {
-    console.log('⚠️  Some number formatting tests failed');
+    logger.warn('Some number formatting tests failed');
   }
 } 

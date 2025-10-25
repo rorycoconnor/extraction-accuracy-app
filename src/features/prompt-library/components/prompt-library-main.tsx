@@ -197,6 +197,7 @@ export function PromptLibraryMain() {
       toast({
         title: 'Template Created Successfully',
         description: `Template "${selectedTemplate.name}" has been created in Box with key "${createdTemplate.templateKey}".`,
+        duration: 4000,
       });
 
       console.log('✅ Box template created:', createdTemplate);
@@ -234,7 +235,7 @@ export function PromptLibraryMain() {
               Library
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Curate, rate, and manage prompt variants
+              Curate and manage templates, prompts and prompt versions
             </p>
           </div>
           
@@ -421,15 +422,12 @@ export function PromptLibraryMain() {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Rename Template</AlertDialogTitle>
-              <AlertDialogDescription>
-                Enter a new name for "{getSelectedTemplate()?.name}":
-              </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="space-y-4 py-4">
               <Input
                 value={newTemplateName}
                 onChange={(e) => setNewTemplateName(e.target.value)}
-                className="bg-white dark:bg-gray-800"
+                className="bg-white dark:bg-gray-800 h-11"
                 placeholder="Enter template name"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
@@ -438,7 +436,6 @@ export function PromptLibraryMain() {
                   }
                 }}
                 autoFocus
-                className="h-11"
               />
             </div>
             <AlertDialogFooter>

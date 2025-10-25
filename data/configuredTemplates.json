@@ -1010,7 +1010,7 @@
         "displayName": "Employee name",
         "hidden": false,
         "description": "",
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "6b8b31dd-f476-4bd7-b587-813a1ad85f16",
@@ -1019,7 +1019,7 @@
         "displayName": "Employee address",
         "hidden": false,
         "description": "",
-        "isActive": true
+        "isActive": false
       },
       {
         "id": "42f60f3e-0b0f-4a6a-b4a5-0472a8835d08",

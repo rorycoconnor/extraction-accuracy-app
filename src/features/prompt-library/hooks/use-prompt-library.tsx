@@ -209,6 +209,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
         toast({
           title: 'Prompt Added',
           description: 'New prompt has been added successfully.',
+          duration: 3000,
         });
       }, 0);
     }
@@ -278,6 +279,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
         toast({
           title: 'Prompt Deleted',
           description: 'Prompt has been removed successfully.',
+          duration: 3000,
         });
       }, 0);
     }
@@ -314,6 +316,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
         toast({
           title: "Prompt updated",
           description: "The prompt has been successfully updated.",
+          duration: 3000,
         });
       }, 0);
     }
@@ -325,6 +328,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
       toast({
         title: 'Copied!',
         description: 'Prompt text copied to clipboard.',
+        duration: 2000,
       });
     } catch (err) {
       console.error('Failed to copy to clipboard:', err);
@@ -362,6 +366,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     toast({
       title: 'Category Added',
       description: `Category "${trimmedName}" has been created successfully.`,
+      duration: 3000,
     });
   }, [database.categories, toast]);
 
@@ -391,6 +396,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     toast({
       title: 'Template Added',
       description: `Template "${trimmedTemplateName}" has been created in the "${trimmedCategoryName}" category.`,
+      duration: 3000,
     });
   }, [generateUniqueId, toast]);
 
@@ -408,6 +414,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     toast({
       title: 'Template Deleted',
       description: `Template "${templateToDelete.name}" has been deleted.`,
+      duration: 3000,
     });
   }, [database.templates, toast]);
 
@@ -432,6 +439,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     toast({
       title: 'Template Renamed',
       description: `Template renamed from "${oldName}" to "${trimmedNewName}".`,
+      duration: 3000,
     });
   }, [database.templates, toast]);
 
@@ -471,6 +479,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
     toast({
       title: 'Field Added',
       description: `Field "${trimmedFieldName}" has been added to "${templateName}".`,
+      duration: 3000,
     });
   }, [database.templates, generateUniqueId, toast]);
 
@@ -574,6 +583,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
           description: isPinning 
             ? "Prompt pinned. Other pins in this field have been removed."
             : "Prompt unpinned.",
+          duration: 3000,
         });
       }, 0);
     }
@@ -609,6 +619,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
         toast({
           title: "Field Deleted",
           description: `Field "${fieldName}" has been removed from "${templateName}".`,
+          duration: 3000,
         });
       }, 0);
     }
@@ -650,6 +661,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
         toast({
           title: "Field Renamed",
           description: `Field has been renamed to "${trimmedName}" in "${templateName}".`,
+          duration: 3000,
         });
       }, 0);
     }
@@ -688,6 +700,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
         toast({
           title: "Field Updated",
           description: `Field has been updated in "${templateName}".`,
+          duration: 3000,
         });
       }, 0);
     }
@@ -846,6 +859,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
       toast({
         title: 'Import Complete',
         description: `Successfully imported ${templatesProcessed} template(s), ${fieldsProcessed} field(s), and ${promptsProcessed} prompt(s).`,
+        duration: 4000,
       });
     }, 100);
   }, [toast]);

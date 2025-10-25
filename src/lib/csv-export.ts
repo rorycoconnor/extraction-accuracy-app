@@ -1,6 +1,7 @@
 import type { AccuracyData } from '@/lib/types';
 import { formatModelName } from '@/lib/utils';
 import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
+import { logger } from './logger';
 
 export interface ExportSummaryData {
   templateName: string;
@@ -44,19 +45,18 @@ function calculateSummaryStats(
       // Extract the model names in order of performance (best first)
       modelsCompared = modelSummaries.map(summary => summary.modelName);
       
-      console.log('✅ CSV Export: Models sorted by Accuracy performance:', modelsCompared.map((model, index) => {
-        const summary = modelSummaries.find(s => s.modelName === model);
-        const accuracy = summary ? (summary.overallAccuracy * 100).toFixed(1) : 'N/A';
-        return `${index + 1}. ${formatModelName(model)} (Accuracy: ${accuracy}%)`;
-      }));
+      logger.debug('CSV Export: Models sorted by Accuracy performance', { 
+        modelCount: modelsCompared.length,
+        topModel: modelsCompared[0] ? formatModelName(modelsCompared[0]) : 'none'
+      });
     } catch (error) {
-      console.warn('Failed to sort models by performance, using alphabetical order:', error);
+      logger.warn('Failed to sort models by performance, using alphabetical order', { error });
       modelsCompared = visibleModels.sort();
     }
   } else {
     // Fallback to alphabetical sorting if no performance data available
     modelsCompared = visibleModels.sort();
-    console.log('ℹ️ CSV Export: Using alphabetical order (no performance data available)');
+    logger.debug('CSV Export: Using alphabetical order (no performance data available)');
   }
 
   return {
@@ -105,7 +105,7 @@ function generateSummaryRows(
   accuracyData?: AccuracyData
 ): any[][] {
   const summaryRows: any[][] = [
-    ['Accuracy App - Comparison Results Export'],
+    ['Box Optimizer - Comparison Results Export'],
     ['Generated', new Date().toLocaleString()],
     [''],
     ['SUMMARY INFORMATION'],
@@ -166,15 +166,15 @@ function generateFieldAveragesRows(
   summaryData: ExportSummaryData,
   fieldSettings?: Record<string, { includeInMetrics: boolean }>
 ): any[][] {
-  console.log('🔍 CSV Export: Generating Accuracy scores section...');
-  console.log('  - Has ground truth data:', summaryData.hasGroundTruthData);
-  console.log('  - Has averages data:', !!accuracyData.averages);
-  console.log('  - Number of fields:', accuracyData.fields?.length || 0);
-  console.log('  - Number of models:', summaryData.modelsCompared.length);
-  console.log('  - Averages object keys:', accuracyData.averages ? Object.keys(accuracyData.averages) : 'none');
+  logger.debug('CSV Export: Generating Accuracy scores section');
+  logger.debug('Has ground truth data', { hasGroundTruth: summaryData.hasGroundTruthData });
+  logger.debug('Has averages data', { hasAverages: !!accuracyData.averages });
+  logger.debug('Number of fields', { count: accuracyData.fields?.length || 0 });
+  logger.debug('Number of models', { count: summaryData.modelsCompared.length });
+  logger.debug('Averages object keys', { keys: accuracyData.averages ? Object.keys(accuracyData.averages) : [] });
 
   if (!summaryData.hasGroundTruthData || !accuracyData.averages) {
-    console.log('❌ CSV Export: Cannot generate Accuracy scores - missing ground truth or averages data');
+    logger.warn('CSV Export: Cannot generate Accuracy scores - missing ground truth or averages data');
     return [
       ['FIELD AVERAGES (Accuracy Scores)'],
       ['No ground truth data available - metrics cannot be calculated'],
@@ -205,7 +205,7 @@ function generateFieldAveragesRows(
     rows.push(overallRow);
     rows.push(['']);
   } catch (e) {
-    console.warn('⚠️ CSV Export: Failed to compute overall model accuracies for header row', e);
+    logger.warn('CSV Export: Failed to compute overall model accuracies for header row', { error: e });
   }
 
   // Data rows for each field (show all fields, mark disabled ones)
@@ -229,7 +229,7 @@ function generateFieldAveragesRows(
         if (avg && typeof avg.accuracy === 'number') {
           return `${(avg.accuracy * 100).toFixed(1)}%`;
         } else {
-          console.warn(`  - Missing Accuracy data for field "${field.key}", model "${model}":`, avg);
+          logger.debug(`Missing Accuracy data for field "${field.key}", model "${model}"`, { avg });
           return 'N/A';
         }
       }),
@@ -238,7 +238,7 @@ function generateFieldAveragesRows(
     rows.push(row);
   });
 
-  console.log(`✅ CSV Export: Generated Accuracy scores for ${fieldsWithData}/${accuracyData.fields.length} fields`);
+  logger.info(`CSV Export: Generated Accuracy scores for ${fieldsWithData}/${accuracyData.fields.length} fields`);
   
   rows.push(['']);
   return rows;
@@ -370,9 +370,9 @@ export function exportToCSV(
       URL.revokeObjectURL(url);
     }
 
-    console.log('✅ CSV export completed:', filename);
+    logger.info('CSV export completed', { filename });
   } catch (error) {
-    console.error('❌ Error exporting to CSV:', error);
+    logger.error('Error exporting to CSV', error as Error);
     throw new Error('Failed to export data to CSV. Please try again.');
   }
 }

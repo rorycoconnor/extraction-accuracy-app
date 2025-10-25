@@ -73,7 +73,7 @@ export function PromptPickerDialog({ fieldName, onSelectPrompt, triggerButtonCon
         <DialogHeader>
           <DialogTitle>Library Prompts</DialogTitle>
           <DialogDescription>
-            Browse prompts for "{fieldName}" from {matchingPrompts.categoryName} → {matchingPrompts.templateName}
+            "{fieldName}" from {matchingPrompts.categoryName} → {matchingPrompts.templateName}
           </DialogDescription>
         </DialogHeader>
 
@@ -111,8 +111,9 @@ export function PromptPickerDialog({ fieldName, onSelectPrompt, triggerButtonCon
                 {currentPrompt.isPinned && (
                   <Pin className="h-4 w-4 text-blue-600 fill-current" />
                 )}
-                <span>👍 {currentPrompt.up}</span>
-                <span>👎 {currentPrompt.down}</span>
+                {/* Hidden until database is implemented */}
+                {/* <span>👍 {currentPrompt.up}</span>
+                <span>👎 {currentPrompt.down}</span> */}
               </div>
             </div>
 

@@ -186,6 +186,7 @@ export function FieldDetailsSheet({
     toast({
       title: 'Field Deleted',
       description: `Field "${field.name}" has been deleted successfully.`,
+      duration: 3000,
     });
   };
 

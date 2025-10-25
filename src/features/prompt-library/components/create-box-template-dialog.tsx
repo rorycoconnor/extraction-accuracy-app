@@ -75,6 +75,7 @@ export function CreateBoxTemplateDialog({ selectedTemplate }: CreateBoxTemplateD
       toast({
         title: 'Template Created Successfully',
         description: `Template "${selectedTemplate.name}" has been created in Box with key "${createdTemplate.templateKey}".`,
+        duration: 4000,
       });
 
       console.log('✅ Box template created:', createdTemplate);

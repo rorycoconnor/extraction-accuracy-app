@@ -274,7 +274,7 @@ export const useDataHandlers = ({
     const fieldToUpdate = newAccuracyData.fields.find((f: AccuracyField) => f.key === fieldKey)!;
 
     // Find and remove the version
-    const versionIndex = fieldToUpdate.promptHistory.findIndex(v => v.id === versionId);
+    const versionIndex = fieldToUpdate.promptHistory.findIndex((v: PromptVersion) => v.id === versionId);
     if (versionIndex === -1) return;
 
     const deletedVersion = fieldToUpdate.promptHistory[versionIndex];

@@ -9,8 +9,8 @@ import { PromptLibraryProvider } from '@/features/prompt-library/hooks/use-promp
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'Box Accuracy App',
-  description: 'Evaluate metadata extraction from documents.',
+  title: 'Box Optimizer',
+  description: 'Optimize and evaluate AI-powered metadata extraction from Box documents.',
 };
 
 export default function RootLayout({

@@ -76,6 +76,7 @@ export function AddFieldDialog({
     toast({
       title: 'Field Added',
       description: `Successfully added field "${newFieldName}" to template "${selectedTemplate?.name}".`,
+      duration: 3000,
     });
 
     // Reset and close

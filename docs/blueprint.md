@@ -1,4 +1,4 @@
-# **App Name**: Box Accuracy App
+# **App Name**: Box Optimizer
 
 ## Core Features:
 

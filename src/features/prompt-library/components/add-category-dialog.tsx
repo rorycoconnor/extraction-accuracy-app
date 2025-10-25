@@ -43,6 +43,7 @@ export function AddCategoryDialog({
     toast({
       title: 'Category Added',
       description: `Successfully created category "${newCategoryName}".`,
+      duration: 3000,
     });
 
     // Reset and close

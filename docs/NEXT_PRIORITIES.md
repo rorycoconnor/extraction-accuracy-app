@@ -1,4 +1,4 @@
-# Next Priorities for Accuracy App
+# Next Priorities for Box Optimizer
 
 ## ✅ COMPLETED: Core Iterative Workflow Fixed (Critical)
 

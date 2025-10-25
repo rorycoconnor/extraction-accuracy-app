@@ -62,6 +62,7 @@ export function AddTemplateDialog({
     toast({
       title: 'Template Added',
       description: `Successfully created template "${newTemplateName}" in category "${selectedCategoryForTemplate}".`,
+      duration: 3000,
     });
 
     // Reset and close

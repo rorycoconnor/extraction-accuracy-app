@@ -738,7 +738,7 @@ export default function GroundTruthPage() {
               <Folder className="h-8 w-8 text-muted-foreground/50" />
               <div className="text-lg font-medium">No files selected</div>
               <div className="text-sm">
-                Use the "Select Files" button above to choose files from multiple box folder in order to edit ground truth or export, import csv tiles.
+                Use the "Select Files" button above to choose files from multiple box folder in order to edit ground truth.  Or export, import csv files.
               </div>
             </div>
           </TableCell>
@@ -757,7 +757,7 @@ export default function GroundTruthPage() {
             Ground Truth Data
           </h1>
           <p className="text-muted-foreground">
-            Manage and confirm ground truth data for your documents.
+            Manage ground truth data for your documents.
           </p>
         </div>
 
@@ -783,26 +783,28 @@ export default function GroundTruthPage() {
           <CardContent className="space-y-4">
             {/* Selected Files Status */}
             {selectedFiles.length > 0 && (
-              <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md p-3">
-                <div className="flex items-center gap-2 text-sm">
-                  <CheckCircle className="h-4 w-4 text-blue-600" />
-                  <span className="font-medium text-blue-900 dark:text-blue-100">
-                    {selectedFiles.length} file{selectedFiles.length !== 1 ? 's' : ''} selected for ground truth editing
-                  </span>
+              <div className="bg-gray-50 dark:bg-gray-800/20 border border-gray-200 dark:border-gray-700 rounded-md px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm">
+                    <CheckCircle className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                    <span className="font-medium text-gray-900 dark:text-gray-200">
+                      {selectedFiles.length} file{selectedFiles.length !== 1 ? 's' : ''} selected for ground truth editing
+                    </span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 ml-2">
+                      These files are ready for ground truth editing. Use "Select Files" to add more files.
+                    </span>
+                  </div>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => {
                       setSelectedFiles([]);
                       setFilesWithStatus([]);
                     }}
-                    className="ml-auto h-6 px-2 text-blue-600 hover:text-blue-800"
+                    className="h-8 ml-4"
                   >
                     Clear All
                   </Button>
-                </div>
-                <div className="mt-2 text-xs text-blue-700 dark:text-blue-300">
-                  These files are ready for ground truth editing. Use "Select Files" to add more files.
                 </div>
               </div>
             )}

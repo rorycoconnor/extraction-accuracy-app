@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { ThumbsUp, ThumbsDown, Copy, MoreHorizontal, Trash2, Pencil, Pin } from 'lucide-react';
+import { Copy, MoreHorizontal, Trash2, Pencil, Pin } from 'lucide-react';
+// Hidden until database is implemented: ThumbsUp, ThumbsDown
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -35,7 +36,8 @@ interface PromptItemProps {
 }
 
 export function PromptItem({ prompt, templateId, fieldId, rank, fieldName }: PromptItemProps) {
-  const { updatePromptRating, deletePrompt, copyToClipboard, editPrompt, togglePinPrompt } = usePromptLibrary();
+  const { deletePrompt, copyToClipboard, editPrompt, togglePinPrompt } = usePromptLibrary();
+  // Hidden until database is implemented: updatePromptRating
   const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
 
@@ -45,9 +47,10 @@ export function PromptItem({ prompt, templateId, fieldId, rank, fieldName }: Pro
     return 'bg-gray-100 text-gray-800 dark:bg-gray-800/20 dark:text-gray-400';
   };
 
-  const handleRating = (type: 'up' | 'down') => {
-    updatePromptRating(templateId, fieldId, prompt.id, type);
-  };
+  // Hidden until database is implemented
+  // const handleRating = (type: 'up' | 'down') => {
+  //   updatePromptRating(templateId, fieldId, prompt.id, type);
+  // };
 
   const handleCopy = () => {
     copyToClipboard(prompt.text);
@@ -78,14 +81,18 @@ export function PromptItem({ prompt, templateId, fieldId, rank, fieldName }: Pro
         <div className="flex-1">
           {/* First line with prompt text and inline actions */}
           <div className="flex items-start justify-between gap-4">
-            <p className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed flex-1">
+            <p 
+              className="text-sm text-gray-900 dark:text-gray-100 leading-relaxed flex-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              onClick={() => setIsEditDialogOpen(true)}
+              title="Click to edit prompt"
+            >
               {prompt.text}
             </p>
 
             {/* Inline Actions - voting and utility buttons */}
             <div className="flex items-center flex-shrink-0">
-              {/* Rating Buttons Group */}
-              <div className="flex items-center">
+              {/* Rating Buttons Group - HIDDEN until database is implemented */}
+              {/* <div className="flex items-center">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -104,7 +111,7 @@ export function PromptItem({ prompt, templateId, fieldId, rank, fieldName }: Pro
                   <ThumbsDown className="h-3 w-3 mr-1" />
                   {prompt.down}
                 </Button>
-              </div>
+              </div> */}
 
               {/* Utility Actions - with consistent spacing */}
               <div className="flex items-center">

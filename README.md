@@ -1,6 +1,6 @@
-# Box AI Accuracy Testing Application
+# Box Optimizer
 
-A comprehensive tool for testing and optimizing AI model accuracy in metadata extraction from Box documents.
+A comprehensive tool for optimizing AI model accuracy in metadata extraction from Box documents.
 
 ## 🚀 Features
 
@@ -38,7 +38,7 @@ A comprehensive tool for testing and optimizing AI model accuracy in metadata ex
 1. **Clone the repository**
    ```bash
    git clone [your-repo-url]
-   cd "Accuracy App"
+   cd box-optimizer
    ```
 
 2. **Install dependencies**

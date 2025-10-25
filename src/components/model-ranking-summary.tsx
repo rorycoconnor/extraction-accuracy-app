@@ -40,8 +40,8 @@ type ViewMode = 'stack' | 'side-by-side';
  * @returns JSX element containing the model performance summary
  */
 function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
-  // View mode state (default to stack view)
-  const [viewMode, setViewMode] = useState<ViewMode>('stack');
+  // View mode state (default to side-by-side view)
+  const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
 
   // Early validation to prevent runtime errors
   if (!data || !data.fields || !data.averages) {
@@ -337,20 +337,6 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
           {/* View Toggle Buttons */}
           <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <Button
-              variant={viewMode === 'stack' ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('stack')}
-              className={cn(
-                'flex items-center gap-2 text-xs px-3 py-1.5',
-                viewMode === 'stack' 
-                  ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100' 
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100'
-              )}
-            >
-              <LayoutGrid className="h-3 w-3" />
-              Stack
-            </Button>
-            <Button
               variant={viewMode === 'side-by-side' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('side-by-side')}
@@ -363,6 +349,20 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
             >
               <Columns className="h-3 w-3" />
               Side by side
+            </Button>
+            <Button
+              variant={viewMode === 'stack' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('stack')}
+              className={cn(
+                'flex items-center gap-2 text-xs px-3 py-1.5',
+                viewMode === 'stack' 
+                  ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100' 
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 hover:text-gray-900 dark:hover:text-gray-100'
+              )}
+            >
+              <LayoutGrid className="h-3 w-3" />
+              Stack
             </Button>
           </div>
 

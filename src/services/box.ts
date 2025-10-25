@@ -8,6 +8,7 @@ import type { BoxTemplate, BoxFile } from '@/lib/types';
 import type { BoxAIField } from '@/lib/schemas';
 import BoxSDK from 'box-node-sdk';
 import { getOAuthAccessToken, isOAuthConnected } from './oauth';
+import { boxLogger } from '@/lib/logger';
 
 const BOX_API_BASE_URL = 'https://api.box.com/2.0';
 
@@ -91,7 +92,7 @@ async function getAccessToken(): Promise<string> {
                 tokenType: 'oauth'
             };
             
-            console.log('🔑 OAuth2.0 token cached for 55 minutes');
+            boxLogger.info('OAuth2.0 token cached for 55 minutes');
             return oauthToken;
         }
     }
@@ -114,10 +115,10 @@ async function getAccessToken(): Promise<string> {
                 tokenType: 'service_account'
             };
             
-            console.log('🔑 Service Account token cached for 55 minutes');
+            boxLogger.info('Service Account token cached for 55 minutes');
             return tokenInfo.accessToken;
         } catch (error) {
-             console.error("Failed to get access token using Service Account:", error);
+             boxLogger.error("Failed to get access token using Service Account", error as Error);
              throw new Error('The stored Service Account configuration is invalid. Please save it again on the Settings page.');
         }
     }
@@ -131,7 +132,7 @@ async function getAccessToken(): Promise<string> {
             tokenType: 'developer'
         };
         
-        console.log('🔑 Developer token cached for 1 hour');
+        boxLogger.info('Developer token cached for 1 hour');
         return developerToken;
     }
     
@@ -143,7 +144,7 @@ async function getAccessToken(): Promise<string> {
  */
 export async function clearTokenCache(): Promise<void> {
     cachedToken = null;
-    console.log('🔑 Token cache cleared');
+    boxLogger.info('Token cache cleared');
 }
 
 // Export function to get access token for external use
@@ -219,7 +220,7 @@ export async function getTemplates(): Promise<BoxTemplate[]> {
  */
 export async function createMetadataTemplate(templateData: BoxMetadataTemplateCreateRequest): Promise<BoxMetadataTemplateResponse> {
   try {
-    console.log('🔧 Creating Box metadata template:', templateData.displayName);
+    boxLogger.info('Creating Box metadata template', { displayName: templateData.displayName });
     
     const response = await boxApiFetch('/metadata_templates/schema', {
       method: 'POST',
@@ -229,7 +230,7 @@ export async function createMetadataTemplate(templateData: BoxMetadataTemplateCr
       body: JSON.stringify(templateData),
     });
 
-    console.log('✅ Successfully created Box metadata template:', response.templateKey);
+    boxLogger.info('Successfully created Box metadata template', { templateKey: response.templateKey });
     return response;
   } catch (error) {
     console.error('❌ Error creating metadata template in Box:', error);
@@ -257,10 +258,10 @@ export async function getFolderItems(folderId: string): Promise<BoxFile[]> {
     const data: BoxFolderItemsResponse = await boxApiFetch(`/folders/${folderId}/items?fields=id,name,type`, { method: 'GET' });
     
     // Log what we're getting from Box API to see folders
-    console.log(`=== Box API Response for folder ${folderId} ===`);
-    console.log('All items:', data.entries);
-    console.log('Files:', data.entries.filter(item => item.type === 'file'));
-    console.log('Folders:', data.entries.filter(item => item.type === 'folder'));
+    boxLogger.debug(`Box API Response for folder ${folderId}`);
+    boxLogger.debug('All items', { count: data.entries.length });
+    boxLogger.debug('Files', { count: data.entries.filter(item => item.type === 'file').length });
+    boxLogger.debug('Folders', { count: data.entries.filter(item => item.type === 'folder').length });
     
     return data.entries
         .filter((item): item is BoxFile => item.type === 'file')
@@ -287,7 +288,7 @@ export async function getFolderContents(folderId: string): Promise<{
         .filter((item): item is BoxFolder => item.type === 'folder')
         .sort((a, b) => a.name.localeCompare(b.name));
     
-    console.log(`Folder ${folderId} contents:`, { files: files.length, folders: folders.length });
+    boxLogger.debug(`Folder ${folderId} contents`, { files: files.length, folders: folders.length });
     
     return { files, folders };
 
@@ -308,7 +309,7 @@ export async function getBoxFileContent(fileId: string): Promise<string> {
         });
 
         if (fileInfo) {
-            console.log(`File ${fileId} representations:`, fileInfo.representations);
+            boxLogger.debug(`File ${fileId} representations available`);
             
             // Look for extracted text representation
             const textRep = fileInfo.representations?.entries?.find(
@@ -328,15 +329,15 @@ export async function getBoxFileContent(fileId: string): Promise<string> {
                 
                 if (contentResponse.ok) {
                     const content = await contentResponse.text();
-                    console.log(`File ${fileId} extracted text length:`, content.length);
-                    console.log(`File ${fileId} extracted text preview:`, content.substring(0, 500));
+                    boxLogger.debug(`File ${fileId} extracted text`, { length: content.length });
+                    boxLogger.debug(`File ${fileId} text preview`, { preview: content.substring(0, 100) + '...' });
                     return content;
                 }
             }
         }
         
         // Fallback: Use Box AI to extract text
-        console.log(`Using Box AI fallback for text extraction for file ${fileId}`);
+        boxLogger.info(`Using Box AI fallback for text extraction`, { fileId });
         const aiResponse = await boxApiFetch(`/ai/text_gen`, {
             method: 'POST',
             body: JSON.stringify({
@@ -347,8 +348,8 @@ export async function getBoxFileContent(fileId: string): Promise<string> {
         });
         
         if (aiResponse?.answer) {
-            console.log(`File ${fileId} AI extracted text length:`, aiResponse.answer.length);
-            console.log(`File ${fileId} AI extracted text preview:`, aiResponse.answer.substring(0, 500));
+            boxLogger.debug(`File ${fileId} AI extracted text`, { length: aiResponse.answer.length });
+            boxLogger.debug(`File ${fileId} AI text preview`, { preview: aiResponse.answer.substring(0, 100) + '...' });
             return aiResponse.answer;
         }
         
@@ -423,13 +424,13 @@ export async function extractStructuredMetadataWithBoxAI(
     
     // CRITICAL FIX: Use Box metadata template when available
     if (templateKey) {
-      console.log(`🔧 Using Box metadata template: ${templateKey}`);
+      boxLogger.debug('Using Box metadata template', { templateKey });
       requestBody.metadata_template = {
         template_key: templateKey,
         scope: 'enterprise'
       };
     } else if (fields) {
-      console.log('🔧 Using inline field definitions (fallback)');
+      boxLogger.debug('Using inline field definitions (fallback)');
       requestBody.fields = fields;
     } else {
       throw new Error('Either templateKey or fields must be provided');
@@ -442,7 +443,7 @@ export async function extractStructuredMetadataWithBoxAI(
         id: 'enhanced_extract_agent',
         type: 'ai_agent_id' as const
       };
-      console.log(`🤖 BOX_AI_MODEL: Using Enhanced Extract Agent for file ${fileId}`);
+      boxLogger.debug(`Using Enhanced Extract Agent`, { fileId });
     } else {
       // Use AI agent configuration with specific model override
       requestBody.ai_agent = {
@@ -457,20 +458,10 @@ export async function extractStructuredMetadataWithBoxAI(
           model: model
         }
       };
-      console.log(`🤖 BOX_AI_MODEL: Using custom AI agent with model "${model}" for file ${fileId}`);
+      boxLogger.debug(`Using custom AI agent with model`, { model, fileId });
     }
 
-    console.log(`🤖 BOX_AI_MODEL: Full request body:`, JSON.stringify(requestBody, null, 2));
-    
-    // Extended JSON dump for debugging session
-    console.log(`🤖 BOX_AI_MODEL: 📤 COMPLETE REQUEST DUMP:`, {
-      endpoint: '/ai/extract_structured',
-      method: 'POST',
-      requestedModel: model,
-      fileId: fileId,
-      requestBody: requestBody,
-      timestamp: new Date().toISOString()
-    });
+    boxLogger.debug('Box AI extraction request prepared', { model, fileId, hasTemplate: !!templateKey });
 
     // Call Box AI API and capture RAW response
     const accessToken = await getAccessToken();
@@ -486,12 +477,11 @@ export async function extractStructuredMetadataWithBoxAI(
     
     const rawResponseText = await response.text();
     
-    // Log the TRULY RAW JSON response from Box AI
-    console.log(`🤖 BOX_AI_MODEL: 🔍 RAW JSON RESPONSE TEXT for model "${model}":`, rawResponseText);
+    boxLogger.debug('Box AI response received', { model, fileId, status: response.status, responseLength: rawResponseText.length });
     
     // Check for HTTP errors
     if (!response.ok) {
-        console.error(`🤖 BOX_AI_MODEL: ❌ HTTP Error ${response.status} for model "${model}":`, rawResponseText);
+        boxLogger.error(`Box AI HTTP error ${response.status} for model "${model}"`, new Error(rawResponseText.substring(0, 500)));
         throw new Error(`Box AI API returned ${response.status}: ${response.statusText}. Response: ${rawResponseText}`);
     }
     
@@ -500,28 +490,11 @@ export async function extractStructuredMetadataWithBoxAI(
     try {
         result = JSON.parse(rawResponseText);
     } catch (parseError) {
-        console.error(`🤖 BOX_AI_MODEL: ❌ JSON Parse Error for model "${model}":`, parseError);
-        console.error(`🤖 BOX_AI_MODEL: ❌ Raw text that failed to parse:`, rawResponseText);
+        boxLogger.error(`Box AI JSON parse error for model "${model}"`, parseError as Error);
         throw new Error(`Failed to parse Box AI response: ${parseError}`);
     }
     
-    console.log(`🤖 BOX_AI_MODEL: Parsed response for model "${model}":`, JSON.stringify(result, null, 2));
-    
-    // Extended JSON dump for debugging session
-    console.log(`🤖 BOX_AI_MODEL: 📥 COMPLETE RESPONSE DUMP:`, {
-      requestedModel: model,
-      fileId: fileId,
-      httpStatus: response.status,
-      httpStatusText: response.statusText,
-      rawResponseText: rawResponseText,
-      responseData: result,
-      responseType: typeof result,
-      isArray: Array.isArray(result),
-      hasAnswer: result?.answer ? true : false,
-      hasEntries: result?.entries ? true : false,
-      responseKeys: result && typeof result === 'object' ? Object.keys(result) : [],
-      timestamp: new Date().toISOString()
-    });
+    boxLogger.debug('Box AI response parsed successfully', { model, fileId, hasAnswer: !!result?.answer, hasEntries: !!result?.entries });
 
     // Handle Box AI response formats - simplified based on actual API behavior
     let extractedData: Record<string, any> = {};
@@ -529,20 +502,11 @@ export async function extractStructuredMetadataWithBoxAI(
     // Check for the most common response format first (what we see in logs)
     if (result?.answer && typeof result.answer === 'object') {
         extractedData = result.answer;
-        console.log('Extracted Data (answer field):', extractedData);
-        console.log(`🤖 BOX_AI_MODEL: ✅ Successfully extracted data using model "${model}" for file ${fileId}. Fields extracted: ${Object.keys(extractedData).length}`);
-        
-        // Extended success dump for debugging session
-        console.log(`🤖 BOX_AI_MODEL: 🎯 EXTRACTION SUCCESS DUMP:`, {
-          requestedModel: model,
-          fileId: fileId,
-          fieldsExtracted: Object.keys(extractedData),
+        boxLogger.info(`Successfully extracted data using model "${model}"`, { 
+          fileId, 
           fieldCount: Object.keys(extractedData).length,
-          extractedData: extractedData,
-          extractionPath: 'answer field',
-          timestamp: new Date().toISOString()
+          extractionPath: 'answer field'
         });
-        
         return extractedData;
     }
     
@@ -554,20 +518,11 @@ export async function extractStructuredMetadataWithBoxAI(
         } else {
             throw new Error(`Box AI extraction failed: ${firstResult?.error || 'Unknown error'}`);
         }
-        console.log('Extracted Data (array format):', extractedData);
-        console.log(`🤖 BOX_AI_MODEL: ✅ Successfully extracted data using model "${model}" for file ${fileId}. Fields extracted: ${Object.keys(extractedData).length}`);
-        
-        // Extended success dump for debugging session
-        console.log(`🤖 BOX_AI_MODEL: 🎯 EXTRACTION SUCCESS DUMP:`, {
-          requestedModel: model,
-          fileId: fileId,
-          fieldsExtracted: Object.keys(extractedData),
+        boxLogger.info(`Successfully extracted data using model "${model}"`, { 
+          fileId, 
           fieldCount: Object.keys(extractedData).length,
-          extractedData: extractedData,
-          extractionPath: 'array format',
-          timestamp: new Date().toISOString()
+          extractionPath: 'array format'
         });
-        
         return extractedData;
     }
     
@@ -576,24 +531,15 @@ export async function extractStructuredMetadataWithBoxAI(
         const firstResult = result.entries[0];
         if (firstResult?.status === 'error') {
             const errorMessage = `Box AI failed to extract metadata: ${firstResult.message || 'An unknown error occurred.'}`;
-            console.error(errorMessage, { requestBody, result });
+            boxLogger.error(errorMessage, new Error(JSON.stringify({ requestBody, result })));
             throw new Error(errorMessage);
         }
         extractedData = firstResult?.answer || {};
-        console.log('Extracted Data (entries format):', extractedData);
-        console.log(`🤖 BOX_AI_MODEL: ✅ Successfully extracted data using model "${model}" for file ${fileId}. Fields extracted: ${Object.keys(extractedData).length}`);
-        
-        // Extended success dump for debugging session
-        console.log(`🤖 BOX_AI_MODEL: 🎯 EXTRACTION SUCCESS DUMP:`, {
-          requestedModel: model,
-          fileId: fileId,
-          fieldsExtracted: Object.keys(extractedData),
+        boxLogger.info(`Successfully extracted data using model "${model}"`, { 
+          fileId, 
           fieldCount: Object.keys(extractedData).length,
-          extractedData: extractedData,
-          extractionPath: 'entries format',
-          timestamp: new Date().toISOString()
+          extractionPath: 'entries format'
         });
-        
         return extractedData;
     }
     
@@ -601,30 +547,20 @@ export async function extractStructuredMetadataWithBoxAI(
     extractedData = result?.extractedMetadata || result?.data || {};
     
     if (Object.keys(extractedData).length === 0) {
-        console.warn('No extractable data found in response:', result);
+        boxLogger.warn('No extractable data found in Box AI response', { model, fileId, result });
         throw new Error('Box AI returned an unexpected response format. No extractable data found.');
     }
 
-    console.log('Extracted Data (fallback):', extractedData);
-    
-    // Final summary log
-    console.log(`🤖 BOX_AI_MODEL: ✅ Successfully extracted data using model "${model}" for file ${fileId}. Fields extracted: ${Object.keys(extractedData).length}`);
-    
-    // Extended success dump for debugging session
-    console.log(`🤖 BOX_AI_MODEL: 🎯 EXTRACTION SUCCESS DUMP:`, {
-      requestedModel: model,
-      fileId: fileId,
-      fieldsExtracted: Object.keys(extractedData),
+    boxLogger.info(`Successfully extracted data using model "${model}"`, { 
+      fileId, 
       fieldCount: Object.keys(extractedData).length,
-      extractedData: extractedData,
-      extractionPath: 'fallback format',
-      timestamp: new Date().toISOString()
+      extractionPath: 'fallback format'
     });
     
     return extractedData;
 
   } catch (error) {
-    console.error(`🤖 BOX_AI_MODEL: ❌ Error using model "${model}" for file ${fileId}:`, error);
+    boxLogger.error(`Error using model "${model}" for file ${fileId}`, error as Error);
     throw error;
   }
 }
@@ -637,7 +573,7 @@ export async function getBoxFileEmbedLink(fileId: string): Promise<string> {
         }
         return fileInfo.expiring_embed_link.url;
     } catch (error) {
-        console.error(`Error fetching embed link for file ${fileId} from Box:`, error);
+        boxLogger.error(`Error fetching embed link for file ${fileId}`, error as Error);
         throw error;
     }
 }

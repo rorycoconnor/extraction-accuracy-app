@@ -115,10 +115,10 @@ describe('ModelRankingSummary - Accuracy-First Display Tests', () => {
       
       render(<ModelRankingSummary data={mockData} shownColumns={defaultShownColumns} />)
       
-      // Should render model cards (expect multiple occurrences - header + insights)
-      expect(screen.getAllByText('GPT 4')).toHaveLength(2) // Header + insights section
-      expect(screen.getAllByText('Claude')).toHaveLength(2)
-      expect(screen.getAllByText('Gemini')).toHaveLength(2)
+      // Should render model names (in side-by-side view they appear in card header + Key Insights)
+      expect(screen.getAllByText('GPT 4')).toHaveLength(2) // Card header + Key Insights
+      expect(screen.getAllByText('Claude')).toHaveLength(1) // Card header only
+      expect(screen.getAllByText('Gemini')).toHaveLength(1) // Card header only
     })
 
     test('should return null for invalid data', () => {
@@ -236,34 +236,34 @@ describe('ModelRankingSummary - Accuracy-First Display Tests', () => {
       expect(screen.getByText('Side by side')).toBeInTheDocument()
     })
 
-    test('should start with Stack view by default', () => {
+    test('should start with Side by side view by default', () => {
       const mockData = createMockAccuracyData()
       
       render(<ModelRankingSummary data={mockData} shownColumns={defaultShownColumns} />)
       
-      // Stack button should be active by default
+      // Side by side button should be active by default
       const stackButton = screen.getByText('Stack').closest('button')
       const sideBySideButton = screen.getByText('Side by side').closest('button')
       
-      expect(stackButton).toHaveClass('bg-white') // Active styling
-      expect(sideBySideButton).not.toHaveClass('bg-white') // Inactive styling
+      expect(sideBySideButton).toHaveClass('bg-white') // Active styling
+      expect(stackButton).not.toHaveClass('bg-white') // Inactive styling
     })
 
-    test('should switch to Side by side view when clicked', () => {
+    test('should switch to Stack view when clicked', () => {
       const mockData = createMockAccuracyData()
       
       render(<ModelRankingSummary data={mockData} shownColumns={defaultShownColumns} />)
       
-      // Click side by side button
-      const sideBySideButton = screen.getByText('Side by side')
-      fireEvent.click(sideBySideButton)
+      // Click stack button
+      const stackButton = screen.getByText('Stack')
+      fireEvent.click(stackButton)
       
-      // Side by side button should now be active
+      // Stack button should now be active
       const sideBySideButtonAfter = screen.getByText('Side by side').closest('button')
       const stackButtonAfter = screen.getByText('Stack').closest('button')
       
-      expect(sideBySideButtonAfter).toHaveClass('bg-white') // Active styling
-      expect(stackButtonAfter).not.toHaveClass('bg-white') // Inactive styling
+      expect(stackButtonAfter).toHaveClass('bg-white') // Active styling
+      expect(sideBySideButtonAfter).not.toHaveClass('bg-white') // Inactive styling
     })
   })
 
@@ -273,12 +273,13 @@ describe('ModelRankingSummary - Accuracy-First Display Tests', () => {
       
       render(<ModelRankingSummary data={mockData} shownColumns={defaultShownColumns} />)
       
-      // Should show field names (field names appear once per model, so 3 times total for 3 models)
+      // Should show field names (in side-by-side view, field names appear once per model card)
       expect(screen.getAllByText('Company Name')).toHaveLength(3) // Once per model card
       expect(screen.getAllByText('Contract Date')).toHaveLength(3) // Once per model card
       
-      // Should show individual field accuracy percentages
-      expect(screen.getAllByText(/\d+%/)).toHaveLength(15) // 3 models × 4 metrics + 3 overall badges + field percentages
+      // Should show individual field accuracy percentages (in side-by-side view)
+      // 3 Accuracy badges + (2 fields × 3 models) + 1 in Key Insights = 10 total
+      expect(screen.getAllByText(/\d+%/)).toHaveLength(10)
     })
 
     test('should indicate field winners with proper styling', () => {
@@ -299,8 +300,8 @@ describe('ModelRankingSummary - Accuracy-First Display Tests', () => {
       
       render(<ModelRankingSummary data={mockData} shownColumns={defaultShownColumns} />)
       
-      // Should show legend items (legend appears once per model card)
-      expect(screen.getAllByText('Field Performance:')).toHaveLength(3) // Once per model card
+      // Should show legend items (in side-by-side view, "Field Performance:" appears per card + header legend)
+      expect(screen.getAllByText('Field Performance:')).toHaveLength(4) // 3 model cards + 1 in header
       expect(screen.getAllByText('Winner')).toHaveLength(1) // Once in the main legend
       expect(screen.getAllByText('Shared Victory')).toHaveLength(1) // Once in the main legend
       expect(screen.getAllByText('Non-winner')).toHaveLength(1) // Once in the main legend

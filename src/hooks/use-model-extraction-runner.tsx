@@ -19,6 +19,7 @@ import type {
   ApiExtractionResult 
 } from '@/lib/types';
 import { FIELD_TYPE_MAPPING } from '@/features/prompt-library/types';
+import { extractionLogger } from '@/lib/logger';
 
 interface ExtractionJob {
   fileResult: FileResult;
@@ -144,23 +145,23 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       const allFailed = Array.from(modelResults.values()).every(result => !result.success);
       if (allFailed && modelResults.size > 0) {
         filesToRetry.add(fileId);
-        console.log(`🔄 File ${fileId} had all extractions fail, scheduling for retry`);
+        extractionLogger.info('File scheduled for retry (all extractions failed)', { fileId });
       }
     });
 
     if (filesToRetry.size === 0) {
-      console.log('✅ No files need retry - at least one model succeeded for each file');
+      extractionLogger.info('No files need retry - at least one model succeeded per file');
       return [];
     }
 
-    console.log(`🔄 Retrying ${filesToRetry.size} files where all extractions failed`);
+    extractionLogger.info('Retrying files where all extractions failed', { count: filesToRetry.size });
 
     // Create retry jobs only for the failed files
     const retryJobs = originalJobs.filter(job => filesToRetry.has(job.fileResult.id));
     
     // Execute retry extractions
     const retryResults = await processWithConcurrency(retryJobs, 3, async (job) => {
-      console.log(`🔄 RETRY: Processing ${job.modelName} for file ${job.fileResult.id}`);
+      extractionLogger.debug('Retrying extraction', { model: job.modelName, fileId: job.fileResult.id });
       const result = await extractionProcessor(job);
       
       // Mark this as a retry attempt
@@ -174,10 +175,10 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
     const stillFailedRetries = retryResults.filter(result => !result.success);
 
     if (successfulRetries.length > 0) {
-      console.log(`✅ RETRY SUCCESS: ${successfulRetries.length} extractions succeeded on retry`);
+      extractionLogger.info('Retry complete', { successCount: successfulRetries.length });
     }
     if (stillFailedRetries.length > 0) {
-      console.log(`❌ RETRY FAILED: ${stillFailedRetries.length} extractions still failed after retry`);
+      extractionLogger.warn('Some extractions still failed after retry', { failedCount: stillFailedRetries.length });
     }
 
     return retryResults;
@@ -193,7 +194,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
     // Keep template key for validation purposes, but don't use it for extraction
     const templateKeyForValidation = selectedTemplate?.templateKey || accuracyData.templateKey;
     
-    console.log('🔧 Template detection for validation:', {
+    extractionLogger.debug('Template detection for validation', {
       selectedTemplate: selectedTemplate?.templateKey,
       accuracyDataTemplate: accuracyData.templateKey,
       templateKeyForValidation: templateKeyForValidation
@@ -202,12 +203,12 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
     // IMPORTANT: Always use fields-based extraction to enable prompt testing
     // We'll validate against template constraints separately
     const fieldsForExtraction = accuracyData.fields.map(field => {
-      console.log(`=== PROMPT DEBUG for ${field.key} ===`);
-      console.log(`Current prompt: "${field.prompt}"`);
+      extractionLogger.debug(`Prompt debug for field`, { fieldKey: field.key });
+      extractionLogger.debug('Current prompt', { fieldKey: field.key, prompt: field.prompt?.substring(0, 100) });
       
       // Transform UI field type to Box AI field type
       const boxFieldType = FIELD_TYPE_MAPPING[field.type as keyof typeof FIELD_TYPE_MAPPING] || field.type;
-      console.log(`🔄 Field type transformation: ${field.key} - UI type: "${field.type}" → Box AI type: "${boxFieldType}"`);
+      extractionLogger.debug('Field type transformation', { fieldKey: field.key, uiType: field.type, boxType: boxFieldType });
       
       const baseField = {
         key: field.key,
@@ -223,21 +224,21 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         // 🔧 FIXED: Use persisted field options first (most reliable)
         if (field.options && field.options.length > 0) {
           fieldOptions = field.options.map(opt => ({ key: opt.key }));
-          console.log(`✅ Using persisted ${field.type} options for ${field.key}:`, fieldOptions);
+          extractionLogger.debug('Using persisted options', { fieldKey: field.key, fieldType: field.type, optionCount: fieldOptions.length });
         } 
         // Fallback to selectedTemplate if field options not available
         else if (selectedTemplate) {
           const templateField = selectedTemplate.fields.find(tf => tf.key === field.key);
           if (templateField?.options && templateField.options.length > 0) {
             fieldOptions = templateField.options.map(opt => ({ key: opt.key }));
-            console.log(`⚠️ Using template ${field.type} options for ${field.key}:`, fieldOptions);
+            extractionLogger.debug('Using template options', { fieldKey: field.key, fieldType: field.type, optionCount: fieldOptions.length });
           }
         }
         
         // Final fallback to defaults
         if (fieldOptions.length === 0) {
           fieldOptions = getDefaultEnumOptions(field.key, field.name);
-          console.log(`🆘 Using default ${field.type} options for ${field.key}:`, fieldOptions);
+          extractionLogger.warn('Using default options (no template options found)', { fieldKey: field.key, fieldType: field.type });
         }
         
         if (fieldOptions.length > 0) {
@@ -268,7 +269,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         title: "Cannot Run Extraction",
         description: `Enum fields missing options: ${fieldNames}. Please check your template configuration.`,
       });
-      console.error('🚫 Blocking extraction: enum fields without options:', enumFieldsWithoutOptions);
+      extractionLogger.error('Blocking extraction: enum fields without options', new Error(JSON.stringify(enumFieldsWithoutOptions)));
       return [];
     }
 
@@ -282,7 +283,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       selectedModels.map(modelName => ({ fileResult, modelName }))
     );
     
-    console.log('🔧 Extraction jobs created:', extractionJobs.length);
+    extractionLogger.info('Extraction jobs created', { jobCount: extractionJobs.length });
 
     // Setup debug data for the first extraction job
     if (extractionJobs.length > 0) {
@@ -292,37 +293,38 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       const isNoPromptModel = firstJob.modelName.endsWith('_no_prompt');
       const actualModelName = isNoPromptModel ? firstJob.modelName.replace('_no_prompt', '') : firstJob.modelName;
       
-      console.log(`🔍 Debug setup for model: ${firstJob.modelName}`);
-      console.log(`🔍 Is no-prompt variant: ${isNoPromptModel}`);
-      console.log(`🔍 Actual model name for Box AI: ${actualModelName}`);
+      extractionLogger.debug('Debug setup for model', { modelName: firstJob.modelName });
+      extractionLogger.debug('Model prompt variant', { isNoPromptModel });
+      extractionLogger.debug('Actual model name for Box AI', { actualModelName });
       
       // For no-prompt models, completely omit prompt field
       let fieldsToShow: any[] | undefined = fieldsForExtraction;
       if (isNoPromptModel && fieldsForExtraction) {
-        console.log('🚫 Debug: Removing prompt fields for no-prompt model');
+        extractionLogger.debug('Removing prompt fields for no-prompt model');
         fieldsToShow = fieldsForExtraction.map(field => {
           // Create field without prompt property for true no-prompt test
           const { prompt, ...fieldWithoutInstruction } = field;
           return fieldWithoutInstruction;
         });
-        console.log('✅ Debug: Prompts removed for no-prompt model:', firstJob.modelName);
+        extractionLogger.debug('Prompts removed for no-prompt model', { modelName: firstJob.modelName });
       } else {
-        console.log('✅ Debug: Prompts included for regular model:', firstJob.modelName);
+        extractionLogger.debug('Prompts included for regular model', { modelName: firstJob.modelName });
       }
       
       // Log a sample field to verify prompt handling in debug
       if (fieldsToShow && fieldsToShow.length > 0) {
         const sampleField = fieldsToShow[0];
-        console.log(`📝 Debug sample field for ${firstJob.modelName}:`, {
+        extractionLogger.debug(`Sample field for model`, { 
+          modelName: firstJob.modelName, 
           key: sampleField.key,
           hasPrompt: !!sampleField.prompt,
           promptPreview: sampleField.prompt ? sampleField.prompt.substring(0, 50) + '...' : 'NONE'
         });
         
         if (isNoPromptModel) {
-          console.log('🚫 NO-PROMPT REQUEST: Prompts removed for A/B testing');
+          extractionLogger.debug('NO-PROMPT REQUEST: Prompts removed for A/B testing');
         } else {
-          console.log('✅ PROMPT REQUEST: Prompts included for A/B testing');
+          extractionLogger.debug('PROMPT REQUEST: Prompts included for A/B testing');
         }
       }
       
@@ -335,8 +337,8 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         requestBody.model = actualModelName; // Use clean model name in debug
       }
       
-      console.log('🔧 Using fields-based extraction for prompt testing');
-      console.log('🔧 Template available for validation:', !!templateKeyForValidation);
+      extractionLogger.debug('Using fields-based extraction for prompt testing');
+      extractionLogger.debug('Template available for validation', { hasTemplate: !!templateKeyForValidation });
       
       setApiRequestDebugData(requestBody);
     } else {
@@ -351,37 +353,38 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       const isNoPromptModel = job.modelName.endsWith('_no_prompt');
       const actualModelName = isNoPromptModel ? job.modelName.replace('_no_prompt', '') : job.modelName;
       
-      console.log(`🔍 Processing model: ${job.modelName}`);
-      console.log(`🔍 Is no-prompt variant: ${isNoPromptModel}`);
-      console.log(`🔍 Actual model name for Box AI: ${actualModelName}`);
+      extractionLogger.debug('Processing model', { modelName: job.modelName });
+      extractionLogger.debug('Model prompt variant', { isNoPromptModel });
+      extractionLogger.debug('Actual model name for Box AI', { actualModelName });
       
       // For no-prompt models, completely omit prompt field
       let fieldsToUse: any[] | undefined = fieldsForExtraction;
       if (isNoPromptModel && fieldsForExtraction) {
-        console.log('🚫 Removing prompt fields for no-prompt model');
+        extractionLogger.debug('Removing prompt fields for no-prompt model');
         fieldsToUse = fieldsForExtraction.map(field => {
           // Create field without prompt property
           const { prompt, ...fieldWithoutInstruction } = field;
           return fieldWithoutInstruction;
         });
-        console.log('✅ Prompts removed for no-prompt model:', job.modelName);
+        extractionLogger.debug('Prompts removed for no-prompt model', { modelName: job.modelName });
       } else {
-        console.log('✅ Prompts included for regular model:', job.modelName);
+        extractionLogger.debug('Prompts included for regular model', { modelName: job.modelName });
       }
       
       // Log a sample field to verify prompt handling
       if (fieldsToUse && fieldsToUse.length > 0) {
         const sampleField = fieldsToUse[0];
-        console.log(`📝 Sample field for ${job.modelName}:`, {
+        extractionLogger.debug(`Sample field for model`, { 
+          modelName: job.modelName, 
           key: sampleField.key,
           hasPrompt: !!sampleField.prompt,
           promptPreview: sampleField.prompt ? sampleField.prompt.substring(0, 50) + '...' : 'NONE'
         });
         
         if (isNoPromptModel) {
-          console.log('🚫 NO-PROMPT REQUEST: Prompts removed for A/B testing');
+          extractionLogger.debug('NO-PROMPT REQUEST: Prompts removed for A/B testing');
         } else {
-          console.log('✅ PROMPT REQUEST: Prompts included for A/B testing');
+          extractionLogger.debug('PROMPT REQUEST: Prompts included for A/B testing');
         }
       }
       
@@ -394,15 +397,14 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         model: actualModelName,
       };
       
-      console.log(`🤖 BOX_AI_MODEL: 📤 CLIENT REQUEST for ${actualModelName}:`, {
+      extractionLogger.debug(`Box AI client request`, { 
+        modelName: actualModelName,
         fileId: job.fileResult.id,
         fileName: job.fileResult.fileName,
         requestedModel: actualModelName,
         originalModelName: job.modelName,
         isNoPromptVariant: isNoPromptModel,
-        fieldCount: fieldsToUse?.length || 0,
-        extractionRequest: extractionRequest,
-        timestamp: new Date().toISOString()
+        fieldCount: fieldsToUse?.length || 0
       });
       
       const result = await executeExtractionWithRetry(
@@ -410,14 +412,13 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
           const response = await extractMetadata(extractionRequest);
           
           // Client-side response logging for browser console
-          console.log(`🤖 BOX_AI_MODEL: 📥 CLIENT RESPONSE for ${actualModelName}:`, {
+          extractionLogger.debug(`Box AI client response`, { 
+            modelName: actualModelName,
             fileId: job.fileResult.id,
             fileName: job.fileResult.fileName,
             requestedModel: actualModelName,
             originalModelName: job.modelName,
-            responseData: response,
-            extractedFieldCount: response?.data ? Object.keys(response.data).length : 0,
-            timestamp: new Date().toISOString()
+            extractedFieldCount: response?.data ? Object.keys(response.data).length : 0
           });
           
           return response;

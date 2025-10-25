@@ -1,4 +1,4 @@
-# Box Accuracy App Documentation
+# Box Optimizer Documentation
 
 ## 📋 **Documentation Index**
 

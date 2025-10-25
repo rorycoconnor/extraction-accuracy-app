@@ -37,6 +37,7 @@ import {
   getErrorToastMessage,
   getExtractionSummary
 } from '@/lib/error-handler';
+import { logger, authLogger } from '@/lib/logger';
 
 // ===== DATA FUNCTIONS IMPORTS =====
 import { 
@@ -122,9 +123,9 @@ const MainPage: React.FC = () => {
   // Debug logging to understand which system is being used
   React.useEffect(() => {
     if (compatData?.clearResults) {
-      console.log('🔧 MAIN: Using unified store clearResults');
+      logger.debug('Using unified store clearResults');
     } else {
-      console.log('🔧 MAIN: Using fallback clearResults');
+      logger.debug('Using fallback clearResults');
     }
   }, [compatData?.clearResults]);
 
@@ -169,20 +170,20 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     const checkOAuthStatus = async () => {
       try {
-        console.log('🔐 Step 1: Checking OAuth status...');
+        authLogger.debug('Checking OAuth status');
         const response = await fetch('/api/auth/box/status');
         const data = await response.json();
         
         if (data.success) {
           const status = data.status.isConnected ? 'connected' : 'disconnected';
           setOauthStatus(status);
-          console.log('🔐 OAuth status:', status);
+          authLogger.debug('OAuth status retrieved', { isConnected: status });
         } else {
           setOauthStatus('disconnected');
-          console.log('🔐 OAuth status: disconnected (no data)');
+          authLogger.debug('OAuth status: disconnected (no data)');
         }
       } catch (error) {
-        console.error('❌ Failed to check OAuth status:', error);
+        authLogger.error('Failed to check OAuth status', error as Error);
         setOauthStatus('disconnected');
       }
     };
@@ -193,7 +194,7 @@ const MainPage: React.FC = () => {
     // Re-check when page becomes visible (user navigates back to home)
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log('🔐 Page visible again, re-checking auth status...');
+        authLogger.debug('Page visible again, re-checking auth status');
         checkOAuthStatus();
       }
     };
@@ -210,12 +211,12 @@ const MainPage: React.FC = () => {
     const fetchUserInfo = async () => {
       try {
         setIsAuthChecking(true);
-        console.log('🔐 Step 2: Fetching user info...');
+        authLogger.debug('Fetching user info');
         
         const response = await fetch('/api/auth/box/user');
         const data = await response.json();
         
-        console.log('🔐 User info response:', {
+        authLogger.debug('User info response', {
           success: data.success,
           hasUser: !!data.user,
           authMethod: data.authMethod,
@@ -224,14 +225,14 @@ const MainPage: React.FC = () => {
         if (data.success && data.user) {
           setIsBoxAuthenticated(true);
           setAuthMethod(data.authMethod || '');
-          console.log('✅ Authentication confirmed:', data.authMethod);
+          authLogger.info('Authentication confirmed', { authMethod: data.authMethod });
         } else {
           setIsBoxAuthenticated(false);
           setAuthMethod('');
-          console.log('❌ Not authenticated:', data.error);
+          authLogger.warn('Not authenticated', { error: data.error });
         }
       } catch (error) {
-        console.error('❌ Failed to fetch user info:', error);
+        authLogger.error('Failed to fetch user info', error as Error);
         setIsBoxAuthenticated(false);
         setAuthMethod('');
       } finally {
@@ -258,7 +259,7 @@ const MainPage: React.FC = () => {
   
   // 🔧 DEFENSIVE: Force close all modals handler (recovery mechanism)
   const forceCloseAllModals = () => {
-    console.log('🛡️ Force closing all modals (recovery mode)');
+    logger.info('Force closing all modals (recovery mode)');
     setIsModalOpen(false);
     setIsPromptStudioOpen(false);
     setIsInlineEditorOpen(false);
@@ -270,7 +271,7 @@ const MainPage: React.FC = () => {
     const handleEscapeKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !isModalOpen && !isPromptStudioOpen && !isInlineEditorOpen && !showResetDialog) {
         // If Escape is pressed but no modal thinks it's open, we might be in a stuck state
-        console.log('🔍 Escape pressed with no modal open - checking for stuck overlays');
+        logger.debug('Escape pressed with no modal open - checking for stuck overlays');
         forceCloseAllModals();
       }
     };
@@ -314,7 +315,7 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     // Refresh ground truth data when the home page loads
     // This ensures we pick up any changes made on the ground truth page
-    console.log('🏠 Home page mounting, refreshing ground truth data...');
+    logger.info('Home page mounting, refreshing ground truth data');
     refreshGroundTruth();
   }, [refreshGroundTruth]);
 
@@ -338,7 +339,7 @@ const MainPage: React.FC = () => {
         description: "CSV file has been downloaded to your computer.",
       });
     } catch (error) {
-      console.error('Export error:', error);
+      logger.error('Export error', error as Error);
       toast({
         title: "Export Failed",
         description: "Failed to export data. Please try again.",
@@ -357,7 +358,7 @@ const MainPage: React.FC = () => {
    */
   const handleToggleFieldMetrics = (fieldKey: string, include: boolean) => {
     if (!accuracyData) {
-      console.log('❌ No accuracy data to update');
+      logger.warn('No accuracy data to update');
       return;
     }
     
@@ -377,7 +378,7 @@ const MainPage: React.FC = () => {
    * Handle copying Enhanced Extract results to ground truth
    */
   const handleAutoPopulateGroundTruth = async () => {
-    console.log('🚀 Starting auto-populate ground truth');
+    logger.info('Starting auto-populate ground truth');
     
     if (!accuracyData || !accuracyData.results || accuracyData.results.length === 0) {
       toast({
@@ -400,7 +401,7 @@ const MainPage: React.FC = () => {
     let totalUpdated = 0;
     const enhancedExtractModel = 'enhanced_extract_agent';
 
-    console.log('📊 Processing data:', {
+    logger.debug('Processing data', {
       filesCount: accuracyData.results.length,
       fieldsCount: accuracyData.fields.length,
       enhancedExtractModel
@@ -409,30 +410,31 @@ const MainPage: React.FC = () => {
     try {
       // Process each file
       for (const fileResult of accuracyData.results) {
-        console.log(`\n📁 Processing file: ${fileResult.fileName} (ID: ${fileResult.id})`);
+        logger.debug(`Processing file`, { fileName: fileResult.fileName, fileId: fileResult.id });
         
         // Process each field for this file
         for (const fieldConfig of accuracyData.fields) {
           const fieldKey = fieldConfig.key;
           const fieldData = fileResult.fields[fieldKey];
           
-          console.log(`  🔍 Field: ${fieldKey}`, {
+          logger.debug(`Processing field`, { 
+            fieldKey, 
             hasFieldData: !!fieldData,
-            availableModels: fieldData ? Object.keys(fieldData) : [],
+            availableModels: fieldData ? Object.keys(fieldData) : []
           });
           
           if (!fieldData) {
-            console.log(`  ⚠️ No field data for ${fieldKey}`);
+            logger.debug(`No field data`, { fieldKey });
             continue;
           }
           
           // Get the value from Enhanced Extract
           const extractedValue = fieldData[enhancedExtractModel];
           
-          console.log(`  📝 Enhanced Extract value for ${fieldKey}:`, extractedValue);
+          logger.debug(`Enhanced Extract value`, { fieldKey, value: extractedValue });
           
           if (extractedValue && extractedValue !== '' && extractedValue !== null && extractedValue !== undefined) {
-            console.log(`  💾 Saving ${fieldKey} = "${extractedValue}"`);
+            logger.debug(`Saving field value`, { fieldKey, value: extractedValue });
             
             // 🔧 Normalize date format to match manual ground truth editor format
             let valueToSave = extractedValue;
@@ -441,7 +443,7 @@ const MainPage: React.FC = () => {
               if (!isNaN(parsedDate.getTime())) {
                 // Convert to ISO format (YYYY-MM-DD) to match ground truth editor
                 valueToSave = parsedDate.toISOString().split('T')[0];
-                console.log(`  📅 Normalized date for ${fieldKey}: "${extractedValue}" → "${valueToSave}"`);
+                logger.debug(`Normalized date`, { fieldKey, original: extractedValue, normalized: valueToSave });
               }
             }
             
@@ -452,18 +454,18 @@ const MainPage: React.FC = () => {
               valueToSave
             );
             
-            console.log(`  ${success ? '✅' : '❌'} Save result for ${fieldKey}:`, success);
+            logger.debug(`Save result`, { fieldKey, success });
             
             if (success) {
               totalUpdated++;
             }
           } else {
-            console.log(`  ⚠️ Skipping ${fieldKey} - no valid value`);
+            logger.debug(`Skipping field - no valid value`, { fieldKey });
           }
         }
       }
 
-      console.log(`🎉 Auto-populate complete. Total updated: ${totalUpdated}`);
+      logger.info(`Auto-populate complete`, { totalUpdated });
 
       toast({
         title: 'Ground Truth Updated',
@@ -474,11 +476,11 @@ const MainPage: React.FC = () => {
       refreshGroundTruth();
 
       // 🔧 ADDED: Force refresh of the main accuracy data to show ground truth in the grid
-      console.log('🔄 Triggering accuracy data refresh to update grid...');
+      logger.debug('Triggering accuracy data refresh to update grid');
       
       // Get the refreshed ground truth data
       const refreshedGroundTruthData = getGroundTruthData();
-      console.log('📊 Refreshed ground truth data:', refreshedGroundTruthData);
+      logger.debug('Refreshed ground truth data', { dataCount: Object.keys(refreshedGroundTruthData).length });
       
       // Update the accuracy data with the new ground truth values
       if (accuracyData && setAccuracyData) {
@@ -496,12 +498,12 @@ const MainPage: React.FC = () => {
           });
         });
         
-        console.log('🔄 Setting updated accuracy data with ground truth...');
+        logger.debug('Setting updated accuracy data with ground truth');
         setAccuracyData(updatedAccuracyData);
       }
 
     } catch (error) {
-      console.error('❌ Error during auto-populate:', error);
+      logger.error('Error during auto-populate', error as Error);
       toast({
         title: 'Update Failed',
         description: 'An error occurred while updating ground truth.',
@@ -555,11 +557,11 @@ const MainPage: React.FC = () => {
         progress={enhancedRunner.progress}
         shownColumns={shownColumns}
         onSelectDocuments={() => {
-          console.log('📂 Select Documents button clicked');
+          logger.debug('Select Documents button clicked');
           try {
             setIsModalOpen(true);
           } catch (error) {
-            console.error('Error opening modal:', error);
+            logger.error('Error opening modal', error as Error);
             forceCloseAllModals();
             setTimeout(() => setIsModalOpen(true), 100);
           }
@@ -609,7 +611,7 @@ const MainPage: React.FC = () => {
         isExtractionModalOpen={isModalOpen}
         configuredTemplates={configuredTemplates}
         onCloseExtractionModal={() => {
-          console.log('🔒 Closing extraction modal');
+          logger.debug('Closing extraction modal');
           setIsModalOpen(false);
         }}
         onRunExtraction={handleRunExtraction}
