@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { logger } from '@/lib/logger';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { getBoxFilesInFolder, getBoxFolderContents } from '@/lib/actions/box';
@@ -79,8 +80,8 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
       .then((contents) => {
         setFiles(contents.files);
         setFolders(contents.folders);
-        console.log(`📁 Folder ${folderId} - Folders found:`, contents.folders);
-        console.log(`📄 Folder ${folderId} - Files found:`, contents.files);
+        logger.debug('Folder contents', { folderId, folderCount: contents.folders.length });
+        logger.debug('Folder files', { folderId, fileCount: contents.files.length });
       })
       .catch((err) => {
           let errorMessage = err instanceof Error ? err.message : "An unknown error occurred while fetching files from Box.";
@@ -101,7 +102,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
           }
           
           setErrorFiles(errorMessage);
-          console.error(err);
+          logger.error('Error', err);
       })
       .finally(() => setIsLoadingFiles(false));
   };
@@ -228,7 +229,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
       // Call the parent close handler
       onClose();
     } catch (error) {
-      console.error('Error closing extraction modal:', error);
+      logger.error('Error closing extraction modal', error);
       // Force close even if there's an error
       onClose();
     }
@@ -239,7 +240,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
     const selectedFiles = getSelectedFiles();
 
     // Debug logging
-    console.log('🔍 Submit Debug:', {
+    logger.debug('Submit Debug', {
       selectedTemplateKey,
       selectedTemplate: !!selectedTemplate,
       selectedFileIds: selectedFiles.map(f => f.id),

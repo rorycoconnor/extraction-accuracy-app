@@ -13,6 +13,7 @@ import {
   ERROR_MESSAGES,
   RetryConfig 
 } from './types';
+import { logger } from '@/lib/logger';
 
 // ===== ERROR CLASSIFICATION =====
 
@@ -188,7 +189,11 @@ export async function executeExtractionWithRetry(
   try {
     const result = await retryWithBackoff(async () => {
       if (retryCount > 0) {
-        console.log(`🔄 Retrying extraction for ${context.fileName} with ${context.modelName} (attempt ${retryCount + 1})`);
+        logger.info('Retrying extraction', {
+          fileName: context.fileName,
+          modelName: context.modelName,
+          attempt: retryCount + 1
+        });
       }
       
       const extractionResult = await extractionFn();
@@ -213,15 +218,16 @@ export async function executeExtractionWithRetry(
     const extractionError = createExtractionError(error, context);
     
     // Enhanced error logging with more details
-    console.error(`❌ Extraction failed for ${context.fileName} with ${context.modelName}:`);
-    console.error(`   Error Type: ${extractionError.type}`);
-    console.error(`   Error Message: ${extractionError.message}`);
-    console.error(`   User Message: ${extractionError.userMessage}`);
-    console.error(`   Retryable: ${extractionError.retryable}`);
-    if (extractionError.statusCode) {
-      console.error(`   Status Code: ${extractionError.statusCode}`);
-    }
-    console.error(`   Full Error Object:`, extractionError);
+    logger.error('Extraction failed', {
+      fileName: context.fileName,
+      modelName: context.modelName,
+      errorType: extractionError.type,
+      errorMessage: extractionError.message,
+      userMessage: extractionError.userMessage,
+      retryable: extractionError.retryable,
+      statusCode: extractionError.statusCode,
+      fullError: extractionError
+    });
     
     return {
       fileId: context.fileId,

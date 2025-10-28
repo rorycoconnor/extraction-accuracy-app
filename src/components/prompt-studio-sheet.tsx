@@ -27,6 +27,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 import type { AccuracyField, PromptVersion, AccuracyData, FileResult } from '@/lib/types';
 import { Save, History, Star, Play, Copy, Sparkles, Loader2, TrendingUp, TrendingDown, BarChart3, Wand2, Trash2, X, FlaskConical, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -187,7 +188,7 @@ export default function PromptStudioSheet({
         
         if (isImprovementMode) {
           // Improve existing prompt
-          console.log('🔧 Improving prompt with feedback:', improvementInstructions);
+          logger.info('Improving prompt with feedback', { improvementInstructions });
           result = await improvePrompt({
             originalPrompt: activePromptText,
             userFeedback: improvementInstructions,
@@ -209,7 +210,7 @@ export default function PromptStudioSheet({
           setImprovementInstructions('');
         } else {
           // Generate new prompt
-          console.log('🔧 Generating new prompt for field:', field.name);
+          logger.info('Generating new prompt for field', { fieldName: field.name });
           result = await generateInitialPrompt({
             templateName: templateName || 'document',
             field: {
@@ -227,11 +228,11 @@ export default function PromptStudioSheet({
         }
         
         // Replace the current prompt text with the new one
-        console.log('🔧 Replacing prompt text:', result.prompt);
+        logger.debug('Replacing prompt text', { promptLength: result.prompt.length });
         setActivePromptText(result.prompt);
         
     } catch (error) {
-        console.error("Failed to generate/improve prompt:", error);
+        logger.error('Failed to generate/improve prompt', error);
         
         // Handle specific Box API authentication errors
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -370,9 +371,11 @@ export default function PromptStudioSheet({
     setTestProgress({ current: 0, total: totalOperations });
 
     try {
-      console.log('🧪 Starting test with prompt:', activePromptText);
-      console.log('🧪 Testing models:', modelsToTest);
-      console.log('🧪 Testing files:', filesToTest.map(r => r.fileName));
+      logger.info('Starting test', {
+        promptLength: activePromptText.length,
+        models: modelsToTest,
+        fileCount: filesToTest.length
+      });
 
       // Create a test field with the current prompt
       // Note: Map AccuracyField types to BoxAIField types (which is more restrictive)
@@ -423,7 +426,7 @@ export default function PromptStudioSheet({
       
       const runExtraction = async (job: { fileIndex: number; fileId: string; modelName: string }) => {
         const startTime = Date.now();
-        console.log(`🚀 Starting extraction: ${job.modelName} for file ${job.fileIndex + 1}`);
+        logger.debug('Starting extraction', { modelName: job.modelName, fileIndex: job.fileIndex + 1 });
         
         try {
           const result = await extractMetadata({
@@ -444,10 +447,10 @@ export default function PromptStudioSheet({
           testResultsData[job.fileIndex].fields[field.key][job.modelName] = formattedValue;
           
           const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-          console.log(`✅ Completed: ${job.modelName} for file ${job.fileIndex + 1} in ${duration}s`);
+          logger.debug('Extraction completed', { modelName: job.modelName, fileIndex: job.fileIndex + 1, duration });
         } catch (error) {
           const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-          console.error(`❌ Failed: ${job.modelName} for file ${job.fileIndex + 1} after ${duration}s:`, error);
+          logger.error('Extraction failed', { modelName: job.modelName, fileIndex: job.fileIndex + 1, duration, error });
           testResultsData[job.fileIndex].fields[field.key][job.modelName] = 'ERROR';
         }
 
@@ -461,7 +464,7 @@ export default function PromptStudioSheet({
 
       // Process jobs with concurrency limit using proper queue
       const startTime = Date.now();
-      console.log(`🧪 Starting ${extractionJobs.length} extractions with concurrency limit of ${CONCURRENCY_LIMIT}`);
+      logger.info('Starting extractions', { jobCount: extractionJobs.length, concurrencyLimit: CONCURRENCY_LIMIT });
 
       const executeWithLimit = async () => {
         const executing: Set<Promise<void>> = new Set();
@@ -487,8 +490,10 @@ export default function PromptStudioSheet({
       await executeWithLimit();
       
       const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
-      console.log(`✅ All extractions completed in ${totalDuration}s`);
-      console.log(`📊 Average: ${(parseFloat(totalDuration) / extractionJobs.length).toFixed(1)}s per extraction`);
+      logger.info('All extractions completed', {
+        totalDuration,
+        averageDuration: (parseFloat(totalDuration) / extractionJobs.length).toFixed(1)
+      });
       
       toast({
         title: "Test Complete",
@@ -496,7 +501,7 @@ export default function PromptStudioSheet({
       });
 
     } catch (error) {
-      console.error("Test failed:", error);
+      logger.error('Test failed', error);
       toast({
         variant: "destructive",
         title: "Test Failed",

@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/logger';
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
@@ -191,7 +192,7 @@ export function FieldDetailsSheet({
   };
 
   const handleFieldTypeChange = (value: string) => {
-    console.log('🔍 Field type change:', {
+    logger.debug('Field type change', {
       oldType: fieldType,
       newType: value,
       fieldName: field?.name,
@@ -203,7 +204,7 @@ export function FieldDetailsSheet({
     
     // 🚨 POTENTIAL BUG DETECTOR: Check if optionsPaste contains prompt-like text
     if (field?.optionsPaste && field.optionsPaste.length > 100) {
-      console.warn('🚨 POTENTIAL BUG: optionsPaste looks like prompt text:', field.optionsPaste);
+      logger.warn('POTENTIAL BUG: optionsPaste looks like prompt text', { optionsPaste: field.optionsPaste });
     }
     
     if (value === 'dropdown') {

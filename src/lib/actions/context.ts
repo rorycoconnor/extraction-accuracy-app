@@ -2,6 +2,7 @@
 
 import { getBoxFileContent } from '@/services/box';
 import { findValueContext, type ContextMatch } from '@/lib/context-finder';
+import { logger } from '@/lib/logger';
 
 export async function getFieldContext(
   fileId: string, 
@@ -21,7 +22,7 @@ export async function getFieldContext(
     
     return context;
   } catch (error) {
-    console.error(`Error finding context for field ${fieldKey} in file ${fileId}:`, error);
+    logger.error('Error finding context for field', { fieldKey, fileId, error });
     return null;
   }
 }
@@ -51,7 +52,7 @@ export async function getMultipleFieldContexts(
     
     return contexts;
   } catch (error) {
-    console.error(`Error finding contexts for file ${fileId}:`, error);
+    logger.error('Error finding contexts for file', { fileId, error });
     return {};
   }
 } 

@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/logger';
 
 import React, { useState, useMemo } from 'react';
 import { AlertCircle, BookOpen, Plus, ChevronDown, MoreHorizontal, Download, Upload, Box, Trash2, Edit } from 'lucide-react';
@@ -200,10 +201,10 @@ export function PromptLibraryMain() {
         duration: 4000,
       });
 
-      console.log('✅ Box template created:', createdTemplate);
+      logger.info('Box template created', { template: createdTemplate });
       
     } catch (error) {
-      console.error('❌ Failed to create Box template:', error);
+      logger.error('Failed to create Box template', error);
       toast({
         variant: 'destructive',
         title: 'Failed to Create Template',

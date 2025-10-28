@@ -18,6 +18,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { getBoxTemplates } from '@/lib/actions/box';
 import type { BoxTemplate } from '@/lib/types';
 import { Loader2, Terminal } from 'lucide-react';
+import { logger } from '@/lib/logger';
 
 type NewTemplateDialogProps = {
   isOpen: boolean;
@@ -46,7 +47,7 @@ export default function NewTemplateDialog({
         .then(setAllTemplates)
         .catch((err) => {
           setError(err instanceof Error ? err.message : 'An unknown error occurred.');
-          console.error(err);
+          logger.error('Error', err);
         })
         .finally(() => setIsLoading(false));
     }

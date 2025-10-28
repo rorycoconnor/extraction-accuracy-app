@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { disconnectOAuth } from '@/services/oauth';
 
 export async function POST(request: NextRequest) {
@@ -10,7 +11,7 @@ export async function POST(request: NextRequest) {
       message: 'OAuth disconnected successfully'
     });
   } catch (error) {
-    console.error('Failed to disconnect OAuth:', error);
+    logger.error('Failed to disconnect OAuth', error);
     
     return NextResponse.json({
       success: false,

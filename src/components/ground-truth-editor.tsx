@@ -18,6 +18,7 @@ import { getBoxFileEmbedLinkAction } from '@/lib/actions/box';
 import { getFieldContext } from '@/lib/actions/context';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { NOT_PRESENT_VALUE } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 type GroundTruthEditorProps = {
   isOpen: boolean;
@@ -50,7 +51,7 @@ const createDefaultValues = (template: BoxTemplate, groundTruth: Record<string, 
 
 
 export default function GroundTruthEditor({ isOpen, onClose, file, template, groundTruth, onSave }: GroundTruthEditorProps) {
-  console.log('🎬 GroundTruthEditor opened for file:', file.id, {
+  logger.debug('GroundTruthEditor opened for file', { fileId: file.id, 
     template: template.templateKey,
     groundTruthData: groundTruth,
     activeFields: template.fields.filter(f => f.isActive).map(f => ({ key: f.key, name: f.displayName }))
@@ -81,7 +82,7 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
       const context = await getFieldContext(file.id, fieldKey, value);
       setFieldContexts(prev => ({ ...prev, [fieldKey]: context }));
     } catch (error) {
-      console.error(`Failed to load context for field ${fieldKey}:`, error);
+      logger.error('Failed to load context for field', { fieldKey, error });
       setFieldContexts(prev => ({ ...prev, [fieldKey]: null }));
     } finally {
       setLoadingContexts(prev => ({ ...prev, [fieldKey]: false }));
@@ -139,7 +140,7 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
           setEmbedUrl(url);
         })
         .catch(err => {
-          console.error("Failed to get embed link", err);
+          logger.error('Failed to get embed link', err);
           setEmbedError(err instanceof Error ? err.message : "Could not load file preview.");
         })
         .finally(() => {
@@ -150,7 +151,7 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
 
 
   const onSubmit = (data: Record<string, any>) => {
-    console.log('📝 GroundTruthEditor submitting data for file:', file.id);
+    logger.debug('GroundTruthEditor submitting data for file', { fileId: file.id });
     
     // Convert date objects back to strings for saving
     const dataToSave = Object.entries(data).reduce((acc, [key, value]) => {
@@ -162,7 +163,7 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
         return acc;
     }, {} as Record<string, string>);
 
-    console.log('💾 Saving ground truth data with', Object.keys(dataToSave).length, 'fields');
+    logger.debug('Saving ground truth data', { fieldCount: Object.keys(dataToSave).length });
     onSave(file.id, dataToSave);
   };
 

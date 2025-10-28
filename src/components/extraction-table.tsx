@@ -18,6 +18,7 @@ import { compareValues, type ComparisonResult } from '@/lib/metrics';
 import { MousePointer2, Play, RotateCcw, Clock } from 'lucide-react';
 import { ModelPill } from '@/components/model-pill';
 import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
+import { logger } from '@/lib/logger';
 
 type ExtractionTableProps = {
   data: AccuracyData;
@@ -113,7 +114,7 @@ export default function ExtractionTable({
           sortedModels = models.sort();
         }
       } catch (error) {
-        console.warn('Failed to sort models by performance, using alphabetical order:', error);
+        logger.warn('Failed to sort models by performance, using alphabetical order', error);
         sortedModels = models.sort();
       }
     } else {

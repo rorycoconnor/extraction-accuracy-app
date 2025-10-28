@@ -7,6 +7,7 @@
 
 import { useToast } from '@/hooks/use-toast';
 import { useGroundTruth } from '@/hooks/use-ground-truth';
+import { logger } from '@/lib/logger';
 import { 
   UI_LABELS, 
   TOAST_MESSAGES, 
@@ -72,12 +73,12 @@ export const useExtractionSetup = ({
     // Associate files to template for compatibility with existing systems
     associateFilesToTemplate(selectedFiles.map(f => f.id), template.templateKey);
 
-    console.log('🔧 Loading ground truth data using unified system for', selectedFiles.length, 'files...');
+    logger.info('Loading ground truth data using unified system', { fileCount: selectedFiles.length });
 
     // 🔧 NEW: Load existing accuracy data and migrate to cross-template storage
     const existingAccuracyData = getAccuracyData();
-    console.log('🔍 DEBUG: existingAccuracyData:', existingAccuracyData ? `Found with templateKey: ${existingAccuracyData.templateKey}` : 'null');
-    console.log('🔍 DEBUG: current template.templateKey:', template.templateKey);
+    logger.debug('Existing accuracy data', { found: !!existingAccuracyData, templateKey: existingAccuracyData?.templateKey });
+    logger.debug('Current template', { templateKey: template.templateKey });
     
     // 🆕 NEW: Ensure prompt data is restored from files
     await restorePromptDataFromFiles();
@@ -86,11 +87,11 @@ export const useExtractionSetup = ({
     if (existingAccuracyData) {
       const migratedCount = migrateFromAccuracyData(existingAccuracyData);
       if (migratedCount > 0) {
-        console.log(`🎉 Migrated ${migratedCount} prompts to cross-template storage`);
+        logger.info('Migrated prompts to cross-template storage', { count: migratedCount });
       }
     }
 
-    console.log('📚 Cross-template prompt storage initialized');
+    logger.info('Cross-template prompt storage initialized');
 
     const newAccuracyData: AccuracyData = {
       templateKey: template.templateKey,
@@ -101,7 +102,7 @@ export const useExtractionSetup = ({
         
         if (crossTemplatePromptData && crossTemplatePromptData.promptHistory.length > 0) {
           // ✅ Use existing cross-template prompt data
-          console.log(`✅ Loading ${crossTemplatePromptData.promptHistory.length} prompt versions for field: ${field.key} (from cross-template storage)`);
+          logger.debug('Loading prompt versions for field', { fieldKey: field.key, versionCount: crossTemplatePromptData.promptHistory.length });
           return {
             name: field.displayName,
             key: field.key,
@@ -112,7 +113,7 @@ export const useExtractionSetup = ({
           };
         } else {
           // 🔧 CHANGED: Create empty prompt for new fields - users can generate in prompt studio
-          console.log(`🆕 Creating empty prompt for new field: ${field.key}`);
+          logger.debug('Creating empty prompt for new field', { fieldKey: field.key });
           return {
             name: field.displayName,
             key: field.key,
@@ -136,7 +137,7 @@ export const useExtractionSetup = ({
                 const groundTruthData = getGroundTruth(file.id);
                 const groundTruthValue = groundTruthData[field.key] ?? '';
                 initialFieldResult[modelName] = groundTruthValue;
-                console.log(`📊 Ground truth for file ${file.id}, field ${field.key}:`, groundTruthValue ? `"${groundTruthValue}"` : 'empty');
+                logger.debug('Ground truth for file field', { fileId: file.id, fieldKey: field.key, hasValue: !!groundTruthValue });
               } else {
                 initialFieldResult[modelName] = UI_LABELS.PENDING_STATUS;
               }
@@ -175,7 +176,7 @@ export const useExtractionSetup = ({
     setShownColumns(newShownColumns);
     setAccuracyData(newAccuracyData);
     
-    console.log('✅ Accuracy data initialized with prompt version preservation');
+    logger.info('Accuracy data initialized with prompt version preservation');
   };
 
   return {

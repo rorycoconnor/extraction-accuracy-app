@@ -1,4 +1,5 @@
 /**
+import { logger } from '@/lib/logger';
  * localStorage Polyfill for Server-Side Rendering
  * 
  * This ensures localStorage exists in Node.js environment with proper function signatures.
@@ -8,7 +9,7 @@
 if (typeof window === 'undefined' && typeof global !== 'undefined') {
   // Only polyfill on server-side
   if (!global.localStorage || typeof global.localStorage.getItem !== 'function') {
-    console.log('🔧 Installing localStorage polyfill for SSR');
+    logger.debug('Installing localStorage polyfill for SSR');
     
     class LocalStoragePolyfill implements Storage {
       private store: Map<string, string> = new Map();
@@ -41,7 +42,7 @@ if (typeof window === 'undefined' && typeof global !== 'undefined') {
     
     // Install the polyfill
     (global as any).localStorage = new LocalStoragePolyfill();
-    console.log('✅ localStorage polyfill installed');
+    logger.debug('localStorage polyfill installed');
   }
 }
 

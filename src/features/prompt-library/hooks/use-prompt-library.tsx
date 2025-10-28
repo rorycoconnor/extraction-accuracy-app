@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/logger';
 
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import type { Database, Template, Field, Prompt, SearchFilters, FieldType } from '../types';
@@ -65,7 +66,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
   useEffect(() => {
     // Extra SSR guard - only run on client
     if (typeof window === 'undefined') {
-      console.log('⚠️ PromptLibraryProvider: Still on server, skipping load');
+      logger.debug('PromptLibraryProvider: Still on server, skipping load');
       return;
     }
 
@@ -75,7 +76,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
       setDatabase(data);
       setError(null);
     } catch (err) {
-      console.error('Failed to load prompt library data:', err);
+      logger.error('Failed to load prompt library data', err);
       setError('Failed to load prompt library data');
     } finally {
       setIsLoading(false);
@@ -331,7 +332,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
         duration: 2000,
       });
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+      logger.error('Failed to copy to clipboard', err);
       toast({
         title: 'Copy Failed',
         description: 'Failed to copy text to clipboard.',

@@ -28,6 +28,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ExternalLink, CheckCircle, XCircle } from 'lucide-react';
 import { updateBoxSettings } from '@/lib/actions/settings';
+import { logger } from '@/lib/logger';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -66,7 +67,7 @@ function SettingsContent() {
     } | null;
   } | null>(null);
   const [userLoading, setUserLoading] = React.useState(true);
-  console.log('Environment variables', process.env)
+  logger.debug('Environment variables', { env: process.env })
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
@@ -115,7 +116,7 @@ function SettingsContent() {
           setOauthStatus('disconnected');
         }
       } catch (error) {
-        console.error('Failed to check OAuth status:', error);
+        logger.error('Failed to check OAuth status', error);
         setOauthStatus('disconnected');
       }
     };
@@ -134,11 +135,11 @@ function SettingsContent() {
         if (data.success && data.user) {
           setUserInfo(data.user);
         } else {
-          console.log('No user info available:', data.error);
+          logger.warn('No user info available', { error: data.error });
           setUserInfo(null);
         }
       } catch (error) {
-        console.error('Failed to fetch user info:', error);
+        logger.error('Failed to fetch user info', error);
         setUserInfo(null);
       } finally {
         setUserLoading(false);
@@ -155,14 +156,14 @@ function SettingsContent() {
         const data = await response.json();
         
         if (data.success && data.status.accessToken) {
-          console.log('🔑 Access Token:', data.status.accessToken);
-          console.log('�� Expires At:', data.status.expiresAt);
-          console.log('�� Token Type:', data.status.tokenType);
+          logger.debug('OAuth token info', {
+            tokenType: data.status.tokenType
+          });
         } else {
-          console.log('❌ No access token found');
+          logger.warn('No access token found');
         }
       } catch (error) {
-        console.error('Failed to fetch token:', error);
+        logger.error('Failed to fetch token', error);
       }
     };
     
@@ -211,7 +212,7 @@ function SettingsContent() {
               setUserInfo(null);
             }
           } catch (error) {
-            console.error('Failed to refresh user info:', error);
+            logger.error('Failed to refresh user info', error);
           } finally {
             setUserLoading(false);
           }

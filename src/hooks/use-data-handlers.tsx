@@ -7,6 +7,7 @@
  */
 
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 import { UI_LABELS, TOAST_MESSAGES } from '@/lib/main-page-constants';
 import { useGroundTruth } from './use-ground-truth';
 import { 
@@ -123,7 +124,7 @@ export const useDataHandlers = ({
         results: updatedResults
       };
       
-      console.log('💾 handleSaveInlineGroundTruth: Updated accuracy data for', fileId, fieldKey, newValue);
+      logger.debug('handleSaveInlineGroundTruth: Updated accuracy data', { fileId, fieldKey, newValue });
       
       setAccuracyData(updatedAccuracyData);
       saveAccuracyData(updatedAccuracyData);
@@ -188,7 +189,7 @@ export const useDataHandlers = ({
     
     setSelectedFieldForPromptStudio(fieldToUpdate);
     
-    console.log('✅ Prompt version saved to both systems without metrics:', {
+    logger.info('Prompt version saved to both systems without metrics', {
       fieldKey,
       newPrompt: newPrompt.substring(0, 100) + '...',
       versionCount: fieldToUpdate.promptHistory.length,
@@ -236,7 +237,7 @@ export const useDataHandlers = ({
     
     setSelectedFieldForPromptStudio(fieldToUpdate);
     
-    console.log('✅ Switched to prompt version in both systems:', {
+    logger.info('Switched to prompt version in both systems', {
       fieldKey,
       versionId: promptVersion.id,
       prompt: promptVersion.prompt.substring(0, 100) + '...'
@@ -307,7 +308,7 @@ export const useDataHandlers = ({
     
     setSelectedFieldForPromptStudio(fieldToUpdate);
     
-    console.log('✅ Prompt version deleted:', {
+    logger.info('Prompt version deleted', {
       fieldKey,
       deletedVersionId: versionId,
       remainingVersions: fieldToUpdate.promptHistory.length
@@ -368,7 +369,7 @@ export const useDataHandlers = ({
               };
               
               hasUpdates = true;
-              console.log(`✅ Updated metrics for prompt version ${currentVersion.id} in field ${field.key}`);
+              logger.debug('Updated metrics for prompt version', { versionId: currentVersion.id, fieldKey: field.key });
             }
           }
         }
@@ -376,7 +377,7 @@ export const useDataHandlers = ({
     });
 
     if (hasUpdates) {
-      console.log('✅ Prompt version metrics updated after run comparison');
+      logger.info('Prompt version metrics updated after run comparison');
     }
 
     return newAccuracyData;

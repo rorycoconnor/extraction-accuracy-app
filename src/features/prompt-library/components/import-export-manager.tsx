@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/logger';
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Download, Upload } from 'lucide-react';
@@ -113,7 +114,7 @@ export function ImportExportManager({
       setExportDialogOpen(false);
       setSelectedTemplatesForExport([]);
     } catch (error) {
-      console.error('Export error:', error);
+      logger.error('Export error', error);
       toast({
         title: 'Export Failed',
         description: 'Failed to export templates. Please try again.',
@@ -316,7 +317,7 @@ export function ImportExportManager({
       });
 
       if (uniqueTemplates.length !== templatesToImport.length) {
-        console.warn(`🚨 CSV Import: Removed ${templatesToImport.length - uniqueTemplates.length} duplicate templates`);
+        logger.warn('CSV Import: Removed duplicate templates', { removedCount: templatesToImport.length - uniqueTemplates.length });
       }
 
       // Use the batch import function
@@ -334,7 +335,7 @@ export function ImportExportManager({
       setNewImportTemplateName('');
 
     } catch (error) {
-      console.error('Import error:', error);
+      logger.error('Import error', error);
       toast({
         title: 'Import Failed',
         description: 'Failed to import templates. Please check the CSV format.',

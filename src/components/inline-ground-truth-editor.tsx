@@ -15,6 +15,7 @@ import { getBoxFileEmbedLinkAction } from '@/lib/actions/box';
 import { getFieldContext } from '@/lib/actions/context';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { NOT_PRESENT_VALUE } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 type InlineGroundTruthEditorProps = {
   isOpen: boolean;
@@ -65,7 +66,7 @@ export default function InlineGroundTruthEditor({
           setEmbedUrl(url);
         })
         .catch(err => {
-          console.error("Failed to get embed link", err);
+          logger.error('Failed to get embed link', err);
           setEmbedError(err instanceof Error ? err.message : "Could not load file preview.");
         })
         .finally(() => {
@@ -86,7 +87,7 @@ export default function InlineGroundTruthEditor({
           setContext(contextResult);
         })
         .catch(err => {
-          console.error("Failed to get context", err);
+          logger.error('Failed to get context', err);
           setContextError(err instanceof Error ? err.message : "Could not load context information.");
         })
         .finally(() => {
@@ -114,7 +115,7 @@ export default function InlineGroundTruthEditor({
       await onSave(file.id, field.key, valueToSave);
       onClose();
     } catch (error) {
-      console.error('Error saving ground truth:', error);
+      logger.error('Error saving ground truth', error);
       toast({
         title: 'Save Failed',
         description: 'Failed to save ground truth data. Please try again.',

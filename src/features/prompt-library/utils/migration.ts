@@ -1,4 +1,5 @@
 /**
+import { logger } from '@/lib/logger';
  * @fileOverview Migration Utilities
  * 
  * Handles migration from old prompt library data format to new Box-compliant format
@@ -49,7 +50,7 @@ const LEGACY_TYPE_MAPPING: Record<LegacyFieldType, FieldType> = {
  * Migrate legacy prompt library data to new format
  */
 export function migrateLegacyData(legacyData: LegacyDatabase): Database {
-  console.log('🔄 Starting prompt library migration...');
+  logger.info('Starting prompt library migration');
   
   const migratedTemplates: Template[] = legacyData.templates.map(template => {
     const migratedFields: Field[] = template.fields.map(field => ({
@@ -73,7 +74,7 @@ export function migrateLegacyData(legacyData: LegacyDatabase): Database {
     };
   });
 
-  console.log(`✅ Migrated ${migratedTemplates.length} templates with ${migratedTemplates.reduce((acc, t) => acc + t.fields.length, 0)} fields`);
+  logger.info('Migration complete', { templateCount: migratedTemplates.length, fieldCount: migratedTemplates.reduce((acc, t) => acc + t.fields.length, 0) });
   
   return {
     categories: legacyData.categories,
@@ -106,7 +107,7 @@ export function needsMigration(): boolean {
 export function autoMigrateIfNeeded(): Database | null {
   // SSR guard
   if (typeof window === 'undefined') {
-    console.log('⚠️ autoMigrateIfNeeded(): Server-side, skipping migration');
+    logger.debug('autoMigrateIfNeeded(): Server-side, skipping migration');
     return null;
   }
 
@@ -125,11 +126,11 @@ export function autoMigrateIfNeeded(): Database | null {
     localStorage.setItem('prompt-library-db-v2', JSON.stringify(migratedData));
     
     // Keep old data as backup
-    console.log('✅ Migration complete. Old data preserved in prompt-library-db-v1');
+    logger.info('Migration complete. Old data preserved in prompt-library-db-v1');
     
     return migratedData;
   } catch (error) {
-    console.error('❌ Migration failed:', error);
+    logger.error('Migration failed', error);
     return null;
   }
 }

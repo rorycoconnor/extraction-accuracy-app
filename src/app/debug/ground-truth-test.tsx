@@ -1,4 +1,5 @@
 'use client'
+import { logger } from '@/lib/logger';
 
 import { useState } from 'react';
 import { useGroundTruth } from '@/hooks/use-ground-truth';
@@ -17,20 +18,20 @@ export default function GroundTruthTest() {
   const [lastResult, setLastResult] = useState<boolean | null>(null);
 
   const handleSave = async () => {
-    console.log('🧪 Testing ground truth save...');
+    logger.debug('Testing ground truth save');
     const result = await saveGroundTruth(fileId, templateKey, fieldKey, value);
     setLastResult(result);
-    console.log('🧪 Save result:', result);
+    logger.debug('Save result', { result });
   };
 
   const handleGet = () => {
-    console.log('🧪 Testing ground truth get...');
+    logger.debug('Testing ground truth get');
     const result = getGroundTruth(fileId);
-    console.log('🧪 Get result:', result);
+    logger.debug('Get result', { result });
   };
 
   const handleRefresh = () => {
-    console.log('🧪 Testing ground truth refresh...');
+    logger.debug('Testing ground truth refresh');
     refreshGroundTruth();
   };
 

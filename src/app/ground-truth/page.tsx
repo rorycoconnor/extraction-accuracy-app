@@ -48,6 +48,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 import GroundTruthEditor from '@/components/ground-truth-editor';
 import ExtractionModal from '@/components/extraction-modal';
 import { useToast } from '@/hooks/use-toast';
@@ -167,7 +168,7 @@ export default function GroundTruthPage() {
     } catch (err) {
       let errorMessage = err instanceof Error ? err.message : 'An unknown error occurred while processing selected files.';
       setError(errorMessage);
-      console.error(err);
+      logger.error('Error loading data', err);
     } finally {
       setIsLoading(false);
     }
@@ -200,18 +201,18 @@ export default function GroundTruthPage() {
   ) => {
     
     if (!selectedFile || !selectedFile.template) {
-      console.error('❌ No selected file or template');
+      logger.error('No selected file or template');
       return;
     }
 
     // Save all fields at once to avoid race conditions
     const templateKey = selectedFile.template.templateKey;
-    console.log('💾 Saving all fields for template:', templateKey, Object.keys(data));
+    logger.info('Saving all fields for template', { templateKey, fieldCount: Object.keys(data).length });
     
     try {
       // Use direct save to avoid race conditions from multiple simultaneous saves
       saveGroundTruthForFile(fileId, templateKey, data);
-      console.log('✅ All ground truth saved successfully');
+      logger.info('All ground truth saved successfully');
       
       // Refresh the unified ground truth system for other pages (like home page)
       refreshGroundTruth();
@@ -237,7 +238,7 @@ export default function GroundTruthPage() {
         description: 'Your changes have been saved successfully.',
       });
     } catch (error) {
-      console.error('❌ Ground truth save failed:', error);
+      logger.error('Ground truth save failed', error);
       toast({
         title: 'Save Failed',
         description: 'Some changes could not be saved. Please try again.',
@@ -352,7 +353,7 @@ export default function GroundTruthPage() {
           
           csvRows.push(row.join(','));
         } catch (error) {
-          console.warn(`Failed to process file ${fileInfo.file.id}:`, error);
+          logger.warn('Failed to process file', { fileId: fileInfo.file.id, error });
           // Continue with other files
         }
       }
@@ -385,7 +386,7 @@ export default function GroundTruthPage() {
       
       setIsExportDialogOpen(false);
     } catch (error) {
-      console.error('CSV export error:', error);
+      logger.error('CSV export error', error);
       toast({
         title: 'Export Failed',
         description: 'Failed to export CSV. Please try again.',
@@ -397,20 +398,16 @@ export default function GroundTruthPage() {
   };
 
   const parseCSV = (csvText: string): Array<Record<string, string>> => {
-    console.log('🐛 DEBUG: parseCSV called with text length:', csvText.length);
+    logger.debug('parseCSV called', { textLength: csvText.length });
     const lines = csvText.trim().split('\n');
-    console.log('🐛 DEBUG: CSV split into', lines.length, 'lines');
-    console.log('🐛 DEBUG: First line (headers):', lines[0]);
-    if (lines.length >= 2) {
-      console.log('🐛 DEBUG: Second line (first data):', lines[1]);
-    }
+    logger.debug('CSV split into lines', { lineCount: lines.length, firstLine: lines[0] });
     
     if (lines.length < 2) {
       throw new Error('CSV file must contain at least a header row and one data row');
     }
 
     const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
-    console.log('🐛 DEBUG: Parsed headers:', headers);
+    logger.debug('Parsed headers', { headers });
     const rows: Array<Record<string, string>> = [];
 
     for (let i = 1; i < lines.length; i++) {
@@ -455,8 +452,7 @@ export default function GroundTruthPage() {
       rows.push(row);
     }
 
-    console.log('🐛 DEBUG: parseCSV completed with', rows.length, 'data rows');
-    console.log('🐛 DEBUG: Sample parsed row:', rows[0]);
+    logger.debug('parseCSV completed', { rowCount: rows.length, sampleRow: rows[0] });
     return rows;
   };
 
@@ -504,33 +500,32 @@ export default function GroundTruthPage() {
       return;
     }
 
-    console.log('🐛 DEBUG: Starting CSV import process');
-    console.log('🐛 DEBUG: CSV file selected:', csvFile.name, csvFile.size, 'bytes');
+    logger.info('Starting CSV import process', { fileName: csvFile.name, fileSize: csvFile.size });
 
     try {
       setIsLoading(true);
       
       // Read CSV file
-      console.log('🐛 DEBUG: Reading CSV file...');
+      logger.debug('Reading CSV file');
       const csvText = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target?.result as string);
         reader.onerror = () => reject(new Error('Failed to read file'));
         reader.readAsText(csvFile);
       });
-      console.log('🐛 DEBUG: CSV text read, length:', csvText.length);
-      console.log('🐛 DEBUG: CSV preview:', csvText.substring(0, 300) + '...');
+      logger.debug('CSV text read', { length: csvText.length, preview: csvText.substring(0, 300) });
 
       // Parse CSV
-      console.log('🐛 DEBUG: Parsing CSV...');
+      logger.debug('Parsing CSV');
       const rows = parseCSV(csvText);
-      console.log('🐛 DEBUG: CSV parsed successfully, rows:', rows.length);
-      console.log('🐛 DEBUG: First row data:', rows[0]);
-      console.log('🐛 DEBUG: CSV columns:', Object.keys(rows[0] || {}));
+      logger.debug('CSV parsed successfully', { 
+        rowCount: rows.length, 
+        columns: Object.keys(rows[0] || {})
+      });
       
       // Detect template from CSV data
       const templateKeys = [...new Set(rows.map(row => row.template_key).filter(Boolean))];
-      console.log('🐛 DEBUG: Template keys found in CSV:', templateKeys);
+      logger.debug('Template keys found in CSV', { templateKeys });
       if (templateKeys.length === 0) {
         throw new Error('No template_key found in CSV data');
       }
@@ -539,12 +534,14 @@ export default function GroundTruthPage() {
       }
       
       const csvTemplateKey = templateKeys[0];
-      console.log('🐛 DEBUG: CSV template key:', csvTemplateKey);
+      logger.debug('CSV template key', { csvTemplateKey });
       
       // Find the template
       const template = configuredTemplates.find(t => t.templateKey === csvTemplateKey);
-      console.log('🐛 DEBUG: Configured templates:', configuredTemplates.map(t => t.templateKey));
-      console.log('🐛 DEBUG: Found template:', template ? template.displayName : 'NOT FOUND');
+      logger.debug('Template lookup', { 
+        configuredTemplates: configuredTemplates.map(t => t.templateKey),
+        foundTemplate: template?.displayName || 'NOT FOUND'
+      });
       if (!template) {
         throw new Error(`Template "${csvTemplateKey}" not found in configured templates`);
       }
@@ -558,24 +555,23 @@ export default function GroundTruthPage() {
       // Get field columns (excluding metadata columns)
       const metadataColumns = ['box_file_id', 'file_name', 'template_key'];
       const fieldColumns = Object.keys(rows[0]).filter(col => !metadataColumns.includes(col));
-      console.log('🐛 DEBUG: Metadata columns:', metadataColumns);
-      console.log('🐛 DEBUG: Field columns:', fieldColumns);
+      logger.debug('CSV columns categorized', { metadataColumns, fieldColumns });
       
       // Process imports
       let updatedCount = 0;
       let skippedCount = 0;
       const errors: string[] = [];
 
-      console.log('🐛 DEBUG: Starting to process', rows.length, 'rows');
+      logger.debug('Starting to process rows', { rowCount: rows.length });
       for (const row of rows) {
         try {
           const fileId = row.box_file_id;
-          console.log('🐛 DEBUG: Processing row for fileId:', fileId, 'fileName:', row.file_name);
+          logger.debug('Processing row', { fileId, fileName: row.file_name });
           if (!fileId) continue;
 
           // Get current ground truth
           const currentGroundTruth = getGroundTruth(fileId);
-          console.log('🐛 DEBUG: Current ground truth for file:', currentGroundTruth);
+          logger.debug('Current ground truth for file', { fileId, currentGroundTruth });
           
           // Prepare new ground truth data
           const newGroundTruth: Record<string, string> = { ...currentGroundTruth };
@@ -589,19 +585,19 @@ export default function GroundTruthPage() {
             if (!currentValue && newValue) {
               newGroundTruth[fieldColumn] = newValue;
               hasChanges = true;
-              console.log(`🐛 DEBUG: Field "${fieldColumn}" will be updated from empty to "${newValue}"`);
+              logger.debug('Field will be updated', { field: fieldColumn, newValue });
             } else if (currentValue) {
-              console.log(`🐛 DEBUG: Field "${fieldColumn}" skipped (already has value: "${currentValue}")`);
+              logger.debug('Field skipped (already has value)', { field: fieldColumn, currentValue });
             }
           }
 
           if (hasChanges) {
             // Save ground truth data and ensure template is assigned
-            console.log('🐛 DEBUG: Saving ground truth for file:', fileId, 'with data:', newGroundTruth);
+            logger.debug('Saving ground truth for file', { fileId, fieldCount: Object.keys(newGroundTruth).length });
             saveGroundTruthForFile(fileId, csvTemplateKey, newGroundTruth);
             updatedCount++;
           } else {
-            console.log('🐛 DEBUG: No changes for file:', fileId, '- skipping');
+            logger.debug('No changes for file - skipping', { fileId });
             skippedCount++;
           }
 
@@ -634,15 +630,15 @@ export default function GroundTruthPage() {
       });
 
       if (errors.length > 0) {
-        console.warn('Import errors:', errors);
+        logger.warn('Import errors', { errors });
       }
       
-      console.log('🐛 DEBUG: CSV import completed successfully');
+      logger.info('CSV import completed successfully');
       setIsImportDialogOpen(false);
       setCsvFile(null);
       
     } catch (error) {
-      console.error('CSV import error:', error);
+      logger.error('CSV import error', error);
       toast({
         title: 'Import Failed',
         description: error instanceof Error ? error.message : 'Failed to import CSV. Please try again.',

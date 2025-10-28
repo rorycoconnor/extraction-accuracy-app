@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 import { getOAuthStatus } from '@/services/oauth';
 
 export async function GET(request: NextRequest) {
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
       status
     });
   } catch (error) {
-    console.error('Failed to get OAuth status:', error);
+    logger.error('Failed to get OAuth status', error);
     
     return NextResponse.json({
       success: false,

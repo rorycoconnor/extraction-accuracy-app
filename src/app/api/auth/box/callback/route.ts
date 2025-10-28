@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storeOAuthTokens } from '@/services/oauth';
+import { logger } from '@/lib/logger';
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +11,7 @@ export async function GET(request: NextRequest) {
 
     // Handle OAuth errors
     if (error) {
-      console.error('Box OAuth error:', error);
+      logger.error('Box OAuth error', error);
       return NextResponse.redirect(
         new URL('/settings?error=oauth_failed&message=' + encodeURIComponent(error), request.url)
       );
@@ -18,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     // Validate required parameters
     if (!code) {
-      console.error('Missing authorization code in OAuth callback');
+      logger.error('Missing authorization code in OAuth callback');
       return NextResponse.redirect(
         new URL('/settings?error=oauth_failed&message=missing_code', request.url)
       );
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
     const redirectUri = `${request.nextUrl.origin}/api/auth/box/callback`;
 
     if (!clientId || !clientSecret) {
-      console.error('Missing Box OAuth credentials');
+      logger.error('Missing Box OAuth credentials');
       return NextResponse.redirect(
         new URL('/settings?error=oauth_failed&message=missing_credentials', request.url)
       );
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
-      console.error('Failed to exchange code for token:', errorText);
+      logger.error('Failed to exchange code for token', { errorText });
       return NextResponse.redirect(
         new URL('/settings?error=oauth_failed&message=token_exchange_failed', request.url)
       );
@@ -74,7 +75,7 @@ export async function GET(request: NextRequest) {
     );
 
   } catch (error) {
-    console.error('OAuth callback error:', error);
+    logger.error('OAuth callback error', error);
     return NextResponse.redirect(
       new URL('/settings?error=oauth_failed&message=unexpected_error', request.url)
     );

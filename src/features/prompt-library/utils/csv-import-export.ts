@@ -1,4 +1,5 @@
 import type { Database, Template, Field, Prompt, FieldType } from '../types';
+import { logger } from '@/lib/logger';
 
 export interface ExportableTemplate {
   category: string;
@@ -154,7 +155,7 @@ function normalizeFieldType(fieldType: string): string {
   }
 
   // Default to 'text' if no match found
-  console.warn(`Unknown field type "${fieldType}" in CSV import, defaulting to 'text'`);
+  logger.warn('Unknown field type in CSV import, defaulting to text', { fieldType });
   return 'text';
 }
 

@@ -3,6 +3,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import { logger } from '@/lib/logger';
 
 /**
  * Updates or removes key-value pairs in the .env file.
@@ -91,7 +92,7 @@ export async function updateBoxSettings(settings: {
     
     return { success: true };
   } catch (error) {
-    console.error('Failed to update .env file:', error);
+    logger.error('Failed to update .env file', error);
     return {
       success: false,
       message: 'An unexpected error occurred while saving settings.',

@@ -1,4 +1,5 @@
 
+import { logger } from '@/lib/logger';
 'use server';
 
 /**
@@ -24,7 +25,7 @@ export async function extractMetadata(input: ExtractMetadataInput): Promise<Extr
       data: extractedData
     };
   } catch (error) {
-    console.error('Error extracting metadata:', error);
+    logger.error('Error extracting metadata', error);
     
     // Preserve the original error details for better debugging
     const originalMessage = error instanceof Error ? error.message : String(error);

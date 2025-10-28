@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { logger } from '@/lib/logger';
 
 interface OAuthTokens {
   accessToken: string;
@@ -69,7 +70,7 @@ export async function storeOAuthTokens(tokens: OAuthTokens): Promise<void> {
     path: '/'
   });
   
-  console.log('🔐 OAuth tokens stored securely in HTTP-only cookies');
+  logger.info('OAuth tokens stored securely in HTTP-only cookies');
 }
 
 /**
@@ -120,7 +121,7 @@ export async function isOAuthConnected(): Promise<boolean> {
       await refreshOAuthToken();
       return true;
     } catch (error) {
-      console.error('Failed to refresh OAuth token:', error);
+      logger.error('Failed to refresh OAuth token', error);
       await disconnectOAuth();
       return false;
     }
@@ -186,7 +187,7 @@ async function refreshOAuthToken(): Promise<void> {
     tokenType: tokenData.token_type,
   });
 
-  console.log('🔄 OAuth token refreshed successfully');
+  logger.info('OAuth token refreshed successfully');
 }
 
 /**
@@ -200,7 +201,7 @@ export async function disconnectOAuth(): Promise<void> {
     cookieStore.delete(cookieName);
   });
   
-  console.log('🔓 OAuth disconnected and cookies cleared');
+  logger.info('OAuth disconnected and cookies cleared');
 }
 
 /**

@@ -1,4 +1,5 @@
 'use client';
+import { logger } from '@/lib/logger';
 
 import React, { createContext, useReducer, useContext, useMemo, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -412,7 +413,7 @@ export const AccuracyDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
   useEffect(() => {
     // Extra SSR guard - only run on client
     if (typeof window === 'undefined') {
-      console.log('⚠️ AccuracyDataProvider: Still on server, skipping load');
+      logger.debug('AccuracyDataProvider: Still on server, skipping load');
       return;
     }
 
@@ -453,7 +454,7 @@ export const AccuracyDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
           await saveAccuracyData(state.data);
           dispatch({ type: 'MARK_SAVED' });
         } catch (error) {
-          console.error('Failed to auto-save data:', error);
+          logger.error('Failed to auto-save data', error);
         }
       };
 

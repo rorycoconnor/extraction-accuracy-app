@@ -1,4 +1,5 @@
 import type { Database } from '../types';
+import { logger } from '@/lib/logger';
 import { STORAGE_KEY } from '../types';
 import { autoMigrateIfNeeded } from './migration';
 
@@ -127,7 +128,7 @@ export const PromptLibraryStorage = {
   load(): Database {
     // SSR guard - return empty data structure on server
     if (typeof window === 'undefined') {
-      console.log('⚠️ PromptLibraryStorage.load(): Server-side, returning empty database');
+      logger.debug('PromptLibraryStorage.load(): Server-side, returning empty database');
       return { categories: [], templates: [] };
     }
 
@@ -147,7 +148,7 @@ export const PromptLibraryStorage = {
         }
       }
     } catch (error) {
-      console.error('Failed to load prompt library data:', error);
+      logger.error('Failed to load prompt library data', error);
     }
     
     // Return seed data only if localStorage is empty/invalid and save it
@@ -160,14 +161,14 @@ export const PromptLibraryStorage = {
   save(data: Database): void {
     // SSR guard
     if (typeof window === 'undefined') {
-      console.log('⚠️ PromptLibraryStorage.save(): Server-side, skipping save');
+      logger.debug('PromptLibraryStorage.save(): Server-side, skipping save');
       return;
     }
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
-      console.error('Failed to save prompt library data:', error);
+      logger.error('Failed to save prompt library data', error);
     }
   },
 
@@ -175,14 +176,14 @@ export const PromptLibraryStorage = {
   clear(): void {
     // SSR guard
     if (typeof window === 'undefined') {
-      console.log('⚠️ PromptLibraryStorage.clear(): Server-side, skipping clear');
+      logger.debug('PromptLibraryStorage.clear(): Server-side, skipping clear');
       return;
     }
 
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      console.error('Failed to clear prompt library data:', error);
+      logger.error('Failed to clear prompt library data', error);
     }
   }
 }; 

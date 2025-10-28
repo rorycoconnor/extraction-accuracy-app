@@ -1,6 +1,7 @@
 'use server';
 
 import { getTemplates, getFolderItems, getFolderContents, getBoxFileContent, getBoxFileEmbedLink } from '@/services/box';
+import { logger } from '@/lib/logger';
 import type { BoxTemplate, BoxFile, BoxFolder } from '@/lib/types';
 
 export async function getBoxTemplates(): Promise<BoxTemplate[]> {
@@ -8,7 +9,7 @@ export async function getBoxTemplates(): Promise<BoxTemplate[]> {
         const templates = await getTemplates();
         return templates;
     } catch (error) {
-        console.error("Error in getBoxTemplates server action:", error);
+        logger.error('Error in getBoxTemplates server action', error);
         throw error;
     }
 }
@@ -18,7 +19,7 @@ export async function getBoxFilesInFolder(folderId: string): Promise<BoxFile[]> 
         const files = await getFolderItems(folderId);
         return files;
     } catch (error) {
-        console.error("Error in getBoxFilesInFolder server action:", error);
+        logger.error('Error in getBoxFilesInFolder server action', error);
         throw error;
     }
 }
@@ -31,7 +32,7 @@ export async function getBoxFolderContents(folderId: string): Promise<{
         const contents = await getFolderContents(folderId);
         return contents;
     } catch (error) {
-        console.error("Error in getBoxFolderContents server action:", error);
+        logger.error('Error in getBoxFolderContents server action', error);
         throw error;
     }
 }
@@ -41,7 +42,7 @@ export async function getBoxFileContentAction(fileId: string): Promise<string> {
         const content = await getBoxFileContent(fileId);
         return content;
     } catch (error) {
-        console.error(`Error in getBoxFileContentAction for fileId ${fileId}:`, error);
+        logger.error('Error in getBoxFileContentAction', { fileId, error });
         throw error;
     }
 }
@@ -51,7 +52,7 @@ export async function getBoxFileEmbedLinkAction(fileId: string): Promise<string>
         const url = await getBoxFileEmbedLink(fileId);
         return url;
     } catch (error) {
-        console.error(`Error in getBoxFileEmbedLinkAction for fileId ${fileId}:`, error);
+        logger.error('Error in getBoxFileEmbedLinkAction', { fileId, error });
         throw error;
     }
 }

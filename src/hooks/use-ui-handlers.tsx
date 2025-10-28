@@ -1,4 +1,5 @@
 /**
+import { logger } from '@/lib/logger';
  * Custom hook for simple UI state handlers
  * 
  * This hook contains handlers that primarily manage UI state without complex business logic.
@@ -63,7 +64,7 @@ export const useUIHandlers = ({
     saveAccuracyData(newAccuracyData);
     setSelectedFieldForPromptStudio(fieldToUpdate);
     
-    console.log('✅ Toggled favorite status:', {
+    logger.debug('Toggled favorite status', {
       fieldKey,
       versionId,
       isFavorite: versionToUpdate.isFavorite
