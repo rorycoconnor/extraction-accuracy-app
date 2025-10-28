@@ -11,6 +11,8 @@
  * - Enable/disable controls
  */
 
+import { logger } from '@/lib/logger';
+
 // ==========================================
 // CONFIGURATION
 // ==========================================
@@ -231,7 +233,10 @@ export function addAcronymExpansion(acronym: string, expansions: string[]): void
   });
   
   if (DEFAULT_SEMANTIC_CONFIG.debug) {
-    console.log(`[Semantic Matcher] Added expansion: ${upperAcronym} → ${expansions.join(', ')}`);
+    logger.debug('[Semantic Matcher] Added expansion', { 
+      acronym: upperAcronym, 
+      expansions: expansions.join(', ') 
+    });
   }
 }
 
@@ -252,7 +257,7 @@ export function removeAcronymExpansion(acronym: string): void {
     delete ACRONYM_EXPANSIONS[upperAcronym];
     
     if (DEFAULT_SEMANTIC_CONFIG.debug) {
-      console.log(`[Semantic Matcher] Removed expansion: ${upperAcronym}`);
+      logger.debug('[Semantic Matcher] Removed expansion', { acronym: upperAcronym });
     }
   }
 }
@@ -295,7 +300,7 @@ export function findSemanticMatch(
   const searchPattern = config.caseSensitive ? cleanPattern : cleanPattern.toLowerCase();
   
   if (config.debug) {
-    console.log(`[Semantic Matcher] Searching for: "${cleanPattern}" in text`);
+    logger.debug('[Semantic Matcher] Searching for pattern', { pattern: cleanPattern });
   }
   
   // 1. Check if pattern is an acronym we can expand
@@ -309,7 +314,10 @@ export function findSemanticMatch(
         const actualMatch = text.substring(index, index + expansion.length);
         
         if (config.debug) {
-          console.log(`[Semantic Matcher] Found acronym expansion: ${upperPattern} → ${actualMatch}`);
+          logger.debug('[Semantic Matcher] Found acronym expansion', { 
+            acronym: upperPattern, 
+            expansion: actualMatch 
+          });
         }
         
         return {
@@ -338,7 +346,10 @@ export function findSemanticMatch(
         const actualMatch = text.substring(index, index + variation.length);
         
         if (config.debug) {
-          console.log(`[Semantic Matcher] Found expansion to acronym: ${cleanPattern} → ${actualMatch}`);
+          logger.debug('[Semantic Matcher] Found expansion to acronym', { 
+            expansion: cleanPattern, 
+            acronym: actualMatch 
+          });
         }
         
         return {
@@ -357,13 +368,16 @@ export function findSemanticMatch(
   const numberMatch = findNumberMatch(cleanPattern, text);
   if (numberMatch) {
     if (config.debug) {
-      console.log(`[Semantic Matcher] Found number format match: ${cleanPattern} → ${numberMatch.matchedText}`);
+      logger.debug('[Semantic Matcher] Found number format match', { 
+        pattern: cleanPattern, 
+        match: numberMatch.matchedText 
+      });
     }
     return numberMatch;
   }
   
   if (config.debug) {
-    console.log(`[Semantic Matcher] No semantic match found for: "${cleanPattern}"`);
+    logger.debug('[Semantic Matcher] No semantic match found', { pattern: cleanPattern });
   }
   
   return null;
@@ -387,7 +401,7 @@ export function setSemanticMatchingEnabled(enabled: boolean): void {
   DEFAULT_SEMANTIC_CONFIG.enabled = enabled;
   
   if (DEFAULT_SEMANTIC_CONFIG.debug) {
-    console.log(`[Semantic Matcher] Semantic matching ${enabled ? 'enabled' : 'disabled'}`);
+    logger.info('[Semantic Matcher] Semantic matching status changed', { enabled });
   }
 }
 
@@ -396,7 +410,7 @@ export function setSemanticMatchingEnabled(enabled: boolean): void {
  */
 export function setSemanticDebugMode(debug: boolean): void {
   DEFAULT_SEMANTIC_CONFIG.debug = debug;
-  console.log(`[Semantic Matcher] Debug mode ${debug ? 'enabled' : 'disabled'}`);
+  logger.info('[Semantic Matcher] Debug mode changed', { debug });
 }
 
 /**

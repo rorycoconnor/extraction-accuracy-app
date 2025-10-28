@@ -1,4 +1,5 @@
 import type { AccuracyData } from './types';
+import { logger } from '@/lib/logger';
 
 // Constants for better maintainability
 export const PERFORMANCE_THRESHOLDS = {
@@ -83,20 +84,22 @@ export function calculateModelSummaries(
       const f1Diff = Math.abs(overallF1 - expectedF1);
       
       if (f1Diff > 0.01) { // 1% tolerance for rounding
-        console.warn(`🚨 ${modelName} - Macro F1 inconsistency!`);
-        console.warn(`   Macro F1: ${(overallF1 * 100).toFixed(1)}%`);
-        console.warn(`   Macro Precision: ${(overallPrecision * 100).toFixed(1)}%`);
-        console.warn(`   Macro Recall: ${(overallRecall * 100).toFixed(1)}%`);
-        console.warn(`   Expected F1 from formula: ${(expectedF1 * 100).toFixed(1)}%`);
-        console.warn(`   Difference: ${(f1Diff * 100).toFixed(1)}%`);
-        
-        // Log field-level details for debugging (enabled fields only)
-        console.warn(`   Enabled field details:`);
-        enabledFields.forEach(fp => {
-          console.warn(`     ${fp.fieldName}: F1=${(fp.f1*100).toFixed(1)}%, P=${(fp.precision*100).toFixed(1)}%, R=${(fp.recall*100).toFixed(1)}%`);
+        logger.warn('Macro F1 inconsistency detected', {
+          modelName,
+          macroF1: (overallF1 * 100).toFixed(1) + '%',
+          macroPrecision: (overallPrecision * 100).toFixed(1) + '%',
+          macroRecall: (overallRecall * 100).toFixed(1) + '%',
+          expectedF1: (expectedF1 * 100).toFixed(1) + '%',
+          difference: (f1Diff * 100).toFixed(1) + '%',
+          enabledFieldCount: enabledFields.length
         });
       } else {
-        console.log(`✅ ${modelName} - Macro averaging validation passed: F1=${(overallF1*100).toFixed(1)}%, P=${(overallPrecision*100).toFixed(1)}%, R=${(overallRecall*100).toFixed(1)}%`);
+        logger.debug('Macro averaging validation passed', {
+          modelName,
+          f1: (overallF1 * 100).toFixed(1) + '%',
+          precision: (overallPrecision * 100).toFixed(1) + '%',
+          recall: (overallRecall * 100).toFixed(1) + '%'
+        });
       }
     }
     
@@ -104,9 +107,15 @@ export function calculateModelSummaries(
     if (overallPrecision >= 0.999) {
       const failedEnabledFields = enabledFields.filter(fp => fp.f1 < 0.999);
       if (failedEnabledFields.length > 0) {
-        console.warn(`🚨 ${modelName} - Precision=100% but ${failedEnabledFields.length} enabled fields have F1 < 100%:`);
-        failedEnabledFields.forEach(fp => {
-          console.warn(`     ${fp.fieldName}: F1=${(fp.f1*100).toFixed(1)}%, P=${(fp.precision*100).toFixed(1)}%, R=${(fp.recall*100).toFixed(1)}%`);
+        logger.warn('Precision=100% but some fields have F1 < 100%', {
+          modelName,
+          failedFieldCount: failedEnabledFields.length,
+          failedFields: failedEnabledFields.map(fp => ({
+            field: fp.fieldName,
+            f1: (fp.f1 * 100).toFixed(1) + '%',
+            precision: (fp.precision * 100).toFixed(1) + '%',
+            recall: (fp.recall * 100).toFixed(1) + '%'
+          }))
         });
       }
     }
