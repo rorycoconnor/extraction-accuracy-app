@@ -15,6 +15,7 @@
  * Environment Variables:
  *   LOG_LEVEL - Set to 'debug', 'info', 'warn', 'error', or 'none' (default: 'info')
  *   NODE_ENV - 'development' enables all logs, 'production' respects LOG_LEVEL
+ *   NEXT_PUBLIC_DEBUG_MODE - Set to 'true' to enable verbose logging in production
  */
 
 export enum LogLevel {
@@ -32,13 +33,20 @@ interface LogContext {
 class Logger {
   private level: LogLevel;
   private isDevelopment: boolean;
+  private isDebugMode: boolean;
 
   constructor() {
     this.isDevelopment = process.env.NODE_ENV === 'development';
+    this.isDebugMode = process.env.NEXT_PUBLIC_DEBUG_MODE === 'true';
     this.level = this.getLogLevel();
   }
 
   private getLogLevel(): LogLevel {
+    // Debug mode overrides everything
+    if (this.isDebugMode) {
+      return LogLevel.DEBUG;
+    }
+
     const envLevel = process.env.LOG_LEVEL?.toLowerCase() || 'info';
     
     switch (envLevel) {
@@ -58,6 +66,11 @@ class Logger {
   }
 
   private shouldLog(level: LogLevel): boolean {
+    // Debug mode shows everything
+    if (this.isDebugMode) {
+      return true;
+    }
+
     // In development, always log debug and info
     if (this.isDevelopment && level <= LogLevel.INFO) {
       return true;
@@ -65,6 +78,52 @@ class Logger {
     
     // Otherwise, respect the configured log level
     return level >= this.level;
+  }
+
+  /**
+   * Sanitize sensitive data for production logging
+   * Removes or masks sensitive fields like fileId, tokens, etc.
+   */
+  private sanitizeData(data: any): any {
+    if (!data || typeof data !== 'object') {
+      return data;
+    }
+
+    // In development or debug mode, don't sanitize
+    if (this.isDevelopment || this.isDebugMode) {
+      return data;
+    }
+
+    // Clone the object to avoid mutating original
+    const sanitized = Array.isArray(data) ? [...data] : { ...data };
+
+    // List of sensitive field names to mask
+    const sensitiveFields = [
+      'fileId',
+      'token',
+      'accessToken',
+      'refreshToken',
+      'password',
+      'secret',
+      'apiKey',
+      'authorization'
+    ];
+
+    // Recursively sanitize object
+    Object.keys(sanitized).forEach(key => {
+      const lowerKey = key.toLowerCase();
+      
+      // Check if this is a sensitive field
+      if (sensitiveFields.some(field => lowerKey.includes(field.toLowerCase()))) {
+        sanitized[key] = '***';
+      } 
+      // Recursively sanitize nested objects
+      else if (typeof sanitized[key] === 'object' && sanitized[key] !== null) {
+        sanitized[key] = this.sanitizeData(sanitized[key]);
+      }
+    });
+
+    return sanitized;
   }
 
   private formatMessage(level: string, message: string, context?: LogContext | Error): string {
@@ -79,7 +138,9 @@ class Logger {
       return `${prefix} ${message}\nError: ${context.message}\nStack: ${context.stack}`;
     }
     
-    return `${prefix} ${message} ${JSON.stringify(context)}`;
+    // Sanitize context data before logging
+    const sanitizedContext = this.sanitizeData(context);
+    return `${prefix} ${message} ${JSON.stringify(sanitizedContext)}`;
   }
 
   /**
