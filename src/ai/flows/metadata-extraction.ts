@@ -1,6 +1,6 @@
+'use server';
 
 import { logger } from '@/lib/logger';
-'use server';
 
 /**
  * @fileOverview Metadata extraction using Box AI directly.
