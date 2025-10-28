@@ -9,6 +9,7 @@ import {
 } from '@/lib/mock-data';
 import { calculateFieldMetricsWithDebug } from '@/lib/metrics';
 import type { AccuracyData, AccuracyField, BoxTemplate, BoxFile, FieldResult, ModelAverages } from '@/lib/types';
+import { logger } from '@/lib/logger';
 
 // Import centralized model constants
 import { AVAILABLE_MODELS, ALL_MODELS, UI_LABELS } from '@/lib/main-page-constants';
@@ -120,7 +121,7 @@ export function useAccuracyData() {
   useEffect(() => {
     // Extra SSR guard - only run on client
     if (typeof window === 'undefined') {
-      console.log('⚠️ use-accuracy-data: Still on server, skipping load');
+      logger.debug('useAccuracyData: Still on server, skipping load');
       return;
     }
 
@@ -137,7 +138,9 @@ export function useAccuracyData() {
         );
         
         if (fieldsNeedingHydration.length > 0) {
-          console.log('🔧 Hydrating missing enum options for fields:', fieldsNeedingHydration.map(f => f.key));
+          logger.info('useAccuracyData: Hydrating missing enum options', { 
+            fields: fieldsNeedingHydration.map(f => f.key) 
+          });
           
           hydratedAccuracyData = {
             ...savedAccuracyData,
@@ -145,7 +148,10 @@ export function useAccuracyData() {
               if (field.type === 'enum' && (!field.options || field.options.length === 0)) {
                 const templateField = matchingTemplate.fields.find(tf => tf.key === field.key);
                 if (templateField?.options && templateField.options.length > 0) {
-                  console.log(`✅ Hydrated enum options for ${field.key}:`, templateField.options);
+                  logger.debug('useAccuracyData: Hydrated enum options', { 
+                    fieldKey: field.key, 
+                    optionCount: templateField.options.length 
+                  });
                   return {
                     ...field,
                     options: templateField.options
@@ -175,7 +181,7 @@ export function useAccuracyData() {
            });
           setShownColumns(newShownColumns);
         } catch (error) {
-          console.error('Failed to parse saved column visibility:', error);
+          logger.error('useAccuracyData: Failed to parse saved column visibility', error as Error);
           const newShownColumns: Record<string, boolean> = {};
           newShownColumns['Ground Truth'] = true;
           AVAILABLE_MODELS.forEach((model: string) => {
@@ -203,7 +209,7 @@ export function useAccuracyData() {
 
   // Helper function to recalculate metrics for specific fields
   const recalculateFieldMetrics = useCallback((data: AccuracyData, fieldsToRecalculate?: string[]): AccuracyData => {
-    console.log('🔄 Auto-recalculating metrics for Model Performance Summary...');
+    logger.debug('useAccuracyData: Auto-recalculating metrics for Model Performance Summary');
     const fieldsToUpdate = fieldsToRecalculate || data.fields.map(f => f.key);
     const newAverages: Record<string, ModelAverages> = { ...data.averages };
     
@@ -260,7 +266,7 @@ export function useAccuracyData() {
       newAverages[fieldKey] = modelAvgs;
     });
     
-    console.log('✅ Metrics recalculation complete');
+    logger.debug('useAccuracyData: Metrics recalculation complete');
     return { ...data, results: updatedResults, averages: newAverages };
   }, [getGroundTruth]);
 
@@ -268,7 +274,7 @@ export function useAccuracyData() {
   useEffect(() => {
     if (!accuracyData) return;
     
-    console.log('🔄 Ground truth data changed, refreshing accuracy data...');
+    logger.debug('useAccuracyData: Ground truth data changed, refreshing accuracy data');
     
     // Recalculate all metrics to reflect the new ground truth data
     const updatedData = recalculateFieldMetrics(accuracyData);
@@ -277,7 +283,7 @@ export function useAccuracyData() {
     const hasGroundTruthChanged = JSON.stringify(updatedData.results) !== JSON.stringify(accuracyData.results);
     
     if (hasGroundTruthChanged) {
-      console.log('✅ Ground truth values changed, updating accuracy data...');
+      logger.info('useAccuracyData: Ground truth values changed, updating accuracy data');
       setAccuracyData(updatedData);
       saveAccuracyData(updatedData);
     }
@@ -336,7 +342,9 @@ export function useAccuracyData() {
         ) // Reset averages but preserve structure
       };
       
-      console.log('🗑️ Clearing results while preserving custom prompts for fields:', accuracyData.fields.map(f => f.key));
+      logger.info('useAccuracyData: Clearing results while preserving custom prompts', { 
+        fieldCount: accuracyData.fields.length 
+      });
       setAccuracyData(clearedData);
       saveAccuracyData(clearedData);
     } else {

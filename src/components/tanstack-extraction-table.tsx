@@ -20,6 +20,7 @@ import { MousePointer2, Play, RotateCcw, Clock } from 'lucide-react';
 import { ModelPill } from '@/components/model-pill';
 import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
 import { ImageThumbnailHover } from '@/components/image-thumbnail-hover';
+import { logger } from '@/lib/logger';
 
 // Extend TanStack's ColumnMeta to include our custom properties
 declare module '@tanstack/react-table' {
@@ -402,7 +403,7 @@ export default function TanStackExtractionTable({
   
   // Force refresh when data.results changes (which includes Ground Truth updates)
   React.useEffect(() => {
-    console.log('🔄 TanStack Table: Data changed, refreshing...', results.length);
+    logger.debug('TanStack Table: Data changed, refreshing', { resultCount: results.length });
     setRefreshCounter(prev => prev + 1);
   }, [results]);
   
@@ -413,7 +414,7 @@ export default function TanStackExtractionTable({
         `${result.id}-${field.key}-${result.fields[field.key]?.['Ground Truth'] || ''}`
       ).join('|')
     ).join('||');
-    console.log('🔍 TanStack Table: Ground Truth hash:', groundTruthValues.slice(0, 100) + '...');
+    logger.debug('TanStack Table: Ground Truth hash computed', { hashPreview: groundTruthValues.slice(0, 100) });
     return groundTruthValues;
   }, [results, fields]);
 
@@ -424,7 +425,7 @@ export default function TanStackExtractionTable({
 
   // Transform data for TanStack Table
   const processedData = React.useMemo<ProcessedRowData[]>(() => {
-    console.log('🔄 TanStack Table: Processing data with results:', results.length);
+    logger.debug('TanStack Table: Processing data', { resultCount: results.length });
     
     return results.map(result => {
       const row: ProcessedRowData = {
@@ -448,7 +449,11 @@ export default function TanStackExtractionTable({
           
           // Debug Ground Truth values
           if (modelName === 'Ground Truth' && groundTruthValue) {
-            console.log(`📝 TanStack Table: Ground Truth for ${result.fileName} - ${field.key}:`, groundTruthValue);
+            logger.debug('TanStack Table: Ground Truth value', { 
+              fileName: result.fileName, 
+              fieldKey: field.key, 
+              value: groundTruthValue 
+            });
           }
         });
       });

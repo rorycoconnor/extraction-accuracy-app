@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef } f
 import { saveGroundTruthForFile, getGroundTruthForFile, getGroundTruthData, restoreDataFromFiles } from '@/lib/mock-data';
 import { toast } from '@/hooks/use-toast';
 import { TOAST_MESSAGES } from '@/lib/main-page-constants';
+import { logger } from '@/lib/logger';
 
 // Types
 interface GroundTruthData {
@@ -37,7 +38,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
 
   // Load ground truth data from localStorage (with JSON file backup)
   const loadGroundTruthData = useCallback(async () => {
-    console.log('🔄 Loading ground truth data from localStorage...');
+    logger.debug('useGroundTruth: Loading ground truth data from localStorage');
     try {
       setIsLoading(true);
       
@@ -45,7 +46,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
       await restoreDataFromFiles();
       
       const rawData = getGroundTruthData();
-      console.log('📊 Raw data from localStorage:', rawData);
+      logger.debug('useGroundTruth: Raw data from localStorage', { fileCount: Object.keys(rawData).length });
       
       const processedData: GroundTruthData = {};
       
@@ -57,11 +58,11 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
         };
       });
       
-      console.log('✅ Processed data:', processedData);
+      logger.info('useGroundTruth: Processed ground truth data', { fileCount: Object.keys(processedData).length });
       setGroundTruthData(processedData);
       setError(null);
     } catch (err) {
-      console.error('❌ Failed to load ground truth data:', err);
+      logger.error('useGroundTruth: Failed to load ground truth data', err as Error);
       setError('Failed to load ground truth data');
     } finally {
       setIsLoading(false);
@@ -71,7 +72,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
   // Get ground truth for a specific file
   const getGroundTruth = useCallback((fileId: string): Record<string, string> => {
     const result = groundTruthData[fileId]?.groundTruth || {};
-    console.log('🔍 Getting ground truth for file:', fileId, '→', result);
+    logger.debug('useGroundTruth: Getting ground truth for file', { fileId, fieldCount: Object.keys(result).length });
     return result;
   }, [groundTruthData]);
 
@@ -82,7 +83,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
     fieldKey: string,
     value: string
   ): Promise<boolean> => {
-    console.log('🔄 saveGroundTruth called:', { fileId, templateKey, fieldKey, value });
+    logger.debug('useGroundTruth: saveGroundTruth called', { fileId, templateKey, fieldKey, value });
     
     try {
       setIsLoading(true);
@@ -91,9 +92,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
       const currentStorageData = getGroundTruthForFile(fileId);
       const currentStateData = groundTruthData[fileId];
       
-      console.log('📊 Current data:', { 
-        currentStorageData, 
-        currentStateData,
+      logger.debug('useGroundTruth: Current data check', { 
         hasStorageData: Object.keys(currentStorageData).length > 0,
         hasStateData: !!currentStateData
       });
@@ -102,7 +101,8 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
       // Compare the current field value in storage with what we expect it to be
       if (currentStateData && currentStorageData[fieldKey] && 
           currentStorageData[fieldKey] !== currentStateData.groundTruth[fieldKey]) {
-        console.log('⚠️ Conflict detected for field:', fieldKey, {
+        logger.warn('useGroundTruth: Conflict detected for field', {
+          fieldKey,
           storageValue: currentStorageData[fieldKey],
           stateValue: currentStateData.groundTruth[fieldKey],
           newValue: value
@@ -115,7 +115,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
         });
         
         // Refresh data and retry after a short delay
-        loadGroundTruthData().catch(console.error);
+        loadGroundTruthData().catch((err) => logger.error('useGroundTruth: Refresh after conflict failed', err));
         return false;
       }
       
@@ -131,7 +131,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
         lastModified: Date.now()
       };
       
-      console.log('📝 Updating state with:', { fileId, updatedFileData });
+      logger.debug('useGroundTruth: Updating state', { fileId, fieldCount: Object.keys(updatedGroundTruth).length });
       
       setGroundTruthData(prev => ({
         ...prev,
@@ -139,15 +139,15 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
       }));
       
       // Save to localStorage
-      console.log('💾 Saving to localStorage:', { fileId, templateKey, updatedGroundTruth });
+      logger.debug('useGroundTruth: Saving to localStorage', { fileId, templateKey });
       saveGroundTruthForFile(fileId, templateKey, updatedGroundTruth);
       
       // Verify save was successful
       const verifyData = getGroundTruthForFile(fileId);
-      console.log('✅ Verification - data after save:', verifyData);
+      logger.debug('useGroundTruth: Verification after save', { fileId, fieldKey });
       
       if (verifyData[fieldKey] === value) {
-        console.log('✅ Ground truth saved successfully:', { fileId, fieldKey, value });
+        logger.info('useGroundTruth: Ground truth saved successfully', { fileId, fieldKey });
         
         toast({
           title: TOAST_MESSAGES.GROUND_TRUTH_UPDATED.title,
@@ -157,16 +157,16 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
         setError(null);
         return true;
       } else {
-        console.error('❌ Save verification failed:', { expected: value, actual: verifyData[fieldKey] });
+        logger.error('useGroundTruth: Save verification failed', { expected: value, actual: verifyData[fieldKey] });
         throw new Error('Save verification failed');
       }
       
     } catch (err) {
-      console.error('❌ Failed to save ground truth:', err);
+      logger.error('useGroundTruth: Failed to save ground truth', err as Error);
       setError('Failed to save ground truth data');
       
       // Rollback optimistic update
-      loadGroundTruthData().catch(console.error);
+      loadGroundTruthData().catch((err) => logger.error('useGroundTruth: Rollback failed', err));
       
       toast({
         title: 'Save Failed',
@@ -182,7 +182,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
 
   // Refresh ground truth data
   const refreshGroundTruth = useCallback(() => {
-    console.log('🔄 Refreshing ground truth data...');
+    logger.debug('useGroundTruth: Refreshing ground truth data');
     return loadGroundTruthData(); // Return promise so callers can await
   }, [loadGroundTruthData]);
 
@@ -194,21 +194,21 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
   // Load data on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      console.log('🔄 Initial load of ground truth data...');
-      loadGroundTruthData().catch(console.error);
+      logger.debug('useGroundTruth: Initial load of ground truth data');
+      loadGroundTruthData().catch((err) => logger.error('useGroundTruth: Initial load failed', err));
     }
   }, [loadGroundTruthData]);
 
   // Handle window focus and page visibility to detect external changes
   useEffect(() => {
     const handleFocus = () => {
-      console.log('🔍 Window focus detected, refreshing ground truth...');
+      logger.debug('useGroundTruth: Window focus detected, refreshing');
       refreshGroundTruth();
     };
 
     const handleVisibilityChange = () => {
       if (!document.hidden) {
-        console.log('🔍 Page became visible, refreshing ground truth...');
+        logger.debug('useGroundTruth: Page became visible, refreshing');
         refreshGroundTruth();
       }
     };
@@ -226,7 +226,7 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'fileMetadataStore' || e.key === 'accuracyData') {
-        console.log('📡 Storage change detected:', e.key);
+        logger.debug('useGroundTruth: Storage change detected', { key: e.key });
         refreshGroundTruth();
       }
     };
@@ -237,12 +237,12 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
 
   // Load data on client-side mount (after SSR hydration)
   useEffect(() => {
-    console.log('🚀 GroundTruthProvider: Client-side initialization starting...');
+    logger.debug('useGroundTruth: Client-side initialization starting');
     if (typeof window !== 'undefined') {
-      console.log('✅ GroundTruthProvider: Window is available, loading data...');
-      loadGroundTruthData().catch(console.error);
+      logger.debug('useGroundTruth: Window is available, loading data');
+      loadGroundTruthData().catch((err) => logger.error('useGroundTruth: Client-side load failed', err));
     } else {
-      console.log('❌ GroundTruthProvider: Still on server side, skipping...');
+      logger.debug('useGroundTruth: Still on server side, skipping');
     }
   }, [loadGroundTruthData]);
 

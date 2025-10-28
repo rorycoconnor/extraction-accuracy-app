@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { logger } from '@/lib/logger';
 
 interface ImageThumbnailHoverProps {
   fileName: string;
@@ -23,14 +24,14 @@ export function ImageThumbnailHover({ fileName, fileId, children }: ImageThumbna
   const fileTypeFromName = fileName.split('.').pop()?.toLowerCase();
   const isImageByExtension = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'tiff', 'svg'].includes(fileTypeFromName || '');
   
-  console.log('ImageThumbnailHover Debug:', { 
+  logger.debug('ImageThumbnailHover: File type check', { 
     fileName, 
     fileId, 
     isImageFile, 
     fileTypeFromName,
     isImageByExtension,
     finalCheck: isImageFile || isImageByExtension
-  }); // Debug log
+  });
   
   if (!isImageFile && !isImageByExtension) {
     return <>{children}</>;
@@ -40,7 +41,7 @@ export function ImageThumbnailHover({ fileName, fileId, children }: ImageThumbna
   const imageUrl = `/api/box/files/${fileId}/thumbnail`;
 
   const handleMouseEnter = () => {
-    console.log('Mouse enter on image file:', fileName); // Debug log
+    logger.debug('ImageThumbnailHover: Mouse enter', { fileName });
     // Clear any existing timeout
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
@@ -48,7 +49,7 @@ export function ImageThumbnailHover({ fileName, fileId, children }: ImageThumbna
     
     // Set timeout to show popover after delay
     hoverTimeoutRef.current = setTimeout(() => {
-      console.log('Showing popover for:', fileName); // Debug log
+      logger.debug('ImageThumbnailHover: Showing popover', { fileName });
       setIsOpen(true);
       setImageLoaded(false);
       setImageError(false);
@@ -56,7 +57,7 @@ export function ImageThumbnailHover({ fileName, fileId, children }: ImageThumbna
   };
 
   const handleMouseLeave = () => {
-    console.log('Mouse leave on image file:', fileName); // Debug log
+    logger.debug('ImageThumbnailHover: Mouse leave', { fileName });
     // Clear timeout and close popover
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
@@ -70,7 +71,7 @@ export function ImageThumbnailHover({ fileName, fileId, children }: ImageThumbna
   };
 
   const handlePopoverMouseEnter = () => {
-    console.log('Mouse enter on popover'); // Debug log
+    logger.debug('ImageThumbnailHover: Mouse enter on popover');
     // Clear any pending close timeout when mouse enters popover
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
@@ -79,19 +80,19 @@ export function ImageThumbnailHover({ fileName, fileId, children }: ImageThumbna
   };
 
   const handlePopoverMouseLeave = () => {
-    console.log('Mouse leave on popover'); // Debug log
+    logger.debug('ImageThumbnailHover: Mouse leave on popover');
     // Close popover when mouse leaves
     setIsOpen(false);
   };
 
   const handleImageLoad = () => {
-    console.log('✅ Image loaded successfully for:', fileName, 'URL:', imageUrl);
+    logger.debug('ImageThumbnailHover: Image loaded successfully', { fileName, imageUrl });
     setImageLoaded(true);
     setImageError(false);
   };
 
   const handleImageError = (e: any) => {
-    console.error('❌ Image failed to load for:', fileName, 'URL:', imageUrl, 'Error:', e);
+    logger.error('ImageThumbnailHover: Image failed to load', { fileName, imageUrl, error: e });
     setImageError(true);
     setImageLoaded(false);
   };
