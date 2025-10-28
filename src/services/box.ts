@@ -177,7 +177,7 @@ export async function boxApiFetch(path: string, options: RequestInit = {}) {
 
     if (!response.ok) {
         const errorData = responseText;
-        console.error(`Box API Error on path ${path}:`, { status: response.status, data: errorData, options });
+        boxLogger.error(`Box API Error on path ${path}`, { status: response.status, data: errorData, options });
         
         let errorMessage = `Failed to call Box API on path ${path}: ${response.status} ${response.statusText}`;
         try {
@@ -210,7 +210,7 @@ export async function getTemplates(): Promise<BoxTemplate[]> {
         .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
   } catch (error) {
-    console.error('Error fetching templates from Box:', error);
+    boxLogger.error('Error fetching templates from Box', error);
     throw error;
   }
 }
@@ -233,7 +233,7 @@ export async function createMetadataTemplate(templateData: BoxMetadataTemplateCr
     boxLogger.info('Successfully created Box metadata template', { templateKey: response.templateKey });
     return response;
   } catch (error) {
-    console.error('❌ Error creating metadata template in Box:', error);
+    boxLogger.error('Error creating metadata template in Box', error);
     throw error;
   }
 }
@@ -248,7 +248,7 @@ export async function checkTemplateExists(templateName: string): Promise<boolean
       template.displayName.toLowerCase() === templateName.toLowerCase()
     );
   } catch (error) {
-    console.error('Error checking if template exists:', error);
+    boxLogger.error('Error checking if template exists', error);
     throw error;
   }
 }
@@ -268,7 +268,7 @@ export async function getFolderItems(folderId: string): Promise<BoxFile[]> {
         .sort((a, b) => a.name.localeCompare(b.name));
 
   } catch (error) {
-    console.error('Error fetching folder items from Box:', error);
+    boxLogger.error('Error fetching folder items from Box', error);
     throw error;
   }
 }
@@ -293,7 +293,7 @@ export async function getFolderContents(folderId: string): Promise<{
     return { files, folders };
 
   } catch (error) {
-    console.error('Error fetching folder contents from Box:', error);
+    boxLogger.error('Error fetching folder contents from Box', error);
     throw error;
   }
 }
@@ -356,7 +356,7 @@ export async function getBoxFileContent(fileId: string): Promise<string> {
         throw new Error('Could not extract text content from document');
 
     } catch (error) {
-        console.error(`Error fetching content for file ${fileId} from Box:`, error);
+        boxLogger.error(`Error fetching content for file ${fileId} from Box`, error);
         throw error;
     }
 }
@@ -364,20 +364,22 @@ export async function getBoxFileContent(fileId: string): Promise<string> {
 // Debug function to test file content extraction
 export async function debugFileContent(fileId: string): Promise<void> {
     try {
-        console.log(`\n=== Debugging File Content for ${fileId} ===`);
+        boxLogger.debug('Debugging file content', { fileId });
         
         // Test file info
         const fileInfo = await boxApiFetch(`/files/${fileId}?fields=name,size,type,extension`, { method: 'GET' });
-        console.log('File Info:', fileInfo);
+        boxLogger.debug('File info retrieved', fileInfo);
         
         // Test content extraction
         const content = await getBoxFileContent(fileId);
-        console.log('Content Length:', content.length);
-        console.log('Content Preview:', content.substring(0, 1000));
+        boxLogger.debug('Content extracted', { 
+            contentLength: content.length,
+            contentPreview: content.substring(0, 1000)
+        });
         
-        console.log(`=== End Debug ===\n`);
+        boxLogger.debug('Debug complete', { fileId });
     } catch (error) {
-        console.error('Debug failed:', error);
+        boxLogger.error('Debug failed', error);
     }
 }
 

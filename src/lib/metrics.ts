@@ -4,6 +4,7 @@
  */
 
 import { NOT_PRESENT_VALUE } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 export type MetricsResult = {
   accuracy: number;
@@ -462,29 +463,42 @@ export function calculateFieldMetricsWithDebug(
     const expectedF1 = (2 * precision * recall) / (precision + recall);
     const f1Diff = Math.abs(f1Score - expectedF1);
     if (f1Diff > 0.001) {
-      console.warn(`⚠️  Field-level F1 formula inconsistency: calculated=${f1Score.toFixed(3)}, expected=${expectedF1.toFixed(3)}, diff=${f1Diff.toFixed(3)}`);
-      console.warn(`   TP=${truePositives}, FP=${falsePositives}, FN=${falseNegatives}, TN=${trueNegatives}`);
+      logger.warn('Field-level F1 formula inconsistency', {
+        calculated: f1Score.toFixed(3),
+        expected: expectedF1.toFixed(3),
+        diff: f1Diff.toFixed(3),
+        counts: { truePositives, falsePositives, falseNegatives, trueNegatives }
+      });
     }
   }
   
   // VALIDATION: Check for impossible metrics combinations
   if (precision >= 0.999 && falsePositives > 0) {
-    console.warn(`⚠️  Impossible: Precision=100% but FP=${falsePositives} > 0`);
+    logger.warn('Impossible metrics: Precision=100% but FP > 0', { falsePositives });
   }
   
   if (recall >= 0.999 && falseNegatives > 0) {
-    console.warn(`⚠️  Impossible: Recall=100% but FN=${falseNegatives} > 0`);
+    logger.warn('Impossible metrics: Recall=100% but FN > 0', { falseNegatives });
   }
   
   // VALIDATION: Log confusion matrix for debugging
   if (truePositives + falsePositives + falseNegatives + trueNegatives > 0) {
-    console.log(`📊 Confusion Matrix: TP=${truePositives}, FP=${falsePositives}, FN=${falseNegatives}, TN=${trueNegatives}`);
-    console.log(`📈 Metrics: P=${(precision*100).toFixed(1)}%, R=${(recall*100).toFixed(1)}%, F1=${(f1Score*100).toFixed(1)}%, Acc=${(accuracy*100).toFixed(1)}%`);
+    logger.debug('Confusion matrix', {
+      matrix: { truePositives, falsePositives, falseNegatives, trueNegatives },
+      metrics: {
+        precision: (precision * 100).toFixed(1) + '%',
+        recall: (recall * 100).toFixed(1) + '%',
+        f1: (f1Score * 100).toFixed(1) + '%',
+        accuracy: (accuracy * 100).toFixed(1) + '%'
+      }
+    });
   }
   
   // VALIDATION: Precision should be < 1.0 if any field accuracy < 1.0 (unless all are "Not Present")
   if (precision >= 0.999 && falsePositives === 0 && truePositives > 0) {
-    console.log(`✅ Precision=100% validated: TP=${truePositives}, FP=${falsePositives}, FN=${falseNegatives}, TN=${trueNegatives}`);
+    logger.debug('Precision=100% validated', {
+      counts: { truePositives, falsePositives, falseNegatives, trueNegatives }
+    });
   }
   
   return {

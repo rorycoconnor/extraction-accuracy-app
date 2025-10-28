@@ -455,7 +455,7 @@
     "lastModified": "2025-10-22T20:48:33.273Z"
   },
   "endDate": {
-    "activePrompt": "Extract the contract's end date, termination date, or expiration date and format as YYYY-MM-DD; if an explicit end date is not found, calculate it by adding the contract term to the start date or, if unavailable, the date the contract was signed. If no date can be found or calculated, return \"null\".",
+    "activePrompt": "Extract the contract's end date, formatted as YYYY-MM-DD. If the end date is not explicitly stated, calculate it using the contract term and start date, defaulting to the last signature date if the start date is unspecified.",
     "promptHistory": [
       {
         "id": "v8",
@@ -848,7 +848,7 @@
     ],
     "lastUsedTemplate": "contracts",
     "usageCount": 2,
-    "lastModified": "2025-10-02T19:24:21.579Z"
+    "lastModified": "2025-10-28T21:56:33.314Z"
   },
   "effectiveDate": {
     "activePrompt": "Identify this document’s effective start date. Apply this order: (1) an explicit clause stating “Effective Date,” “Effective as of,” “Commencement Date,” or “Term begins on”; (2) if it says “effective upon full execution,” use the latest party signature date in this document; (3) if neither is present, use the document date on the title/first page.",

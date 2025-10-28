@@ -9,6 +9,7 @@ import { calculateFieldMetricsWithDebug } from '@/lib/metrics';
 import { getGroundTruthData } from '@/lib/mock-data';
 import type { AccuracyData, ApiExtractionResult } from '@/lib/types';
 import { extractConciseErrorDescription } from '@/lib/error-handler';
+import { logger } from '@/lib/logger';
 
 interface UseMetricsCalculatorReturn {
   // Actions
@@ -57,9 +58,12 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
               
               // Debug logging for troubleshooting
               if (extractedValue === undefined) {
-                console.log(`🔍 Field "${fieldKey}" not found for ${modelName} in file ${fileResult.id}`);
-                console.log(`📊 Available keys in response:`, Object.keys(modelResult.extractedMetadata as Record<string, any>));
-                console.log(`📋 Full extracted metadata:`, modelResult.extractedMetadata);
+                logger.debug('Field not found in extraction response', {
+                  fieldKey,
+                  modelName,
+                  fileId: fileResult.id,
+                  availableKeys: Object.keys(modelResult.extractedMetadata as Record<string, any>)
+                });
               }
               
               if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
@@ -83,10 +87,10 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
     });
     
     // Calculate metrics for each field and model
-    console.log('\n=== CALCULATING METRICS ===');
+    logger.debug('Calculating metrics for all fields');
     newData.fields.forEach((field: any) => {
       const fieldKey = field.key;
-      console.log(`\n🔍 Processing field: ${fieldKey}`);
+      logger.debug('Processing field for metrics', { fieldKey });
       
       AVAILABLE_MODELS.forEach(modelName => {
         const predictions = newData.results.map((fileResult: any) => 
@@ -98,24 +102,26 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
         
         const result = calculateFieldMetricsWithDebug(predictions, groundTruths);
         
-        console.log(`\n📊 ${modelName} - ${fieldKey}:`);
-        console.log(`  Predictions: [${predictions.map((p: string) => `"${p}"`).join(', ')}]`);
-        console.log(`  Ground Truth: [${groundTruths.map((g: string) => `"${g}"`).join(', ')}]`);
-        console.log(`  📈 Metrics: F1=${(result.f1Score * 100).toFixed(1)}%, Acc=${(result.accuracy * 100).toFixed(1)}%, Prec=${(result.precision * 100).toFixed(1)}%, Rec=${(result.recall * 100).toFixed(1)}%`);
-        console.log(`  🔢 Counts: TP=${result.debug.truePositives}, FP=${result.debug.falsePositives}, FN=${result.debug.falseNegatives}, TN=${result.debug.trueNegatives}`);
-        
-        if (result.debug.examples.truePositives.length > 0) {
-          console.log(`  ✅ True Positives: ${result.debug.examples.truePositives.map(ex => `"${ex.predicted}" = "${ex.actual}"`).join(', ')}`);
-        }
-        if (result.debug.examples.falsePositives.length > 0) {
-          console.log(`  ❌ False Positives: ${result.debug.examples.falsePositives.map(ex => `"${ex.predicted}" ≠ "${ex.actual}"`).join(', ')}`);
-        }
-        if (result.debug.examples.falseNegatives.length > 0) {
-          console.log(`  ❌ False Negatives: ${result.debug.examples.falseNegatives.map(ex => `"${ex.predicted}" ≠ "${ex.actual}"`).join(', ')}`);
-        }
-        if (result.debug.examples.trueNegatives.length > 0) {
-          console.log(`  ✅ True Negatives: ${result.debug.examples.trueNegatives.map(ex => `"${ex.predicted}" = "${ex.actual}"`).join(', ')}`);
-        }
+        logger.debug('Metrics calculated', {
+          modelName,
+          fieldKey,
+          f1: (result.f1Score * 100).toFixed(1) + '%',
+          accuracy: (result.accuracy * 100).toFixed(1) + '%',
+          precision: (result.precision * 100).toFixed(1) + '%',
+          recall: (result.recall * 100).toFixed(1) + '%',
+          counts: {
+            truePositives: result.debug.truePositives,
+            falsePositives: result.debug.falsePositives,
+            falseNegatives: result.debug.falseNegatives,
+            trueNegatives: result.debug.trueNegatives
+          },
+          examples: {
+            truePositivesCount: result.debug.examples.truePositives.length,
+            falsePositivesCount: result.debug.examples.falsePositives.length,
+            falseNegativesCount: result.debug.examples.falseNegatives.length,
+            trueNegativesCount: result.debug.examples.trueNegatives.length
+          }
+        })
         
         // Store the calculated metrics in averages (to match hook structure)
         if (!newData.averages) {
