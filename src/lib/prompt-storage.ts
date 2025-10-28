@@ -1,5 +1,6 @@
 import type { PromptVersion } from './types';
 import { savePromptDataAction, getPromptDataAction } from './actions/json-storage';
+import { logger } from './logger';
 
 // Storage key for localStorage
 const PROMPT_STORAGE_KEY = 'promptsStore';
@@ -31,7 +32,7 @@ export function getPromptStore(): PromptStore {
       return JSON.parse(stored);
     }
   } catch (error) {
-    console.error('Failed to parse prompt store from localStorage:', error);
+    logger.error('Failed to parse prompt store from localStorage', error as Error);
   }
   
   return {};
@@ -50,11 +51,11 @@ function savePromptStore(store: PromptStore): void {
     localStorage.setItem(PROMPT_STORAGE_KEY, JSON.stringify(store));
     
     // Background sync to JSON file for persistent storage
-    savePromptDataAction(store).catch(console.error);
+    savePromptDataAction(store).catch((err) => logger.error('Failed to sync prompt data to JSON', err));
     
-    console.log('✅ Prompt store saved with', Object.keys(store).length, 'fields');
+    logger.debug('Prompt store saved', { fieldCount: Object.keys(store).length });
   } catch (error) {
-    console.error('Failed to save prompt store:', error);
+    logger.error('Failed to save prompt store', error as Error);
   }
 }
 
@@ -114,7 +115,8 @@ export function saveFieldPrompt(
   
   savePromptStore(store);
   
-  console.log(`✅ Saved prompt for field "${fieldKey}":`, {
+  logger.debug('Saved prompt for field', {
+    fieldKey,
     promptLength: activePrompt.length,
     historyCount: promptHistory.length,
     templateKey,
@@ -161,7 +163,7 @@ export function updateFieldActivePrompt(fieldKey: string, newPrompt: string): vo
     existing.lastModified = new Date().toISOString();
     savePromptStore(store);
     
-    console.log(`✅ Updated active prompt for field "${fieldKey}"`);
+    logger.debug('Updated active prompt for field', { fieldKey });
   }
 }
 
@@ -181,9 +183,9 @@ export function addPromptVersion(fieldKey: string, promptVersion: PromptVersion)
       existing.lastModified = new Date().toISOString();
       savePromptStore(store);
       
-      console.log(`✅ Added new prompt version for field "${fieldKey}"`);
+      logger.debug('Added new prompt version for field', { fieldKey });
     } else {
-      console.log(`⚠️ Duplicate prompt detected for field "${fieldKey}", skipping`);
+      logger.debug('Duplicate prompt detected for field, skipping', { fieldKey });
     }
   }
 }
@@ -208,7 +210,7 @@ export function migrateFromAccuracyData(accuracyData: any): number {
   const store = getPromptStore();
   let migratedCount = 0;
   
-  console.log('🔄 Starting prompt migration from AccuracyData...');
+  logger.info('Starting prompt migration from AccuracyData');
   
   accuracyData.fields.forEach((field: any) => {
     const fieldKey = field.key;
@@ -228,13 +230,13 @@ export function migrateFromAccuracyData(accuracyData: any): number {
       };
       
       migratedCount++;
-      console.log(`✅ Migrated field "${fieldKey}" with ${field.promptHistory?.length || 0} prompt versions`);
+      logger.debug('Migrated field', { fieldKey, versionCount: field.promptHistory?.length || 0 });
     }
   });
   
   if (migratedCount > 0) {
     savePromptStore(store);
-    console.log(`🎉 Migration complete: ${migratedCount} fields migrated`);
+    logger.info('Migration complete', { migratedCount });
   }
   
   return migratedCount;
@@ -258,11 +260,11 @@ export async function restorePromptDataFromFiles(): Promise<void> {
       const fileData = await getPromptDataAction();
       if (fileData && Object.keys(fileData).length > 0) {
         localStorage.setItem(PROMPT_STORAGE_KEY, JSON.stringify(fileData));
-        console.log('✅ Restored prompt data from JSON file:', Object.keys(fileData).length, 'fields');
+        logger.info('Restored prompt data from JSON file', { fieldCount: Object.keys(fileData).length });
       }
     }
   } catch (error) {
-    console.error('Failed to restore prompt data from files:', error);
+    logger.error('Failed to restore prompt data from files', error as Error);
   }
 }
 
@@ -275,8 +277,8 @@ export function clearPromptStore(): void {
   }
   
   localStorage.removeItem(PROMPT_STORAGE_KEY);
-  savePromptDataAction({}).catch(console.error);
-  console.log('🗑️ Prompt store cleared');
+  savePromptDataAction({}).catch((err) => logger.error('Failed to clear prompt data JSON', err));
+  logger.info('Prompt store cleared');
 }
 
 /**

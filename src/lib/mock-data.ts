@@ -7,6 +7,7 @@ import {
   saveAccuracyDataAction,
   clearAllGroundTruthDataAction 
 } from './actions/json-storage';
+import { logger } from './logger';
 
 const CONFIGURED_TEMPLATES_STORAGE_KEY = 'configuredTemplates';
 
@@ -32,7 +33,7 @@ export function getConfiguredTemplates(): BoxTemplate[] {
       const parsedTemplates = JSON.parse(storedTemplates);
       return ensureFieldsAreActiveByDefault(parsedTemplates);
     } catch (e) {
-      console.error("Failed to parse stored templates", e);
+      logger.error("Failed to parse stored templates", e as Error);
       return [];
     }
   }
@@ -47,7 +48,7 @@ function saveConfiguredTemplates(templates: BoxTemplate[]) {
     localStorage.setItem(CONFIGURED_TEMPLATES_STORAGE_KEY, JSON.stringify(templates));
     
     // Background sync to JSON file for persistent storage
-    saveConfiguredTemplatesAction(templates).catch(console.error);
+    saveConfiguredTemplatesAction(templates).catch((err) => logger.error('Failed to sync templates to JSON', err));
 }
 
 export function addConfiguredTemplates(newTemplates: BoxTemplate[]) {
@@ -106,7 +107,7 @@ export function getFileMetadataStore(): FileMetadataStore {
         try {
             return JSON.parse(storedData);
         } catch (e) {
-            console.error("Failed to parse file metadata store", e);
+            logger.error("Failed to parse file metadata store", e as Error);
             return {};
         }
     }
@@ -115,14 +116,14 @@ export function getFileMetadataStore(): FileMetadataStore {
 
 function saveFileMetadataStore(data: FileMetadataStore) {
     if (typeof window === 'undefined') {
-        console.log('❌ Window is undefined, cannot save to localStorage');
+        logger.warn('Window is undefined, cannot save to localStorage');
         return;
     }
     try {
         localStorage.setItem(FILE_METADATA_STORAGE_KEY, JSON.stringify(data));
-        console.log('✅ Successfully saved to localStorage');
+        logger.debug('Successfully saved file metadata to localStorage');
     } catch (error) {
-        console.error('❌ Error saving to localStorage:', error);
+        logger.error('Error saving to localStorage', error as Error);
     }
 }
 
@@ -171,8 +172,8 @@ export function saveGroundTruthForFile(fileId: string, templateKey: string, data
     saveFileMetadataStore(store);
     
     // Background sync to JSON file for persistent storage
-    saveGroundTruthAction(fileId, templateKey, cleanedGroundTruth).catch(console.error);
-    console.log('✅ saveGroundTruthForFile completed');
+    saveGroundTruthAction(fileId, templateKey, cleanedGroundTruth).catch((err) => logger.error('Failed to sync ground truth to JSON', err));
+    logger.debug('saveGroundTruthForFile completed', { fileId, templateKey });
 }
 
 export function getGroundTruthForFile(fileId: string): Record<string, string> {
@@ -193,7 +194,7 @@ export function saveAccuracyData(data: AccuracyData | null) {
     }
     
     // Background sync to JSON file for persistent storage
-    saveAccuracyDataAction(data).catch(console.error);
+    saveAccuracyDataAction(data).catch((err) => logger.error('Failed to sync accuracy data to JSON', err));
 }
 
 export function getAccuracyData(): AccuracyData | null {
@@ -205,7 +206,7 @@ export function getAccuracyData(): AccuracyData | null {
         try {
             return JSON.parse(storedData);
         } catch (e) {
-            console.error("Failed to parse accuracy data", e);
+            logger.error("Failed to parse accuracy data", e as Error);
             return null;
         }
     }
@@ -225,7 +226,7 @@ export function clearAllGroundTruthData() {
     localStorage.removeItem(ACCURACY_DATA_STORAGE_KEY);
     
     // Background sync to clear JSON files for persistent storage
-    clearAllGroundTruthDataAction().catch(console.error);
+    clearAllGroundTruthDataAction().catch((err) => logger.error('Failed to clear ground truth JSON files', err));
 }
 
 // Restore data from JSON files if localStorage is empty
@@ -239,16 +240,16 @@ export async function restoreDataFromFiles() {
         const hasLocalStorage = localStorage.getItem(FILE_METADATA_STORAGE_KEY) !== null;
         
         if (!hasLocalStorage) {
-            console.log('📁 Restoring data from JSON files...');
+            logger.info('Restoring data from JSON files');
             
             // Restore ground truth data
             const groundTruthData = await getGroundTruthDataAction();
             if (Object.keys(groundTruthData).length > 0) {
                 localStorage.setItem(FILE_METADATA_STORAGE_KEY, JSON.stringify(groundTruthData));
-                console.log('✅ Restored ground truth data from JSON files');
+                logger.info('Restored ground truth data from JSON files', { fileCount: Object.keys(groundTruthData).length });
             }
         }
     } catch (error) {
-        console.error('❌ Failed to restore data from JSON files:', error);
+        logger.error('Failed to restore data from JSON files', error as Error);
     }
 }
