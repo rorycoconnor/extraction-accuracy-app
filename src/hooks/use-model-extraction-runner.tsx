@@ -20,6 +20,7 @@ import type {
 } from '@/lib/types';
 import { FIELD_TYPE_MAPPING } from '@/features/prompt-library/types';
 import { extractionLogger } from '@/lib/logger';
+import { DUAL_SYSTEM, prepareFieldsForModel, getFieldPreparationInfo } from '@/lib/dual-system-utils';
 
 interface ExtractionJob {
   fileResult: FileResult;
@@ -289,43 +290,24 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
     if (extractionJobs.length > 0) {
       const firstJob = extractionJobs[0];
       
-      // Handle "no prompt" variants - _no_prompt is just a UI convention
-      const isNoPromptModel = firstJob.modelName.endsWith('_no_prompt');
-      const actualModelName = isNoPromptModel ? firstJob.modelName.replace('_no_prompt', '') : firstJob.modelName;
+      // Use centralized dual-system utilities
+      const prepInfo = getFieldPreparationInfo(firstJob.modelName, fieldsForExtraction.length);
+      const actualModelName = DUAL_SYSTEM.getBaseModelName(firstJob.modelName);
+      const fieldsToShow = prepareFieldsForModel(fieldsForExtraction, firstJob.modelName);
       
-      extractionLogger.debug('Debug setup for model', { modelName: firstJob.modelName });
-      extractionLogger.debug('Model prompt variant', { isNoPromptModel });
-      extractionLogger.debug('Actual model name for Box AI', { actualModelName });
+      extractionLogger.debug('Debug setup for extraction', prepInfo);
       
-      // For no-prompt models, completely omit prompt field
-      let fieldsToShow: any[] | undefined = fieldsForExtraction;
-      if (isNoPromptModel && fieldsForExtraction) {
-        extractionLogger.debug('Removing prompt fields for no-prompt model');
-        fieldsToShow = fieldsForExtraction.map(field => {
-          // Create field without prompt property for true no-prompt test
-          const { prompt, ...fieldWithoutInstruction } = field;
-          return fieldWithoutInstruction;
-        });
-        extractionLogger.debug('Prompts removed for no-prompt model', { modelName: firstJob.modelName });
-      } else {
-        extractionLogger.debug('Prompts included for regular model', { modelName: firstJob.modelName });
-      }
-      
-      // Log a sample field to verify prompt handling in debug
-      if (fieldsToShow && fieldsToShow.length > 0) {
+      // Log a sample field to verify prompt handling
+      if (fieldsToShow.length > 0) {
         const sampleField = fieldsToShow[0];
-        extractionLogger.debug(`Sample field for model`, { 
+        extractionLogger.debug('Sample field for model', { 
           modelName: firstJob.modelName, 
           key: sampleField.key,
-          hasPrompt: !!sampleField.prompt,
-          promptPreview: sampleField.prompt ? sampleField.prompt.substring(0, 50) + '...' : 'NONE'
+          hasPrompt: 'prompt' in sampleField,
+          promptPreview: 'prompt' in sampleField && sampleField.prompt 
+            ? sampleField.prompt.substring(0, 50) + '...' 
+            : 'NONE'
         });
-        
-        if (isNoPromptModel) {
-          extractionLogger.debug('NO-PROMPT REQUEST: Prompts removed for A/B testing');
-        } else {
-          extractionLogger.debug('PROMPT REQUEST: Prompts included for A/B testing');
-        }
       }
       
       const requestBody: any = {
@@ -349,75 +331,29 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
 
     // Execute extractions in controlled batches
     const extractionProcessor = async (job: ExtractionJob) => {
-      // Handle "no prompt" variants - _no_prompt is just a UI convention
-      const isNoPromptModel = job.modelName.endsWith('_no_prompt');
-      const actualModelName = isNoPromptModel ? job.modelName.replace('_no_prompt', '') : job.modelName;
+      // Use centralized dual-system utilities
+      const prepInfo = getFieldPreparationInfo(job.modelName, fieldsForExtraction.length);
+      const actualModelName = DUAL_SYSTEM.getBaseModelName(job.modelName);
+      const fieldsToUse = prepareFieldsForModel(fieldsForExtraction, job.modelName);
       
-      extractionLogger.debug('Processing model', { modelName: job.modelName });
-      extractionLogger.debug('Model prompt variant', { isNoPromptModel });
-      extractionLogger.debug('Actual model name for Box AI', { actualModelName });
-      
-      // For no-prompt models, completely omit prompt field
-      let fieldsToUse: any[] | undefined = fieldsForExtraction;
-      if (isNoPromptModel && fieldsForExtraction) {
-        extractionLogger.debug('Removing prompt fields for no-prompt model');
-        fieldsToUse = fieldsForExtraction.map(field => {
-          // Create field without prompt property
-          const { prompt, ...fieldWithoutInstruction } = field;
-          return fieldWithoutInstruction;
-        });
-        extractionLogger.debug('Prompts removed for no-prompt model', { modelName: job.modelName });
-      } else {
-        extractionLogger.debug('Prompts included for regular model', { modelName: job.modelName });
-      }
-      
-      // Log a sample field to verify prompt handling
-      if (fieldsToUse && fieldsToUse.length > 0) {
-        const sampleField = fieldsToUse[0];
-        extractionLogger.debug(`Sample field for model`, { 
-          modelName: job.modelName, 
-          key: sampleField.key,
-          hasPrompt: !!sampleField.prompt,
-          promptPreview: sampleField.prompt ? sampleField.prompt.substring(0, 50) + '...' : 'NONE'
-        });
-        
-        if (isNoPromptModel) {
-          extractionLogger.debug('NO-PROMPT REQUEST: Prompts removed for A/B testing');
-        } else {
-          extractionLogger.debug('PROMPT REQUEST: Prompts included for A/B testing');
-        }
-      }
-      
-      // Use the actual model name (without _no_prompt suffix) for Box AI
-      
-      // Client-side logging for browser console
-      const extractionRequest = {
+      extractionLogger.debug('Processing extraction', {
+        ...prepInfo,
         fileId: job.fileResult.id,
-        fields: fieldsToUse,
-        model: actualModelName,
-      };
-      
-      extractionLogger.debug(`Box AI client request`, { 
-        modelName: actualModelName,
-        fileId: job.fileResult.id,
-        fileName: job.fileResult.fileName,
-        requestedModel: actualModelName,
-        originalModelName: job.modelName,
-        isNoPromptVariant: isNoPromptModel,
-        fieldCount: fieldsToUse?.length || 0
+        fileName: job.fileResult.fileName
       });
       
       const result = await executeExtractionWithRetry(
         async () => {
-          const response = await extractMetadata(extractionRequest);
+          const response = await extractMetadata({
+            fileId: job.fileResult.id,
+            fields: fieldsToUse,
+            model: actualModelName,
+          });
           
-          // Client-side response logging for browser console
-          extractionLogger.debug(`Box AI client response`, { 
+          extractionLogger.debug('Box AI response received', { 
             modelName: actualModelName,
             fileId: job.fileResult.id,
             fileName: job.fileResult.fileName,
-            requestedModel: actualModelName,
-            originalModelName: job.modelName,
             extractedFieldCount: response?.data ? Object.keys(response.data).length : 0
           });
           

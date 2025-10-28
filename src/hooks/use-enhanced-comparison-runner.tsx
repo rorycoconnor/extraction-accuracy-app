@@ -25,6 +25,7 @@ import type {
   ApiExtractionResult,
 } from '@/lib/types';
 import { useDataHandlers } from '@/hooks/use-data-handlers';
+import { logger } from '@/lib/logger';
 
 // Import centralized constants
 import { AVAILABLE_MODELS } from '@/lib/main-page-constants';
@@ -148,7 +149,7 @@ export const useEnhancedComparisonRunner = (
     });
 
     try {
-      console.log('🚀 Starting enhanced extraction with versioning...');
+      logger.info('Starting enhanced extraction with versioning');
       
       // Run extractions using the existing hook
       const apiResults = await runExtractions(
@@ -156,7 +157,11 @@ export const useEnhancedComparisonRunner = (
         selectedTemplate,
         shownColumns,
         (job, result) => {
-          console.log(`📊 Progress update: ${job.modelName} for ${job.fileResult.fileName}`);
+          logger.debug('Progress update', { 
+            modelName: job.modelName, 
+            fileName: job.fileResult.fileName,
+            success: result.success
+          });
           
           updateProgress();
           
@@ -186,7 +191,7 @@ export const useEnhancedComparisonRunner = (
         }
       );
 
-      console.log('✅ Extraction completed, processing results with versioning...');
+      logger.info('Extraction completed, processing results with versioning');
 
       updateDetailedProgress({
         currentOperation: 'Calculating metrics...',
@@ -218,7 +223,7 @@ export const useEnhancedComparisonRunner = (
       });
       
     } catch (error) {
-      console.error('Enhanced extraction failed:', error);
+      logger.error('Enhanced extraction failed', error);
       stopExtraction();
       
       updateDetailedProgress({
@@ -378,9 +383,12 @@ export const useEnhancedComparisonRunner = (
               
               // Debug logging for troubleshooting
               if (extractedValue === undefined) {
-                console.log(`🔍 Field "${fieldKey}" not found for ${modelName} in file ${fileResult.id}`);
-                console.log(`📊 Available keys in response:`, Object.keys(modelResult.extractedMetadata as Record<string, any>));
-                console.log(`📋 Full extracted metadata:`, modelResult.extractedMetadata);
+                logger.debug('Field not found in extraction response', {
+                  fieldKey,
+                  modelName,
+                  fileId: fileResult.id,
+                  availableKeys: Object.keys(modelResult.extractedMetadata as Record<string, any>)
+                });
               }
               
               if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
@@ -390,7 +398,11 @@ export const useEnhancedComparisonRunner = (
                 const field = accuracyData.fields.find(f => f.key === fieldKey);
                 if (field && isMultiSelectField(field, fieldKey)) {
                   formattedValue = formatMultiSelectValue(formattedValue);
-                  console.log(`🔧 Formatted multi-select value for ${fieldKey}: "${extractedValue}" → "${formattedValue}"`);
+                  logger.debug('Formatted multi-select value', {
+                    fieldKey,
+                    original: extractedValue,
+                    formatted: formattedValue
+                  });
                 }
                 
                 fieldData[modelName] = formattedValue;
@@ -466,7 +478,7 @@ export const useEnhancedComparisonRunner = (
       payload: updatedAccuracyDataWithMetrics
     });
     
-    console.log('✅ Results processed and stored with versioning');
+    logger.info('Results processed and stored with versioning');
   };
 
   return {

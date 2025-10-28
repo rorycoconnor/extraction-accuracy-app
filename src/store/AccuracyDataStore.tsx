@@ -362,36 +362,25 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
       if (!state.data) return state;
       
       const timestamp = new Date().toISOString();
-      const currentData = state.data;
       
-      // Explicitly preserve fields with their prompt history
-      const preservedFields = currentData.fields.map(field => ({
-        ...field,
-        promptHistory: [...field.promptHistory] // Ensure prompt history is preserved
-      }));
-      
-      const updatedSessions = currentData.sessions.map(session => ({
-        ...session,
-        runs: session.runs.map(run => ({
-          ...run,
-          results: [],
-          averages: {},
-          apiResults: [],
-          lastModified: timestamp
-        }))
-      }));
-
-      console.log('🗑️ UNIFIED STORE: Clearing results while preserving prompts for fields:', preservedFields.map(f => f.key));
-      console.log('🗑️ UNIFIED STORE: Preserved prompt counts:', preservedFields.map(f => `${f.key}: ${f.promptHistory.length} versions`));
-
+      // Optimized: Single pass to preserve fields and update sessions
       return {
         ...state,
         data: {
-          ...currentData,
-          fields: preservedFields, // Explicitly preserve fields with prompt history
+          ...state.data,
+          fields: state.data.fields, // Fields are already immutable, no need to copy
           results: [], // Clear extraction results
           averages: {}, // Reset averages
-          sessions: updatedSessions,
+          sessions: state.data.sessions.map(session => ({
+            ...session,
+            runs: session.runs.map(run => ({
+              ...run,
+              results: [],
+              averages: {},
+              apiResults: [],
+              lastModified: timestamp
+            }))
+          })),
           lastModified: timestamp
         },
         hasUnsavedChanges: true
@@ -456,7 +445,7 @@ export const AccuracyDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
     loadData();
   }, []);
 
-  // Auto-save when data changes
+  // Auto-save when data changes (debounced)
   useEffect(() => {
     if (state.data && state.hasUnsavedChanges) {
       const saveData = async () => {
@@ -468,7 +457,7 @@ export const AccuracyDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
         }
       };
 
-      // Debounce saves to avoid excessive writes
+      // Debounce saves to avoid excessive writes during rapid updates
       const timeoutId = setTimeout(saveData, 1000);
       return () => clearTimeout(timeoutId);
     }
