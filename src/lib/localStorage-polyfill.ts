@@ -1,5 +1,6 @@
-/**
 import { logger } from '@/lib/logger';
+
+/**
  * localStorage Polyfill for Server-Side Rendering
  * 
  * This ensures localStorage exists in Node.js environment with proper function signatures.
