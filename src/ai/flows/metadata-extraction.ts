@@ -25,7 +25,9 @@ export async function extractMetadata(input: ExtractMetadataInput): Promise<Extr
       data: extractedData
     };
   } catch (error) {
-    logger.error('Error extracting metadata', error);
+    // Type guard for error handling
+    const errorToLog = error instanceof Error ? error : undefined;
+    logger.error('Error extracting metadata', errorToLog);
     
     // Preserve the original error details for better debugging
     const originalMessage = error instanceof Error ? error.message : String(error);
