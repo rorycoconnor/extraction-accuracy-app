@@ -429,11 +429,14 @@ export default function PromptStudioSheet({
         logger.debug('Starting extraction', { modelName: job.modelName, fileIndex: job.fileIndex + 1 });
         
         try {
+          // IMPORTANT: Don't pass templateKey here - we need to use inline fields to test custom prompts
+          // When templateKey is provided, Box AI uses the template which ignores custom prompts
+          // This matches the approach used in use-model-extraction-runner.tsx
           const result = await extractMetadata({
             fileId: job.fileId,
             fields: [testField],
             model: job.modelName,
-            templateKey: accuracyData.templateKey
+            // templateKey intentionally omitted to enable prompt testing
           });
 
           // Store the extracted value using the same field matching logic as home page
