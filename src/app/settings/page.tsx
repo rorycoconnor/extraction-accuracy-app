@@ -242,7 +242,15 @@ function SettingsContent() {
       // Redirect to Box OAuth2.0 authorization URL
       const clientId = process.env.NEXT_PUBLIC_BOX_CLIENT_ID || 'your_box_client_id';
       const redirectUri = `${window.location.origin}/api/auth/box/callback`;
-      const authUrl = `https://account.box.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&state=${Math.random().toString(36).substring(7)}`;
+      
+      // Request necessary scopes for the application
+      const scopes = [
+        'root_readwrite',           // Read and write all files and folders
+        'manage_enterprise_properties', // Create and manage metadata templates
+        'manage_managed_users',     // Access user information
+      ].join(' ');
+      
+      const authUrl = `https://account.box.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&state=${Math.random().toString(36).substring(7)}&scope=${encodeURIComponent(scopes)}`;
       
       window.location.href = authUrl;
     } catch (error) {

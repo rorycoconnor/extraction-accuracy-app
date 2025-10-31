@@ -212,5 +212,13 @@ export async function getOAuthAuthorizationUrl(): Promise<string> {
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002'}/api/auth/box/callback`;
   const state = Math.random().toString(36).substring(7);
   
-  return `https://account.box.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}`;
+  // Request necessary scopes for the application
+  // See: https://developer.box.com/guides/api-calls/permissions-and-errors/scopes/
+  const scopes = [
+    'root_readwrite',           // Read and write all files and folders
+    'manage_enterprise_properties', // Create and manage metadata templates
+    'manage_managed_users',     // Access user information
+  ].join(' ');
+  
+  return `https://account.box.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${encodeURIComponent(scopes)}`;
 } 

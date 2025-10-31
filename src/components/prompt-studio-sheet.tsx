@@ -232,7 +232,9 @@ export default function PromptStudioSheet({
         setActivePromptText(result.prompt);
         
     } catch (error) {
-        logger.error('Failed to generate/improve prompt', error);
+        // Type guard for error handling
+        const errorToLog = error instanceof Error ? error : undefined;
+        logger.error('Failed to generate/improve prompt', errorToLog);
         
         // Handle specific Box API authentication errors
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -504,7 +506,9 @@ export default function PromptStudioSheet({
       });
 
     } catch (error) {
-      logger.error('Test failed', error);
+      // Type guard for error handling
+      const errorToLog = error instanceof Error ? error : undefined;
+      logger.error('Test failed', errorToLog);
       toast({
         variant: "destructive",
         title: "Test Failed",
