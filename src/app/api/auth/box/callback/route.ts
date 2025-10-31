@@ -30,8 +30,19 @@ export async function GET(request: NextRequest) {
     const clientSecret = process.env.BOX_CLIENT_SECRET;
     const redirectUri = `${request.nextUrl.origin}/api/auth/box/callback`;
 
+    logger.debug('OAuth callback - environment check', {
+      hasClientId: !!clientId,
+      hasClientSecret: !!clientSecret,
+      redirectUri,
+      origin: request.nextUrl.origin
+    });
+
     if (!clientId || !clientSecret) {
-      logger.error('Missing Box OAuth credentials');
+      logger.error('Missing Box OAuth credentials', {
+        hasClientId: !!clientId,
+        hasClientSecret: !!clientSecret,
+        envVars: Object.keys(process.env).filter(k => k.includes('BOX'))
+      });
       return NextResponse.redirect(
         new URL('/settings?error=oauth_failed&message=missing_credentials', request.url)
       );
@@ -61,13 +72,29 @@ export async function GET(request: NextRequest) {
 
     const tokenData = await tokenResponse.json();
     
+    // Validate token data
+    if (!tokenData.access_token) {
+      logger.error('Token exchange succeeded but no access_token in response', { tokenData });
+      return NextResponse.redirect(
+        new URL('/settings?error=oauth_failed&message=no_access_token', request.url)
+      );
+    }
+    
+    logger.info('Token exchange successful', { 
+      hasAccessToken: !!tokenData.access_token,
+      hasRefreshToken: !!tokenData.refresh_token,
+      expiresIn: tokenData.expires_in
+    });
+    
     // Store the OAuth tokens securely
     await storeOAuthTokens({
       accessToken: tokenData.access_token,
-      refreshToken: tokenData.refresh_token,
+      refreshToken: tokenData.refresh_token || '', // Some OAuth flows don't return refresh token
       expiresAt: Date.now() + (tokenData.expires_in * 1000),
-      tokenType: tokenData.token_type,
+      tokenType: tokenData.token_type || 'Bearer',
     });
+    
+    logger.info('OAuth tokens stored successfully');
     
     // Redirect back to settings with success
     return NextResponse.redirect(

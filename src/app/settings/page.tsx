@@ -67,7 +67,19 @@ function SettingsContent() {
     } | null;
   } | null>(null);
   const [userLoading, setUserLoading] = React.useState(true);
-  logger.debug('Environment variables', { env: process.env })
+  
+  // Debug: Log environment variable availability (only in dev)
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('[Settings] NEXT_PUBLIC_BOX_CLIENT_ID available:', !!process.env.NEXT_PUBLIC_BOX_CLIENT_ID);
+      console.log('[Settings] Client ID value:', process.env.NEXT_PUBLIC_BOX_CLIENT_ID ? 'SET' : 'NOT SET');
+      logger.debug('Environment variables check', { 
+        hasPublicClientId: !!process.env.NEXT_PUBLIC_BOX_CLIENT_ID,
+        clientIdPreview: process.env.NEXT_PUBLIC_BOX_CLIENT_ID?.substring(0, 10) + '...' || 'N/A'
+      });
+    }
+  }, []);
+  
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsSchema),
     defaultValues: {
@@ -89,6 +101,40 @@ function SettingsContent() {
         title: 'OAuth Connection Successful',
         description: 'Your Box account has been connected successfully!',
       });
+      
+      // Explicitly refetch user info after OAuth success
+      // Add a small delay to ensure cookies are available
+      setTimeout(async () => {
+        try {
+          setUserLoading(true);
+          const response = await fetch('/api/auth/box/user');
+          const data = await response.json();
+          
+          logger.debug('OAuth callback - user info fetch', {
+            success: data.success,
+            hasUser: !!data.user,
+            authenticated: data.authenticated,
+            error: data.error
+          });
+          
+          if (data.success && data.user) {
+            setUserInfo(data.user);
+            logger.info('User info fetched successfully after OAuth connection');
+          } else {
+            logger.warn('User info not available after OAuth connection', { 
+              error: data.error,
+              authenticated: data.authenticated 
+            });
+            setUserInfo(null);
+          }
+        } catch (error) {
+          logger.error('Failed to fetch user info after OAuth connection', error instanceof Error ? error : { error });
+          setUserInfo(null);
+        } finally {
+          setUserLoading(false);
+        }
+      }, 500); // Small delay to ensure cookies are set
+      
       // Clear URL parameters
       router.replace('/settings');
     } else if (error === 'oauth_failed') {
@@ -240,24 +286,58 @@ function SettingsContent() {
     setIsConnectingOAuth(true);
     try {
       // Redirect to Box OAuth2.0 authorization URL
-      const clientId = process.env.NEXT_PUBLIC_BOX_CLIENT_ID || 'your_box_client_id';
+      const clientId = process.env.NEXT_PUBLIC_BOX_CLIENT_ID;
+      
+      if (!clientId || clientId === 'your_box_client_id') {
+        toast({
+          variant: 'destructive',
+          title: 'Configuration Error',
+          description: 'NEXT_PUBLIC_BOX_CLIENT_ID is not set. Please check your .env.local file and restart the server.',
+        });
+        setIsConnectingOAuth(false);
+        logger.error('OAuth connect failed: Missing NEXT_PUBLIC_BOX_CLIENT_ID');
+        return;
+      }
+      
       const redirectUri = `${window.location.origin}/api/auth/box/callback`;
+      const state = Math.random().toString(36).substring(7);
       
-      // Request necessary scopes for the application
-      const scopes = [
-        'root_readwrite',           // Read and write all files and folders
-        'manage_enterprise_properties', // Create and manage metadata templates
-        'manage_managed_users',     // Access user information
-      ].join(' ');
+      // Build authorization URL - Box will use scopes configured in Developer Console
+      const authUrlObj = new URL('https://account.box.com/api/oauth2/authorize');
+      authUrlObj.searchParams.set('client_id', clientId);
+      authUrlObj.searchParams.set('response_type', 'code');
+      authUrlObj.searchParams.set('redirect_uri', redirectUri);
+      authUrlObj.searchParams.set('state', state);
+      const authUrl = authUrlObj.toString();
       
-      const authUrl = `https://account.box.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&state=${Math.random().toString(36).substring(7)}&scope=${encodeURIComponent(scopes)}`;
+      logger.debug('Initiating OAuth redirect', {
+        clientId: clientId.substring(0, 10) + '...', // Log partial ID for debugging
+        redirectUri,
+        origin: window.location.origin,
+        authUrlLength: authUrl.length
+      });
       
+      // Use window.location.replace for immediate redirect
       window.location.href = authUrl;
+      
+      // If redirect doesn't happen within 1 second, show error
+      setTimeout(() => {
+        if (document.hasFocus()) {
+          setIsConnectingOAuth(false);
+          toast({
+            variant: 'destructive',
+            title: 'Redirect Failed',
+            description: 'Unable to redirect to Box. Please check your browser settings or try again.',
+          });
+          logger.error('OAuth redirect did not occur');
+        }
+      }, 1000);
     } catch (error) {
+      logger.error('OAuth connection error', error instanceof Error ? error : { error });
       toast({
         variant: 'destructive',
         title: 'OAuth Connection Failed',
-        description: 'Failed to initiate OAuth2.0 connection. Please try again.',
+        description: error instanceof Error ? error.message : 'Failed to initiate OAuth2.0 connection. Please try again.',
       });
       setIsConnectingOAuth(false);
     }
@@ -455,13 +535,25 @@ function SettingsContent() {
                   ) : (
                     <Button
                       type="button"
-                      onClick={handleOAuthConnect}
-                      disabled={isConnectingOAuth || !process.env.NEXT_PUBLIC_BOX_CLIENT_ID}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('[Settings] Connect button clicked');
+                        console.log('[Settings] Client ID available:', !!process.env.NEXT_PUBLIC_BOX_CLIENT_ID);
+                        console.log('[Settings] Client ID value:', process.env.NEXT_PUBLIC_BOX_CLIENT_ID);
+                        console.log('[Settings] Button disabled?', isConnectingOAuth || !process.env.NEXT_PUBLIC_BOX_CLIENT_ID);
+                        handleOAuthConnect();
+                      }}
+                      disabled={isConnectingOAuth}
                       className="w-full sm:w-auto"
+                      aria-label="Connect Box Account"
                     >
                       {isConnectingOAuth && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                       <ExternalLink className="mr-2 h-4 w-4" />
                       Connect your Box Demo Account
+                      {!process.env.NEXT_PUBLIC_BOX_CLIENT_ID && (
+                        <span className="ml-2 text-xs opacity-75">⚠️ Config Required</span>
+                      )}
                     </Button>
                   )}
                 </div>

@@ -70,7 +70,15 @@ export async function storeOAuthTokens(tokens: OAuthTokens): Promise<void> {
     path: '/'
   });
   
-  logger.info('OAuth tokens stored securely in HTTP-only cookies');
+  // Verify cookies were set
+  const verifyAccessToken = cookieStore.get(COOKIE_NAMES.ACCESS_TOKEN)?.value;
+  logger.info('OAuth tokens stored securely in HTTP-only cookies', {
+    accessTokenStored: !!verifyAccessToken,
+    accessTokenLength: verifyAccessToken?.length || 0,
+    expiresAt: tokens.expiresAt,
+    nodeEnv: process.env.NODE_ENV,
+    isSecure: process.env.NODE_ENV === 'production'
+  });
 }
 
 /**
@@ -85,7 +93,43 @@ export async function getOAuthStatus(): Promise<OAuthState> {
   const tokenType = cookieStore.get(COOKIE_NAMES.TOKEN_TYPE)?.value;
   const lastConnected = cookieStore.get(COOKIE_NAMES.LAST_CONNECTED)?.value;
   
+  logger.debug('OAuth status check', {
+    hasAccessToken: !!accessToken,
+    hasRefreshToken: !!refreshToken,
+    hasExpiresAt: !!expiresAt,
+    accessTokenLength: accessToken?.length || 0,
+    refreshTokenLength: refreshToken?.length || 0,
+    expiresAt,
+    lastConnected
+  });
+  
   if (!accessToken || !refreshToken || !expiresAt) {
+    logger.debug('OAuth not connected - missing required tokens', {
+      missingAccessToken: !accessToken,
+      missingRefreshToken: !refreshToken,
+      missingExpiresAt: !expiresAt
+    });
+    return { isConnected: false };
+  }
+  
+  // Check if token is expired
+  const expiresAtNum = parseInt(expiresAt);
+  const now = Date.now();
+  const isExpired = now >= expiresAtNum;
+  
+  logger.debug('OAuth token validation', {
+    expiresAt: expiresAtNum,
+    now,
+    isExpired,
+    timeUntilExpiry: expiresAtNum - now
+  });
+  
+  if (isExpired) {
+    logger.warn('OAuth token expired', {
+      expiresAt: expiresAtNum,
+      now,
+      expiredBy: now - expiresAtNum
+    });
     return { isConnected: false };
   }
   
@@ -94,7 +138,7 @@ export async function getOAuthStatus(): Promise<OAuthState> {
     tokens: {
       accessToken,
       refreshToken,
-      expiresAt: parseInt(expiresAt),
+      expiresAt: expiresAtNum,
       tokenType: tokenType || 'Bearer'
     },
     lastConnected
@@ -105,19 +149,33 @@ export async function getOAuthStatus(): Promise<OAuthState> {
  * Check if OAuth is connected and tokens are valid
  */
 export async function isOAuthConnected(): Promise<boolean> {
-  const status = await getOAuthStatus();
+  const cookieStore = await cookies();
   
-  if (!status.isConnected || !status.tokens) {
+  // Get tokens directly from cookies to check refresh token even if access token is expired
+  const accessToken = cookieStore.get(COOKIE_NAMES.ACCESS_TOKEN)?.value;
+  const refreshToken = cookieStore.get(COOKIE_NAMES.REFRESH_TOKEN)?.value;
+  const expiresAt = cookieStore.get(COOKIE_NAMES.EXPIRES_AT)?.value;
+  
+  // Need at least access token or refresh token to proceed
+  if (!accessToken && !refreshToken) {
     return false;
   }
-
-  // Check if token is expired (with 5-minute buffer)
-  const now = Date.now();
-  const expiresAt = status.tokens.expiresAt;
   
-  if (now >= expiresAt - (5 * 60 * 1000)) {
-    // Token expired, try to refresh
+  // If we have a refresh token but no access token, or access token is expired/expiring soon, try to refresh
+  const now = Date.now();
+  const expiresAtNum = expiresAt ? parseInt(expiresAt) : 0;
+  const isExpiredOrExpiringSoon = !expiresAtNum || now >= expiresAtNum - (5 * 60 * 1000);
+  
+  if (isExpiredOrExpiringSoon && refreshToken) {
+    // Token expired or expiring soon, try to refresh
     try {
+      logger.debug('Attempting to refresh OAuth token', {
+        hasAccessToken: !!accessToken,
+        hasRefreshToken: !!refreshToken,
+        expiresAt: expiresAtNum,
+        now,
+        isExpired: now >= expiresAtNum
+      });
       await refreshOAuthToken();
       return true;
     } catch (error) {
@@ -126,29 +184,65 @@ export async function isOAuthConnected(): Promise<boolean> {
       return false;
     }
   }
-
-  return true;
+  
+  // If we have a valid (non-expired) access token, we're connected
+  if (accessToken && expiresAtNum && now < expiresAtNum) {
+    return true;
+  }
+  
+  return false;
 }
 
 /**
  * Get valid access token for Box API calls
  */
 export async function getOAuthAccessToken(): Promise<string | null> {
+  // Ensure we're connected (will refresh token if needed)
   if (!(await isOAuthConnected())) {
     return null;
   }
   
-  const status = await getOAuthStatus();
-  return status.tokens?.accessToken || null;
+  // Read the access token directly from cookies (may have been refreshed)
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get(COOKIE_NAMES.ACCESS_TOKEN)?.value;
+  const expiresAt = cookieStore.get(COOKIE_NAMES.EXPIRES_AT)?.value;
+  
+  // Double-check the token is still valid (in case it expired between checks)
+  if (!accessToken || !expiresAt) {
+    logger.warn('Access token missing after connection check');
+    return null;
+  }
+  
+  const expiresAtNum = parseInt(expiresAt);
+  const now = Date.now();
+  
+  // If token is expired, try to refresh one more time
+  if (now >= expiresAtNum) {
+    logger.debug('Token expired between connection check and token retrieval, attempting refresh');
+    try {
+      await refreshOAuthToken();
+      // Read the refreshed token
+      const refreshedToken = cookieStore.get(COOKIE_NAMES.ACCESS_TOKEN)?.value;
+      return refreshedToken || null;
+    } catch (error) {
+      logger.error('Failed to refresh token in getOAuthAccessToken', error instanceof Error ? error : { error });
+      return null;
+    }
+  }
+  
+  return accessToken;
 }
 
 /**
  * Refresh OAuth access token using refresh token
  */
 async function refreshOAuthToken(): Promise<void> {
-  const status = await getOAuthStatus();
+  const cookieStore = await cookies();
   
-  if (!status.tokens?.refreshToken) {
+  // Read refresh token directly from cookies (even if access token is expired)
+  const refreshToken = cookieStore.get(COOKIE_NAMES.REFRESH_TOKEN)?.value;
+  
+  if (!refreshToken) {
     throw new Error('No refresh token available');
   }
 
@@ -166,7 +260,7 @@ async function refreshOAuthToken(): Promise<void> {
     },
     body: new URLSearchParams({
       grant_type: 'refresh_token',
-      refresh_token: status.tokens.refreshToken,
+      refresh_token: refreshToken,
       client_id: clientId,
       client_secret: clientSecret,
     }),
@@ -180,9 +274,10 @@ async function refreshOAuthToken(): Promise<void> {
   const tokenData = await response.json();
   
   // Store the new tokens
+  // Use the new refresh token if provided, otherwise keep the existing one
   await storeOAuthTokens({
     accessToken: tokenData.access_token,
-    refreshToken: tokenData.refresh_token || status.tokens.refreshToken,
+    refreshToken: tokenData.refresh_token || refreshToken,
     expiresAt: Date.now() + (tokenData.expires_in * 1000),
     tokenType: tokenData.token_type,
   });
@@ -212,13 +307,12 @@ export async function getOAuthAuthorizationUrl(): Promise<string> {
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002'}/api/auth/box/callback`;
   const state = Math.random().toString(36).substring(7);
   
-  // Request necessary scopes for the application
-  // See: https://developer.box.com/guides/api-calls/permissions-and-errors/scopes/
-  const scopes = [
-    'root_readwrite',           // Read and write all files and folders
-    'manage_enterprise_properties', // Create and manage metadata templates
-    'manage_managed_users',     // Access user information
-  ].join(' ');
+  // Build authorization URL - Box will use scopes configured in Developer Console
+  const authUrl = new URL('https://account.box.com/api/oauth2/authorize');
+  authUrl.searchParams.set('client_id', clientId);
+  authUrl.searchParams.set('response_type', 'code');
+  authUrl.searchParams.set('redirect_uri', redirectUri);
+  authUrl.searchParams.set('state', state);
   
-  return `https://account.box.com/api/oauth2/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&scope=${encodeURIComponent(scopes)}`;
+  return authUrl.toString();
 } 
