@@ -1,5 +1,4 @@
 /**
-import { logger } from '@/lib/logger';
  * Custom hook for simple UI state handlers
  * 
  * This hook contains handlers that primarily manage UI state without complex business logic.
@@ -7,6 +6,7 @@ import { logger } from '@/lib/logger';
  */
 
 import { useToast } from '@/hooks/use-toast';
+import { logger } from '@/lib/logger';
 import { TOAST_MESSAGES } from '@/lib/main-page-constants';
 import { clearAllGroundTruthData, saveAccuracyData } from '@/lib/mock-data';
 import type { AccuracyField, AccuracyData, PromptVersion } from '@/lib/types';

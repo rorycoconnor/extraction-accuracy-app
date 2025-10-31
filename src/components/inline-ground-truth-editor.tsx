@@ -115,7 +115,7 @@ export default function InlineGroundTruthEditor({
       await onSave(file.id, field.key, valueToSave);
       onClose();
     } catch (error) {
-      logger.error('Error saving ground truth', error);
+      logger.error('Error saving ground truth', error instanceof Error ? error : { error });
       toast({
         title: 'Save Failed',
         description: 'Failed to save ground truth data. Please try again.',

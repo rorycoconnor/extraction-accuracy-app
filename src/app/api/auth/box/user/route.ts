@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
           }
         });
       } catch (oauthError) {
-        logger.error('[API] OAuth user fetch failed', oauthError);
+        logger.error('[API] OAuth user fetch failed', oauthError instanceof Error ? oauthError : { error: oauthError });
         // OAuth token might be expired, continue to try other methods
       }
     }
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
           });
         }
       } catch (serviceError) {
-        logger.error('[API] Service account user fetch failed', serviceError);
+        logger.error('[API] Service account user fetch failed', serviceError instanceof Error ? serviceError : { error: serviceError });
       }
     }
     
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
           }
         });
       } catch (devTokenError) {
-        logger.error('[API] Developer token user fetch failed', devTokenError);
+        logger.error('[API] Developer token user fetch failed', devTokenError instanceof Error ? devTokenError : { error: devTokenError });
       }
     }
     
@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
     }, { status: 401 });
     
   } catch (error) {
-    logger.error('[API] Error fetching user info', error);
+    logger.error('[API] Error fetching user info', error instanceof Error ? error : { error });
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch user information',

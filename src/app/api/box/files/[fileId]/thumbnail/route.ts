@@ -50,7 +50,7 @@ export async function GET(
     });
     
   } catch (error) {
-    logger.error('Error fetching Box thumbnail', error);
+    logger.error('Error fetching Box thumbnail', error instanceof Error ? error : { error });
     return new NextResponse('Internal server error', { status: 500 });
   }
 }

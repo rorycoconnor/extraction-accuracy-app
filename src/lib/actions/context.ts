@@ -22,7 +22,7 @@ export async function getFieldContext(
     
     return context;
   } catch (error) {
-    logger.error('Error finding context for field', { fieldKey, fileId, error });
+    logger.error('Error finding context for field', { fieldKey, fileId, error: error instanceof Error ? error : String(error) });
     return null;
   }
 }
@@ -52,7 +52,7 @@ export async function getMultipleFieldContexts(
     
     return contexts;
   } catch (error) {
-    logger.error('Error finding contexts for file', { fileId, error });
+    logger.error('Error finding contexts for file', { fileId, error: error instanceof Error ? error : String(error) });
     return {};
   }
 } 

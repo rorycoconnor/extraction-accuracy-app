@@ -181,7 +181,7 @@ export function useAccuracyData() {
            });
           setShownColumns(newShownColumns);
         } catch (error) {
-          logger.error('useAccuracyData: Failed to parse saved column visibility', error as Error);
+          logger.error('useAccuracyData: Failed to parse saved column visibility', error instanceof Error ? error : { error });
           const newShownColumns: Record<string, boolean> = {};
           newShownColumns['Ground Truth'] = true;
           AVAILABLE_MODELS.forEach((model: string) => {

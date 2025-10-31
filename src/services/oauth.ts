@@ -121,7 +121,7 @@ export async function isOAuthConnected(): Promise<boolean> {
       await refreshOAuthToken();
       return true;
     } catch (error) {
-      logger.error('Failed to refresh OAuth token', error);
+      logger.error('Failed to refresh OAuth token', error instanceof Error ? error : { error });
       await disconnectOAuth();
       return false;
     }

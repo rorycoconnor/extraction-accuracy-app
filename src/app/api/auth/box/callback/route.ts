@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
 
     // Handle OAuth errors
     if (error) {
-      logger.error('Box OAuth error', error);
+      logger.error('Box OAuth error', { error });
       return NextResponse.redirect(
         new URL('/settings?error=oauth_failed&message=' + encodeURIComponent(error), request.url)
       );
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
     );
 
   } catch (error) {
-    logger.error('OAuth callback error', error);
+    logger.error('OAuth callback error', error instanceof Error ? error : { error });
     return NextResponse.redirect(
       new URL('/settings?error=oauth_failed&message=unexpected_error', request.url)
     );

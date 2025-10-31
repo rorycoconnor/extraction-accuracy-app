@@ -50,7 +50,7 @@ function calculateSummaryStats(
         topModel: modelsCompared[0] ? formatModelName(modelsCompared[0]) : 'none'
       });
     } catch (error) {
-      logger.warn('Failed to sort models by performance, using alphabetical order', { error });
+      logger.warn('Failed to sort models by performance, using alphabetical order', { error: error instanceof Error ? error : String(error) });
       modelsCompared = visibleModels.sort();
     }
   } else {
@@ -205,7 +205,7 @@ function generateFieldAveragesRows(
     rows.push(overallRow);
     rows.push(['']);
   } catch (e) {
-    logger.warn('CSV Export: Failed to compute overall model accuracies for header row', { error: e });
+    logger.warn('CSV Export: Failed to compute overall model accuracies for header row', { error: e instanceof Error ? e : String(e) });
   }
 
   // Data rows for each field (show all fields, mark disabled ones)
@@ -372,7 +372,7 @@ export function exportToCSV(
 
     logger.info('CSV export completed', { filename });
   } catch (error) {
-    logger.error('Error exporting to CSV', error as Error);
+    logger.error('Error exporting to CSV', error instanceof Error ? error : { error });
     throw new Error('Failed to export data to CSV. Please try again.');
   }
 }

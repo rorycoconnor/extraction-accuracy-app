@@ -114,7 +114,7 @@ export default function ExtractionTable({
           sortedModels = models.sort();
         }
       } catch (error) {
-        logger.warn('Failed to sort models by performance, using alphabetical order', error);
+        logger.warn('Failed to sort models by performance, using alphabetical order', error instanceof Error ? error : { error });
         sortedModels = models.sort();
       }
     } else {

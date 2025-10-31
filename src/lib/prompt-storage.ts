@@ -32,7 +32,7 @@ export function getPromptStore(): PromptStore {
       return JSON.parse(stored);
     }
   } catch (error) {
-    logger.error('Failed to parse prompt store from localStorage', error as Error);
+    logger.error('Failed to parse prompt store from localStorage', error instanceof Error ? error : { error });
   }
   
   return {};
@@ -55,7 +55,7 @@ function savePromptStore(store: PromptStore): void {
     
     logger.debug('Prompt store saved', { fieldCount: Object.keys(store).length });
   } catch (error) {
-    logger.error('Failed to save prompt store', error as Error);
+    logger.error('Failed to save prompt store', error instanceof Error ? error : { error });
   }
 }
 
@@ -264,7 +264,7 @@ export async function restorePromptDataFromFiles(): Promise<void> {
       }
     }
   } catch (error) {
-    logger.error('Failed to restore prompt data from files', error as Error);
+    logger.error('Failed to restore prompt data from files', error instanceof Error ? error : { error });
   }
 }
 

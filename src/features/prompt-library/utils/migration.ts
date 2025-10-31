@@ -1,10 +1,10 @@
 /**
-import { logger } from '@/lib/logger';
  * @fileOverview Migration Utilities
  * 
  * Handles migration from old prompt library data format to new Box-compliant format
  */
 
+import { logger } from '@/lib/logger';
 import type { Database, Template, Field, FieldType } from '../types';
 
 // Legacy field types from v1
@@ -130,7 +130,7 @@ export function autoMigrateIfNeeded(): Database | null {
     
     return migratedData;
   } catch (error) {
-    logger.error('Migration failed', error);
+    logger.error('Migration failed', error instanceof Error ? error : { error });
     return null;
   }
 }

@@ -1,5 +1,4 @@
 /**
-import { logger } from '@/lib/logger';
  * Enhanced Error Handling Hook
  * 
  * Provides comprehensive error handling for Box AI operations including:
@@ -10,6 +9,7 @@ import { logger } from '@/lib/logger';
  */
 
 import { useState, useCallback } from 'react';
+import { logger } from '@/lib/logger';
 import { useToast } from '@/hooks/use-toast';
 
 // Error types for better categorization
@@ -239,7 +239,7 @@ export const useEnhancedErrorHandling = () => {
         lastError = enhancedError;
         
         // Log error for debugging
-        logger.error('Attempt failed', { attempt: attempt + 1, maxRetries: config.maxRetries + 1, error: enhancedError });
+        logger.error('Attempt failed', { attempt: attempt + 1, maxRetries: config.maxRetries + 1, error: enhancedError.message || String(enhancedError) });
         
         // If it's the last attempt or error is not retryable, throw
         if (attempt === config.maxRetries || !enhancedError.retryable) {

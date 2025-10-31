@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       message: 'OAuth disconnected successfully'
     });
   } catch (error) {
-    logger.error('Failed to disconnect OAuth', error);
+    logger.error('Failed to disconnect OAuth', error instanceof Error ? error : { error });
     
     return NextResponse.json({
       success: false,

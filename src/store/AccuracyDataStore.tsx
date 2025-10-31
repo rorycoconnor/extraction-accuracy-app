@@ -454,7 +454,7 @@ export const AccuracyDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
           await saveAccuracyData(state.data);
           dispatch({ type: 'MARK_SAVED' });
         } catch (error) {
-          logger.error('Failed to auto-save data', error);
+          logger.error('Failed to auto-save data', error instanceof Error ? error : { error });
         }
       };
 

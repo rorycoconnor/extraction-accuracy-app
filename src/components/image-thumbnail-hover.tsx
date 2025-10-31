@@ -92,7 +92,7 @@ export function ImageThumbnailHover({ fileName, fileId, children }: ImageThumbna
   };
 
   const handleImageError = (e: any) => {
-    logger.error('ImageThumbnailHover: Image failed to load', { fileName, imageUrl, error: e });
+    logger.error('ImageThumbnailHover: Image failed to load', { fileName, imageUrl, error: e instanceof Error ? e : String(e) });
     setImageError(true);
     setImageLoaded(false);
   };

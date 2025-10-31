@@ -116,7 +116,7 @@ function SettingsContent() {
           setOauthStatus('disconnected');
         }
       } catch (error) {
-        logger.error('Failed to check OAuth status', error);
+        logger.error('Failed to check OAuth status', error instanceof Error ? error : { error });
         setOauthStatus('disconnected');
       }
     };
@@ -139,7 +139,7 @@ function SettingsContent() {
           setUserInfo(null);
         }
       } catch (error) {
-        logger.error('Failed to fetch user info', error);
+        logger.error('Failed to fetch user info', error instanceof Error ? error : { error });
         setUserInfo(null);
       } finally {
         setUserLoading(false);
@@ -163,7 +163,7 @@ function SettingsContent() {
           logger.warn('No access token found');
         }
       } catch (error) {
-        logger.error('Failed to fetch token', error);
+        logger.error('Failed to fetch token', error instanceof Error ? error : { error });
       }
     };
     
@@ -212,7 +212,7 @@ function SettingsContent() {
               setUserInfo(null);
             }
           } catch (error) {
-            logger.error('Failed to refresh user info', error);
+            logger.error('Failed to refresh user info', error instanceof Error ? error : { error });
           } finally {
             setUserLoading(false);
           }

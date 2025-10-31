@@ -229,7 +229,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
       // Call the parent close handler
       onClose();
     } catch (error) {
-      logger.error('Error closing extraction modal', error);
+      logger.error('Error closing extraction modal', error instanceof Error ? error : { error });
       // Force close even if there's an error
       onClose();
     }

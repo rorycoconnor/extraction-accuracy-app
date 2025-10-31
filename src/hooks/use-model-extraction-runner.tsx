@@ -344,9 +344,26 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       
       const result = await executeExtractionWithRetry(
         async () => {
+          // Map BoxFieldType to BoxAIField type (convert 'float' to 'number')
+          const mappedFields = fieldsToUse.map(field => {
+            let mappedType: 'string' | 'number' | 'date' | 'enum' | 'multiSelect';
+            if (field.type === 'float') {
+              mappedType = 'number';
+            } else if (field.type === 'string' || field.type === 'date' || field.type === 'enum' || field.type === 'multiSelect') {
+              mappedType = field.type;
+            } else {
+              mappedType = 'string'; // fallback to string for unknown types
+            }
+            
+            return {
+              ...field,
+              type: mappedType
+            };
+          });
+          
           const response = await extractMetadata({
             fileId: job.fileResult.id,
-            fields: fieldsToUse,
+            fields: mappedFields,
             model: actualModelName,
           });
           

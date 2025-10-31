@@ -92,7 +92,7 @@ export async function updateBoxSettings(settings: {
     
     return { success: true };
   } catch (error) {
-    logger.error('Failed to update .env file', error);
+    logger.error('Failed to update .env file', error instanceof Error ? error : { error });
     return {
       success: false,
       message: 'An unexpected error occurred while saving settings.',

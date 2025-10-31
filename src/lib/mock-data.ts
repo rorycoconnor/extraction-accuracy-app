@@ -123,7 +123,7 @@ function saveFileMetadataStore(data: FileMetadataStore) {
         localStorage.setItem(FILE_METADATA_STORAGE_KEY, JSON.stringify(data));
         logger.debug('Successfully saved file metadata to localStorage');
     } catch (error) {
-        logger.error('Error saving to localStorage', error as Error);
+        logger.error('Error saving to localStorage', error instanceof Error ? error : { error });
     }
 }
 
@@ -250,6 +250,6 @@ export async function restoreDataFromFiles() {
             }
         }
     } catch (error) {
-        logger.error('Failed to restore data from JSON files', error as Error);
+        logger.error('Failed to restore data from JSON files', error instanceof Error ? error : { error });
     }
 }

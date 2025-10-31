@@ -168,7 +168,7 @@ export default function GroundTruthPage() {
     } catch (err) {
       let errorMessage = err instanceof Error ? err.message : 'An unknown error occurred while processing selected files.';
       setError(errorMessage);
-      logger.error('Error loading data', err);
+      logger.error('Error loading data', {err});
     } finally {
       setIsLoading(false);
     }
@@ -238,7 +238,7 @@ export default function GroundTruthPage() {
         description: 'Your changes have been saved successfully.',
       });
     } catch (error) {
-      logger.error('Ground truth save failed', error);
+      logger.error('Ground truth save failed', error instanceof Error ? error : { error });
       toast({
         title: 'Save Failed',
         description: 'Some changes could not be saved. Please try again.',
@@ -353,7 +353,7 @@ export default function GroundTruthPage() {
           
           csvRows.push(row.join(','));
         } catch (error) {
-          logger.warn('Failed to process file', { fileId: fileInfo.file.id, error });
+          logger.warn('Failed to process file', { fileId: fileInfo.file.id, error: error instanceof Error ? error : String(error) });
           // Continue with other files
         }
       }
@@ -386,7 +386,7 @@ export default function GroundTruthPage() {
       
       setIsExportDialogOpen(false);
     } catch (error) {
-      logger.error('CSV export error', error);
+      logger.error('CSV export error', error instanceof Error ? error : { error });
       toast({
         title: 'Export Failed',
         description: 'Failed to export CSV. Please try again.',
@@ -638,7 +638,7 @@ export default function GroundTruthPage() {
       setCsvFile(null);
       
     } catch (error) {
-      logger.error('CSV import error', error);
+      logger.error('CSV import error', error instanceof Error ? error : { error });
       toast({
         title: 'Import Failed',
         description: error instanceof Error ? error.message : 'Failed to import CSV. Please try again.',

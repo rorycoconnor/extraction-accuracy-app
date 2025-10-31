@@ -210,7 +210,7 @@ export async function getTemplates(): Promise<BoxTemplate[]> {
         .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
   } catch (error) {
-    boxLogger.error('Error fetching templates from Box', error);
+    boxLogger.error('Error fetching templates from Box', error instanceof Error ? error : { error });
     throw error;
   }
 }
@@ -233,7 +233,7 @@ export async function createMetadataTemplate(templateData: BoxMetadataTemplateCr
     boxLogger.info('Successfully created Box metadata template', { templateKey: response.templateKey });
     return response;
   } catch (error) {
-    boxLogger.error('Error creating metadata template in Box', error);
+    boxLogger.error('Error creating metadata template in Box', error instanceof Error ? error : { error });
     throw error;
   }
 }
@@ -248,7 +248,7 @@ export async function checkTemplateExists(templateName: string): Promise<boolean
       template.displayName.toLowerCase() === templateName.toLowerCase()
     );
   } catch (error) {
-    boxLogger.error('Error checking if template exists', error);
+    boxLogger.error('Error checking if template exists', error instanceof Error ? error : { error });
     throw error;
   }
 }
@@ -268,7 +268,7 @@ export async function getFolderItems(folderId: string): Promise<BoxFile[]> {
         .sort((a, b) => a.name.localeCompare(b.name));
 
   } catch (error) {
-    boxLogger.error('Error fetching folder items from Box', error);
+    boxLogger.error('Error fetching folder items from Box', error instanceof Error ? error : { error });
     throw error;
   }
 }
@@ -293,7 +293,7 @@ export async function getFolderContents(folderId: string): Promise<{
     return { files, folders };
 
   } catch (error) {
-    boxLogger.error('Error fetching folder contents from Box', error);
+    boxLogger.error('Error fetching folder contents from Box', error instanceof Error ? error : { error });
     throw error;
   }
 }
@@ -356,7 +356,7 @@ export async function getBoxFileContent(fileId: string): Promise<string> {
         throw new Error('Could not extract text content from document');
 
     } catch (error) {
-        boxLogger.error(`Error fetching content for file ${fileId} from Box`, error);
+        boxLogger.error(`Error fetching content for file ${fileId} from Box`, error instanceof Error ? error : { error });
         throw error;
     }
 }
@@ -379,7 +379,7 @@ export async function debugFileContent(fileId: string): Promise<void> {
         
         boxLogger.debug('Debug complete', { fileId });
     } catch (error) {
-        boxLogger.error('Debug failed', error);
+        boxLogger.error('Debug failed', error instanceof Error ? error : { error });
     }
 }
 
@@ -562,7 +562,7 @@ export async function extractStructuredMetadataWithBoxAI(
     return extractedData;
 
   } catch (error) {
-    boxLogger.error(`Error using model "${model}" for file ${fileId}`, error as Error);
+    boxLogger.error(`Error using model "${model}" for file ${fileId}`, error instanceof Error ? error : { error });
     throw error;
   }
 }
@@ -575,7 +575,7 @@ export async function getBoxFileEmbedLink(fileId: string): Promise<string> {
         }
         return fileInfo.expiring_embed_link.url;
     } catch (error) {
-        boxLogger.error(`Error fetching embed link for file ${fileId}`, error as Error);
+        boxLogger.error(`Error fetching embed link for file ${fileId}`, error instanceof Error ? error : { error });
         throw error;
     }
 }

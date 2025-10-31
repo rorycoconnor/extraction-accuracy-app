@@ -114,7 +114,7 @@ export function ImportExportManager({
       setExportDialogOpen(false);
       setSelectedTemplatesForExport([]);
     } catch (error) {
-      logger.error('Export error', error);
+      logger.error('Export error', error instanceof Error ? error : { error });
       toast({
         title: 'Export Failed',
         description: 'Failed to export templates. Please try again.',
@@ -335,7 +335,7 @@ export function ImportExportManager({
       setNewImportTemplateName('');
 
     } catch (error) {
-      logger.error('Import error', error);
+      logger.error('Import error', error instanceof Error ? error : { error });
       toast({
         title: 'Import Failed',
         description: 'Failed to import templates. Please check the CSV format.',

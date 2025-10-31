@@ -61,7 +61,7 @@ export function addExpansion(acronym: string, expansions: string | string[]): bo
     logger.info('Added expansion', { acronym, expansions: expArray.join(', ') });
     return true;
   } catch (error) {
-    logger.error('Failed to add expansion', error as Error);
+    logger.error('Failed to add expansion', error instanceof Error ? error : { error });
     return false;
   }
 }
@@ -83,7 +83,7 @@ export function removeExpansion(acronym: string): boolean {
     logger.info('Removed expansion', { acronym: upperAcronym });
     return true;
   } catch (error) {
-    logger.error('Failed to remove expansion', error as Error);
+    logger.error('Failed to remove expansion', error instanceof Error ? error : { error });
     return false;
   }
 }

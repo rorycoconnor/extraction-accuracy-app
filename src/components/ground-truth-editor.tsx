@@ -82,7 +82,7 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
       const context = await getFieldContext(file.id, fieldKey, value);
       setFieldContexts(prev => ({ ...prev, [fieldKey]: context }));
     } catch (error) {
-      logger.error('Failed to load context for field', { fieldKey, error });
+      logger.error('Failed to load context for field', { fieldKey, error: error instanceof Error ? error : String(error) });
       setFieldContexts(prev => ({ ...prev, [fieldKey]: null }));
     } finally {
       setLoadingContexts(prev => ({ ...prev, [fieldKey]: false }));

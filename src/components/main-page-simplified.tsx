@@ -339,7 +339,7 @@ const MainPage: React.FC = () => {
         description: "CSV file has been downloaded to your computer.",
       });
     } catch (error) {
-      logger.error('Export error', error as Error);
+      logger.error('Export error', error instanceof Error ? error : { error });
       toast({
         title: "Export Failed",
         description: "Failed to export data. Please try again.",
@@ -503,7 +503,7 @@ const MainPage: React.FC = () => {
       }
 
     } catch (error) {
-      logger.error('Error during auto-populate', error as Error);
+      logger.error('Error during auto-populate', error instanceof Error ? error : { error });
       toast({
         title: 'Update Failed',
         description: 'An error occurred while updating ground truth.',
@@ -561,7 +561,7 @@ const MainPage: React.FC = () => {
           try {
             setIsModalOpen(true);
           } catch (error) {
-            logger.error('Error opening modal', error as Error);
+            logger.error('Error opening modal', error instanceof Error ? error : { error });
             forceCloseAllModals();
             setTimeout(() => setIsModalOpen(true), 100);
           }

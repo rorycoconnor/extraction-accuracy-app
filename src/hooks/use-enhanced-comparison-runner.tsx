@@ -223,7 +223,7 @@ export const useEnhancedComparisonRunner = (
       });
       
     } catch (error) {
-      logger.error('Enhanced extraction failed', error);
+      logger.error('Enhanced extraction failed', error instanceof Error ? error : { error });
       stopExtraction();
       
       updateDetailedProgress({

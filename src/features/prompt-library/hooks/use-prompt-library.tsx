@@ -76,7 +76,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
       setDatabase(data);
       setError(null);
     } catch (err) {
-      logger.error('Failed to load prompt library data', err);
+      logger.error('Failed to load prompt library data', err instanceof Error ? err : { error: err });
       setError('Failed to load prompt library data');
     } finally {
       setIsLoading(false);
@@ -332,7 +332,7 @@ export function PromptLibraryProvider({ children }: { children: React.ReactNode 
         duration: 2000,
       });
     } catch (err) {
-      logger.error('Failed to copy to clipboard', err);
+      logger.error('Failed to copy to clipboard', err instanceof Error ? err : { error: err });
       toast({
         title: 'Copy Failed',
         description: 'Failed to copy text to clipboard.',

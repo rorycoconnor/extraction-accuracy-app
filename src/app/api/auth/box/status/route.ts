@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
       status
     });
   } catch (error) {
-    logger.error('Failed to get OAuth status', error);
+    logger.error('Failed to get OAuth status', error instanceof Error ? error : { error });
     
     return NextResponse.json({
       success: false,

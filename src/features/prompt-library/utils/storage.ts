@@ -148,7 +148,7 @@ export const PromptLibraryStorage = {
         }
       }
     } catch (error) {
-      logger.error('Failed to load prompt library data', error);
+      logger.error('Failed to load prompt library data', error instanceof Error ? error : { error });
     }
     
     // Return seed data only if localStorage is empty/invalid and save it
@@ -168,7 +168,7 @@ export const PromptLibraryStorage = {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
-      logger.error('Failed to save prompt library data', error);
+      logger.error('Failed to save prompt library data', error instanceof Error ? error : { error });
     }
   },
 
@@ -183,7 +183,7 @@ export const PromptLibraryStorage = {
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      logger.error('Failed to clear prompt library data', error);
+      logger.error('Failed to clear prompt library data', error instanceof Error ? error : { error });
     }
   }
 }; 

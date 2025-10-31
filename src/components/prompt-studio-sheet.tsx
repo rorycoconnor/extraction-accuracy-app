@@ -455,7 +455,7 @@ export default function PromptStudioSheet({
           logger.debug('Extraction completed', { modelName: job.modelName, fileIndex: job.fileIndex + 1, duration });
         } catch (error) {
           const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-          logger.error('Extraction failed', { modelName: job.modelName, fileIndex: job.fileIndex + 1, duration, error });
+          logger.error('Extraction failed', { modelName: job.modelName, fileIndex: job.fileIndex + 1, duration, error: error instanceof Error ? error : String(error) });
           testResultsData[job.fileIndex].fields[field.key][job.modelName] = 'ERROR';
         }
 

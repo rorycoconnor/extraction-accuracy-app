@@ -82,7 +82,7 @@ export function CreateBoxTemplateDialog({ selectedTemplate }: CreateBoxTemplateD
       logger.info('Box template created', { template: createdTemplate });
       
     } catch (error) {
-      logger.error('Failed to create Box template', error);
+      logger.error('Failed to create Box template', error instanceof Error ? error : { error });
       toast({
         variant: 'destructive',
         title: 'Failed to Create Template',
