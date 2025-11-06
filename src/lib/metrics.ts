@@ -268,6 +268,20 @@ export function compareValues(predicted: string, actual: string): ComparisonResu
     return { isMatch: true, matchType: 'normalized', confidence: 'high' };
   }
   
+  // 🔧 NEW: Handle multi-select fields (e.g., "A, B" matches "B, A")
+  // Check if values contain commas (likely multi-select from Box)
+  if (predicted.includes(',') || actual.includes(',')) {
+    // Split by comma, trim whitespace, normalize, and sort
+    const predictedItems = predicted.split(',').map(item => normalizeText(item.trim())).filter(item => item).sort();
+    const actualItems = actual.split(',').map(item => normalizeText(item.trim())).filter(item => item).sort();
+    
+    // Compare as sorted arrays (order-independent)
+    if (predictedItems.length === actualItems.length && 
+        predictedItems.every((item, index) => item === actualItems[index])) {
+      return { isMatch: true, matchType: 'normalized', confidence: 'high' };
+    }
+  }
+  
   // Check for date format differences
   if (isDateLike(predicted) && isDateLike(actual)) {
     if (compareDates(predicted, actual)) {

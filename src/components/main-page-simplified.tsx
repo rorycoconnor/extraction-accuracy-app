@@ -399,81 +399,238 @@ const MainPage: React.FC = () => {
     }
 
     let totalUpdated = 0;
+    let totalSkipped = 0;
+    let skippedReasons: Record<string, number> = {};
     const enhancedExtractModel = 'enhanced_extract_agent';
 
-    logger.debug('Processing data', {
+    logger.info('Processing data', {
       filesCount: accuracyData.results.length,
       fieldsCount: accuracyData.fields.length,
+      templateKey: selectedTemplate.templateKey,
       enhancedExtractModel
     });
 
+    // Check if Enhanced Extract Agent was actually run in the comparison
+    const firstFileResult = accuracyData.results[0];
+    const firstFieldKey = accuracyData.fields[0]?.key;
+    let hasEnhancedExtract = false;
+    
+    if (firstFileResult && firstFieldKey && firstFileResult.fields[firstFieldKey]) {
+      const availableModels = Object.keys(firstFileResult.fields[firstFieldKey]);
+      hasEnhancedExtract = availableModels.some(m => m.toLowerCase().includes('enhanced'));
+      
+      logger.info('Checking for Enhanced Extract model', {
+        availableModels,
+        hasEnhancedExtract
+      });
+      
+      if (!hasEnhancedExtract) {
+        toast({
+          title: 'Enhanced Extract Not Found',
+          description: 'Please run a comparison with the Enhanced Extract Agent model first, then try copying to ground truth.',
+          variant: 'destructive'
+        });
+        return;
+      }
+    }
+
+    // Check if extractions are still in progress
+    let pendingCount = 0;
+    let totalFieldCount = 0;
+    
+    for (const fileResult of accuracyData.results) {
+      for (const fieldConfig of accuracyData.fields) {
+        const fieldKey = fieldConfig.key;
+        const fieldData = fileResult.fields[fieldKey];
+        
+        if (fieldData) {
+          totalFieldCount++;
+          const enhancedValue = fieldData[enhancedExtractModel] || 
+            Object.keys(fieldData).find(m => 
+              m.toLowerCase().includes('enhanced') && 
+              !m.toLowerCase().includes('no prompt')
+            );
+          
+          if (enhancedValue && (fieldData[enhancedValue] === 'Pending...' || !fieldData[enhancedValue])) {
+            pendingCount++;
+          }
+        }
+      }
+    }
+    
+    const pendingPercentage = totalFieldCount > 0 ? (pendingCount / totalFieldCount) * 100 : 0;
+    
+    logger.info('Extraction progress check', {
+      pendingCount,
+      totalFieldCount,
+      pendingPercentage: pendingPercentage.toFixed(1) + '%'
+    });
+    
+    // Warn if more than 20% of fields are still pending
+    if (pendingPercentage > 20) {
+      toast({
+        title: 'Extractions Still In Progress',
+        description: `${pendingCount} of ${totalFieldCount} fields are still being extracted (${pendingPercentage.toFixed(0)}%). Only completed fields will be copied. Consider waiting for extractions to finish for better results.`,
+        variant: 'default'
+      });
+      // Continue anyway - user can still copy what's available
+    }
+
     try {
+      // 🔧 OPTIMIZED: Batch ground truth updates per file to avoid 50+ toast notifications
+      // Build up ground truth data for each file, then save once per file
+      
       // Process each file
       for (const fileResult of accuracyData.results) {
         logger.debug(`Processing file`, { fileName: fileResult.fileName, fileId: fileResult.id });
+        
+        // Build ground truth object for this file
+        const fileGroundTruthUpdates: Record<string, string> = {};
         
         // Process each field for this file
         for (const fieldConfig of accuracyData.fields) {
           const fieldKey = fieldConfig.key;
           const fieldData = fileResult.fields[fieldKey];
           
-          logger.debug(`Processing field`, { 
-            fieldKey, 
-            hasFieldData: !!fieldData,
-            availableModels: fieldData ? Object.keys(fieldData) : []
-          });
-          
           if (!fieldData) {
-            logger.debug(`No field data`, { fieldKey });
+            logger.debug(`No field data for field`, { fieldKey, fileName: fileResult.fileName });
+            totalSkipped++;
+            skippedReasons['no_field_data'] = (skippedReasons['no_field_data'] || 0) + 1;
             continue;
           }
           
+          // Log all available models for this field
+          const availableModels = Object.keys(fieldData);
+          logger.debug(`Field data available`, { 
+            fieldKey, 
+            fileName: fileResult.fileName,
+            availableModels: availableModels,
+            allValues: fieldData
+          });
+          
           // Get the value from Enhanced Extract
-          const extractedValue = fieldData[enhancedExtractModel];
+          let extractedValue = fieldData[enhancedExtractModel];
           
-          logger.debug(`Enhanced Extract value`, { fieldKey, value: extractedValue });
-          
-          if (extractedValue && extractedValue !== '' && extractedValue !== null && extractedValue !== undefined) {
-            logger.debug(`Saving field value`, { fieldKey, value: extractedValue });
-            
-            // 🔧 Normalize date format to match manual ground truth editor format
-            let valueToSave = extractedValue;
-            if (fieldConfig.type === 'date') {
-              const parsedDate = new Date(extractedValue);
-              if (!isNaN(parsedDate.getTime())) {
-                // Convert to ISO format (YYYY-MM-DD) to match ground truth editor
-                valueToSave = parsedDate.toISOString().split('T')[0];
-                logger.debug(`Normalized date`, { fieldKey, original: extractedValue, normalized: valueToSave });
-              }
-            }
-            
-            const success = await saveGroundTruth(
-              fileResult.id,
-              selectedTemplate.templateKey,
-              fieldKey,
-              valueToSave
+          // If enhanced_extract_agent is not available, check if any model with "enhanced" exists
+          if (!extractedValue || extractedValue === '' || extractedValue === 'Pending...' || extractedValue.startsWith('Error:')) {
+            const enhancedModel = availableModels.find(m => 
+              m.toLowerCase().includes('enhanced') && 
+              !m.toLowerCase().includes('no prompt') &&
+              fieldData[m] && 
+              fieldData[m] !== '' && 
+              fieldData[m] !== 'Pending...' &&
+              !fieldData[m].startsWith('Error:')
             );
             
-            logger.debug(`Save result`, { fieldKey, success });
-            
-            if (success) {
-              totalUpdated++;
+            if (enhancedModel) {
+              logger.info(`Using alternative enhanced model`, { 
+                fieldKey, 
+                fileName: fileResult.fileName,
+                originalModel: enhancedExtractModel,
+                foundModel: enhancedModel 
+              });
+              extractedValue = fieldData[enhancedModel];
             }
-          } else {
-            logger.debug(`Skipping field - no valid value`, { fieldKey });
+          }
+          
+          logger.debug(`Extracted value for field`, { 
+            fieldKey, 
+            fileName: fileResult.fileName,
+            value: extractedValue,
+            valueType: typeof extractedValue
+          });
+          
+          // Check if value is valid
+          if (!extractedValue || extractedValue === '' || extractedValue === null || extractedValue === undefined) {
+            logger.debug(`Skipping field - empty or null value`, { fieldKey, fileName: fileResult.fileName });
+            totalSkipped++;
+            skippedReasons['empty_value'] = (skippedReasons['empty_value'] || 0) + 1;
+            continue;
+          }
+          
+          if (extractedValue === 'Pending...') {
+            logger.debug(`Skipping field - still pending`, { fieldKey, fileName: fileResult.fileName });
+            totalSkipped++;
+            skippedReasons['pending'] = (skippedReasons['pending'] || 0) + 1;
+            continue;
+          }
+          
+          if (extractedValue.startsWith('Error:')) {
+            logger.debug(`Skipping field - extraction error`, { fieldKey, fileName: fileResult.fileName, error: extractedValue });
+            totalSkipped++;
+            skippedReasons['error'] = (skippedReasons['error'] || 0) + 1;
+            continue;
+          }
+          
+          logger.info(`Queueing valid field value for save`, { fieldKey, fileName: fileResult.fileName, value: extractedValue });
+          
+          // 🔧 Normalize date format to match manual ground truth editor format
+          let valueToSave = extractedValue;
+          if (fieldConfig.type === 'date') {
+            const parsedDate = new Date(extractedValue);
+            if (!isNaN(parsedDate.getTime())) {
+              // Convert to ISO format (YYYY-MM-DD) to match ground truth editor
+              valueToSave = parsedDate.toISOString().split('T')[0];
+              logger.debug(`Normalized date`, { fieldKey, original: extractedValue, normalized: valueToSave });
+            }
+          }
+          
+          // Add to batch for this file
+          fileGroundTruthUpdates[fieldKey] = valueToSave;
+          totalUpdated++;
+        }
+        
+        // 🔧 OPTIMIZED: Save all fields for this file at once (no individual toasts)
+        if (Object.keys(fileGroundTruthUpdates).length > 0) {
+          logger.info(`Saving ${Object.keys(fileGroundTruthUpdates).length} ground truth values for file`, { 
+            fileName: fileResult.fileName,
+            fileId: fileResult.id
+          });
+          
+          try {
+            saveGroundTruthForFile(fileResult.id, selectedTemplate.templateKey, fileGroundTruthUpdates);
+            logger.debug(`Batch save successful for file`, { fileName: fileResult.fileName });
+          } catch (error) {
+            logger.error(`Batch save failed for file`, { fileName: fileResult.fileName, error });
+            // Count all fields in this batch as failed
+            const fieldsInBatch = Object.keys(fileGroundTruthUpdates).length;
+            totalSkipped += fieldsInBatch;
+            totalUpdated -= fieldsInBatch; // Remove from successful count
+            skippedReasons['save_failed'] = (skippedReasons['save_failed'] || 0) + fieldsInBatch;
           }
         }
       }
 
-      logger.info(`Auto-populate complete`, { totalUpdated });
-
-      toast({
-        title: 'Ground Truth Updated',
-        description: `Successfully copied ${totalUpdated} fields from Enhanced Extract to ground truth.`,
+      logger.info(`Auto-populate complete`, { 
+        totalUpdated, 
+        totalSkipped,
+        skippedReasons 
       });
 
-      // Refresh ground truth to show the updates
-      refreshGroundTruth();
+      // Create detailed description message
+      let description = `Successfully copied ${totalUpdated} field${totalUpdated !== 1 ? 's' : ''}.`;
+      if (totalSkipped > 0) {
+        description += ` Skipped ${totalSkipped} field${totalSkipped !== 1 ? 's' : ''}`;
+        const reasons = [];
+        if (skippedReasons['pending']) reasons.push(`${skippedReasons['pending']} pending`);
+        if (skippedReasons['empty_value']) reasons.push(`${skippedReasons['empty_value']} empty`);
+        if (skippedReasons['error']) reasons.push(`${skippedReasons['error']} errors`);
+        if (skippedReasons['no_field_data']) reasons.push(`${skippedReasons['no_field_data']} no data`);
+        if (skippedReasons['save_failed']) reasons.push(`${skippedReasons['save_failed']} save failed`);
+        if (reasons.length > 0) {
+          description += ` (${reasons.join(', ')})`;
+        }
+      }
+
+      toast({
+        title: totalUpdated > 0 ? 'Ground Truth Updated' : 'No Fields Copied',
+        description: description,
+        variant: totalUpdated > 0 ? 'default' : 'destructive'
+      });
+
+      // 🔧 FIX: AWAIT the refresh so data is actually loaded before we try to use it
+      logger.debug('Refreshing ground truth context to reload data from storage');
+      await refreshGroundTruth();
 
       // 🔧 ADDED: Force refresh of the main accuracy data to show ground truth in the grid
       logger.debug('Triggering accuracy data refresh to update grid');
@@ -490,15 +647,33 @@ const MainPage: React.FC = () => {
         updatedAccuracyData.results.forEach((fileResult: any) => {
           const fileGroundTruth = refreshedGroundTruthData[fileResult.id]?.groundTruth || {};
           
+          logger.debug('Updating ground truth for file', { 
+            fileId: fileResult.id, 
+            fileName: fileResult.fileName,
+            fieldCount: Object.keys(fileGroundTruth).length 
+          });
+          
           // Update each field's ground truth value
           Object.keys(fileResult.fields).forEach(fieldKey => {
             if (fileResult.fields[fieldKey]) {
-              fileResult.fields[fieldKey]['Ground Truth'] = fileGroundTruth[fieldKey] || '';
+              const gtValue = fileGroundTruth[fieldKey] || '';
+              fileResult.fields[fieldKey]['Ground Truth'] = gtValue;
+              
+              if (gtValue) {
+                logger.debug('Updated ground truth value', { 
+                  fileId: fileResult.id, 
+                  fieldKey, 
+                  value: gtValue 
+                });
+              }
             }
           });
         });
         
-        logger.debug('Setting updated accuracy data with ground truth');
+        logger.info('Setting updated accuracy data with ground truth', {
+          filesUpdated: updatedAccuracyData.results.length,
+          fieldsPerFile: updatedAccuracyData.fields.length
+        });
         setAccuracyData(updatedAccuracyData);
       }
 
