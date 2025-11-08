@@ -1748,5 +1748,74 @@
       "invoiceId": "8742",
       "invoiceTotalAmount": "1002000"
     }
+  },
+  "2037537237427": {
+    "templateKey": "payoffStatementV3",
+    "groundTruth": {
+      "documentType": "Payoff Statement",
+      "loanType": "CONV W/O PMI",
+      "helocText": "Not Present",
+      "goodThroughDate": "5/6/2025",
+      "goodThroughText": "The enclosed amount is needed to pay off the loan and is only good through 05-06-25. After that time you'll need to request a new payoff statement because the amount will change. This is because the loan accrues interest daily.",
+      "perDiem": "19.75",
+      "chargeCount": "8",
+      "borrowerName": "Linnea Dudas",
+      "doesDisbursementNotesIncludeBorrower": "Yes",
+      "lenderName": "WELLS FARGO HOME MORTGAGE",
+      "lenderAddress": "test",
+      "beneficiaryName": "Wells Fargo Bank N.A.",
+      "beneficiaryAddress": "1 Home Campus Des Moines IA 50328",
+      "propertyAddress": "8024 S Lismore Ln West Jordan UT 84088",
+      "bankName": "Wells Fargo Bank N.A.",
+      "wireInstructions": "WIRE TRANSFER - Beneficiary Wells Fargo Bank N.A. Beneficiary Bank ABA: 121000248 Beneficiary Bank Acct: 4127400093 Beneficiary Bank Address: 1 Home Campus Des Moines IA 50328 Special Information for Beneficiary: Apply funds to: 936 loan 0603913344 Mortgagor: Linnea Dudas Sender's Name and Phone Number Deadline: 2:00 p.m. Central Time (Monday - Friday)",
+      "wireTransferAddress": "test",
+      "overnightDeliveriesAddress": "test"
+    }
+  },
+  "2037528783610": {
+    "templateKey": "payoffStatementV3",
+    "groundTruth": {
+      "documentType": "Payoff Statement",
+      "loanType": "HELOC",
+      "helocText": "Line of Credit Payoff Suspension and Closure Authorization",
+      "goodThroughDate": "5/16/2025",
+      "goodThroughText": "Payoff Good Through Date: 5/16/25",
+      "perDiem": "0",
+      "chargeCount": "4",
+      "borrowerName": "BRIAN THOMAS QUARESMA",
+      "doesDisbursementNotesIncludeBorrower": "No",
+      "lenderName": "Flagstar Bank",
+      "lenderAddress": "test",
+      "beneficiaryName": "Flagstar Bank",
+      "beneficiaryAddress": "270 Park Ave New York NY 10017",
+      "propertyAddress": "573 MESA RD NIPOMO CA 93444-9342",
+      "bankName": "JP Morgan Chase Bank NA",
+      "wireInstructions": "WIRE TRANSFER Beneficiary Name: Flagstar Bank Account #: 10000017821848 ABA/Routing NUMBER: 021000021 Bank Name: JP Morgan Chase Bank NA Bank Address: 270 Park Ave New York NY 10017 CUSTOMER SERVICE 833-755-2085",
+      "wireTransferAddress": "test",
+      "overnightDeliveriesAddress": "test"
+    }
+  },
+  "2037524944251": {
+    "templateKey": "payoffStatementV3",
+    "groundTruth": {
+      "documentType": "Payoff Statement",
+      "loanType": "Not Present",
+      "helocText": "Not Present",
+      "goodThroughDate": "5/7/2025",
+      "goodThroughText": "Payoff Requested Date: 05/07/2025 (If the account is not paid in full by this date updated payoff amount should be requested prior to closing)",
+      "perDiem": "153.37",
+      "chargeCount": "2",
+      "borrowerName": "TRINITY ESTATE HOMES LTD",
+      "doesDisbursementNotesIncludeBorrower": "Yes",
+      "lenderName": "Amegy Bank of Texas",
+      "lenderAddress": "test",
+      "beneficiaryName": "ZIONS BANCORPORATION NA DBA AMEGY BANK",
+      "beneficiaryAddress": "1801 Main street Houston TX 77002",
+      "propertyAddress": "13610 COMLEY HOUSTON TX 77079 HARRIS",
+      "bankName": "ZIONS BANCORPORATION NA DBA AMEGY BANK",
+      "wireInstructions": "Wire Instructions: BENEFICIARY NAME: ZIONS BANCORPORATION NA DBA AMEGY BANK ABA:113011258 BENEFICIARY ACCOUNT NAME: BANCS-LIT-ADVANCES & PAYMENTS BENEFICIARY ACCOUNT NUMBER: 696600-5771 REFERENCES: TRINITY ESTATE HOMES LTD REFERENCE ACCOUNT NUMBER: 1750000511799 WESTERN UNION IS NOT ACCEPTED",
+      "wireTransferAddress": "test",
+      "overnightDeliveriesAddress": "test"
+    }
   }
 }

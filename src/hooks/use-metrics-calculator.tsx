@@ -5,8 +5,9 @@
 
 import { useCallback } from 'react';
 import { NOT_PRESENT_VALUE, findFieldValue } from '@/lib/utils';
-import { calculateFieldMetricsWithDebug } from '@/lib/metrics';
+import { calculateFieldMetricsWithDebug, calculateFieldMetricsWithDebugAsync } from '@/lib/metrics';
 import { getGroundTruthData } from '@/lib/mock-data';
+import { getCompareConfigForField } from '@/lib/compare-type-storage';
 import type { AccuracyData, ApiExtractionResult } from '@/lib/types';
 import { extractConciseErrorDescription } from '@/lib/error-handler';
 import { logger } from '@/lib/logger';
@@ -16,7 +17,7 @@ interface UseMetricsCalculatorReturn {
   calculateAndUpdateMetrics: (
     accuracyData: AccuracyData,
     apiResults: ApiExtractionResult[]
-  ) => AccuracyData;
+  ) => Promise<AccuracyData>;
 }
 
 // Import centralized constants
@@ -30,10 +31,10 @@ const UI_LABELS = {
 } as const;
 
 export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
-  const calculateAndUpdateMetrics = (
+  const calculateAndUpdateMetrics = async (
     accuracyData: AccuracyData,
     apiResults: ApiExtractionResult[]
-  ): AccuracyData => {
+  ): Promise<AccuracyData> => {
     const refreshedGroundTruth = getGroundTruthData();
     const newData = JSON.parse(JSON.stringify(accuracyData));
     
@@ -86,25 +87,42 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
       }, {});
     });
     
-    // Calculate metrics for each field and model
+    // Calculate metrics for each field and model (async)
     logger.debug('Calculating metrics for all fields');
-    newData.fields.forEach((field: any) => {
+
+    // Get template key for compare type lookup from accuracyData
+    const templateKey = accuracyData.templateKey;
+
+    // Process all fields sequentially (to handle async compare operations)
+    for (const field of newData.fields) {
       const fieldKey = field.key;
       logger.debug('Processing field for metrics', { fieldKey });
-      
-      AVAILABLE_MODELS.forEach(modelName => {
-        const predictions = newData.results.map((fileResult: any) => 
+
+      // Get compare config for this field
+      const compareConfig = templateKey
+        ? getCompareConfigForField(templateKey, fieldKey)
+        : null;
+
+      // Process all models for this field
+      for (const modelName of AVAILABLE_MODELS) {
+        const predictions = newData.results.map((fileResult: any) =>
           fileResult.fields[fieldKey]?.[modelName] || ''
         );
-        const groundTruths = newData.results.map((fileResult: any) => 
+        const groundTruths = newData.results.map((fileResult: any) =>
           fileResult.fields[fieldKey]?.[UI_LABELS.GROUND_TRUTH] || ''
         );
-        
-        const result = calculateFieldMetricsWithDebug(predictions, groundTruths);
-        
+
+        // Use async version with compare config
+        const result = await calculateFieldMetricsWithDebugAsync(
+          predictions,
+          groundTruths,
+          compareConfig || undefined
+        );
+
         logger.debug('Metrics calculated', {
           modelName,
           fieldKey,
+          compareType: compareConfig?.compareType || 'legacy',
           f1: (result.f1Score * 100).toFixed(1) + '%',
           accuracy: (result.accuracy * 100).toFixed(1) + '%',
           precision: (result.precision * 100).toFixed(1) + '%',
@@ -121,8 +139,8 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
             falseNegativesCount: result.debug.examples.falseNegatives.length,
             trueNegativesCount: result.debug.examples.trueNegatives.length
           }
-        })
-        
+        });
+
         // Store the calculated metrics in averages (to match hook structure)
         if (!newData.averages) {
           newData.averages = {};
@@ -136,9 +154,9 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
           recall: result.recall,
           f1: result.f1Score
         };
-      });
-    });
-    
+      }
+    }
+
     return newData;
   };
 

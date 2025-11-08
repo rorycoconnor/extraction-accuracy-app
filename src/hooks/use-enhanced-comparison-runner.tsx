@@ -6,7 +6,8 @@ import { useAccuracyDataStore, useCurrentSession } from '@/store/AccuracyDataSto
 import { useModelExtractionRunner } from '@/hooks/use-model-extraction-runner';
 import { useGroundTruth } from '@/hooks/use-ground-truth';
 import { useExtractionProgress } from '@/hooks/use-extraction-progress';
-import { calculateFieldMetricsWithDebug } from '@/lib/metrics';
+import { calculateFieldMetricsWithDebug, calculateFieldMetricsWithDebugAsync } from '@/lib/metrics';
+import { getCompareConfigForField } from '@/lib/compare-type-storage';
 import { formatModelName, NOT_PRESENT_VALUE, findFieldValue } from '@/lib/utils';
 import { 
   createExtractionSummaryMessage, 
@@ -426,33 +427,48 @@ export const useEnhancedComparisonRunner = (
       }, {});
     });
     
-    // Calculate fresh metrics for all fields and models
+    // Calculate fresh metrics for all fields and models (async with compare types)
     const newAverages: Record<string, ModelAverages> = {};
-    
-    accuracyData.fields.forEach((field) => {
+
+    // Get template key for compare type lookup from accuracyData
+    const templateKey = accuracyData.templateKey;
+
+    // Process fields sequentially to handle async compare operations
+    for (const field of accuracyData.fields) {
       const fieldKey = field.key;
       const modelAvgs: ModelAverages = {};
-      
-      AVAILABLE_MODELS.forEach(modelName => {
-        const predictions = processedResults.map((fileResult) => 
+
+      // Get compare config for this field
+      const compareConfig = templateKey
+        ? getCompareConfigForField(templateKey, fieldKey)
+        : null;
+
+      // Process models sequentially
+      for (const modelName of AVAILABLE_MODELS) {
+        const predictions = processedResults.map((fileResult) =>
           fileResult.fields[fieldKey]?.[modelName] || ''
         );
-        const groundTruths = processedResults.map((fileResult) => 
+        const groundTruths = processedResults.map((fileResult) =>
           fileResult.fields[fieldKey]?.[UI_LABELS.GROUND_TRUTH] || ''
         );
-        
-        const result = calculateFieldMetricsWithDebug(predictions, groundTruths);
-        
+
+        // Use async version with compare config
+        const result = await calculateFieldMetricsWithDebugAsync(
+          predictions,
+          groundTruths,
+          compareConfig || undefined
+        );
+
         modelAvgs[modelName] = {
           accuracy: result.accuracy,
           precision: result.precision,
           recall: result.recall,
           f1: result.f1Score
         };
-      });
-      
+      }
+
       newAverages[fieldKey] = modelAvgs;
-    });
+    }
     
     // 🆕 NEW: Update prompt version metrics for any recently saved prompts
     const updatedAccuracyDataWithMetrics = updatePromptVersionMetrics({
