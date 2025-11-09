@@ -6,7 +6,7 @@
 
 'use server';
 
-import { boxApiFetch } from '@/services/box';
+import { boxApiFetch, clearBlankPlaceholderFileCache, getBlankPlaceholderFileId } from '@/services/box';
 import { logger } from '@/lib/logger';
 
 /**
@@ -38,36 +38,25 @@ export async function evaluateWithLLM({
     // Construct prompt using template
     const prompt = buildComparisonPrompt(groundTruthValue, extractedValue, comparisonPrompt);
 
-    // Box AI text_gen endpoint REQUIRES at least one file item
-    // If no fileId provided, we cannot use Box AI
-    if (!fileId) {
-      logger.warn('LLM comparison called without fileId - Box AI requires file context');
-      // return {
-      //   isMatch: false,
-      //   reason: 'LLM compareison requires a file ID for Box AI context',
-      //   rawResponse: '',
-      //   error: 'No file ID provided - Box AI text_gen endpoint requires file context'
-      // };
+    // Determine which file ID to use for Box AI context
+    const contextFileId = fileId ?? await getBlankPlaceholderFileId();
+    let items = [{ id: contextFileId, type: 'file' as const }];
+
+    // Call Box AI text generation API with retry if the placeholder disappears
+    let response: any;
+    try {
+      response = await invokeBoxAI(prompt, items);
+    } catch (error) {
+      if (!fileId && isFileMissingError(error)) {
+        logger.warn('Placeholder file missing, attempting to recreate and retry');
+        await clearBlankPlaceholderFileCache();
+        const refreshedFileId = await getBlankPlaceholderFileId({ refresh: true });
+        items = [{ id: refreshedFileId, type: 'file' as const }];
+        response = await invokeBoxAI(prompt, items);
+      } else {
+        throw error;
+      }
     }
-
-    // Prepare items for Box AI (required)
-    const items = [{ id: '2040714201496', type: 'file' as const }];
-
-    // Call Box AI text generation API
-    const response = await boxApiFetch('/ai/text_gen', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        prompt,
-        items,
-        ai_agent: {
-          type: 'ai_agent_text_gen',
-          basic_gen: {
-            model: 'google__gemini_2_5_pro'
-          }
-        }
-      }),
-    });
 
     const rawResponse = response.answer;
 
@@ -99,6 +88,36 @@ export async function evaluateWithLLM({
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }
+}
+
+async function invokeBoxAI(prompt: string, items: Array<{ id: string; type: 'file' }>): Promise<any> {
+  return boxApiFetch('/ai/text_gen', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      prompt,
+      items,
+      ai_agent: {
+        type: 'ai_agent_text_gen',
+        basic_gen: {
+          model: 'google__gemini_2_5_pro'
+        }
+      }
+    }),
+  });
+}
+
+function isFileMissingError(error: unknown): boolean {
+  if (!error) {
+    return false;
+  }
+
+  const message = error instanceof Error ? error.message : String(error);
+  const normalized = message.toLowerCase();
+  return normalized.includes('404') ||
+    normalized.includes('not found') ||
+    normalized.includes('item_not_found') ||
+    normalized.includes('not_found');
 }
 
 /**

@@ -11,6 +11,12 @@ import { getOAuthAccessToken, isOAuthConnected } from './oauth';
 import { boxLogger } from '@/lib/logger';
 
 const BOX_API_BASE_URL = 'https://api.box.com/2.0';
+const BOX_UPLOAD_BASE_URL = 'https://upload.box.com/api/2.0';
+const BLANK_FILE_NAME = process.env.BOX_BLANK_FILE_NAME || '~BLANK_FILE_FOR_OPTIMIZER_AI.txt';
+const BLANK_FILE_FOLDER_ID = process.env.BOX_BLANK_FILE_FOLDER_ID || '0';
+
+let blankPlaceholderFileId: string | null = null;
+let blankPlaceholderInitPromise: Promise<string> | null = null;
 
 // Token cache to avoid expensive JWT operations on every request
 interface TokenCache {
@@ -27,6 +33,27 @@ type BoxTemplatesResponse = {
 
 type BoxFolderItemsResponse = {
   entries: (BoxFile | BoxFolder)[];
+};
+
+type BoxSearchEntry = {
+  id: string;
+  name: string;
+  type: 'file' | string;
+  size?: number;
+  item_status?: 'active' | 'trashed' | string;
+};
+
+type BoxSearchResponse = {
+  entries: BoxSearchEntry[];
+};
+
+type BoxUploadResponse = {
+  entries?: Array<{
+    id: string;
+    name: string;
+    type: 'file';
+    size?: number;
+  }>;
 };
 
 type BoxFolder = {
@@ -145,6 +172,167 @@ async function getAccessToken(): Promise<string> {
 export async function clearTokenCache(): Promise<void> {
     cachedToken = null;
     boxLogger.info('Token cache cleared');
+}
+
+/**
+ * Clears the cached blank placeholder file ID so the next request revalidates.
+ */
+export async function clearBlankPlaceholderFileCache(): Promise<void> {
+    blankPlaceholderFileId = null;
+    boxLogger.debug('Blank placeholder file cache cleared');
+}
+
+/**
+ * Ensures a blank placeholder file exists in Box and returns its ID.
+ * The result is cached per runtime to avoid repeated search calls.
+ */
+export async function getBlankPlaceholderFileId(options: { refresh?: boolean } = {}): Promise<string> {
+    if (options.refresh) {
+        await clearBlankPlaceholderFileCache();
+    }
+
+    if (blankPlaceholderFileId) {
+        return blankPlaceholderFileId;
+    }
+
+    if (!blankPlaceholderInitPromise) {
+        blankPlaceholderInitPromise = ensureBlankPlaceholderFileExists()
+            .then(fileId => {
+                blankPlaceholderFileId = fileId;
+                return fileId;
+            })
+            .finally(() => {
+                blankPlaceholderInitPromise = null;
+            });
+    }
+
+    return blankPlaceholderInitPromise;
+}
+
+async function ensureBlankPlaceholderFileExists(): Promise<string> {
+    const existing = await findExistingBlankPlaceholderFile();
+    if (existing) {
+        boxLogger.debug('Using existing blank placeholder file', { fileId: existing.id });
+        return existing.id;
+    }
+
+    const created = await createBlankPlaceholderFile();
+    boxLogger.info('Created new blank placeholder file', { fileId: created.id });
+    return created.id;
+}
+
+async function findExistingBlankPlaceholderFile(): Promise<BoxFile | null> {
+    try {
+        const response: BoxSearchResponse = await boxApiFetch(`/search?query=${encodeURIComponent(BLANK_FILE_NAME)}&type=file&content_types=name&fields=id,name,size,item_status&limit=10`, { method: 'GET' });
+        const entries = response?.entries ?? [];
+        const match = entries.find(entry =>
+            entry.type === 'file' &&
+            entry.name === BLANK_FILE_NAME &&
+            entry.item_status !== 'trashed'
+        );
+
+        if (!match) {
+            return null;
+        }
+
+        const isEmpty = await verifyFileIsZeroBytes(match.id);
+        if (!isEmpty) {
+            boxLogger.warn('Blank placeholder file is not empty. It will be recreated.', {
+                fileId: match.id,
+                size: match.size
+            });
+            return null;
+        }
+
+        return { id: match.id, name: match.name, type: 'file' };
+    } catch (error) {
+        boxLogger.error('Failed to search for blank placeholder file', error instanceof Error ? error : { error });
+        throw error;
+    }
+}
+
+async function verifyFileIsZeroBytes(fileId: string): Promise<boolean> {
+    try {
+        const fileInfo = await boxApiFetch(`/files/${fileId}?fields=id,name,size`, { method: 'GET' });
+        const size = typeof fileInfo?.size === 'number' ? fileInfo.size : null;
+        const isEmpty = size === 0;
+        if (!isEmpty) {
+            boxLogger.warn('Placeholder file has unexpected size', { fileId, size });
+        }
+        return isEmpty;
+    } catch (error) {
+        boxLogger.warn('Unable to verify placeholder file size. It will be recreated.', error instanceof Error ? error : { error });
+        return false;
+    }
+}
+
+async function createBlankPlaceholderFile(): Promise<BoxFile> {
+    const accessToken = await getAccessToken();
+    const formData = new FormData();
+    formData.append('attributes', JSON.stringify({
+        name: BLANK_FILE_NAME,
+        parent: { id: BLANK_FILE_FOLDER_ID }
+    }));
+    const emptyBlob = new Blob([''], { type: 'text/plain' });
+    formData.append('file', emptyBlob, BLANK_FILE_NAME);
+
+    const response = await fetch(`${BOX_UPLOAD_BASE_URL}/files/content`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+        },
+        body: formData,
+    });
+
+    const responseText = await response.text();
+
+    if (response.ok) {
+        const uploadData: BoxUploadResponse = parseUploadResponse(responseText);
+        const createdEntry = uploadData.entries?.[0];
+        if (createdEntry?.id) {
+            return { id: createdEntry.id, name: createdEntry.name, type: 'file' };
+        }
+        throw new Error('Box upload response missing file entry');
+    }
+
+    if (response.status === 409) {
+        const conflictEntry = extractConflictEntry(responseText);
+        if (conflictEntry?.id) {
+            const verified = await verifyFileIsZeroBytes(conflictEntry.id);
+            if (verified) {
+                boxLogger.warn('Encountered name conflict while creating placeholder, reusing existing file', {
+                    fileId: conflictEntry.id
+                });
+                return { id: conflictEntry.id, name: conflictEntry.name, type: 'file' };
+            }
+        }
+    }
+
+    throw new Error(`Failed to create blank placeholder file: ${response.status} ${response.statusText}. Details: ${responseText}`);
+}
+
+function parseUploadResponse(responseText: string): BoxUploadResponse {
+    try {
+        return JSON.parse(responseText);
+    } catch (error) {
+        boxLogger.error('Failed to parse Box upload response', error as Error);
+        throw new Error('Invalid Box upload response');
+    }
+}
+
+function extractConflictEntry(responseText: string): BoxSearchEntry | null {
+    try {
+        const parsed = JSON.parse(responseText);
+        const conflict = parsed?.context_info?.conflicts?.find(
+            (entry: BoxSearchEntry) =>
+                entry.type === 'file' &&
+                entry.name === BLANK_FILE_NAME
+        );
+        return conflict ?? null;
+    } catch (error) {
+        boxLogger.warn('Failed to parse conflict response for placeholder upload', error as Error);
+        return null;
+    }
 }
 
 // Export function to get access token for external use
