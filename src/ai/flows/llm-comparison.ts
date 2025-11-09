@@ -40,6 +40,9 @@ export async function evaluateWithLLM({
 
     // Determine which file ID to use for Box AI context
     const contextFileId = fileId ?? await getBlankPlaceholderFileId();
+    if (!fileId) {
+      logger.debug(`Using blank placeholder file ${contextFileId} for LLM comparison`);
+    }
     let items = [{ id: contextFileId, type: 'file' as const }];
 
     // Call Box AI text generation API with retry if the placeholder disappears
@@ -48,7 +51,7 @@ export async function evaluateWithLLM({
       response = await invokeBoxAI(prompt, items);
     } catch (error) {
       if (!fileId && isFileMissingError(error)) {
-        logger.warn('Placeholder file missing, attempting to recreate and retry');
+        logger.warn(`Placeholder file ${items[0].id} missing, attempting to recreate and retry`);
         await clearBlankPlaceholderFileCache();
         const refreshedFileId = await getBlankPlaceholderFileId({ refresh: true });
         items = [{ id: refreshedFileId, type: 'file' as const }];

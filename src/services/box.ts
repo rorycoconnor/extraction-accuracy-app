@@ -212,12 +212,12 @@ export async function getBlankPlaceholderFileId(options: { refresh?: boolean } =
 async function ensureBlankPlaceholderFileExists(): Promise<string> {
     const existing = await findExistingBlankPlaceholderFile();
     if (existing) {
-        boxLogger.debug('Using existing blank placeholder file', { fileId: existing.id });
+        boxLogger.debug(`Using existing blank placeholder file ${existing.id}`);
         return existing.id;
     }
 
     const created = await createBlankPlaceholderFile();
-    boxLogger.info('Created new blank placeholder file', { fileId: created.id });
+    boxLogger.info(`Created new blank placeholder file ${created.id}`);
     return created.id;
 }
 
@@ -237,10 +237,7 @@ async function findExistingBlankPlaceholderFile(): Promise<BoxFile | null> {
 
         const isEmpty = await verifyFileIsZeroBytes(match.id);
         if (!isEmpty) {
-            boxLogger.warn('Blank placeholder file is not empty. It will be recreated.', {
-                fileId: match.id,
-                size: match.size
-            });
+            boxLogger.warn(`Blank placeholder file ${match.id} is not empty (size=${match.size}). It will be recreated.`);
             return null;
         }
 
@@ -257,7 +254,7 @@ async function verifyFileIsZeroBytes(fileId: string): Promise<boolean> {
         const size = typeof fileInfo?.size === 'number' ? fileInfo.size : null;
         const isEmpty = size === 0;
         if (!isEmpty) {
-            boxLogger.warn('Placeholder file has unexpected size', { fileId, size });
+            boxLogger.warn(`Placeholder file ${fileId} has unexpected size (${size}).`);
         }
         return isEmpty;
     } catch (error) {
@@ -300,9 +297,7 @@ async function createBlankPlaceholderFile(): Promise<BoxFile> {
         if (conflictEntry?.id) {
             const verified = await verifyFileIsZeroBytes(conflictEntry.id);
             if (verified) {
-                boxLogger.warn('Encountered name conflict while creating placeholder, reusing existing file', {
-                    fileId: conflictEntry.id
-                });
+                boxLogger.warn(`Encountered name conflict while creating placeholder, reusing existing file ${conflictEntry.id}`);
                 return { id: conflictEntry.id, name: conflictEntry.name, type: 'file' };
             }
         }
