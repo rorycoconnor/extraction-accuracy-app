@@ -438,6 +438,7 @@ export const useEnhancedComparisonRunner = (
     for (const field of accuracyData.fields) {
       const fieldKey = field.key;
       const modelAvgs: ModelAverages = {};
+      const fileIds = processedResults.map((fileResult) => fileResult.id);
 
       // Get compare config for this field
       const compareConfig = templateKey
@@ -457,7 +458,8 @@ export const useEnhancedComparisonRunner = (
         const result = await calculateFieldMetricsWithDebugAsync(
           predictions,
           groundTruths,
-          compareConfig || undefined
+          compareConfig || undefined,
+          fileIds
         );
 
         modelAvgs[modelName] = {
@@ -466,6 +468,31 @@ export const useEnhancedComparisonRunner = (
           recall: result.recall,
           f1: result.f1Score
         };
+
+        // Persist per-cell comparison metadata so the UI can show LLM judge reasoning
+        if (result.debug.comparisonResults && result.debug.comparisonResults.length > 0) {
+          processedResults.forEach((fileResult, fileIndex) => {
+            const comparisonResult = result.debug.comparisonResults?.[fileIndex];
+            if (!comparisonResult) {
+              return;
+            }
+
+            if (!fileResult.comparisonResults) {
+              fileResult.comparisonResults = {};
+            }
+            if (!fileResult.comparisonResults[fieldKey]) {
+              fileResult.comparisonResults[fieldKey] = {};
+            }
+
+            fileResult.comparisonResults[fieldKey][modelName] = {
+              isMatch: comparisonResult.isMatch,
+              matchType: comparisonResult.matchType || (compareConfig?.compareType ?? 'near-exact-string'),
+              confidence: comparisonResult.confidence || 'medium',
+              details: 'details' in comparisonResult ? comparisonResult.details : undefined,
+              error: 'error' in comparisonResult ? comparisonResult.error : undefined,
+            };
+          });
+        }
       }
 
       newAverages[fieldKey] = modelAvgs;

@@ -313,27 +313,25 @@ const getCellBackgroundColor = (cellData: CellData, templateKey?: string): strin
     return 'bg-red-100/80 dark:bg-red-900/55';
   }
 
-  // Map compare engine match types to colors
-  switch (comparison.matchType) {
-    case 'exact':
-    case 'normalized':
-    case 'exact-string':
-    case 'near-exact-string':
-    case 'exact-number':
-    case 'boolean':
-      return 'bg-green-100/80 dark:bg-green-900/55';
-    case 'partial':
-      return 'bg-blue-100/80 dark:bg-blue-900/55';
-    case 'date_format':
-    case 'date-exact':
-      return 'bg-yellow-100/80 dark:bg-yellow-900/55';
-    case 'llm-judge':
-    case 'list-unordered':
-    case 'list-ordered':
-      return 'bg-green-100/80 dark:bg-green-900/55';
-    default:
-      return '';
+  // Map compare engine match types to colors - supports both legacy and new types
+  const matchType = comparison.matchType as string;
+
+  // Green for exact matches (all types of exact/normalized matches)
+  if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered'].includes(matchType)) {
+    return 'bg-green-100/80 dark:bg-green-900/55';
   }
+
+  // Blue for partial matches
+  if (matchType === 'partial') {
+    return 'bg-blue-100/80 dark:bg-blue-900/55';
+  }
+
+  // Yellow for date matches
+  if (['date_format', 'date-exact'].includes(matchType)) {
+    return 'bg-yellow-100/80 dark:bg-yellow-900/55';
+  }
+
+  return '';
 };
 
 // Cell component for model values
@@ -378,7 +376,7 @@ const ModelValueCell = ({
     if (modelName === 'Ground Truth') {
       return '';
     }
-    
+
     // Handle "Not Present" cases first
     if (isNotPresent) {
       // If there's ground truth but model returned "Not Present", it's a mismatch
@@ -388,12 +386,12 @@ const ModelValueCell = ({
       // If no ground truth or ground truth is also "Not Present", no special styling
       return '';
     }
-    
+
     // If there's no Ground Truth to compare against, don't apply any coloring
     if (!groundTruth || groundTruth.trim() === '' || groundTruth === '-') {
       return '';
     }
-    
+
     if (!comparison.isMatch) {
       // Don't show red for empty values
       if (!value || value.trim() === '' || value === '-') {
@@ -401,35 +399,37 @@ const ModelValueCell = ({
       }
       return 'bg-red-100/80 text-red-800 dark:bg-red-900/55 dark:text-red-50';
     }
-    
-    switch (comparison.matchType) {
-      case 'exact':
-      case 'normalized':
-      case 'exact-string':
-      case 'near-exact-string':
-      case 'exact-number':
-      case 'boolean':
-        return 'bg-green-100/80 text-green-800 dark:bg-green-900/55 dark:text-green-50';
-      case 'partial':
-        return 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/55 dark:text-blue-50';
-      case 'date_format':
-      case 'date-exact':
-        return 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/55 dark:text-yellow-50';
-      case 'llm-judge':
-      case 'list-unordered':
-      case 'list-ordered':
-        return 'bg-green-100/80 text-green-800 dark:bg-green-900/55 dark:text-green-50';
-      default:
-        return '';
+
+    // Handle match type styling - supports both legacy and new compare engine types
+    const matchType = comparison.matchType as string;
+
+    // Green for exact matches (all types of exact/normalized matches)
+    if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered'].includes(matchType)) {
+      return 'bg-green-100/80 text-green-800 dark:bg-green-900/55 dark:text-green-50';
     }
+
+    // Blue for partial matches
+    if (matchType === 'partial') {
+      return 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/55 dark:text-blue-50';
+    }
+
+    // Yellow for date matches
+    if (['date_format', 'date-exact'].includes(matchType)) {
+      return 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/55 dark:text-yellow-50';
+    }
+
+    return '';
   };
 
   // Simple centering wrapper without background colors (background now on td)
+  // Add hover effect if cell has comparison result (clickable)
+  const hasComparisonResult = !!cellData.comparisonResult;
   const wrapperClasses = cn(
     "grid place-items-center w-full h-full px-2 py-3",
     isPending && "text-muted-foreground italic",
     isError && "text-red-700 dark:text-red-400",
-    isNotPresent && "text-muted-foreground italic"
+    isNotPresent && "text-muted-foreground italic",
+    hasComparisonResult && modelName !== 'Ground Truth' && "hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
   );
 
   const handleCellClick = (e: React.MouseEvent) => {
@@ -452,12 +452,15 @@ const ModelValueCell = ({
   };
 
   return (
-    <div 
+    <div
       className={wrapperClasses}
       onClick={handleCellClick}
     >
-      <div 
-        className="text-sm text-center leading-snug whitespace-pre-wrap break-words max-w-full cursor-pointer" 
+      <div
+        className={cn(
+          "text-sm text-center leading-snug whitespace-pre-wrap break-words max-w-full",
+          (hasComparisonResult || modelName === 'Ground Truth') && "cursor-pointer"
+        )}
         title={value} // Show full text on hover
         style={{
           display: '-webkit-box',
