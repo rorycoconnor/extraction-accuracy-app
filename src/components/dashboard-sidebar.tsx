@@ -6,8 +6,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
-import { 
-  CheckCircle2, 
+import {
+  CheckCircle2,
   FileText,
   ExternalLink,
   AlertTriangle,

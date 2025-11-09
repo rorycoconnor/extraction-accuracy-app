@@ -35,6 +35,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 interface ControlBarProps {
   accuracyData: AccuracyData | null;
   isExtracting: boolean;
+  isJudging?: boolean;
   progress: { processed: number; total: number };
   shownColumns: Record<string, boolean>;
   // Remove showMetrics prop - it will be computed automatically
@@ -52,6 +53,7 @@ interface ControlBarProps {
 const ControlBar: React.FC<ControlBarProps> = ({
   accuracyData,
   isExtracting,
+  isJudging = false,
   progress,
   shownColumns,
   // Remove showMetrics prop - it will be computed automatically
@@ -116,6 +118,19 @@ const ControlBar: React.FC<ControlBarProps> = ({
   const handleMultiModalClick = () => {
     setShowMultiModalOnly(!showMultiModalOnly);
   };
+
+  const comparisonButtonLabel = (() => {
+    if (isJudging) {
+      return 'Comparing...';
+    }
+    if (isExtracting && progress.total > 0) {
+      return `Processing ${progress.processed}/${progress.total} extractions`;
+    }
+    if (isExtracting) {
+      return 'Processing extractions...';
+    }
+    return 'Run Comparison';
+  })();
 
   return (
     <div className="flex items-center gap-2 px-6 py-4 mb-2">
@@ -217,9 +232,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
         ) : (
           <Play className="mr-2 h-4 w-4" />
         )}
-        {isExtracting && progress.total > 0 
-          ? `Processing ${progress.processed}/${progress.total} extractions` 
-          : 'Run Comparison'}
+        {comparisonButtonLabel}
       </Button>
       
       <Button variant="outline" onClick={onClearResults}>

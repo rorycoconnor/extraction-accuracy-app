@@ -1,12 +1,13 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccuracyDataStore, useCurrentSession } from '@/store/AccuracyDataStore';
 import { useModelExtractionRunner } from '@/hooks/use-model-extraction-runner';
 import { useGroundTruth } from '@/hooks/use-ground-truth';
 import { useExtractionProgress } from '@/hooks/use-extraction-progress';
-import { calculateFieldMetricsWithDebug } from '@/lib/metrics';
+import { calculateFieldMetricsWithDebug, calculateFieldMetricsWithDebugAsync } from '@/lib/metrics';
+import { getCompareConfigForField } from '@/lib/compare-type-storage';
 import { formatModelName, NOT_PRESENT_VALUE, findFieldValue } from '@/lib/utils';
 import { 
   createExtractionSummaryMessage, 
@@ -28,7 +29,6 @@ import { useDataHandlers } from '@/hooks/use-data-handlers';
 import { logger } from '@/lib/logger';
 
 // Import centralized constants
-import { AVAILABLE_MODELS } from '@/lib/main-page-constants';
 
 const UI_LABELS = {
   GROUND_TRUTH: 'Ground Truth',
@@ -51,15 +51,22 @@ const TOAST_MESSAGES = {
   },
 } as const;
 
+const getActiveModelsForRun = (shownColumns: Record<string, boolean>) =>
+  Object.entries(shownColumns)
+    .filter(([modelName, isShown]) => modelName !== UI_LABELS.GROUND_TRUTH && isShown)
+    .map(([modelName]) => modelName);
+
 interface UseEnhancedComparisonRunnerReturn {
   handleRunComparison: () => Promise<void>;
   isExtracting: boolean;
   progress: { processed: number; total: number };
+  isJudging: boolean;
 }
 
 export const useEnhancedComparisonRunner = (
   selectedTemplate: BoxTemplate | null
 ): UseEnhancedComparisonRunnerReturn => {
+  const [isJudging, setIsJudging] = useState(false);
   const { toast } = useToast();
   const { state, dispatch } = useAccuracyDataStore();
   const currentSession = useCurrentSession();
@@ -102,9 +109,20 @@ export const useEnhancedComparisonRunner = (
 
     const accuracyData = state.data;
     const shownColumns = accuracyData.shownColumns;
+    const activeModelsForRun = getActiveModelsForRun(shownColumns);
+
+    if (activeModelsForRun.length === 0) {
+      toast({
+        title: TOAST_MESSAGES.NO_DATA_TO_PROCESS.title,
+        description: 'Please enable at least one model column before running a comparison.',
+        variant: TOAST_MESSAGES.NO_DATA_TO_PROCESS.variant,
+      });
+      return;
+    }
     
     // Initialize ref with current data
     currentDataRef.current = accuracyData;
+    setIsJudging(false);
 
     // Start a new comparison run
     const runId = uuidv4();
@@ -125,7 +143,7 @@ export const useEnhancedComparisonRunner = (
     }
 
     // Initialize progress tracking
-    const extractionJobCount = accuracyData.results.length * AVAILABLE_MODELS.filter(model => shownColumns[model]).length;
+    const extractionJobCount = accuracyData.results.length * activeModelsForRun.length;
     startExtraction(extractionJobCount);
     
     updateDetailedProgress({
@@ -179,14 +197,15 @@ export const useEnhancedComparisonRunner = (
             lastUpdateTime: new Date()
           });
           
-          // 🎨 Real-time update: Process this single result and update the table immediately
-          // Update only the results, not the averages
+          // 🎨 Real-time update: Process this single result internally
+          // We update the ref but don't dispatch to avoid triggering redundant comparisons
+          // The final processExtractionResults will handle the complete state update with metrics
           if (currentDataRef.current) {
             const updatedData = processSingleResult(currentDataRef.current, job, result);
             currentDataRef.current = updatedData; // Update ref for next iteration
-            
-            // Dispatch the update with results only, preserving existing averages
-            dispatch({ type: 'SET_ACCURACY_DATA', payload: updatedData });
+
+            // NOTE: We intentionally don't dispatch here to avoid duplicate comparison runs
+            // The UI will update once at the end with complete metrics
           }
         }
       );
@@ -197,6 +216,7 @@ export const useEnhancedComparisonRunner = (
         currentOperation: 'Calculating metrics...',
         lastUpdateTime: new Date()
       });
+      setIsJudging(true);
       
       // ❌ DISABLED: Auto-populate ground truth from premium model if available
       // This is now only done when user clicks "Copy to Ground Truth" button
@@ -205,8 +225,9 @@ export const useEnhancedComparisonRunner = (
       // }
       
       // Process results with atomic updates to prevent overwrites
-      await processExtractionResults(accuracyData, apiResults, runId, sessionId);
-      
+      await processExtractionResults(accuracyData, apiResults, runId, sessionId, activeModelsForRun);
+      setIsJudging(false);
+
       stopExtraction();
       
       updateDetailedProgress({
@@ -224,6 +245,7 @@ export const useEnhancedComparisonRunner = (
       
     } catch (error) {
       logger.error('Enhanced extraction failed', error instanceof Error ? error : { error });
+      setIsJudging(false);
       stopExtraction();
       
       updateDetailedProgress({
@@ -352,7 +374,8 @@ export const useEnhancedComparisonRunner = (
     accuracyData: AccuracyData,
     apiResults: ApiExtractionResult[],
     runId: string,
-    sessionId: string
+    sessionId: string,
+    activeModelsForRun: string[]
   ) => {
     // Get fresh ground truth data to ensure we have the latest
     const refreshedGroundTruth = getGroundTruthData();
@@ -360,64 +383,61 @@ export const useEnhancedComparisonRunner = (
     // Create a deep copy to avoid mutations
     const processedResults: FileResult[] = JSON.parse(JSON.stringify(accuracyData.results));
     
+    const activeModelSet = new Set(activeModelsForRun);
+
     // Process each file result atomically
     processedResults.forEach((fileResult) => {
       const fileApiResults = apiResults.filter(r => r.fileId === fileResult.id);
+      const previousFields = fileResult.fields;
       
       // Update fields for this file
-      fileResult.fields = Object.keys(fileResult.fields).reduce((acc: any, fieldKey) => {
-        const fieldData: any = {};
+      fileResult.fields = Object.keys(previousFields).reduce((acc: any, fieldKey) => {
+        const existingFieldData = previousFields[fieldKey] || {};
+        const fieldData: any = { ...existingFieldData };
         
         // Always use the latest ground truth data - this prevents overwrites
         const refreshedGroundTruthValue = refreshedGroundTruth[fileResult.id]?.groundTruth?.[fieldKey] || '';
         fieldData[UI_LABELS.GROUND_TRUTH] = refreshedGroundTruthValue;
         
-        // Update model results from API, preserving existing data for models not in this run
-        AVAILABLE_MODELS.forEach(modelName => {
-          const modelResult = fileApiResults.find(r => r.modelName === modelName);
-          if (modelResult) {
-            // This model was run in this comparison - update with new results
-            if (modelResult.success) {
-              // 🔧 Enhanced field value extraction with debugging
-              const extractedValue = findFieldValue(modelResult.extractedMetadata as Record<string, any>, fieldKey);
+        // Update only the models that actually participated in this run
+        fileApiResults.forEach(modelResult => {
+          if (!activeModelSet.has(modelResult.modelName)) {
+            return;
+          }
+
+          if (modelResult.success) {
+            const extractedValue = findFieldValue(modelResult.extractedMetadata as Record<string, any>, fieldKey);
+            
+            if (extractedValue === undefined) {
+              logger.debug('Field not found in extraction response', {
+                fieldKey,
+                modelName: modelResult.modelName,
+                fileId: fileResult.id,
+                availableKeys: Object.keys(modelResult.extractedMetadata as Record<string, any>)
+              });
+            }
+            
+            if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
+              let formattedValue = String(extractedValue).trim();
               
-              // Debug logging for troubleshooting
-              if (extractedValue === undefined) {
-                logger.debug('Field not found in extraction response', {
+              const field = accuracyData.fields.find(f => f.key === fieldKey);
+              if (field && isMultiSelectField(field, fieldKey)) {
+                formattedValue = formatMultiSelectValue(formattedValue);
+                logger.debug('Formatted multi-select value', {
                   fieldKey,
-                  modelName,
-                  fileId: fileResult.id,
-                  availableKeys: Object.keys(modelResult.extractedMetadata as Record<string, any>)
+                  original: extractedValue,
+                  formatted: formattedValue
                 });
               }
               
-              if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
-                let formattedValue = String(extractedValue).trim();
-                
-                // Check if this is a multi-select field and format accordingly
-                const field = accuracyData.fields.find(f => f.key === fieldKey);
-                if (field && isMultiSelectField(field, fieldKey)) {
-                  formattedValue = formatMultiSelectValue(formattedValue);
-                  logger.debug('Formatted multi-select value', {
-                    fieldKey,
-                    original: extractedValue,
-                    formatted: formattedValue
-                  });
-                }
-                
-                fieldData[modelName] = formattedValue;
-              } else {
-                fieldData[modelName] = NOT_PRESENT_VALUE;
-              }
+              fieldData[modelResult.modelName] = formattedValue;
             } else {
-              const errorMessage = modelResult.error?.userMessage || modelResult.error?.message || UI_LABELS.UNKNOWN_ERROR;
-              const conciseError = extractConciseErrorDescription(errorMessage);
-              fieldData[modelName] = `Error: ${conciseError}`;
+              fieldData[modelResult.modelName] = NOT_PRESENT_VALUE;
             }
           } else {
-            // This model was not run - preserve existing data
-            const existingValue = fileResult.fields[fieldKey]?.[modelName];
-            fieldData[modelName] = existingValue || UI_LABELS.PENDING_STATUS;
+            const errorMessage = modelResult.error?.userMessage || modelResult.error?.message || UI_LABELS.UNKNOWN_ERROR;
+            const conciseError = extractConciseErrorDescription(errorMessage);
+            fieldData[modelResult.modelName] = `Error: ${conciseError}`;
           }
         });
         
@@ -426,33 +446,76 @@ export const useEnhancedComparisonRunner = (
       }, {});
     });
     
-    // Calculate fresh metrics for all fields and models
+    // Calculate fresh metrics for all fields and models (async with compare types)
     const newAverages: Record<string, ModelAverages> = {};
-    
-    accuracyData.fields.forEach((field) => {
+
+    // Get template key for compare type lookup from accuracyData
+    const templateKey = accuracyData.templateKey;
+
+    // Process fields sequentially to handle async compare operations
+    for (const field of accuracyData.fields) {
       const fieldKey = field.key;
-      const modelAvgs: ModelAverages = {};
-      
-      AVAILABLE_MODELS.forEach(modelName => {
-        const predictions = processedResults.map((fileResult) => 
+      const previousModelAverages = accuracyData.averages?.[fieldKey] || {};
+      const modelAvgs: ModelAverages = { ...previousModelAverages };
+      const fileIds = processedResults.map((fileResult) => fileResult.id);
+
+      // Get compare config for this field
+      const compareConfig = templateKey
+        ? getCompareConfigForField(templateKey, fieldKey)
+        : null;
+
+      // Process only the models that were active for this run
+      for (const modelName of activeModelsForRun) {
+        const predictions = processedResults.map((fileResult) =>
           fileResult.fields[fieldKey]?.[modelName] || ''
         );
-        const groundTruths = processedResults.map((fileResult) => 
+        const groundTruths = processedResults.map((fileResult) =>
           fileResult.fields[fieldKey]?.[UI_LABELS.GROUND_TRUTH] || ''
         );
-        
-        const result = calculateFieldMetricsWithDebug(predictions, groundTruths);
-        
+
+        // Use async version with compare config
+        const result = await calculateFieldMetricsWithDebugAsync(
+          predictions,
+          groundTruths,
+          compareConfig || undefined,
+          fileIds
+        );
+
         modelAvgs[modelName] = {
           accuracy: result.accuracy,
           precision: result.precision,
           recall: result.recall,
           f1: result.f1Score
         };
-      });
-      
+
+        // Persist per-cell comparison metadata so the UI can show LLM judge reasoning
+        if (result.debug.comparisonResults && result.debug.comparisonResults.length > 0) {
+          processedResults.forEach((fileResult, fileIndex) => {
+            const comparisonResult = result.debug.comparisonResults?.[fileIndex];
+            if (!comparisonResult) {
+              return;
+            }
+
+            if (!fileResult.comparisonResults) {
+              fileResult.comparisonResults = {};
+            }
+            if (!fileResult.comparisonResults[fieldKey]) {
+              fileResult.comparisonResults[fieldKey] = {};
+            }
+
+            fileResult.comparisonResults[fieldKey][modelName] = {
+              isMatch: comparisonResult.isMatch,
+              matchType: comparisonResult.matchType || (compareConfig?.compareType ?? 'near-exact-string'),
+              confidence: comparisonResult.confidence || 'medium',
+              details: 'details' in comparisonResult ? comparisonResult.details : undefined,
+              error: 'error' in comparisonResult ? comparisonResult.error : undefined,
+            };
+          });
+        }
+      }
+
       newAverages[fieldKey] = modelAvgs;
-    });
+    }
     
     // 🆕 NEW: Update prompt version metrics for any recently saved prompts
     const updatedAccuracyDataWithMetrics = updatePromptVersionMetrics({
@@ -472,12 +535,6 @@ export const useEnhancedComparisonRunner = (
       }
     });
     
-    // Update the main data with the metrics-enhanced version
-    dispatch({
-      type: 'SET_ACCURACY_DATA',
-      payload: updatedAccuracyDataWithMetrics
-    });
-    
     logger.info('Results processed and stored with versioning');
   };
 
@@ -485,5 +542,6 @@ export const useEnhancedComparisonRunner = (
     handleRunComparison,
     isExtracting,
     progress,
+    isJudging,
   };
 }; 

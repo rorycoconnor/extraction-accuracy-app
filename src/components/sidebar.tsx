@@ -5,11 +5,12 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { BoxLogo } from '@/components/box-logo'
-import { 
-  Home, 
-  FileText, 
-  Database, 
+import {
+  Home,
+  FileText,
+  Database,
   Settings,
+  Settings2,
   BookOpen,
   ExternalLink,
   Moon,
@@ -44,6 +45,11 @@ const navigation: NavigationItem[] = [
     name: 'Ground Truth',
     href: '/ground-truth',
     icon: Database,
+  },
+  {
+    name: 'Compare Types',
+    href: '/compare-types',
+    icon: Settings2,
   },
   {
     name: 'Library',

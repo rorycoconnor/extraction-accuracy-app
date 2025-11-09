@@ -727,9 +727,10 @@ const MainPage: React.FC = () => {
  return (
      <div className="flex flex-col h-full">
        <ControlBar
-        accuracyData={accuracyData}
-        isExtracting={enhancedRunner.isExtracting}
-        progress={enhancedRunner.progress}
+       accuracyData={accuracyData}
+       isExtracting={enhancedRunner.isExtracting}
+       isJudging={enhancedRunner.isJudging}
+       progress={enhancedRunner.progress}
         shownColumns={shownColumns}
         onSelectDocuments={() => {
           logger.debug('Select Documents button clicked');

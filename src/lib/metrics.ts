@@ -5,6 +5,7 @@
 
 import { NOT_PRESENT_VALUE } from '@/lib/utils';
 import { logger } from '@/lib/logger';
+import type { FieldCompareConfig } from './compare-types';
 
 export type MetricsResult = {
   accuracy: number;
@@ -25,6 +26,8 @@ export type MetricsDebugInfo = {
     falseNegatives: Array<{predicted: string, actual: string}>;
     trueNegatives: Array<{predicted: string, actual: string}>;
   };
+  // Per-cell comparison results (index matches predictions/groundTruths arrays)
+  comparisonResults?: any[];
 };
 
 export type ComparisonResult = {
@@ -309,6 +312,34 @@ function isMatch(predicted: string, actual: string): boolean {
 }
 
 /**
+ * Compare values using configured compare type (async version for compare engine)
+ * Returns whether values match based on the configured comparison strategy
+ */
+export async function isMatchWithCompareEngine(
+  predicted: string,
+  actual: string,
+  compareConfig?: FieldCompareConfig
+): Promise<boolean> {
+  // If no compare config provided, fall back to legacy comparison
+  if (!compareConfig) {
+    return isMatch(predicted, actual);
+  }
+
+  try {
+    // Dynamic import to avoid circular dependencies
+    const { compareValues: compareValuesEngine } = await import('./compare-engine');
+    const result = await compareValuesEngine(predicted, actual, compareConfig);
+    return result.isMatch;
+  } catch (error) {
+    logger.error('Compare engine failed, falling back to legacy comparison', {
+      error: error as Error,
+    });
+    // Fall back to legacy comparison on error
+    return isMatch(predicted, actual);
+  }
+}
+
+/**
  * Calculates precision, recall, and F1 score for a single field across multiple files.
  * 
  * This function treats the problem as a multi-class classification where:
@@ -335,16 +366,210 @@ export function calculateFieldMetrics(
 }
 
 /**
+ * Calculates precision, recall, and F1 score with detailed debug information (async version with compare engine).
+ *
+ * Uses the compare engine with configured compare types for accurate field-level comparisons.
+ *
+ * @param predictions Array of predicted values from the model
+ * @param groundTruths Array of ground truth values
+ * @param compareConfig Optional compare configuration for the field
+ * @param fileIds Optional array of file IDs (for LLM judge comparisons that need file context)
+ * @returns MetricsResult and debug information
+ */
+export async function calculateFieldMetricsWithDebugAsync(
+  predictions: string[],
+  groundTruths: string[],
+  compareConfig?: FieldCompareConfig,
+  fileIds?: string[]
+): Promise<MetricsResult & { debug: MetricsDebugInfo }> {
+  if (predictions.length !== groundTruths.length) {
+    throw new Error('Predictions and ground truths must have the same length');
+  }
+
+  if (predictions.length === 0) {
+    return {
+      accuracy: 0,
+      precision: 0,
+      recall: 0,
+      f1Score: 0,
+      debug: {
+        truePositives: 0,
+        falsePositives: 0,
+        falseNegatives: 0,
+        trueNegatives: 0,
+        totalValidPairs: 0,
+        examples: {
+          truePositives: [],
+          falsePositives: [],
+          falseNegatives: [],
+          trueNegatives: []
+        }
+      }
+    };
+  }
+
+  let truePositives = 0;
+  let falsePositives = 0;
+  let falseNegatives = 0;
+  let trueNegatives = 0;
+  let totalValidPairs = 0;
+
+  const examples = {
+    truePositives: [] as Array<{predicted: string, actual: string}>,
+    falsePositives: [] as Array<{predicted: string, actual: string}>,
+    falseNegatives: [] as Array<{predicted: string, actual: string}>,
+    trueNegatives: [] as Array<{predicted: string, actual: string}>
+  };
+
+  // Store detailed comparison results for each cell (for UI display)
+  const comparisonResults: any[] = [];
+
+  for (let i = 0; i < predictions.length; i++) {
+    const predicted = predictions[i];
+    const actual = groundTruths[i];
+
+    // Skip if prediction is in pending/error state
+    if (!predicted || predicted.startsWith('Pending') || predicted.startsWith('Error')) {
+      comparisonResults.push(null);
+      continue;
+    }
+
+    // Handle empty/missing ground truth - treat as "Not Present"
+    const normalizedActual = !actual || normalizeText(actual) === '' ? NOT_PRESENT_VALUE : actual;
+    const normalizedPredicted = !predicted || normalizeText(predicted) === '' ? NOT_PRESENT_VALUE : predicted;
+
+    totalValidPairs++;
+
+    let comparisonResult: any = null;
+
+    // Case 1: Ground truth is "Not Present"
+    if (normalizedActual === NOT_PRESENT_VALUE) {
+      if (normalizedPredicted === NOT_PRESENT_VALUE) {
+        trueNegatives++; // Model correctly predicted "Not Present"
+        examples.trueNegatives.push({predicted: normalizedPredicted, actual: normalizedActual});
+        comparisonResult = {
+          isMatch: true,
+          matchType: 'exact',
+          confidence: 'high'
+        };
+      } else {
+        falsePositives++; // Model incorrectly predicted something when field should be empty
+        examples.falsePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
+        comparisonResult = {
+          isMatch: false,
+          matchType: 'none',
+          confidence: 'high'
+        };
+      }
+    }
+    // Case 2: Ground truth exists (is not "Not Present")
+    else {
+      // Use compare engine with configured compare type - get full comparison result
+      if (compareConfig) {
+        // For LLM judge comparisons, inject fileId into parameters
+        const configWithFileId = { ...compareConfig };
+        if (compareConfig.compareType === 'llm-judge' && fileIds && fileIds[i]) {
+          configWithFileId.parameters = {
+            ...compareConfig.parameters,
+            fileId: fileIds[i]
+          };
+        }
+
+        // Dynamic import to use compare engine
+        const { compareValues: compareValuesEngine } = await import('./compare-engine');
+        comparisonResult = await compareValuesEngine(normalizedPredicted, normalizedActual, configWithFileId);
+      } else {
+        // Fall back to legacy comparison
+        comparisonResult = compareValues(normalizedPredicted, normalizedActual);
+      }
+
+      const match = comparisonResult.isMatch;
+
+      if (match) {
+        truePositives++; // Model correctly predicted the value
+        examples.truePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
+      } else {
+        // FIXED: Wrong predictions count as BOTH FP and FN
+        // FP: Model predicted something wrong (predicted value is incorrect)
+        // FN: Model failed to extract the correct ground truth value
+        falsePositives++; // Predicted something wrong
+        falseNegatives++; // Failed to extract the correct value
+        examples.falsePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
+        examples.falseNegatives.push({predicted: normalizedPredicted, actual: normalizedActual});
+      }
+    }
+
+    comparisonResults.push(comparisonResult);
+  }
+
+  // Calculate metrics using same logic as sync version
+  if (totalValidPairs === 0) {
+    return {
+      accuracy: 0,
+      precision: 0,
+      recall: 0,
+      f1Score: 0,
+      debug: {
+        truePositives: 0,
+        falsePositives: 0,
+        falseNegatives: 0,
+        trueNegatives: 0,
+        totalValidPairs: 0,
+        examples: {
+          truePositives: [],
+          falsePositives: [],
+          falseNegatives: [],
+          trueNegatives: []
+        },
+        comparisonResults
+      }
+    };
+  }
+
+  const accuracy = (truePositives + trueNegatives) / totalValidPairs;
+
+  let precision: number;
+  let recall: number;
+  let f1Score: number;
+
+  if (truePositives === 0 && falsePositives === 0 && falseNegatives === 0 && trueNegatives > 0) {
+    precision = 1.0;
+    recall = 1.0;
+    f1Score = 1.0;
+  } else {
+    precision = (truePositives + falsePositives) > 0 ? truePositives / (truePositives + falsePositives) : 0;
+    recall = (truePositives + falseNegatives) > 0 ? truePositives / (truePositives + falseNegatives) : 0;
+    f1Score = (precision + recall) > 0 ? (2 * precision * recall) / (precision + recall) : 0;
+  }
+
+  return {
+    accuracy: Math.max(0, Math.min(1, accuracy)),
+    precision: Math.max(0, Math.min(1, precision)),
+    recall: Math.max(0, Math.min(1, recall)),
+    f1Score: Math.max(0, Math.min(1, f1Score)),
+    debug: {
+      truePositives,
+      falsePositives,
+      falseNegatives,
+      trueNegatives,
+      totalValidPairs,
+      examples,
+      comparisonResults
+    }
+  };
+}
+
+/**
  * Calculates precision, recall, and F1 score with detailed debug information.
- * 
+ *
  * FIXED: Wrong predictions now count as BOTH FP and FN for proper metrics calculation.
- * 
+ *
  * @param predictions Array of predicted values from the model
  * @param groundTruths Array of ground truth values
  * @returns MetricsResult and debug information
  */
 export function calculateFieldMetricsWithDebug(
-  predictions: string[], 
+  predictions: string[],
   groundTruths: string[]
 ): MetricsResult & { debug: MetricsDebugInfo } {
   if (predictions.length !== groundTruths.length) {

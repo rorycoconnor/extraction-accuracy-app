@@ -9,18 +9,26 @@ import {
   Header,
   ColumnMeta,
 } from '@tanstack/react-table';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { AccuracyData, AccuracyField } from '@/lib/types';
 import { cn, formatModelName, NOT_PRESENT_VALUE } from '@/lib/utils';
-import { compareValues, type ComparisonResult } from '@/lib/metrics';
-import { MousePointer2, Play, RotateCcw, Clock } from 'lucide-react';
+import { compareValues, type ComparisonResult as LegacyComparisonResult } from '@/lib/metrics';
+import { compareValuesPreview } from '@/lib/compare-engine';
+import type { ComparisonResult as EngineComparisonResult } from '@/lib/compare-types';
+import { MousePointer2, Play, RotateCcw, Clock, Settings2 } from 'lucide-react';
+
+// Union type to handle both legacy and new comparison results
+type ComparisonResult = LegacyComparisonResult | EngineComparisonResult;
 import { ModelPill } from '@/components/model-pill';
 import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
 import { ImageThumbnailHover } from '@/components/image-thumbnail-hover';
 import { logger } from '@/lib/logger';
+import { getCompareConfigForField } from '@/lib/compare-type-storage';
+import { COMPARE_TYPE_LABELS } from '@/lib/compare-types';
+import { ComparisonResultModal } from '@/components/comparison-result-modal';
 
 // Extend TanStack's ColumnMeta to include our custom properties
 declare module '@tanstack/react-table' {
@@ -39,7 +47,11 @@ interface CellData {
   groundTruth: string;
   fieldKey: string;
   modelName: string;
+  comparisonResult?: ComparisonMetadata;
 }
+
+// Import ComparisonMetadata type
+import type { ComparisonMetadata } from '@/lib/types';
 
 interface ProcessedRowData {
   id: string;
@@ -60,6 +72,7 @@ type TanStackExtractionTableProps = {
   isExtracting?: boolean;
   extractingFields?: Set<string>;
   onToggleFieldMetrics?: (fieldKey: string, include: boolean) => void;
+  templateKey?: string;
 };
 
 // Custom header components
@@ -67,26 +80,34 @@ const FileNameHeader = () => (
   <div className="p-2 font-semibold text-foreground">File Name</div>
 );
 
-const FieldHeaderGroup = ({ 
-  field, 
-  recentlyChangedPrompts = new Set(), 
+const FieldHeaderGroup = ({
+  field,
+  recentlyChangedPrompts = new Set(),
   onOpenPromptStudio,
   onRunSingleField,
   includeInMetrics = true,
-  onToggleMetrics
-}: { 
+  onToggleMetrics,
+  templateKey
+}: {
   field: AccuracyField;
   recentlyChangedPrompts?: Set<string>;
   onOpenPromptStudio: (field: AccuracyField) => void;
   onRunSingleField?: (field: AccuracyField) => void;
   includeInMetrics?: boolean;
   onToggleMetrics?: (include: boolean) => void;
+  templateKey?: string;
 }) => {
-  
+  const router = useRouter();
+
+  // Get compare type for this field
+  const compareConfig = templateKey ? getCompareConfigForField(templateKey, field.key) : null;
+  const compareType = compareConfig?.compareType;
+  const compareLabel = compareType ? COMPARE_TYPE_LABELS[compareType] : null;
+
   return (
     <div className="relative px-4 py-2">
       {/* Centered label with equal side padding = toggle width (44px) + gap */}
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center justify-center gap-1">
         <div className="px-14 text-center whitespace-normal break-words hyphens-auto">
           <div className="flex items-center justify-center gap-2 font-semibold">
             {field.name}
@@ -113,6 +134,28 @@ const FieldHeaderGroup = ({
             )}
           </div>
         </div>
+
+        {/* Compare Type Badge */}
+        {compareLabel && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                variant="outline"
+                className="cursor-pointer hover:bg-muted text-[10px] py-0.5 px-1.5 h-5 flex items-center gap-1"
+                onClick={() => router.push('/compare-types')}
+              >
+                <Settings2 className="h-2.5 w-2.5" />
+                {compareLabel}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              <div className="text-xs">
+                <div className="font-semibold">Compare Type: {compareLabel}</div>
+                <div className="text-muted-foreground mt-1">Click to configure</div>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
 
       {/* Toggle fixed to the right, vertically centered */}
@@ -128,7 +171,7 @@ const FieldHeaderGroup = ({
           )}
           aria-label={`Toggle ${field.name} metrics ${includeInMetrics ? 'off' : 'on'}`}
         >
-          <span 
+          <span
             className={cn(
               'inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200',
               includeInMetrics ? 'translate-x-6' : 'translate-x-1'
@@ -218,27 +261,27 @@ const FileNameCell = ({ row }: { row: ProcessedRowData }) => (
 );
 
 // Function to get background color for a cell based on its data
-const getCellBackgroundColor = (cellData: CellData): string => {
-  const { value, groundTruth, modelName } = cellData;
+const getCellBackgroundColor = (cellData: CellData, templateKey?: string): string => {
+  const { value, groundTruth, modelName, fieldKey } = cellData;
   const isPending = value.startsWith('Pending');
   const isError = value.startsWith('Error:');
   const isNotPresent = value === NOT_PRESENT_VALUE;
-  
+
   // No background for Ground Truth cells
   if (modelName === 'Ground Truth') {
     return '';
   }
-  
+
   // No background for pending states
   if (isPending) {
     return '';
   }
-  
+
   // Error state background
   if (isError) {
     return 'bg-red-100/60 dark:bg-red-900/55';
   }
-  
+
   // Handle "Not Present" cases
   if (isNotPresent) {
     // If there's ground truth but model returned "Not Present", it's a mismatch
@@ -248,15 +291,23 @@ const getCellBackgroundColor = (cellData: CellData): string => {
     // If no ground truth or ground truth is also "Not Present", no special background
     return '';
   }
-  
-  // Comparison-based background colors
-  const comparison = compareValues(value, groundTruth);
-  
+
   // If there's no Ground Truth to compare against, don't apply any coloring
   if (!groundTruth || groundTruth.trim() === '' || groundTruth === '-') {
     return '';
   }
-  
+
+  // Get compare config and use compare engine for accurate comparison
+  const compareConfig = templateKey ? getCompareConfigForField(templateKey, fieldKey) : null;
+  const comparisonMetadata = cellData.comparisonResult;
+
+  // Prefer stored comparison metadata (includes LLM judge decisions). Fall back to local evaluation.
+  const comparison = comparisonMetadata
+    ? comparisonMetadata
+    : compareConfig
+      ? compareValuesPreview(value, groundTruth, compareConfig)
+      : compareValues(value, groundTruth);
+
   if (!comparison.isMatch) {
     // Don't show red for empty values
     if (!value || value.trim() === '' || value === '-') {
@@ -264,46 +315,74 @@ const getCellBackgroundColor = (cellData: CellData): string => {
     }
     return 'bg-red-100/80 dark:bg-red-900/55';
   }
-  
-  switch (comparison.matchType) {
-    case 'exact':
-    case 'normalized':
-      return 'bg-green-100/80 dark:bg-green-900/55';
-    case 'partial':
-      return 'bg-blue-100/80 dark:bg-blue-900/55';
-    case 'date_format':
-      return 'bg-yellow-100/80 dark:bg-yellow-900/55';
-    default:
-      return '';
+
+  // Map compare engine match types to colors - supports both legacy and new types
+  const matchType = comparison.matchType as string;
+
+  // Green for exact matches (all types of exact/normalized matches)
+  if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered'].includes(matchType)) {
+    return 'bg-green-100/80 dark:bg-green-900/55';
   }
+
+  // Blue for partial matches
+  if (matchType === 'partial') {
+    return 'bg-blue-100/80 dark:bg-blue-900/55';
+  }
+
+  // Yellow for date matches
+  if (['date_format', 'date-exact'].includes(matchType)) {
+    return 'bg-yellow-100/80 dark:bg-yellow-900/55';
+  }
+
+  return '';
 };
 
 // Cell component for model values
-const ModelValueCell = ({ 
+const ModelValueCell = ({
   cellData,
   fileId,
   onOpenInlineEditor,
   onRunSingleFieldForFile,
-  field
+  field,
+  templateKey,
+  onShowComparisonResult
 }: {
   cellData: CellData;
   fileId: string;
   onOpenInlineEditor?: (fileId: string, fieldKey: string) => void;
   onRunSingleFieldForFile?: (field: AccuracyField, fileId: string) => void;
   field?: AccuracyField;
+  templateKey?: string;
+  onShowComparisonResult?: (data: {
+    comparisonResult: ComparisonMetadata;
+    predictedValue: string;
+    groundTruthValue: string;
+    fieldName: string;
+    modelName: string;
+  }) => void;
 }) => {
   const { value, groundTruth, fieldKey, modelName } = cellData;
   const isPending = value.startsWith('Pending');
   const isError = value.startsWith('Error:');
   const isNotPresent = value === NOT_PRESENT_VALUE;
-  const comparison = compareValues(value, groundTruth);
+
+  // Get compare config and use compare engine for accurate comparison
+  const compareConfig = templateKey ? getCompareConfigForField(templateKey, fieldKey) : null;
+  const comparisonMetadata = cellData.comparisonResult;
+
+  // Prefer stored comparison metadata so LLM judge decisions drive coloring
+  const comparison = comparisonMetadata
+    ? comparisonMetadata
+    : compareConfig
+      ? compareValuesPreview(value, groundTruth, compareConfig)
+      : compareValues(value, groundTruth);
   
   const getComparisonClasses = (comparison: ComparisonResult) => {
     // Never apply styling to Ground Truth cells
     if (modelName === 'Ground Truth') {
       return '';
     }
-    
+
     // Handle "Not Present" cases first
     if (isNotPresent) {
       // If there's ground truth but model returned "Not Present", it's a mismatch
@@ -313,12 +392,12 @@ const ModelValueCell = ({
       // If no ground truth or ground truth is also "Not Present", no special styling
       return '';
     }
-    
+
     // If there's no Ground Truth to compare against, don't apply any coloring
     if (!groundTruth || groundTruth.trim() === '' || groundTruth === '-') {
       return '';
     }
-    
+
     if (!comparison.isMatch) {
       // Don't show red for empty values
       if (!value || value.trim() === '' || value === '-') {
@@ -326,42 +405,68 @@ const ModelValueCell = ({
       }
       return 'bg-red-100/80 text-red-800 dark:bg-red-900/55 dark:text-red-50';
     }
-    
-    switch (comparison.matchType) {
-      case 'exact':
-      case 'normalized':
-        return 'bg-green-100/80 text-green-800 dark:bg-green-900/55 dark:text-green-50';
-      case 'partial':
-        return 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/55 dark:text-blue-50';
-      case 'date_format':
-        return 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/55 dark:text-yellow-50';
-      default:
-        return '';
+
+    // Handle match type styling - supports both legacy and new compare engine types
+    const matchType = comparison.matchType as string;
+
+    // Green for exact matches (all types of exact/normalized matches)
+    if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered'].includes(matchType)) {
+      return 'bg-green-100/80 text-green-800 dark:bg-green-900/55 dark:text-green-50';
     }
+
+    // Blue for partial matches
+    if (matchType === 'partial') {
+      return 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/55 dark:text-blue-50';
+    }
+
+    // Yellow for date matches
+    if (['date_format', 'date-exact'].includes(matchType)) {
+      return 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/55 dark:text-yellow-50';
+    }
+
+    return '';
   };
 
   // Simple centering wrapper without background colors (background now on td)
+  // Add hover effect if cell has comparison result (clickable)
+  const hasComparisonResult = !!cellData.comparisonResult;
   const wrapperClasses = cn(
     "grid place-items-center w-full h-full px-2 py-3",
     isPending && "text-muted-foreground italic",
     isError && "text-red-700 dark:text-red-400",
-    isNotPresent && "text-muted-foreground italic"
+    isNotPresent && "text-muted-foreground italic",
+    hasComparisonResult && modelName !== 'Ground Truth' && "hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
   );
 
   const handleCellClick = (e: React.MouseEvent) => {
     // Handle ground truth editing - open inline editor for preview
     if (modelName === 'Ground Truth' && onOpenInlineEditor) {
       onOpenInlineEditor(fileId, fieldKey);
+      return;
+    }
+
+    // Show comparison result modal if available
+    if (cellData.comparisonResult && onShowComparisonResult && field) {
+      onShowComparisonResult({
+        comparisonResult: cellData.comparisonResult,
+        predictedValue: value,
+        groundTruthValue: groundTruth,
+        fieldName: field.name,
+        modelName: modelName
+      });
     }
   };
 
   return (
-    <div 
+    <div
       className={wrapperClasses}
       onClick={handleCellClick}
     >
-      <div 
-        className="text-sm text-center leading-snug whitespace-pre-wrap break-words max-w-full cursor-pointer" 
+      <div
+        className={cn(
+          "text-sm text-center leading-snug whitespace-pre-wrap break-words max-w-full",
+          (hasComparisonResult || modelName === 'Ground Truth') && "cursor-pointer"
+        )}
         title={value} // Show full text on hover
         style={{
           display: '-webkit-box',
@@ -379,25 +484,34 @@ const ModelValueCell = ({
 };
 
 
-export default function TanStackExtractionTable({ 
-  data, 
-  shownColumns, 
-  showMetrics, 
-  onOpenPromptStudio, 
+export default function TanStackExtractionTable({
+  data,
+  shownColumns,
+  showMetrics,
+  onOpenPromptStudio,
   onOpenInlineEditor,
   onRunSingleField,
   onRunSingleFieldForFile,
   recentlyChangedPrompts = new Set(),
   isExtracting = false,
   extractingFields = new Set(),
-  onToggleFieldMetrics
+  onToggleFieldMetrics,
+  templateKey
 }: TanStackExtractionTableProps) {
   
   const { fields, results, averages } = data;
   const pathname = usePathname();
   const isHomePage = pathname === '/';
-  
-  
+
+  // State for comparison result modal
+  const [comparisonModalData, setComparisonModalData] = React.useState<{
+    comparisonResult: ComparisonMetadata;
+    predictedValue: string;
+    groundTruthValue: string;
+    fieldName: string;
+    modelName: string;
+  } | null>(null);
+
   // Add a force refresh counter to trigger re-renders when Ground Truth changes
   const [refreshCounter, setRefreshCounter] = React.useState(0);
   
@@ -439,12 +553,16 @@ export default function TanStackExtractionTable({
         visibleColumns.forEach(modelName => {
           const key = `${field.key}-${modelName}`;
           const groundTruthValue = result.fields[field.key]?.['Ground Truth'] || '';
-          
+
+          // Get comparison result if available
+          const comparisonResult = result.comparisonResults?.[field.key]?.[modelName];
+
           row[key] = {
             value: result.fields[field.key]?.[modelName] || '',
             groundTruth: groundTruthValue,
             fieldKey: field.key,
-            modelName
+            modelName,
+            comparisonResult
           };
           
           // Debug Ground Truth values
@@ -494,6 +612,8 @@ export default function TanStackExtractionTable({
               onOpenInlineEditor={onOpenInlineEditor}
               onRunSingleFieldForFile={onRunSingleFieldForFile}
               field={field}
+              templateKey={templateKey}
+              onShowComparisonResult={setComparisonModalData}
             />
           );
         },
@@ -520,6 +640,7 @@ export default function TanStackExtractionTable({
             onRunSingleField={onRunSingleField}
             includeInMetrics={data.fieldSettings?.[field.key]?.includeInMetrics ?? true}
             onToggleMetrics={(include) => onToggleFieldMetrics?.(field.key, include)}
+            templateKey={templateKey}
           />
         ),
         columns: fieldColumns,
@@ -697,6 +818,7 @@ export default function TanStackExtractionTable({
                         onRunSingleField={onRunSingleField}
                         includeInMetrics={data.fieldSettings?.[field.key]?.includeInMetrics ?? true}
                         onToggleMetrics={(include) => onToggleFieldMetrics?.(field.key, include)}
+                        templateKey={templateKey}
                       />
                     </th>
                   );
@@ -764,7 +886,7 @@ export default function TanStackExtractionTable({
                       // Get the cell data from row.original using the column id
                       const cellData = row.original[cell.column.id] as CellData;
                       if (cellData) {
-                        cellBgColor = getCellBackgroundColor(cellData);
+                        cellBgColor = getCellBackgroundColor(cellData, templateKey);
                       }
                     }
                     
@@ -882,6 +1004,17 @@ export default function TanStackExtractionTable({
           </div>
         </div>
       </div>
+
+      {/* Comparison Result Modal */}
+      <ComparisonResultModal
+        isOpen={!!comparisonModalData}
+        onClose={() => setComparisonModalData(null)}
+        comparisonResult={comparisonModalData?.comparisonResult || null}
+        predictedValue={comparisonModalData?.predictedValue || ''}
+        groundTruthValue={comparisonModalData?.groundTruthValue || ''}
+        fieldName={comparisonModalData?.fieldName || ''}
+        modelName={comparisonModalData?.modelName || ''}
+      />
     </TooltipProvider>
   );
 } 
