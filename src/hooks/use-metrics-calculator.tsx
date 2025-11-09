@@ -41,10 +41,20 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
     // Update results with API data and refreshed ground truth
     newData.results.forEach((fileResult: any) => {
       const fileApiResults = apiResults.filter(r => r.fileId === fileResult.id);
-      
+
+      // Initialize comparisonResults if not present
+      if (!fileResult.comparisonResults) {
+        fileResult.comparisonResults = {};
+      }
+
       fileResult.fields = Object.keys(fileResult.fields).reduce((acc: any, fieldKey) => {
         const fieldData: any = {};
-        
+
+        // Initialize comparison results for this field
+        if (!fileResult.comparisonResults[fieldKey]) {
+          fileResult.comparisonResults[fieldKey] = {};
+        }
+
         // Update ground truth from refreshed data
         const refreshedGroundTruthValue = refreshedGroundTruth[fileResult.id]?.groundTruth?.[fieldKey] || '';
         fieldData[UI_LABELS.GROUND_TRUTH] = refreshedGroundTruthValue;
@@ -103,6 +113,11 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
         ? getCompareConfigForField(templateKey, fieldKey)
         : null;
 
+      // Start console group for LLM judge comparisons
+      if (compareConfig?.compareType === 'llm-judge') {
+        console.group(`🤖 LLM Judge Comparisons: ${field.displayName || fieldKey}`);
+      }
+
       // Process all models for this field
       for (const modelName of AVAILABLE_MODELS) {
         const predictions = newData.results.map((fileResult: any) =>
@@ -112,11 +127,15 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
           fileResult.fields[fieldKey]?.[UI_LABELS.GROUND_TRUTH] || ''
         );
 
-        // Use async version with compare config
+        // Get file IDs for LLM judge comparisons
+        const fileIds = newData.results.map((fileResult: any) => fileResult.id);
+
+        // Use async version with compare config and file IDs
         const result = await calculateFieldMetricsWithDebugAsync(
           predictions,
           groundTruths,
-          compareConfig || undefined
+          compareConfig || undefined,
+          fileIds
         );
 
         logger.debug('Metrics calculated', {
@@ -154,6 +173,38 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
           recall: result.recall,
           f1: result.f1Score
         };
+
+        // Store per-cell comparison results
+        if (result.debug.comparisonResults && result.debug.comparisonResults.length > 0) {
+          newData.results.forEach((fileResult: any, fileIndex: number) => {
+            const comparisonResults = result.debug.comparisonResults;
+            if (!comparisonResults) return;
+
+            const comparisonResult = comparisonResults[fileIndex];
+            if (comparisonResult) {
+              // Ensure comparison results structure exists
+              if (!fileResult.comparisonResults) {
+                fileResult.comparisonResults = {};
+              }
+              if (!fileResult.comparisonResults[fieldKey]) {
+                fileResult.comparisonResults[fieldKey] = {};
+              }
+              // Store the comparison result for this model
+              fileResult.comparisonResults[fieldKey][modelName] = {
+                isMatch: comparisonResult.isMatch,
+                matchType: comparisonResult.matchType,
+                confidence: comparisonResult.confidence,
+                details: 'details' in comparisonResult ? comparisonResult.details : undefined,
+                error: 'error' in comparisonResult ? comparisonResult.error : undefined
+              };
+            }
+          });
+        }
+      }
+
+      // Close console group for LLM judge comparisons
+      if (compareConfig?.compareType === 'llm-judge') {
+        console.groupEnd();
       }
     }
 

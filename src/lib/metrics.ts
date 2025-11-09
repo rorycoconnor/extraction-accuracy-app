@@ -26,6 +26,8 @@ export type MetricsDebugInfo = {
     falseNegatives: Array<{predicted: string, actual: string}>;
     trueNegatives: Array<{predicted: string, actual: string}>;
   };
+  // Per-cell comparison results (index matches predictions/groundTruths arrays)
+  comparisonResults?: any[];
 };
 
 export type ComparisonResult = {
@@ -371,12 +373,14 @@ export function calculateFieldMetrics(
  * @param predictions Array of predicted values from the model
  * @param groundTruths Array of ground truth values
  * @param compareConfig Optional compare configuration for the field
+ * @param fileIds Optional array of file IDs (for LLM judge comparisons that need file context)
  * @returns MetricsResult and debug information
  */
 export async function calculateFieldMetricsWithDebugAsync(
   predictions: string[],
   groundTruths: string[],
-  compareConfig?: FieldCompareConfig
+  compareConfig?: FieldCompareConfig,
+  fileIds?: string[]
 ): Promise<MetricsResult & { debug: MetricsDebugInfo }> {
   if (predictions.length !== groundTruths.length) {
     throw new Error('Predictions and ground truths must have the same length');
@@ -417,12 +421,16 @@ export async function calculateFieldMetricsWithDebugAsync(
     trueNegatives: [] as Array<{predicted: string, actual: string}>
   };
 
+  // Store detailed comparison results for each cell (for UI display)
+  const comparisonResults: any[] = [];
+
   for (let i = 0; i < predictions.length; i++) {
     const predicted = predictions[i];
     const actual = groundTruths[i];
 
     // Skip if prediction is in pending/error state
     if (!predicted || predicted.startsWith('Pending') || predicted.startsWith('Error')) {
+      comparisonResults.push(null);
       continue;
     }
 
@@ -432,20 +440,50 @@ export async function calculateFieldMetricsWithDebugAsync(
 
     totalValidPairs++;
 
+    let comparisonResult: any = null;
+
     // Case 1: Ground truth is "Not Present"
     if (normalizedActual === NOT_PRESENT_VALUE) {
       if (normalizedPredicted === NOT_PRESENT_VALUE) {
         trueNegatives++; // Model correctly predicted "Not Present"
         examples.trueNegatives.push({predicted: normalizedPredicted, actual: normalizedActual});
+        comparisonResult = {
+          isMatch: true,
+          matchType: 'exact',
+          confidence: 'high'
+        };
       } else {
         falsePositives++; // Model incorrectly predicted something when field should be empty
         examples.falsePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
+        comparisonResult = {
+          isMatch: false,
+          matchType: 'none',
+          confidence: 'high'
+        };
       }
     }
     // Case 2: Ground truth exists (is not "Not Present")
     else {
-      // Use compare engine with configured compare type
-      const match = await isMatchWithCompareEngine(normalizedPredicted, normalizedActual, compareConfig);
+      // Use compare engine with configured compare type - get full comparison result
+      if (compareConfig) {
+        // For LLM judge comparisons, inject fileId into parameters
+        const configWithFileId = { ...compareConfig };
+        if (compareConfig.compareType === 'llm-judge' && fileIds && fileIds[i]) {
+          configWithFileId.parameters = {
+            ...compareConfig.parameters,
+            fileId: fileIds[i]
+          };
+        }
+
+        // Dynamic import to use compare engine
+        const { compareValues: compareValuesEngine } = await import('./compare-engine');
+        comparisonResult = await compareValuesEngine(normalizedPredicted, normalizedActual, configWithFileId);
+      } else {
+        // Fall back to legacy comparison
+        comparisonResult = compareValues(normalizedPredicted, normalizedActual);
+      }
+
+      const match = comparisonResult.isMatch;
 
       if (match) {
         truePositives++; // Model correctly predicted the value
@@ -460,6 +498,8 @@ export async function calculateFieldMetricsWithDebugAsync(
         examples.falseNegatives.push({predicted: normalizedPredicted, actual: normalizedActual});
       }
     }
+
+    comparisonResults.push(comparisonResult);
   }
 
   // Calculate metrics using same logic as sync version
@@ -480,7 +520,8 @@ export async function calculateFieldMetricsWithDebugAsync(
           falsePositives: [],
           falseNegatives: [],
           trueNegatives: []
-        }
+        },
+        comparisonResults
       }
     };
   }
@@ -512,7 +553,8 @@ export async function calculateFieldMetricsWithDebugAsync(
       falseNegatives,
       trueNegatives,
       totalValidPairs,
-      examples
+      examples,
+      comparisonResults
     }
   };
 }

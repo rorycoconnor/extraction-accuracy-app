@@ -134,6 +134,7 @@ export default function ComparisonResults({
           isExtracting={isExtracting}
           extractingFields={extractingFields}
           onToggleFieldMetrics={onToggleFieldMetrics}
+          templateKey={accuracyData.templateKey}
         />
       </div>
     </div>

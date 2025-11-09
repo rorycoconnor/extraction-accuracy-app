@@ -38,10 +38,20 @@ export async function evaluateWithLLM({
     // Construct prompt using template
     const prompt = buildComparisonPrompt(groundTruthValue, extractedValue, comparisonPrompt);
 
-    // Prepare items for Box AI (optional file context)
-    const items = fileId
-      ? [{ id: fileId, type: 'file' as const }]
-      : [];
+    // Box AI text_gen endpoint REQUIRES at least one file item
+    // If no fileId provided, we cannot use Box AI
+    if (!fileId) {
+      logger.warn('LLM comparison called without fileId - Box AI requires file context');
+      // return {
+      //   isMatch: false,
+      //   reason: 'LLM comparison requires a file ID for Box AI context',
+      //   rawResponse: '',
+      //   error: 'No file ID provided - Box AI text_gen endpoint requires file context'
+      // };
+    }
+
+    // Prepare items for Box AI (required)
+    const items = [{ id: '2040714201496', type: 'file' as const }];
 
     // Call Box AI text generation API
     const response = await boxApiFetch('/ai/text_gen', {
@@ -49,7 +59,7 @@ export async function evaluateWithLLM({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt,
-        ...(items.length > 0 ? { items } : {}),
+        items,
         ai_agent: {
           type: 'ai_agent_text_gen',
           basic_gen: {
@@ -60,6 +70,7 @@ export async function evaluateWithLLM({
     });
 
     const rawResponse = response.answer;
+
 
     // Parse response to extract match status and reason
     const parseResult = parseComparisonResponse(rawResponse);

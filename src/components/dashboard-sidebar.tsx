@@ -11,8 +11,7 @@ import {
   FileText,
   ExternalLink,
   AlertTriangle,
-  Database,
-  Settings2
+  Database
 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -186,28 +185,6 @@ export function DashboardSidebar({
           </CardContent>
         </Card>
       )}
-
-      {/* Compare Types Card */}
-      <Card>
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Settings2 className="h-4 w-4" />
-              Compare Types
-            </CardTitle>
-            <Link href="/compare-types">
-              <Button variant="ghost" size="sm" className="h-7 text-xs">
-                Configure
-              </Button>
-            </Link>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Set comparison strategies for each field to control how extracted values are validated.
-          </p>
-        </CardContent>
-      </Card>
 
       {/* Getting Started Card */}
       <Card className="bg-blue-50 dark:bg-blue-950/20">

@@ -8,6 +8,113 @@ import { logger } from './logger';
 import { NOT_PRESENT_VALUE } from './utils';
 
 /**
+ * Synchronous comparison function for UI rendering (non-async compare types only)
+ * Falls back to legacy comparison for LLM-judge to avoid blocking renders
+ */
+export function compareValuesSync(
+  extractedValue: string,
+  groundTruthValue: string,
+  compareConfig: FieldCompareConfig
+): ComparisonResult {
+  // Handle empty/missing values
+  if (!extractedValue && !groundTruthValue) {
+    return {
+      isMatch: true,
+      matchType: compareConfig.compareType,
+      confidence: 'high',
+    };
+  }
+
+  // Handle "Not Present" values
+  if (extractedValue === NOT_PRESENT_VALUE && groundTruthValue === NOT_PRESENT_VALUE) {
+    return {
+      isMatch: true,
+      matchType: compareConfig.compareType,
+      confidence: 'high',
+    };
+  }
+
+  if (extractedValue === NOT_PRESENT_VALUE || groundTruthValue === NOT_PRESENT_VALUE) {
+    return {
+      isMatch: false,
+      matchType: compareConfig.compareType,
+      confidence: 'high',
+    };
+  }
+
+  // Skip pending/error states
+  if (
+    extractedValue.startsWith('Pending') ||
+    extractedValue.startsWith('Error') ||
+    extractedValue.startsWith('Not Found')
+  ) {
+    return {
+      isMatch: false,
+      matchType: compareConfig.compareType,
+      confidence: 'high',
+      details: 'Skipped pending/error state',
+    };
+  }
+
+  try {
+    // Route to appropriate comparison function (sync only)
+    switch (compareConfig.compareType) {
+      case 'exact-string':
+        return compareExactString(extractedValue, groundTruthValue);
+
+      case 'near-exact-string':
+        return compareNearExactString(extractedValue, groundTruthValue);
+
+      case 'llm-judge':
+        // For UI rendering, fall back to near-exact for LLM comparisons
+        // (the actual metrics use the async LLM comparison)
+        const fallback = compareNearExactString(extractedValue, groundTruthValue);
+        return {
+          ...fallback,
+          matchType: 'llm-judge',
+          details: 'UI preview (actual metrics use LLM)',
+        };
+
+      case 'exact-number':
+        return compareExactNumber(extractedValue, groundTruthValue);
+
+      case 'date-exact':
+        return compareDateExact(extractedValue, groundTruthValue);
+
+      case 'boolean':
+        return compareBoolean(extractedValue, groundTruthValue);
+
+      case 'list-unordered':
+        return compareListUnordered(extractedValue, groundTruthValue, compareConfig);
+
+      case 'list-ordered':
+        return compareListOrdered(extractedValue, groundTruthValue, compareConfig);
+
+      default:
+        logger.error('Unknown compare type', { compareType: compareConfig.compareType });
+        return {
+          isMatch: false,
+          matchType: compareConfig.compareType,
+          confidence: 'low',
+          error: `Unknown compare type: ${compareConfig.compareType}`,
+        };
+    }
+  } catch (error) {
+    logger.error('Comparison failed', {
+      compareType: compareConfig.compareType,
+      error: error as Error,
+    });
+
+    return {
+      isMatch: false,
+      matchType: compareConfig.compareType,
+      confidence: 'low',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+}
+
+/**
  * Main comparison function that routes to specific comparison strategies
  */
 export async function compareValues(
@@ -171,11 +278,17 @@ async function compareLLMJudge(
       groundTruthValue: groundTruth,
       extractedValue: extracted,
       comparisonPrompt,
-      // fileId could be passed through compareConfig.parameters if needed
+      fileId: compareConfig.parameters?.fileId,
     });
 
     if (result.error) {
       logger.error('LLM comparison returned error', { error: result.error });
+      console.error('🤖 LLM Judge - Error:', {
+        extracted,
+        groundTruth,
+        error: result.error,
+        prompt: comparisonPrompt
+      });
 
       // Fallback to near-exact match on error
       const fallbackResult = compareNearExactString(extracted, groundTruth);
@@ -187,6 +300,16 @@ async function compareLLMJudge(
       };
     }
 
+    // Console log the LLM judge decision for debugging
+    console.log('🤖 LLM Judge Decision:', {
+      extracted,
+      groundTruth,
+      isMatch: result.isMatch,
+      reasoning: result.reason,
+      prompt: comparisonPrompt,
+      fieldKey: compareConfig.fieldKey
+    });
+
     return {
       isMatch: result.isMatch,
       matchType: 'llm-judge',
@@ -195,6 +318,13 @@ async function compareLLMJudge(
     };
   } catch (error) {
     logger.error('Failed to call LLM comparison', { error: error as Error });
+    console.error('🤖 LLM Judge - Exception:', {
+      extracted,
+      groundTruth,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      prompt: comparisonPrompt,
+      fallback: 'Using near-exact match'
+    });
 
     // Fallback to near-exact match on error
     const fallbackResult = compareNearExactString(extracted, groundTruth);

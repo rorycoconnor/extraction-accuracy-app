@@ -23,6 +23,7 @@ export interface CompareParameters {
   // For LLM as Judge
   comparisonPrompt?: string;  // Custom comparison criteria
   llmModel?: string;          // Optional model override
+  fileId?: string;            // File ID for Box AI context (required for LLM comparisons)
 
   // For List comparisons
   separator?: string;         // Delimiter (default: ",")

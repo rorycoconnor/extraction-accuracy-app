@@ -40,12 +40,24 @@ export type FieldResult = {
   [modelOrGroundTruth: string]: string;
 };
 
+// Comparison metadata for cell-level comparison details
+export type ComparisonMetadata = {
+  isMatch: boolean;
+  matchType: string;
+  confidence: 'high' | 'medium' | 'low';
+  details?: string;  // LLM reasoning or other details
+  error?: string;
+};
+
 export type FileResult = {
   id: string;
   fileName: string;
   fileType: string;
   // e.g. "Contract Type": { "Gemini 1.5 Flash": "NDA", "Ground Truth": "NDA" }
-  fields: Record<string, FieldResult>; 
+  fields: Record<string, FieldResult>;
+  // Comparison metadata for each field and model (optional)
+  // e.g. "Contract Type": { "Gemini 1.5 Flash": { isMatch: true, matchType: 'llm-judge', details: '...' } }
+  comparisonResults?: Record<string, Record<string, ComparisonMetadata>>;
 };
 
 export type FieldAverage = {
