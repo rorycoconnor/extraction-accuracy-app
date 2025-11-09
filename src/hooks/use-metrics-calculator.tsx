@@ -30,6 +30,11 @@ const UI_LABELS = {
   UNKNOWN_ERROR: 'Unknown error'
 } as const;
 
+const getActiveModelsForRun = (shownColumns: Record<string, boolean>) =>
+  Object.entries(shownColumns)
+    .filter(([modelName, isShown]) => modelName !== UI_LABELS.GROUND_TRUTH && isShown)
+    .map(([modelName]) => modelName);
+
 export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
   const calculateAndUpdateMetrics = async (
     accuracyData: AccuracyData,
@@ -37,6 +42,8 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
   ): Promise<AccuracyData> => {
     const refreshedGroundTruth = getGroundTruthData();
     const newData = JSON.parse(JSON.stringify(accuracyData));
+    const activeModels = getActiveModelsForRun(accuracyData.shownColumns || {});
+    const modelsToProcess = activeModels.length > 0 ? activeModels : AVAILABLE_MODELS;
     
     // Update results with API data and refreshed ground truth
     newData.results.forEach((fileResult: any) => {
@@ -48,7 +55,8 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
       }
 
       fileResult.fields = Object.keys(fileResult.fields).reduce((acc: any, fieldKey) => {
-        const fieldData: any = {};
+        const existingFieldData = fileResult.fields[fieldKey] || {};
+        const fieldData: any = { ...existingFieldData };
 
         // Initialize comparison results for this field
         if (!fileResult.comparisonResults[fieldKey]) {
@@ -60,7 +68,7 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
         fieldData[UI_LABELS.GROUND_TRUTH] = refreshedGroundTruthValue;
         
         // Update model results from API
-        AVAILABLE_MODELS.forEach(modelName => {
+        modelsToProcess.forEach(modelName => {
           const modelResult = fileApiResults.find(r => r.modelName === modelName);
           if (modelResult) {
             if (modelResult.success) {
@@ -118,8 +126,17 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
         console.group(`🤖 LLM Judge Comparisons: ${field.displayName || fieldKey}`);
       }
 
-      // Process all models for this field
-      for (const modelName of AVAILABLE_MODELS) {
+      if (!newData.averages) {
+        newData.averages = {};
+      }
+      if (!newData.averages[fieldKey]) {
+        newData.averages[fieldKey] = accuracyData.averages?.[fieldKey]
+          ? { ...accuracyData.averages[fieldKey] }
+          : {};
+      }
+
+      // Process only models that are active (fallback to all if none selected)
+      for (const modelName of modelsToProcess) {
         const predictions = newData.results.map((fileResult: any) =>
           fileResult.fields[fieldKey]?.[modelName] || ''
         );
@@ -161,12 +178,6 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
         });
 
         // Store the calculated metrics in averages (to match hook structure)
-        if (!newData.averages) {
-          newData.averages = {};
-        }
-        if (!newData.averages[fieldKey]) {
-          newData.averages[fieldKey] = {};
-        }
         newData.averages[fieldKey][modelName] = {
           accuracy: result.accuracy,
           precision: result.precision,

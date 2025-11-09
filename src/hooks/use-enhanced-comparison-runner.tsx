@@ -29,7 +29,6 @@ import { useDataHandlers } from '@/hooks/use-data-handlers';
 import { logger } from '@/lib/logger';
 
 // Import centralized constants
-import { AVAILABLE_MODELS } from '@/lib/main-page-constants';
 
 const UI_LABELS = {
   GROUND_TRUTH: 'Ground Truth',
@@ -51,6 +50,11 @@ const TOAST_MESSAGES = {
     variant: 'default' as const,
   },
 } as const;
+
+const getActiveModelsForRun = (shownColumns: Record<string, boolean>) =>
+  Object.entries(shownColumns)
+    .filter(([modelName, isShown]) => modelName !== UI_LABELS.GROUND_TRUTH && isShown)
+    .map(([modelName]) => modelName);
 
 interface UseEnhancedComparisonRunnerReturn {
   handleRunComparison: () => Promise<void>;
@@ -105,6 +109,16 @@ export const useEnhancedComparisonRunner = (
 
     const accuracyData = state.data;
     const shownColumns = accuracyData.shownColumns;
+    const activeModelsForRun = getActiveModelsForRun(shownColumns);
+
+    if (activeModelsForRun.length === 0) {
+      toast({
+        title: TOAST_MESSAGES.NO_DATA_TO_PROCESS.title,
+        description: 'Please enable at least one model column before running a comparison.',
+        variant: TOAST_MESSAGES.NO_DATA_TO_PROCESS.variant,
+      });
+      return;
+    }
     
     // Initialize ref with current data
     currentDataRef.current = accuracyData;
@@ -129,7 +143,7 @@ export const useEnhancedComparisonRunner = (
     }
 
     // Initialize progress tracking
-    const extractionJobCount = accuracyData.results.length * AVAILABLE_MODELS.filter(model => shownColumns[model]).length;
+    const extractionJobCount = accuracyData.results.length * activeModelsForRun.length;
     startExtraction(extractionJobCount);
     
     updateDetailedProgress({
@@ -211,7 +225,7 @@ export const useEnhancedComparisonRunner = (
       // }
       
       // Process results with atomic updates to prevent overwrites
-      await processExtractionResults(accuracyData, apiResults, runId, sessionId);
+      await processExtractionResults(accuracyData, apiResults, runId, sessionId, activeModelsForRun);
       setIsJudging(false);
 
       stopExtraction();
@@ -360,7 +374,8 @@ export const useEnhancedComparisonRunner = (
     accuracyData: AccuracyData,
     apiResults: ApiExtractionResult[],
     runId: string,
-    sessionId: string
+    sessionId: string,
+    activeModelsForRun: string[]
   ) => {
     // Get fresh ground truth data to ensure we have the latest
     const refreshedGroundTruth = getGroundTruthData();
@@ -368,64 +383,61 @@ export const useEnhancedComparisonRunner = (
     // Create a deep copy to avoid mutations
     const processedResults: FileResult[] = JSON.parse(JSON.stringify(accuracyData.results));
     
+    const activeModelSet = new Set(activeModelsForRun);
+
     // Process each file result atomically
     processedResults.forEach((fileResult) => {
       const fileApiResults = apiResults.filter(r => r.fileId === fileResult.id);
+      const previousFields = fileResult.fields;
       
       // Update fields for this file
-      fileResult.fields = Object.keys(fileResult.fields).reduce((acc: any, fieldKey) => {
-        const fieldData: any = {};
+      fileResult.fields = Object.keys(previousFields).reduce((acc: any, fieldKey) => {
+        const existingFieldData = previousFields[fieldKey] || {};
+        const fieldData: any = { ...existingFieldData };
         
         // Always use the latest ground truth data - this prevents overwrites
         const refreshedGroundTruthValue = refreshedGroundTruth[fileResult.id]?.groundTruth?.[fieldKey] || '';
         fieldData[UI_LABELS.GROUND_TRUTH] = refreshedGroundTruthValue;
         
-        // Update model results from API, preserving existing data for models not in this run
-        AVAILABLE_MODELS.forEach(modelName => {
-          const modelResult = fileApiResults.find(r => r.modelName === modelName);
-          if (modelResult) {
-            // This model was run in this comparison - update with new results
-            if (modelResult.success) {
-              // 🔧 Enhanced field value extraction with debugging
-              const extractedValue = findFieldValue(modelResult.extractedMetadata as Record<string, any>, fieldKey);
+        // Update only the models that actually participated in this run
+        fileApiResults.forEach(modelResult => {
+          if (!activeModelSet.has(modelResult.modelName)) {
+            return;
+          }
+
+          if (modelResult.success) {
+            const extractedValue = findFieldValue(modelResult.extractedMetadata as Record<string, any>, fieldKey);
+            
+            if (extractedValue === undefined) {
+              logger.debug('Field not found in extraction response', {
+                fieldKey,
+                modelName: modelResult.modelName,
+                fileId: fileResult.id,
+                availableKeys: Object.keys(modelResult.extractedMetadata as Record<string, any>)
+              });
+            }
+            
+            if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
+              let formattedValue = String(extractedValue).trim();
               
-              // Debug logging for troubleshooting
-              if (extractedValue === undefined) {
-                logger.debug('Field not found in extraction response', {
+              const field = accuracyData.fields.find(f => f.key === fieldKey);
+              if (field && isMultiSelectField(field, fieldKey)) {
+                formattedValue = formatMultiSelectValue(formattedValue);
+                logger.debug('Formatted multi-select value', {
                   fieldKey,
-                  modelName,
-                  fileId: fileResult.id,
-                  availableKeys: Object.keys(modelResult.extractedMetadata as Record<string, any>)
+                  original: extractedValue,
+                  formatted: formattedValue
                 });
               }
               
-              if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
-                let formattedValue = String(extractedValue).trim();
-                
-                // Check if this is a multi-select field and format accordingly
-                const field = accuracyData.fields.find(f => f.key === fieldKey);
-                if (field && isMultiSelectField(field, fieldKey)) {
-                  formattedValue = formatMultiSelectValue(formattedValue);
-                  logger.debug('Formatted multi-select value', {
-                    fieldKey,
-                    original: extractedValue,
-                    formatted: formattedValue
-                  });
-                }
-                
-                fieldData[modelName] = formattedValue;
-              } else {
-                fieldData[modelName] = NOT_PRESENT_VALUE;
-              }
+              fieldData[modelResult.modelName] = formattedValue;
             } else {
-              const errorMessage = modelResult.error?.userMessage || modelResult.error?.message || UI_LABELS.UNKNOWN_ERROR;
-              const conciseError = extractConciseErrorDescription(errorMessage);
-              fieldData[modelName] = `Error: ${conciseError}`;
+              fieldData[modelResult.modelName] = NOT_PRESENT_VALUE;
             }
           } else {
-            // This model was not run - preserve existing data
-            const existingValue = fileResult.fields[fieldKey]?.[modelName];
-            fieldData[modelName] = existingValue || UI_LABELS.PENDING_STATUS;
+            const errorMessage = modelResult.error?.userMessage || modelResult.error?.message || UI_LABELS.UNKNOWN_ERROR;
+            const conciseError = extractConciseErrorDescription(errorMessage);
+            fieldData[modelResult.modelName] = `Error: ${conciseError}`;
           }
         });
         
@@ -443,7 +455,8 @@ export const useEnhancedComparisonRunner = (
     // Process fields sequentially to handle async compare operations
     for (const field of accuracyData.fields) {
       const fieldKey = field.key;
-      const modelAvgs: ModelAverages = {};
+      const previousModelAverages = accuracyData.averages?.[fieldKey] || {};
+      const modelAvgs: ModelAverages = { ...previousModelAverages };
       const fileIds = processedResults.map((fileResult) => fileResult.id);
 
       // Get compare config for this field
@@ -451,8 +464,8 @@ export const useEnhancedComparisonRunner = (
         ? getCompareConfigForField(templateKey, fieldKey)
         : null;
 
-      // Process models sequentially
-      for (const modelName of AVAILABLE_MODELS) {
+      // Process only the models that were active for this run
+      for (const modelName of activeModelsForRun) {
         const predictions = processedResults.map((fileResult) =>
           fileResult.fields[fieldKey]?.[modelName] || ''
         );
