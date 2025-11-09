@@ -299,11 +299,14 @@ const getCellBackgroundColor = (cellData: CellData, templateKey?: string): strin
 
   // Get compare config and use compare engine for accurate comparison
   const compareConfig = templateKey ? getCompareConfigForField(templateKey, fieldKey) : null;
+  const comparisonMetadata = cellData.comparisonResult;
 
-  // Use compare engine with config if available, otherwise fall back to legacy
-  const comparison = compareConfig
-    ? compareValuesSync(value, groundTruth, compareConfig)
-    : compareValues(value, groundTruth);
+  // Prefer stored comparison metadata (includes LLM judge decisions). Fall back to local evaluation.
+  const comparison = comparisonMetadata
+    ? comparisonMetadata
+    : compareConfig
+      ? compareValuesSync(value, groundTruth, compareConfig)
+      : compareValues(value, groundTruth);
 
   if (!comparison.isMatch) {
     // Don't show red for empty values
@@ -365,11 +368,14 @@ const ModelValueCell = ({
 
   // Get compare config and use compare engine for accurate comparison
   const compareConfig = templateKey ? getCompareConfigForField(templateKey, fieldKey) : null;
+  const comparisonMetadata = cellData.comparisonResult;
 
-  // Use compare engine with config if available, otherwise fall back to legacy
-  const comparison = compareConfig
-    ? compareValuesSync(value, groundTruth, compareConfig)
-    : compareValues(value, groundTruth);
+  // Prefer stored comparison metadata so LLM judge decisions drive coloring
+  const comparison = comparisonMetadata
+    ? comparisonMetadata
+    : compareConfig
+      ? compareValuesSync(value, groundTruth, compareConfig)
+      : compareValues(value, groundTruth);
   
   const getComparisonClasses = (comparison: ComparisonResult) => {
     // Never apply styling to Ground Truth cells
