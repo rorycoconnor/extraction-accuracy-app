@@ -180,14 +180,15 @@ export const useEnhancedComparisonRunner = (
             lastUpdateTime: new Date()
           });
           
-          // 🎨 Real-time update: Process this single result and update the table immediately
-          // Update only the results, not the averages
+          // 🎨 Real-time update: Process this single result internally
+          // We update the ref but don't dispatch to avoid triggering redundant comparisons
+          // The final processExtractionResults will handle the complete state update with metrics
           if (currentDataRef.current) {
             const updatedData = processSingleResult(currentDataRef.current, job, result);
             currentDataRef.current = updatedData; // Update ref for next iteration
-            
-            // Dispatch the update with results only, preserving existing averages
-            dispatch({ type: 'SET_ACCURACY_DATA', payload: updatedData });
+
+            // NOTE: We intentionally don't dispatch here to avoid duplicate comparison runs
+            // The UI will update once at the end with complete metrics
           }
         }
       );
@@ -486,12 +487,6 @@ export const useEnhancedComparisonRunner = (
         averages: newAverages,
         apiResults
       }
-    });
-    
-    // Update the main data with the metrics-enhanced version
-    dispatch({
-      type: 'SET_ACCURACY_DATA',
-      payload: updatedAccuracyDataWithMetrics
     });
     
     logger.info('Results processed and stored with versioning');
