@@ -2228,5 +2228,131 @@
     "lastUsedTemplate": "invoice",
     "usageCount": 1,
     "lastModified": "2025-09-18T01:45:27.769Z"
+  },
+  "documentType": {
+    "activePrompt": "What is the title of this document? Look for the most prominent text at the top of the first page or in the header that defines the document's purpose, such as \"Agreement,\" \"Addendum,\" or \"Statement.\"",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.070Z"
+  },
+  "loanType": {
+    "activePrompt": "Extract the loan type from the document. Look for explicit labels such as \"Loan Type:\", \"Loan Program:\", or \"Product:\" often found near the top of the first page or in summary tables. Extract the value immediately following the label.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.071Z"
+  },
+  "helocText": {
+    "activePrompt": "Search the document for text that explicitly identifies the loan as a \"Home Equity Line of Credit\" or \"HELOC.\" Look under headings like \"Loan Type,\" \"Product,\" or near the borrower information on the first page. If the document specifies a different loan type (e.g., \"Conventional,\" \"CONV,\" \"Fixed Rate\"), extract that specific text instead. If no loan type is mentioned, return null.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.071Z"
+  },
+  "goodThroughDate": {
+    "activePrompt": "Extract the Good Through Date, which is the date a quote or payoff amount is valid until. Prioritize dates that immediately follow phrases such as 'good through', 'valid through', 'expires on', or 'valid until'. Look for this date near payoff amounts, in summary tables, or under headings related to quote expiration.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.072Z"
+  },
+  "goodThroughText": {
+    "activePrompt": "Extract the full sentence stating when the quote, offer, or payoff amount expires. Look for key phrases such as 'good through', 'valid until', 'expires on', or similar language directly preceding or following a date. Exclude any separate sentences that only explain the reason for the expiration or the consequences of it.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.073Z"
+  },
+  "perDiem": {
+    "activePrompt": "Extract the Per Diem amount, which is a daily charge. Search for the exact dollar value associated with keywords like \"per diem,\" \"daily rate,\" \"daily charge,\" or \"interest per day.\" Prioritize values found in tables or sections related to payoff calculations, fees, or interest.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.075Z"
+  },
+  "chargeCount": {
+    "activePrompt": "Extract the total count of all itemized charges, fees, costs, and disbursements. Review the entire document, paying close attention to tables and line items under headings related to payoff details, fees, or escrow accounts. Sum all individual charges, including items labeled as interest, recording costs, and escrow disbursements, to get the final count.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.075Z"
+  },
+  "borrowerName": {
+    "activePrompt": "Extract the full name of the Borrower. The Borrower is the person or entity receiving the loan. Look for explicit labels like 'Borrower', 'Mortgagor', 'Debtor', or 'Applicant' near the top of the document or in a section defining the parties to the agreement.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.076Z"
+  },
+  "doesDisbursementNotesIncludeBorrower": {
+    "activePrompt": "Does the disbursement notes, wire transfer instructions, or payoff statement include the borrower's name? Check for labels such as 'Borrower', 'Mortgagor', or 'Debtor' and the corresponding name. If the borrower's name is present in any of these sections, return 'Yes'. If it is not mentioned, return 'No'.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.077Z"
+  },
+  "lenderName": {
+    "activePrompt": "Extract the full name of the lender, which is the financial institution or company providing the loan. Look for labels such as 'Lender', 'Beneficiary', 'Secured Party', or 'Mortgagee'. The lender's name is often found at the top of the first page, in the document header or footer, or near the signature block.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.078Z"
+  },
+  "lenderAddress": {
+    "activePrompt": "Extract the lender's full mailing address. Search under headings such as \"Lender,\" \"Notices,\" \"Payments,\" or where payment instructions are provided. The address may be specified for sending checks, correspondence, or payoffs, and could be located in sections like \"CASHIER'S CHECK.\"",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.079Z"
+  },
+  "beneficiaryName": {
+    "activePrompt": "Extract the full name of the beneficiary, which is the entity or person receiving the payment. Search for this information within sections titled 'Wire Transfer Instructions', 'Payment Details', or 'Payoff Information'. The name is typically located next to labels like 'Beneficiary', 'Beneficiary Name', 'Payable to', or 'In favor of'.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.079Z"
+  },
+  "beneficiaryAddress": {
+    "activePrompt": "Extract the full street address for the ultimate beneficiary or payee receiving the funds. Look for this information under headings such as 'Wire Transfer Instructions', 'Payment Details', or 'Beneficiary Information'. Prioritize the address directly associated with the 'Beneficiary Name' and explicitly exclude any address labeled 'Beneficiary Bank Address' or belonging to a financial institution.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.080Z"
+  },
+  "propertyAddress": {
+    "activePrompt": "Extract the full property address, including the street, city, state, and ZIP code. Search for explicit labels like 'Property Address', 'Subject Property', or 'Property Location'. The address is typically located at the top of the document or near the borrower's name. Correct common OCR errors (e.g., 'In' for 'Ln', '1' for 'l') based on standard address formats.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.080Z"
+  },
+  "bankName": {
+    "activePrompt": "Extract the full name of the beneficiary bank. Search under headings like \"Wire Transfer Instructions,\" \"ACH Details,\" or \"Payment Instructions.\" The bank is often labeled \"Beneficiary Bank,\" \"Receiving Bank,\" or \"Financial Institution.\" Include corporate identifiers such as \"N.A.\", \"Inc.\", or \"Bank\" as part of the name.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.081Z"
+  },
+  "wireInstructions": {
+    "activePrompt": "Extract the complete wire transfer instructions. Look for sections under headings such as \"Wire Instructions,\" \"Wire Transfer,\" \"Wiring Instructions,\" or \"Bank Information.\" The extracted text should include all details: Beneficiary Name, Bank Name, ABA/Routing Number, Account Number, and any special instructions or \"For Further Credit\" information. Capture the entire text block associated with these instructions.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.081Z"
+  },
+  "wireTransferAddress": {
+    "activePrompt": "Extract the full street address for the wire transfer. Look within sections titled \"Wire Instructions,\" \"Wiring Instructions,\" or \"Payment Instructions.\" The address may be explicitly labeled \"Wire Transfer Address,\" \"Bank Address,\" or \"Beneficiary Bank Address.\"",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.082Z"
+  },
+  "overnightDeliveriesAddress": {
+    "activePrompt": "Extract the full address for overnight, courier, or express deliveries. Look under headings such as 'Overnight Delivery', 'Courier Address', or 'Notices'. If a specific overnight address is not found, extract the physical address designated for mailing payments or general correspondence.",
+    "promptHistory": [],
+    "lastUsedTemplate": "payoffStatementV3",
+    "usageCount": 2,
+    "lastModified": "2025-11-09T20:13:06.082Z"
   }
 }

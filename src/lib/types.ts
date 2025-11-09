@@ -76,6 +76,8 @@ export type PromptVersion = {
   prompt: string;
   savedAt: string;
   isFavorite?: boolean;
+  source?: 'manual' | 'optimizer' | 'imported';
+  note?: string;
   metrics?: {
     // Individual model metrics instead of aggregated averages
     modelMetrics: Record<string, {
@@ -94,6 +96,7 @@ export type AccuracyField = {
   key: string;
   type: 'string' | 'date' | 'enum' | 'number' | 'multiSelect' | 'dropdown_multi' | 'taxonomy';
   prompt: string; // This is the active prompt
+  templatePrompt?: string;
   promptHistory: PromptVersion[];
   options?: { key: string }[]; // Enum/multiSelect options persisted from template
 };

@@ -161,9 +161,11 @@ export const useDataHandlers = ({
   
     const newAccuracyData = JSON.parse(JSON.stringify(accuracyData));
     const fieldToUpdate = newAccuracyData.fields.find((f: AccuracyField) => f.key === fieldKey)!;
-  
-    // 🔧 FIX: Don't capture metrics when saving prompt - only after running comparison
-    // Metrics should only be added after a run comparison is completed with this specific prompt
+
+    if (!fieldToUpdate.templatePrompt) {
+      fieldToUpdate.templatePrompt = fieldToUpdate.prompt;
+    }
+
     const newVersionNumber = fieldToUpdate.promptHistory.length + 1;
     fieldToUpdate.promptHistory.unshift({
       id: `${UI_LABELS.VERSION_PREFIX}${newVersionNumber}`,
@@ -315,6 +317,60 @@ export const useDataHandlers = ({
     });
   };
 
+  const handleResetAllPrompts = () => {
+    if (!accuracyData) {
+      toast({
+        variant: 'destructive',
+        title: 'No accuracy data',
+        description: 'Load a template before resetting prompts.',
+      });
+      return;
+    }
+
+    const newAccuracyData = JSON.parse(JSON.stringify(accuracyData));
+    let didReset = false;
+
+    newAccuracyData.fields = newAccuracyData.fields.map((field: AccuracyField) => {
+      const defaultPrompt = field.templatePrompt ?? field.promptHistory?.[field.promptHistory.length - 1]?.prompt ?? field.prompt;
+      const hasOverrides = (field.promptHistory?.length ?? 0) > 0 || field.prompt !== defaultPrompt;
+
+      if (!hasOverrides) {
+        return field;
+      }
+
+      didReset = true;
+      return {
+        ...field,
+        prompt: defaultPrompt,
+        promptHistory: [],
+      } satisfies AccuracyField;
+    });
+
+    if (!didReset) {
+      toast({
+        title: 'No overrides detected',
+        description: 'All prompts already match their defaults.',
+      });
+      return;
+    }
+
+    setAccuracyData(newAccuracyData);
+    saveAccuracyData(newAccuracyData);
+    newAccuracyData.fields.forEach((field: AccuracyField) => {
+      saveFieldPrompt(
+        field.key,
+        field.prompt,
+        field.promptHistory,
+        accuracyData.templateKey
+      );
+    });
+
+    toast({
+      title: 'Prompts reset',
+      description: 'All custom overrides were cleared.',
+    });
+  };
+
   /**
    * Update prompt version metrics after a run comparison is completed
    * This ensures metrics are only added after actually testing the prompt
@@ -389,6 +445,7 @@ export const useDataHandlers = ({
     handleUpdatePrompt,
     handleUsePromptVersion,
     handleDeletePromptVersion,
+    handleResetAllPrompts,
     updatePromptVersionMetrics,
   };
-}; 
+};
