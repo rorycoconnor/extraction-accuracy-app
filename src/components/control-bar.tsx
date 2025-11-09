@@ -25,7 +25,8 @@ import {
   MoreHorizontal,
   Crown,
   FileImage,
-  Wand2
+  Wand2,
+  RotateCcw
 } from 'lucide-react';
 import { formatModelName } from '@/lib/utils';
 import type { AccuracyData } from '@/lib/types';
@@ -50,6 +51,7 @@ interface ControlBarProps {
   onOpenSummary: () => void;
   onClearResults: () => void;
   onResetData: () => void;
+  onResetPrompts: () => void;
   onColumnToggle: (modelName: string, checked: boolean) => void;
   onDownloadResults: () => void;
 }
@@ -71,6 +73,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
   onOpenSummary,
   onClearResults,
   onResetData,
+  onResetPrompts,
   onColumnToggle,
   onDownloadResults,
 }) => {
@@ -300,6 +303,13 @@ const ControlBar: React.FC<ControlBarProps> = ({
           >
             <Copy className="mr-2 h-4 w-4" />
             Copy Ground Truth
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={onResetPrompts}
+            disabled={!accuracyData}
+          >
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Reset Prompt Overrides
           </DropdownMenuItem>
           <DropdownMenuItem 
             onClick={onDownloadResults}

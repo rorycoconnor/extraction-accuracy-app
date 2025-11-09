@@ -5,6 +5,14 @@ import { buildOptimizerPrompt, parseOptimizerPromptResponse } from '@/lib/optimi
 import type { OptimizerPromptRequest } from '@/lib/optimizer-types';
 import { boxApiFetch, clearBlankPlaceholderFileCache, getBlankPlaceholderFileId } from '@/services/box';
 
+const MAX_LOG_PREVIEW = 2000;
+
+const formatPayloadForLog = (payload: unknown) => {
+  const raw = typeof payload === 'string' ? payload : JSON.stringify(payload);
+  if (!raw) return raw;
+  return raw.length > MAX_LOG_PREVIEW ? `${raw.slice(0, MAX_LOG_PREVIEW)}…` : raw;
+};
+
 export async function generateOptimizerPrompt(request: OptimizerPromptRequest) {
   const prompt = buildOptimizerPrompt(request);
   let placeholderId = await getBlankPlaceholderFileId();
@@ -25,7 +33,12 @@ export async function generateOptimizerPrompt(request: OptimizerPromptRequest) {
       method: 'POST',
       body: JSON.stringify(body),
     });
-    const parsed = parseOptimizerPromptResponse(response?.answer ?? response);
+    const rawAnswer = response?.answer ?? response;
+    logger.info('optimizer_prompt_llm_answer', {
+      fieldKey: request.fieldKey,
+      rawAnswer: formatPayloadForLog(rawAnswer),
+    });
+    const parsed = parseOptimizerPromptResponse(rawAnswer);
     logger.info('optimizer_prompt_success', { fieldKey: request.fieldKey });
     return parsed;
   } catch (error) {
@@ -36,7 +49,13 @@ export async function generateOptimizerPrompt(request: OptimizerPromptRequest) {
         method: 'POST',
         body: JSON.stringify({ ...body, items: [{ id: placeholderId, type: 'file' as const }] }),
       });
-      const parsed = parseOptimizerPromptResponse(retryResponse?.answer ?? retryResponse);
+      const rawAnswer = retryResponse?.answer ?? retryResponse;
+      logger.info('optimizer_prompt_llm_answer', {
+        fieldKey: request.fieldKey,
+        rawAnswer: formatPayloadForLog(rawAnswer),
+        attempt: 'retry',
+      });
+      const parsed = parseOptimizerPromptResponse(rawAnswer);
       logger.info('optimizer_prompt_success_after_retry', { fieldKey: request.fieldKey });
       return parsed;
     }

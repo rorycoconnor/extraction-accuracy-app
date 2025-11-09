@@ -1,10 +1,4 @@
-import { z } from 'zod';
 import type { OptimizerPromptRequest } from '@/lib/optimizer-types';
-
-const OptimizerPromptResponseSchema = z.object({
-  newPrompt: z.string().min(1),
-  promptTheory: z.string().min(1),
-});
 
 export function buildOptimizerPrompt(request: OptimizerPromptRequest): string {
   const historySection = request.previousPrompts
@@ -25,25 +19,31 @@ export function buildOptimizerPrompt(request: OptimizerPromptRequest): string {
     + 'Instructions:\n'
     + '1. Incorporate document-specific theories into a revised prompt.\n'
     + '2. Keep the tone prescriptive with explicit anchors (tables, headings, context).\n'
-    + '3. Return JSON ONLY with keys `newPrompt` and `promptTheory`.\n'
-    + '4. `promptTheory` must cite the most influential documents or patterns in 2 sentences max.';
+    + '3. Respond as plain text (no JSON). Use the following format exactly:\n'
+    + 'New Prompt:\n<your improved prompt text>\n\nPrompt Theory:\n<concise explanation citing key documents>.\n'
+    + '4. Keep `Prompt Theory` under 2 sentences and reference document nicknames when possible.';
 }
 
 export function parseOptimizerPromptResponse(answer: unknown) {
-  let structured: unknown = answer;
-  if (typeof answer === 'string') {
-    const trimmed = answer.trim();
-    try {
-      structured = JSON.parse(trimmed);
-    } catch (error) {
-      throw new Error('Optimizer prompt response was not valid JSON');
-    }
+  if (answer == null) {
+    throw new Error('Optimizer prompt response was empty');
   }
 
-  const result = OptimizerPromptResponseSchema.safeParse(structured);
-  if (!result.success) {
-    throw new Error('Optimizer prompt response missing required keys');
+  const rawText = typeof answer === 'string' ? answer : JSON.stringify(answer);
+  const normalized = rawText.trim();
+  if (!normalized) {
+    throw new Error('Optimizer prompt response was blank');
   }
 
-  return result.data;
+  const promptMatch = normalized.match(/(?:New\s+Prompt|Prompt)\s*:\s*([\s\S]*?)(?:\n{2,}|\r{2,}|Prompt\s+Theory:|Theory:|Reason:|$)/i);
+  const theoryMatch = normalized.match(/(?:Prompt\s+Theory|Theory|Reason)\s*:\s*([\s\S]*)/i);
+
+  const newPrompt = promptMatch?.[1]?.trim() || normalized;
+  const promptTheory = theoryMatch?.[1]?.trim() || 'Optimizer did not return an explicit theory.';
+
+  if (!newPrompt) {
+    throw new Error('Optimizer prompt response missing prompt content');
+  }
+
+  return { newPrompt, promptTheory };
 }

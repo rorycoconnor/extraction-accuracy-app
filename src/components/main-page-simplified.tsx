@@ -319,7 +319,7 @@ const MainPage: React.FC = () => {
   }, [accuracyData, handleOpenPromptStudio]);
 
   // ===== DATA HANDLERS HOOK =====
-  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, updatePromptVersionMetrics } = useDataHandlers({
+  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, handleResetAllPrompts, updatePromptVersionMetrics } = useDataHandlers({
     accuracyData,
     setAccuracyData,
     selectedCellForEdit,
@@ -381,6 +381,24 @@ const MainPage: React.FC = () => {
     setIsOptimizerSummaryOpen(false);
     resetOptimizer();
   };
+
+  const handleResetPromptsConfirmation = useCallback(() => {
+    if (!accuracyData) {
+      toast({
+        variant: 'destructive',
+        title: 'No accuracy data',
+        description: 'Load a template before resetting prompts.',
+      });
+      return;
+    }
+
+    const shouldReset = window.confirm('Reset all prompt overrides back to their template defaults? This cannot be undone.');
+    if (!shouldReset) {
+      return;
+    }
+
+    handleResetAllPrompts();
+  }, [accuracyData, handleResetAllPrompts, toast]);
 
   /**
    * Handle toggling field inclusion in metrics calculation
@@ -779,6 +797,7 @@ const MainPage: React.FC = () => {
          onOpenSummary={openPerformanceModal}
          onClearResults={clearResults}
          onResetData={() => setShowResetDialog(true)}
+         onResetPrompts={handleResetPromptsConfirmation}
          onColumnToggle={toggleColumn}
          onDownloadResults={handleDownloadResults}
        />

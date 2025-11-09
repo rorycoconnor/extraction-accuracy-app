@@ -28,6 +28,8 @@ interface UseOptimizerRunnerReturn {
   resetOptimizer: () => void;
 }
 
+const PERFECT_ACCURACY = 0.999999;
+
 export const useOptimizerRunner = ({ runComparison }: UseOptimizerRunnerOptions): UseOptimizerRunnerReturn => {
   const { state, dispatch } = useAccuracyDataStore();
   const { toast } = useToast();
@@ -95,12 +97,18 @@ export const useOptimizerRunner = ({ runComparison }: UseOptimizerRunnerOptions)
       dispatch({ type: 'OPTIMIZER_UPDATE', payload: { status: 'sampling', stepIndex: 1 } });
 
       const baseModel = accuracyData.baseModel;
-      const failingFieldKeys = accuracyData.fields
-        .map((field) => field.key)
-        .filter((fieldKey) => {
-          const modelMetrics = accuracyData.averages?.[fieldKey]?.[baseModel];
-          return !modelMetrics || modelMetrics.accuracy < 1;
-        });
+      const fieldAccuracyEntries = accuracyData.fields.map((field) => {
+        const accuracyBefore = accuracyData.averages?.[field.key]?.[baseModel]?.accuracy ?? null;
+        return { fieldKey: field.key, accuracyBefore };
+      });
+
+      const candidateFields = fieldAccuracyEntries.filter(({ accuracyBefore }) => {
+        if (accuracyBefore === null) return true;
+        return accuracyBefore < PERFECT_ACCURACY;
+      });
+
+      const failingFieldKeys = candidateFields.map(({ fieldKey }) => fieldKey);
+      const accuracyLookup = new Map(candidateFields.map(({ fieldKey, accuracyBefore }) => [fieldKey, accuracyBefore ?? 0]));
 
       const failureMap = buildFieldFailureMap(accuracyData, failingFieldKeys, baseModel);
       const filteredFailingFields = failingFieldKeys.filter((fieldKey) => failureMap[fieldKey]?.length);
@@ -167,10 +175,12 @@ export const useOptimizerRunner = ({ runComparison }: UseOptimizerRunnerOptions)
           })
           .filter(Boolean) as Array<{ docId: string; docName: string; theory: string }>;
 
+        const accuracyBefore = accuracyLookup.get(fieldKey) ?? 0;
+
         if (!theoryEntries.length) {
           fieldSummaries.push({
             fieldKey,
-            accuracyBefore: accuracyData.averages?.[fieldKey]?.[baseModel]?.accuracy ?? 0,
+            accuracyBefore,
             sampledDocIds: docIds,
             error: 'No theories generated for this field',
           });
@@ -225,7 +235,7 @@ export const useOptimizerRunner = ({ runComparison }: UseOptimizerRunnerOptions)
 
           fieldSummaries.push({
             fieldKey,
-            accuracyBefore: accuracyData.averages?.[fieldKey]?.[baseModel]?.accuracy ?? 0,
+            accuracyBefore,
             sampledDocIds: docIds,
             newPrompt: promptResponse.newPrompt,
             promptTheory: promptResponse.promptTheory,
@@ -234,7 +244,7 @@ export const useOptimizerRunner = ({ runComparison }: UseOptimizerRunnerOptions)
           logger.error('optimizer_prompt_generation_failed', { fieldKey, error });
           fieldSummaries.push({
             fieldKey,
-            accuracyBefore: accuracyData.averages?.[fieldKey]?.[baseModel]?.accuracy ?? 0,
+            accuracyBefore,
             sampledDocIds: docIds,
             error: error instanceof Error ? error.message : 'Unknown prompt error',
           });

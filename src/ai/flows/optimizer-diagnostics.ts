@@ -8,6 +8,14 @@ import type {
   OptimizerDocumentTheory,
 } from '@/lib/optimizer-types';
 
+const MAX_LOG_PREVIEW = 2000;
+
+const formatPayloadForLog = (payload: unknown) => {
+  const raw = typeof payload === 'string' ? payload : JSON.stringify(payload);
+  if (!raw) return raw;
+  return raw.length > MAX_LOG_PREVIEW ? `${raw.slice(0, MAX_LOG_PREVIEW)}…` : raw;
+};
+
 const THEORY_MODEL = 'google__gemini_2_5_pro';
 const MAX_THEORY_CHARS = 240;
 
@@ -28,6 +36,11 @@ export async function generateDocumentTheories(
           fileId: doc.fileId,
           fields,
           model: THEORY_MODEL,
+        });
+
+        logger.info('optimizer_diagnostics_llm_answer', {
+          fileId: doc.fileId,
+          rawAnswer: formatPayloadForLog(response),
         });
 
         const theories: Record<string, string> = {};

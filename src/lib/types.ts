@@ -96,6 +96,7 @@ export type AccuracyField = {
   key: string;
   type: 'string' | 'date' | 'enum' | 'number' | 'multiSelect' | 'dropdown_multi' | 'taxonomy';
   prompt: string; // This is the active prompt
+  templatePrompt?: string;
   promptHistory: PromptVersion[];
   options?: { key: string }[]; // Enum/multiSelect options persisted from template
 };

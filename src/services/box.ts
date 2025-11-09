@@ -318,11 +318,21 @@ function parseUploadResponse(responseText: string): BoxUploadResponse {
 function extractConflictEntry(responseText: string): BoxSearchEntry | null {
     try {
         const parsed = JSON.parse(responseText);
-        const conflict = parsed?.context_info?.conflicts?.find(
+        let conflicts = parsed?.context_info?.conflicts;
+        if (!conflicts) {
+            return null;
+        }
+
+        if (!Array.isArray(conflicts)) {
+            conflicts = [conflicts];
+        }
+
+        const conflict = conflicts.find(
             (entry: BoxSearchEntry) =>
-                entry.type === 'file' &&
-                entry.name === BLANK_FILE_NAME
+                entry?.type === 'file' &&
+                entry?.name === BLANK_FILE_NAME
         );
+
         return conflict ?? null;
     } catch (error) {
         boxLogger.warn('Failed to parse conflict response for placeholder upload', error as Error);
