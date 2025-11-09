@@ -8,10 +8,10 @@ import { logger } from './logger';
 import { NOT_PRESENT_VALUE } from './utils';
 
 /**
- * Synchronous comparison function for UI rendering (non-async compare types only)
- * Falls back to legacy comparison for LLM-judge to avoid blocking renders
+ * Lightweight comparison used only for UI previews (non-async compare types)
+ * Falls back to near-exact for LLM-judge so renders never await network calls
  */
-export function compareValuesSync(
+export function compareValuesPreview(
   extractedValue: string,
   groundTruthValue: string,
   compareConfig: FieldCompareConfig

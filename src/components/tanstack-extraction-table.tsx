@@ -16,7 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import type { AccuracyData, AccuracyField } from '@/lib/types';
 import { cn, formatModelName, NOT_PRESENT_VALUE } from '@/lib/utils';
 import { compareValues, type ComparisonResult as LegacyComparisonResult } from '@/lib/metrics';
-import { compareValuesSync } from '@/lib/compare-engine';
+import { compareValuesPreview } from '@/lib/compare-engine';
 import type { ComparisonResult as EngineComparisonResult } from '@/lib/compare-types';
 import { MousePointer2, Play, RotateCcw, Clock, Settings2 } from 'lucide-react';
 
@@ -305,7 +305,7 @@ const getCellBackgroundColor = (cellData: CellData, templateKey?: string): strin
   const comparison = comparisonMetadata
     ? comparisonMetadata
     : compareConfig
-      ? compareValuesSync(value, groundTruth, compareConfig)
+      ? compareValuesPreview(value, groundTruth, compareConfig)
       : compareValues(value, groundTruth);
 
   if (!comparison.isMatch) {
@@ -374,7 +374,7 @@ const ModelValueCell = ({
   const comparison = comparisonMetadata
     ? comparisonMetadata
     : compareConfig
-      ? compareValuesSync(value, groundTruth, compareConfig)
+      ? compareValuesPreview(value, groundTruth, compareConfig)
       : compareValues(value, groundTruth);
   
   const getComparisonClasses = (comparison: ComparisonResult) => {

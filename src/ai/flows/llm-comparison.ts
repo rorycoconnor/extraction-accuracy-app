@@ -44,7 +44,7 @@ export async function evaluateWithLLM({
       logger.warn('LLM comparison called without fileId - Box AI requires file context');
       // return {
       //   isMatch: false,
-      //   reason: 'LLM comparison requires a file ID for Box AI context',
+      //   reason: 'LLM compareison requires a file ID for Box AI context',
       //   rawResponse: '',
       //   error: 'No file ID provided - Box AI text_gen endpoint requires file context'
       // };

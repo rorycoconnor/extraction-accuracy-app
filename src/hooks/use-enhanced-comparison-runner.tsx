@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccuracyDataStore, useCurrentSession } from '@/store/AccuracyDataStore';
 import { useModelExtractionRunner } from '@/hooks/use-model-extraction-runner';
@@ -56,11 +56,13 @@ interface UseEnhancedComparisonRunnerReturn {
   handleRunComparison: () => Promise<void>;
   isExtracting: boolean;
   progress: { processed: number; total: number };
+  isJudging: boolean;
 }
 
 export const useEnhancedComparisonRunner = (
   selectedTemplate: BoxTemplate | null
 ): UseEnhancedComparisonRunnerReturn => {
+  const [isJudging, setIsJudging] = useState(false);
   const { toast } = useToast();
   const { state, dispatch } = useAccuracyDataStore();
   const currentSession = useCurrentSession();
@@ -106,6 +108,7 @@ export const useEnhancedComparisonRunner = (
     
     // Initialize ref with current data
     currentDataRef.current = accuracyData;
+    setIsJudging(false);
 
     // Start a new comparison run
     const runId = uuidv4();
@@ -199,6 +202,7 @@ export const useEnhancedComparisonRunner = (
         currentOperation: 'Calculating metrics...',
         lastUpdateTime: new Date()
       });
+      setIsJudging(true);
       
       // ❌ DISABLED: Auto-populate ground truth from premium model if available
       // This is now only done when user clicks "Copy to Ground Truth" button
@@ -208,7 +212,8 @@ export const useEnhancedComparisonRunner = (
       
       // Process results with atomic updates to prevent overwrites
       await processExtractionResults(accuracyData, apiResults, runId, sessionId);
-      
+      setIsJudging(false);
+
       stopExtraction();
       
       updateDetailedProgress({
@@ -226,6 +231,7 @@ export const useEnhancedComparisonRunner = (
       
     } catch (error) {
       logger.error('Enhanced extraction failed', error instanceof Error ? error : { error });
+      setIsJudging(false);
       stopExtraction();
       
       updateDetailedProgress({
@@ -523,5 +529,6 @@ export const useEnhancedComparisonRunner = (
     handleRunComparison,
     isExtracting,
     progress,
+    isJudging,
   };
 }; 
