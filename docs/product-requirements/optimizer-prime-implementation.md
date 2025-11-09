@@ -17,6 +17,51 @@ With those clarifications, the remainder of the PRD aligns with the existing arc
 
 ---
 
+## Data & State Contracts
+
+To avoid one-off prop drilling, we introduce a dedicated optimizer slice in `AccuracyDataStore`:
+
+```ts
+type OptimizerRunStatus =
+  | 'idle'
+  | 'precheck'
+  | 'sampling'
+  | 'diagnostics'
+  | 'prompting'
+  | 'review'
+  | 'error';
+
+type OptimizerFieldSummary = {
+  fieldKey: string;
+  accuracyBefore: number;
+  sampledDocIds: string[];
+  newPrompt?: string;
+  promptTheory?: string;
+  error?: string;
+};
+
+type OptimizerDocumentTheory = {
+  docId: string;
+  docName: string;
+  theories: Record<string, string>; // fieldKey -> short theory
+};
+
+export interface OptimizerState {
+  status: OptimizerRunStatus;
+  stepIndex: number; // maps to the PRD’s 5 steps
+  sampledDocs: OptimizerDocumentTheory[];
+  fieldSummaries: OptimizerFieldSummary[];
+  startedAt?: number;
+  completedAt?: number;
+  autoRanComparison?: boolean;
+  lastToast?: 'success' | 'skip' | 'error';
+}
+```
+
+Reducers/helpers: `startOptimizerRun(stepLabel)`, `advanceOptimizerStep(partial)`, `finishOptimizerRun(summary)`, `failOptimizerRun(error)`, and `resetOptimizerRun()`. The hook, toolbar, and modal all read/write via these helpers to stay consistent with the PRD’s single-source-of-truth requirement.
+
+---
+
 ## Architecture Overview
 
 - **UI entry point**: `ControlBar` (`src/components/control-bar.tsx:205-252`) gains a `Run Optimizer` button that mirrors the styling/disable logic of `Run Comparison`, plus a progress label (`Optimizing… (Sampling 2/5)`).
@@ -26,6 +71,25 @@ With those clarifications, the remainder of the PRD aligns with the existing arc
   - Failure theories reuse `extractStructuredMetadataWithBoxAI` (`src/services/box.ts:601`) with injected custom prompts per field.
   - Prompt synthesis reuses `boxApiFetch('/ai/text_gen', …)` with the Gemini 2.5 Pro override and the blank placeholder file utilities already built for LLM-as-judge (`src/ai/flows/llm-comparison.ts:1-120`).
 - **Results UI**: New modal `OptimizerSummaryModal` renders after a run, listing sampled docs, field-level theories, prompt diffs, and CTA to open Prompt Studio.
+
+### Sequence Overview
+
+```
+ControlBar.RunOptimizer()
+  -> useOptimizerRunner.runOptimizer()
+    -> AccuracyDataStore.startOptimizerRun('precheck')
+    -> maybe handleRunComparison()
+    -> optimizerSampling.buildWorklist()
+    -> AccuracyDataStore.advanceOptimizerStep('diagnostics')
+    -> optimizerDiagnostics.generateDocumentTheories()
+    -> AccuracyDataStore.advanceOptimizerStep('prompting')
+    -> optimizerPrompts.generateFieldPrompts()
+    -> promptStorage.saveFieldPrompt()
+    -> AccuracyDataStore.finishOptimizerRun(summary)
+  -> ModalContainer opens OptimizerSummaryModal
+```
+
+Each call aligns with PRD Section 4 (Pre-check → Sampling → Diagnostics → Prompting → Review) and keeps UX progress labels accurate.
 
 ---
 
@@ -39,6 +103,10 @@ With those clarifications, the remainder of the PRD aligns with the existing arc
   - No `accuracyData` or no files selected (same guard as comparison button).
 - Tooltip copy `Optimizer running…` matches PRD; use shared button component for consistent grayscale state.
 - `MainPageSimplified` (`src/components/main-page-simplified.tsx:290-420`) wires the handler from the new hook.
+
+**Edge cases**
+- If optimizer is mid-run and the user navigates away, the store slice is reset to `idle` on mount to avoid a permanently-disabled button (documented limitation in PRD §11).
+- When a comparison run finishes with errors, we never start optimizer steps; the hook emits the PRD error toast (`Optimizer failed during Comparison. Check console.`) and the button is re-enabled.
 
 ### 2. Optimizer Runner Hook
 
@@ -81,6 +149,8 @@ Responsibilities per step:
    - Call `/ai/text_gen` with `ai_agent_text_gen.basic_gen.model = 'google__gemini_2_5_pro'`.
    - Parse JSON, validate length, and pass to persistence layer.
 6. **Persistence & summary** – Use `handleUpdatePrompt` or a slimmer helper to append a new `PromptVersion` (`source: 'optimizer'` tag optional) and set it active. Collect success/error metadata for the modal. Open the modal via local state; also toast with counts.
+
+The hook also exposes `optimizerProgressLabel` computed via `status` + `stepIndex`, yielding PRD copy like `Optimizing… (Prompting 4/5)`. `ControlBar` simply renders this string without duplicating logic.
 
 ### 3. Data Structures
 
@@ -125,6 +195,29 @@ const instruction = `The last comparison showed "${modelValue}" but ground truth
 
 - Call `extractStructuredMetadataWithBoxAI` once per document (not per field) by sending all instructions together; map the returned `answer[fieldKey]` to fields.
 - Retry rules: on HTTP 5xx, retry up to 2 times with 500 ms backoff. On failure, record error and continue so other docs still process.
+- Clamp theory length to 240 characters to preserve the PRD’s 10k-char downstream ceiling; append `…` when truncating.
+- Normalize responses so we always return `{ docId, docName, theories, error? }` even when the API partially fails, letting the UI render consistent cards.
+
+Pseudocode helper (`src/lib/optimizer-diagnostics.ts`):
+
+```ts
+export async function generateDocumentTheories(params: GenerateDocumentTheoryParams) {
+  return Promise.all(params.docs.map(async (doc) => {
+    try {
+      const fields = buildTheoryFields(doc, params.failureMap);
+      const response = await withRetry(() => extractStructuredMetadataWithBoxAI({
+        fileId: doc.fileId,
+        fields,
+        aiAgent: GEMINI_AGENT,
+      }));
+      return normalizeTheoryResponse(doc, response);
+    } catch (error) {
+      logger.error('optimizer_diagnostics_failed', { docId: doc.fileId, error });
+      return { docId: doc.fileId, docName: doc.name, theories: {}, error: errorMessage(error) };
+    }
+  }));
+}
+```
 
 ### 6. Prompt Generation via Text Gen
 
@@ -132,7 +225,7 @@ const instruction = `The last comparison showed "${modelValue}" but ground truth
   - Field description (name, type, current prompt goal).
   - Up to three previous prompt versions (ordered newest → oldest) separated by delimiters.
   - Theories grouped by document ID.
-  - Guardrails: “Return JSON with keys `newPrompt` and `promptTheory`. Keep each under 1500 characters.”
+- Guardrails: “Return JSON with keys `newPrompt` and `promptTheory`. Keep each under 1500 characters.”
 - Request body example:
 
 ```json
@@ -147,12 +240,15 @@ const instruction = `The last comparison showed "${modelValue}" but ground truth
 ```
 
 - Parse response, validate JSON, strip whitespace, and guard against hallucinated keys. On failure, append `error` to summary so modal can show “Needs manual attention.”
+- Add schema validation via `zod` (already in repo) to ensure generated JSON includes required keys; fall back to treating the field as errored if parsing fails twice.
+- Maintain deterministic prompts by sorting doc theories alphabetically by doc name before injecting them into the template (keeps diffs minimal for telemetry).
 
 ### 7. Version Persistence & Manual Overrides
 
 - Reuse `handleUpdatePrompt` logic from `src/hooks/use-data-handlers.tsx:140-210`, but skip toast spam by adding a non-UI helper (e.g., `applyPromptUpdate(fieldKey, newPrompt, { source: 'optimizer', note: promptTheory })`).
 - After `setAccuracyData`, call `saveAccuracyData` and `saveFieldPrompt` to keep localStorage and JSON backups in sync (`src/lib/prompt-storage.ts:70-110`).
 - The modal presents “Open Prompt Studio” deep links; clicking fires existing `setSelectedFieldForPromptStudio`.
+- Optimizer-created versions become the newest entry but are not auto-selected as the active override; consultants still confirm via Prompt Studio, satisfying PRD user story US-6.
 
 ### 8. Summary Modal
 
@@ -163,10 +259,28 @@ const instruction = `The last comparison showed "${modelValue}" but ground truth
   3. Field cards (old prompt snippet vs new prompt, reason, status pill, CTA to open Prompt Studio).
 - Wire into `ModalContainer` so state lives centrally.
 
+**Design cues**
+- Reuse typography + spacing tokens from `ComparisonSummaryModal` to minimize custom CSS.
+- Clamp long prompt blocks with `max-h-48 overflow-y-auto` to keep modal height manageable.
+- Status pill colors: success → `bg-success-100 text-success-700`, skipped → neutral, error → `bg-destructive-100 text-destructive-700`.
+
 ### 9. Telemetry & Logging
 
 - Emit structured logs via `logger.info`/`logger.error` inside the hook for: run start, comparison auto-run triggered, docs sampled, AI call failures, prompts saved.
 - Analytics events (if available) can reuse the existing telemetry mechanism (none today; logging suffices for this milestone).
+
+Example payload:
+
+```ts
+logger.info('optimizer_run_completed', {
+  runId,
+  fieldsOptimized: summaries.filter((s) => !s.error).length,
+  fieldsErrored: summaries.filter((s) => s.error).length,
+  docsAnalyzed: sampledDocs.length,
+  durationMs: state.completedAt! - state.startedAt!,
+  autoRanComparison: state.autoRanComparison ?? false,
+});
+```
 
 ### 10. Error Handling & Retries
 
@@ -174,6 +288,8 @@ const instruction = `The last comparison showed "${modelValue}" but ground truth
 - Sampling with <1 doc: surface toast “No failing docs found; optimizer skipped.”
 - Diagnostics/prompting: continue processing other fields even if one fails. Modal lists failures.
 - Wrap Box API calls with `try/catch` and categorize errors to surface in modal + console.
+- If prompt persistence fails (e.g., localStorage quota), mark the field summary as errored, include the failure reason, and emit a toast instructing the user to clear storage before retrying. Other fields continue unaffected.
+- If sampled docs resolve to zero after permissions filtering, short-circuit with the PRD skip toast and skip diagnostics/prompting entirely (no modal).
 
 ### 11. Testing Strategy
 
@@ -186,6 +302,7 @@ const instruction = `The last comparison showed "${modelValue}" but ground truth
    - Runs where some fields already 100% (skip path).
    - AI failure path (modal shows error, prompts unchanged).
    - Confirmation that localStorage prompt history updates.
+4. **Regression smoke** – Optional Playwright story that loads `MainPageSimplified` with mocked stores, triggers the optimizer, and asserts that the modal renders the expected counts. Add once the UI stabilizes.
 
 ---
 
@@ -205,14 +322,20 @@ const instruction = `The last comparison showed "${modelValue}" but ground truth
 | **Update** | `src/lib/types.ts` + `src/lib/prompt-storage.ts` | Optional fields for optimizer metadata if we choose to persist `source`/`notes`. |
 | **Update** | `src/services/box.ts` | Utility to run text-gen with blank file (or reuse existing helper). |
 
+Deferred-but-documented (post-v1):
+- `src/hooks/use-optimizer-runner.test.tsx` exercising the full hook with mocked Box calls.
+- Persisting optimizer history entries (timestamp + field list) to local JSON for optional analytics export.
+
 ---
 
 ## Open Questions & Follow-Ups
 
 1. Should optimizer runs capture a lightweight history (timestamp + affected fields) for future auditing? That would require extending local storage but stays within “no new DB.”
 2. Do we need a cancel button if text-gen calls exceed expected runtime? (Not in scope now.)
-3. Cost visibility: if required later, we can log Box API usage counts per run.
+3. Cost visibility: **resolved** — stakeholder confirmed cost is not an object for this PRD, so no UI surfacing is required beyond internal logging.
 4. Should theories surface anywhere else (e.g., inline next to prompts) after modal close? Currently they are transient per requirements.
+5. Do stakeholders want per-field cost estimates in the modal? (Not planned; only run-level logging is scoped.)
+6. Should consecutive optimizer runs reuse prior sampled docs when accuracy hasn't changed, or is re-sampling preferred for now? Current plan always re-samples for simplicity.
 
 ---
 
@@ -222,4 +345,3 @@ const instruction = `The last comparison showed "${modelValue}" but ground truth
 2. Implement the new hook + store slice, then land UI wiring (control bar + modal).
 3. Layer in server-side diagnostics/prompt-generation helpers and accompanying tests.
 4. Run end-to-end QA with mocked Box APIs before pointing at real Gemini 2.5 Pro.
-

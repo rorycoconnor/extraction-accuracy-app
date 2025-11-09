@@ -24,7 +24,8 @@ import {
   Download,
   MoreHorizontal,
   Crown,
-  FileImage
+  FileImage,
+  Wand2
 } from 'lucide-react';
 import { formatModelName } from '@/lib/utils';
 import type { AccuracyData } from '@/lib/types';
@@ -37,10 +38,13 @@ interface ControlBarProps {
   isExtracting: boolean;
   isJudging?: boolean;
   progress: { processed: number; total: number };
+  isOptimizerRunning?: boolean;
+  optimizerProgressLabel?: string | null;
   shownColumns: Record<string, boolean>;
   // Remove showMetrics prop - it will be computed automatically
   onSelectDocuments: () => void;
   onRunComparison: () => void;
+  onRunOptimizer: () => void;
   onAutoPopulateGroundTruth: () => void;
   // Remove onToggleMetrics prop - no longer needed
   onOpenSummary: () => void;
@@ -55,10 +59,13 @@ const ControlBar: React.FC<ControlBarProps> = ({
   isExtracting,
   isJudging = false,
   progress,
+  isOptimizerRunning = false,
+  optimizerProgressLabel,
   shownColumns,
   // Remove showMetrics prop - it will be computed automatically
   onSelectDocuments,
   onRunComparison,
+  onRunOptimizer,
   onAutoPopulateGroundTruth,
   // Remove onToggleMetrics prop - no longer needed
   onOpenSummary,
@@ -131,6 +138,19 @@ const ControlBar: React.FC<ControlBarProps> = ({
     }
     return 'Run Comparison';
   })();
+
+  const optimizerButtonLabel = (() => {
+    if (isOptimizerRunning && optimizerProgressLabel) {
+      return optimizerProgressLabel;
+    }
+    if (isOptimizerRunning) {
+      return 'Optimizing…';
+    }
+    return 'Run Optimizer';
+  })();
+
+  const optimizerDisabled =
+    isOptimizerRunning || isExtracting || isJudging || !accuracyData;
 
   return (
     <div className="flex items-center gap-2 px-6 py-4 mb-2">
@@ -234,6 +254,29 @@ const ControlBar: React.FC<ControlBarProps> = ({
         )}
         {comparisonButtonLabel}
       </Button>
+
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={onRunOptimizer}
+              disabled={optimizerDisabled}
+              variant="outline"
+              className="min-w-[180px] justify-start"
+            >
+              {isOptimizerRunning ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Wand2 className="mr-2 h-4 w-4" />
+              )}
+              {optimizerButtonLabel}
+            </Button>
+          </TooltipTrigger>
+          {optimizerDisabled && isOptimizerRunning && (
+            <TooltipContent>Optimizer running…</TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
       
       <Button variant="outline" onClick={onClearResults}>
         <Trash2 className="mr-2 h-4 w-4" />

@@ -4,6 +4,12 @@ import { logger } from '@/lib/logger';
 import React, { createContext, useReducer, useContext, useMemo, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { AccuracyData, AccuracyField, ApiExtractionResult, FileResult, PromptVersion } from '@/lib/types';
+import {
+  OPTIMIZER_STEPS,
+  type OptimizerDocumentTheory,
+  type OptimizerFieldSummary,
+  type OptimizerState,
+} from '@/lib/optimizer-types';
 import { saveAccuracyData, getAccuracyData } from '@/lib/mock-data';
 
 // Enhanced types for our unified store
@@ -42,6 +48,7 @@ interface AccuracyDataState {
   isLoading: boolean;
   error: string | null;
   hasUnsavedChanges: boolean;
+  optimizer: OptimizerState;
 }
 
 // Action types
@@ -60,14 +67,28 @@ type AccuracyDataAction =
   | { type: 'SAVE_PROMPT_VERSION'; payload: { fieldKey: string; prompt: string; metrics?: any } }
   | { type: 'CLEAR_RESULTS' }
   | { type: 'MARK_SAVED' }
-  | { type: 'CLEAR_ERROR' };
+  | { type: 'CLEAR_ERROR' }
+  | { type: 'OPTIMIZER_START'; payload: { runId: string; autoRanComparison?: boolean } }
+  | { type: 'OPTIMIZER_UPDATE'; payload: Partial<OptimizerState> }
+  | { type: 'OPTIMIZER_COMPLETE'; payload: { sampledDocs: OptimizerDocumentTheory[]; fieldSummaries: OptimizerFieldSummary[] } }
+  | { type: 'OPTIMIZER_FAIL'; payload: { error: string } }
+  | { type: 'OPTIMIZER_RESET' };
 
 // Initial state
+const initialOptimizerState: OptimizerState = {
+  status: 'idle',
+  stepIndex: 0,
+  sampledDocs: [],
+  fieldSummaries: [],
+  runId: undefined,
+};
+
 const initialState: AccuracyDataState = {
   data: null,
   isLoading: false,
   error: null,
   hasUnsavedChanges: false,
+  optimizer: initialOptimizerState,
 };
 
 // Helper function to create initial unified data structure
@@ -394,6 +415,66 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
     case 'CLEAR_ERROR':
       return { ...state, error: null };
 
+    case 'OPTIMIZER_START':
+      return {
+        ...state,
+        optimizer: {
+          status: 'precheck',
+          stepIndex: 0,
+          sampledDocs: [],
+          fieldSummaries: [],
+          startedAt: Date.now(),
+          completedAt: undefined,
+          autoRanComparison: action.payload.autoRanComparison ?? false,
+          lastToast: undefined,
+          errorMessage: undefined,
+          runId: action.payload.runId,
+        },
+      };
+
+    case 'OPTIMIZER_UPDATE':
+      return {
+        ...state,
+        optimizer: {
+          ...state.optimizer,
+          ...action.payload,
+        },
+      };
+
+    case 'OPTIMIZER_COMPLETE':
+      return {
+        ...state,
+        optimizer: {
+          ...state.optimizer,
+          status: 'review',
+          stepIndex: OPTIMIZER_STEPS.length - 1,
+          sampledDocs: action.payload.sampledDocs,
+          fieldSummaries: action.payload.fieldSummaries,
+          completedAt: Date.now(),
+          lastToast: action.payload.fieldSummaries.some(summary => summary.error)
+            ? 'error'
+            : 'success',
+        },
+      };
+
+    case 'OPTIMIZER_FAIL':
+      return {
+        ...state,
+        optimizer: {
+          ...state.optimizer,
+          status: 'error',
+          errorMessage: action.payload.error,
+          completedAt: Date.now(),
+          lastToast: 'error',
+        },
+      };
+
+    case 'OPTIMIZER_RESET':
+      return {
+        ...state,
+        optimizer: initialOptimizerState,
+      };
+
     default:
       return state;
   }
@@ -527,4 +608,9 @@ export const useAccuracyDataCompat = () => {
       clearResults: () => dispatch({ type: 'CLEAR_RESULTS' }),
     };
   }, [state.data, dispatch]);
-}; 
+};
+
+export const useOptimizerState = () => {
+  const { state } = useAccuracyDataStore();
+  return state.optimizer;
+};

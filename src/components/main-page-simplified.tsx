@@ -13,7 +13,7 @@
  */
 
 // ===== REACT & HOOKS IMPORTS =====
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccuracyData } from '@/hooks/use-accuracy-data';
 import { useExtractionProgress } from '@/hooks/use-extraction-progress';
@@ -66,6 +66,7 @@ import { useExtractionSetup } from '@/hooks/use-extraction-setup';
 import { useEnhancedComparisonRunner } from '@/hooks/use-enhanced-comparison-runner';
 import { useAccuracyDataCompat } from '@/store/AccuracyDataStore';
 import { quickExportToCSV } from '@/lib/csv-export';
+import { useOptimizerRunner } from '@/hooks/use-optimizer-runner';
 
 // ===== TYPE IMPORTS =====
 import type { 
@@ -282,6 +283,21 @@ const MainPage: React.FC = () => {
   
   // ===== ENHANCED COMPARISON RUNNER =====
   const enhancedRunner = useEnhancedComparisonRunner(selectedTemplate);
+  const {
+    runOptimizer,
+    optimizerState,
+    optimizerProgressLabel,
+    resetOptimizer,
+  } = useOptimizerRunner({ runComparison: enhancedRunner.handleRunComparison });
+  const [isOptimizerSummaryOpen, setIsOptimizerSummaryOpen] = useState(false);
+
+  useEffect(() => {
+    if (optimizerState.status === 'review') {
+      setIsOptimizerSummaryOpen(true);
+    } else if (optimizerState.status === 'idle') {
+      setIsOptimizerSummaryOpen(false);
+    }
+  }, [optimizerState.status, optimizerState.completedAt]);
 
   // ===== UI HANDLERS HOOK =====
   const { handleOpenPromptStudio, handleToggleFavorite, handleCompleteReset } = useUIHandlers({
@@ -292,6 +308,15 @@ const MainPage: React.FC = () => {
     setShowResetDialog,
     clearResults,
   });
+
+  const handleOpenPromptStudioByKey = useCallback((fieldKey: string) => {
+    const field = accuracyData?.fields.find((current) => current.key === fieldKey);
+    if (!field) {
+      logger.warn('Optimizer modal attempted to open Prompt Studio for missing field', { fieldKey });
+      return;
+    }
+    handleOpenPromptStudio(field);
+  }, [accuracyData, handleOpenPromptStudio]);
 
   // ===== DATA HANDLERS HOOK =====
   const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, updatePromptVersionMetrics } = useDataHandlers({
@@ -352,6 +377,10 @@ const MainPage: React.FC = () => {
    * Handle running AI comparison across selected models - ENHANCED VERSION
    */
   const handleRunComparison = enhancedRunner.handleRunComparison;
+  const handleCloseOptimizerSummary = () => {
+    setIsOptimizerSummaryOpen(false);
+    resetOptimizer();
+  };
 
   /**
    * Handle toggling field inclusion in metrics calculation
@@ -732,7 +761,7 @@ const MainPage: React.FC = () => {
        isJudging={enhancedRunner.isJudging}
        progress={enhancedRunner.progress}
         shownColumns={shownColumns}
-        onSelectDocuments={() => {
+       onSelectDocuments={() => {
           logger.debug('Select Documents button clicked');
           try {
             setIsModalOpen(true);
@@ -742,8 +771,11 @@ const MainPage: React.FC = () => {
             setTimeout(() => setIsModalOpen(true), 100);
           }
         }}
-        onRunComparison={handleRunComparison}
-         onAutoPopulateGroundTruth={handleAutoPopulateGroundTruth}
+       onRunComparison={handleRunComparison}
+        onRunOptimizer={runOptimizer}
+        isOptimizerRunning={['precheck', 'sampling', 'diagnostics', 'prompting'].includes(optimizerState.status)}
+        optimizerProgressLabel={optimizerProgressLabel ?? undefined}
+        onAutoPopulateGroundTruth={handleAutoPopulateGroundTruth}
          onOpenSummary={openPerformanceModal}
          onClearResults={clearResults}
          onResetData={() => setShowResetDialog(true)}
@@ -808,6 +840,11 @@ const MainPage: React.FC = () => {
          accuracyData={accuracyData}
          shownColumns={shownColumns}
          onClosePerformanceModal={closePerformanceModal}
+         isOptimizerSummaryOpen={isOptimizerSummaryOpen}
+         optimizerSampledDocs={optimizerState.sampledDocs}
+         optimizerFieldSummaries={optimizerState.fieldSummaries}
+         onCloseOptimizerSummary={handleCloseOptimizerSummary}
+         onOpenPromptStudio={handleOpenPromptStudioByKey}
          showResetDialog={showResetDialog}
          onCloseResetDialog={() => setShowResetDialog(false)}
          onConfirmReset={handleCompleteReset}

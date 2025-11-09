@@ -15,7 +15,9 @@ import ExtractionModal from '@/components/extraction-modal';
 import PromptStudioSheet from '@/components/prompt-studio-sheet';
 import InlineGroundTruthEditor from '@/components/inline-ground-truth-editor';
 import ModelRankingSummary from '@/components/model-ranking-summary';
+import OptimizerSummaryModal from '@/components/optimizer-summary-modal';
 import type { AccuracyData, AccuracyField, BoxTemplate, BoxFile } from '@/lib/types';
+import type { OptimizerDocumentTheory, OptimizerFieldSummary } from '@/lib/optimizer-types';
 
 interface ModalContainerProps {
   // Extraction Modal
@@ -51,6 +53,11 @@ interface ModalContainerProps {
   shownColumns: Record<string, boolean>;
   onClosePerformanceModal: () => void;
   onRecalculateMetrics?: () => void; // New prop for recalculating metrics
+  isOptimizerSummaryOpen: boolean;
+  optimizerSampledDocs: OptimizerDocumentTheory[];
+  optimizerFieldSummaries: OptimizerFieldSummary[];
+  onCloseOptimizerSummary: () => void;
+  onOpenPromptStudio: (fieldKey: string) => void;
   
   // Reset Dialog
   showResetDialog: boolean;
@@ -80,6 +87,11 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
   accuracyData,
   shownColumns,
   onClosePerformanceModal,
+  isOptimizerSummaryOpen,
+  optimizerSampledDocs,
+  optimizerFieldSummaries,
+  onCloseOptimizerSummary,
+  onOpenPromptStudio,
   showResetDialog,
   onCloseResetDialog,
   onConfirmReset
@@ -154,7 +166,16 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
           </DialogContent>
         </Dialog>
       )}
-      
+
+      <OptimizerSummaryModal
+        isOpen={isOptimizerSummaryOpen}
+        onClose={onCloseOptimizerSummary}
+        accuracyData={accuracyData}
+        sampledDocs={optimizerSampledDocs}
+        fieldSummaries={optimizerFieldSummaries}
+        onOpenPromptStudio={onOpenPromptStudio}
+      />
+
       {/* Reset Confirmation Dialog */}
       <AlertDialog open={showResetDialog} onOpenChange={onCloseResetDialog}>
         <AlertDialogContent>

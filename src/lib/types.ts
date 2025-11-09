@@ -76,6 +76,8 @@ export type PromptVersion = {
   prompt: string;
   savedAt: string;
   isFavorite?: boolean;
+  source?: 'manual' | 'optimizer' | 'imported';
+  note?: string;
   metrics?: {
     // Individual model metrics instead of aggregated averages
     modelMetrics: Record<string, {

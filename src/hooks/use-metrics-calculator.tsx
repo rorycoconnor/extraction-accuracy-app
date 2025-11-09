@@ -42,7 +42,8 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
   ): Promise<AccuracyData> => {
     const refreshedGroundTruth = getGroundTruthData();
     const newData = JSON.parse(JSON.stringify(accuracyData));
-    const activeModels = getActiveModelsForRun(accuracyData.shownColumns || {});
+    const shownColumns = (accuracyData as AccuracyData & { shownColumns?: Record<string, boolean> }).shownColumns ?? {};
+    const activeModels = getActiveModelsForRun(shownColumns);
     const modelsToProcess = activeModels.length > 0 ? activeModels : AVAILABLE_MODELS;
     
     // Update results with API data and refreshed ground truth
