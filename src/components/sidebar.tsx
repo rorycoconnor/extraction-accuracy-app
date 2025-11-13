@@ -10,7 +10,6 @@ import {
   FileText,
   Database,
   Settings,
-  Settings2,
   BookOpen,
   ExternalLink,
   Moon,
@@ -45,11 +44,6 @@ const navigation: NavigationItem[] = [
     name: 'Ground Truth',
     href: '/ground-truth',
     icon: Database,
-  },
-  {
-    name: 'Compare Types',
-    href: '/compare-types',
-    icon: Settings2,
   },
   {
     name: 'Library',

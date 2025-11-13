@@ -1,173 +1,1693 @@
 [
   {
-    "id": "d8528218-4de2-42f8-9088-38e6755c5625",
+    "id": "e9f04859-94e2-4948-9f44-a1a0ed522325",
     "type": "metadata_template",
-    "templateKey": "payoffStatementV3",
-    "scope": "enterprise_869454019",
-    "displayName": "Payoff Statement v3",
+    "templateKey": "contracts",
+    "scope": "enterprise_1218697394",
+    "displayName": "Contracts",
     "hidden": false,
     "copyInstanceOnItemCopy": false,
     "fields": [
       {
-        "id": "eaae6256-edaa-4997-9154-666b9d9ee21a",
+        "id": "46f84943-8ef8-4f99-b180-25c22d79f23a",
+        "type": "enum",
+        "key": "status",
+        "displayName": "Status",
+        "hidden": false,
+        "options": [
+          {
+            "id": "41d5064f-0ed3-46a7-b115-912c99408347",
+            "key": "New Submission"
+          },
+          {
+            "id": "1d30a5a9-ac74-4099-b5c7-15eafe802016",
+            "key": "Assigned"
+          },
+          {
+            "id": "562951f5-60f3-4f32-8f27-495d7b202b62",
+            "key": "In Review"
+          },
+          {
+            "id": "ae923952-08d9-4589-8cfe-43d6bfdbcd51",
+            "key": "Out for Signature"
+          },
+          {
+            "id": "bdccc81c-6e70-42e8-8f78-f900f1f62738",
+            "key": "Pending approval"
+          },
+          {
+            "id": "adbf6c35-92bd-4b30-93d1-24acbab225a5",
+            "key": "Signed"
+          },
+          {
+            "id": "acea995b-6d43-4a58-b484-c5e0bdea8d4a",
+            "key": "Approved"
+          },
+          {
+            "id": "373d8e43-864f-4acc-9971-32b1fa221204",
+            "key": "Active"
+          },
+          {
+            "id": "3c112e78-f63a-4f0d-8ac1-462bcbf27e78",
+            "key": "Issue"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "eb435ec6-a432-488d-be92-f4ad3279d1a6",
         "type": "string",
+        "key": "comments",
+        "displayName": "Comments",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "2a022613-a8f3-413e-9193-e9e46d3dba46",
+        "type": "enum",
+        "key": "assignee",
+        "displayName": "Assignee",
+        "hidden": false,
+        "options": [
+          {
+            "id": "6a2e2f4d-7cba-4170-bef3-e5f34bb37485",
+            "key": "Jake List"
+          },
+          {
+            "id": "d171e971-b910-4c65-82bb-9de186205d63",
+            "key": "Mike Carter"
+          },
+          {
+            "id": "b41cc661-8be8-42be-9ec8-bec6165addf0",
+            "key": "Aria Voss"
+          },
+          {
+            "id": "bba517e1-cb5d-40cc-a091-949aaf54db10",
+            "key": "Sofia Ledesma"
+          },
+          {
+            "id": "e28bc8a2-4898-4cb5-8270-cb6275b3af7a",
+            "key": "Rohan Patel"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "58da9c42-e6fe-4dec-90c9-7ff3ac138e2f",
+        "type": "enum",
+        "key": "contractType",
+        "displayName": "Contract Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "a46c055b-0e27-4255-baa9-31ef353870a5",
+            "key": "NDA"
+          },
+          {
+            "id": "85eb5b25-9692-4fcf-9369-5354c447e765",
+            "key": "Master Agreement"
+          },
+          {
+            "id": "df9501b4-0519-4cbd-a56c-a92c50c80366",
+            "key": "Amendment"
+          },
+          {
+            "id": "9b9bac77-c28f-4224-b899-6773a67535eb",
+            "key": "DPA"
+          },
+          {
+            "id": "823e278d-7fee-4d76-b1fc-cddd08158b29",
+            "key": "Endorsement Agreement"
+          },
+          {
+            "id": "29aefb08-a8fa-4401-a593-78cf6503e5f0",
+            "key": "Reseller Agreement"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "020dacc7-cb31-4529-be4c-91c1404351cd",
+        "type": "string",
+        "key": "counterPartyName",
+        "displayName": "Counter Party Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "99f6c67b-6bfe-4586-b4c9-df0baeb372b2",
+        "type": "string",
+        "key": "counterPartyAddress",
+        "displayName": "Counter Party Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "193ef2a4-6e94-4add-9687-3d305b806a37",
+        "type": "date",
+        "key": "effectiveDate",
+        "displayName": "Effective Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "4d2299d6-13f8-466a-877c-2c1984212d14",
+        "type": "enum",
+        "key": "contractTerm",
+        "displayName": "Contract Term",
+        "hidden": false,
+        "options": [
+          {
+            "id": "0d08c03d-7823-4259-b9f2-433c7272a755",
+            "key": "Monthly"
+          },
+          {
+            "id": "6bfe9318-bc62-4967-b0aa-a787434df41f",
+            "key": "1 Year"
+          },
+          {
+            "id": "b3baa4ee-8602-4b9b-9bce-076861720ba4",
+            "key": "2 Year"
+          },
+          {
+            "id": "0f7b1267-82da-4045-bc7e-ec5217ea1990",
+            "key": "3 Year"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "fb83e4be-9b81-4e52-b2fb-e479dd194eb0",
+        "type": "date",
+        "key": "endDate",
+        "displayName": "End Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "2e30d31c-d484-4ca2-a5a7-b87bf4fd015a",
+        "type": "enum",
+        "key": "renewalType",
+        "displayName": "Renewal Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "cabef5b0-0255-41f0-a283-cc33cec7fb24",
+            "key": "Autorenewal"
+          },
+          {
+            "id": "6fdba85c-8548-4630-94e2-b3b65c35a09f",
+            "key": "Manual Renewal"
+          },
+          {
+            "id": "2dd896a7-5b0f-45e4-a68d-e1469c202a3e",
+            "key": "Evergreen Renewal"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "b399913e-626c-44e1-be98-995b5f6c3225",
+        "type": "string",
+        "key": "noticePeriod",
+        "displayName": "Renewal Notice Period",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "73008f46-fa34-4404-a8c9-44c6a89d6e12",
+        "type": "enum",
+        "key": "governingLaw",
+        "displayName": "Governing Law",
+        "hidden": false,
+        "description": "",
+        "options": [
+          {
+            "id": "195d0c25-4a0e-4ccd-b327-8ae6fe753d67",
+            "key": "California"
+          },
+          {
+            "id": "955976a6-a190-4a5f-8a56-96721f0510f5",
+            "key": "Delaware"
+          },
+          {
+            "id": "53f23ffb-3d1d-46d4-8e9d-7ce949ec02e3",
+            "key": "Florida"
+          },
+          {
+            "id": "b47960cb-988f-467c-aec7-611e1a60f3ca",
+            "key": "Nevada"
+          },
+          {
+            "id": "e4b4c9bf-a645-49f0-8917-64ad0c37e0b0",
+            "key": "New York"
+          },
+          {
+            "id": "a5f39421-289a-4402-a58b-70efa02a5f17",
+            "key": "Texas"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "21073bca-f7a6-46a1-867f-51a8127aae60",
+        "type": "enum",
+        "key": "venue",
+        "displayName": "Venue",
+        "hidden": false,
+        "description": "",
+        "options": [
+          {
+            "id": "fe282bbe-3fa2-474e-9b84-e4316b30a2ca",
+            "key": "California"
+          },
+          {
+            "id": "c4cb175d-972b-499d-96fe-31bbd709534d",
+            "key": "Delaware"
+          },
+          {
+            "id": "cb9f4cfa-4002-44af-b56d-2190c22e175e",
+            "key": "Florida"
+          },
+          {
+            "id": "8adbf858-d98f-4cee-b6dc-d159cbc6201d",
+            "key": "Nevada"
+          },
+          {
+            "id": "48cf191b-45a9-4388-9778-d1811e285190",
+            "key": "New York"
+          },
+          {
+            "id": "9862881d-f167-4820-bce1-2ef8ba1ca4b5",
+            "key": "Texas"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "6ac51866-55c3-4453-ba87-2c6543934f17",
+        "type": "enum",
+        "key": "terminationForConvenience",
+        "displayName": "Termination for Convenience",
+        "hidden": false,
+        "options": [
+          {
+            "id": "c8dd3236-e9df-4b13-9465-b5380ef7f004",
+            "key": "Yes"
+          },
+          {
+            "id": "77c1ff2f-4a11-4571-8eda-b265662537fa",
+            "key": "No"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "0e9316ca-f66b-4d1e-9bdf-9cc897241362",
+        "type": "enum",
+        "key": "terminationForCause",
+        "displayName": "Termination for Cause",
+        "hidden": false,
+        "options": [
+          {
+            "id": "ca0d67b0-d65c-424b-a43d-7115d058bd14",
+            "key": "Yes"
+          },
+          {
+            "id": "27286844-6a95-4cf3-afef-7a6c48ed39ec",
+            "key": "No"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "8517bf17-4b9a-4149-aa46-21ccbb17363c",
+        "type": "string",
+        "key": "contractValue",
+        "displayName": "Contract Value",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "128dceba-a7fb-4940-8f49-0876c7ae3c5e",
+        "type": "string",
+        "key": "limitationOfLiability",
+        "displayName": "Limitation of Liability",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "eda7bb6a-a04c-4c85-8c2b-f094bb765716",
+        "type": "string",
+        "key": "warrantyPeriodMonths",
+        "displayName": "Warranty Period (Months)",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "f8ba5953-19a8-4a72-a7e2-6db5a8f336a7",
+        "type": "enum",
+        "key": "indemnification",
+        "displayName": "Indemnification",
+        "hidden": false,
+        "options": [
+          {
+            "id": "134f75c5-01cc-45bf-8cd8-716875d509d8",
+            "key": "Mutual"
+          },
+          {
+            "id": "edaf30c5-b0f3-47e9-be06-a7ffccc5da6a",
+            "key": "One-way"
+          },
+          {
+            "id": "f01de156-f74a-475e-a485-2a865eff6252",
+            "key": "None"
+          },
+          {
+            "id": "913ddfb1-c9c4-4705-abf2-1fe2803a845c",
+            "key": "Not Specified"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "fba637e6-1128-4047-bdc1-fafef536005c",
+        "type": "enum",
+        "key": "confidentiality",
+        "displayName": "Confidentiality",
+        "hidden": false,
+        "options": [
+          {
+            "id": "f11d6361-4680-4b47-86c3-c2410351ae59",
+            "key": "Yes"
+          },
+          {
+            "id": "66441aab-6b37-4976-9024-814b5510f9cf",
+            "key": "Nol"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "7e3df744-bfe8-4732-bec0-e99f0f29146e",
+        "type": "string",
+        "key": "confidentialityDuration",
+        "displayName": "Confidentiality Duration",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "d15a1891-3f69-40d1-80c8-f3f734ae61c2",
+        "type": "string",
+        "key": "paymentTerms",
+        "displayName": "Payment Terms",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "b423de43-a9c3-4d66-9c66-17eb1479ceb4",
+        "type": "enum",
+        "key": "disputeResolution",
+        "displayName": "Dispute Resolution",
+        "hidden": false,
+        "options": [
+          {
+            "id": "c622154f-8a3c-409b-854e-ac73cd53170f",
+            "key": "Arbitration"
+          },
+          {
+            "id": "6607e6fd-0196-400b-b8df-ce7017eb3548",
+            "key": "Litigation"
+          },
+          {
+            "id": "1baba5a7-f06b-4a70-9c21-e7aaefc9c5ce",
+            "key": "Mediation"
+          },
+          {
+            "id": "f2dc5718-51bd-4e70-8bbd-d069906bc20b",
+            "key": "No Specified"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "cdc9e5cb-2810-4752-a5c9-330f93f2c5bb",
+        "type": "string",
+        "key": "keyObligationsSummary",
+        "displayName": "Key Obligations Summary",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "dcc0383a-770a-427d-8d2f-81b7226134f2",
+        "type": "string",
+        "key": "companySignerEmail",
+        "displayName": "Company Signer Email",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "22936b75-ddf5-4d54-9702-a87ea2b770d2",
+        "type": "string",
+        "key": "counterPartySignerEmail",
+        "displayName": "Counter Party Signer Email",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "00f6b2aa-15db-4582-95fa-9b284b268190",
+        "type": "string",
+        "key": "requestor",
+        "displayName": "Requestor",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "67e4b200-1dfb-4e45-9572-22f0109f7feb",
+        "type": "date",
+        "key": "dateNeeded",
+        "displayName": "Date Needed",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "bcf2d816-3ca0-49bc-9a64-cdad82aeb14b",
+        "type": "date",
+        "key": "submissionDate",
+        "displayName": "Submission Date",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "4c451507-3da3-4f41-9116-84fd3114ee16",
+        "type": "string",
+        "key": "ndaStatus",
+        "displayName": "NDA Status",
+        "hidden": false,
+        "isActive": false
+      }
+    ]
+  },
+  {
+    "id": "bfdd8378-28bf-4313-b78a-fba8a265ee77",
+    "type": "metadata_template",
+    "templateKey": "digitalAssets",
+    "scope": "enterprise_1218697394",
+    "displayName": "Digital Assets",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "bcfe0480-6df5-49d3-895f-4bb475974b79",
+        "type": "enum",
+        "key": "assetType",
+        "displayName": "Asset Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "553b21fd-c014-4eb4-ba85-d8765ed97560",
+            "key": "Image"
+          },
+          {
+            "id": "cb303f9b-04f7-4623-9083-e3daee333c90",
+            "key": "Video"
+          },
+          {
+            "id": "f9ba335b-ab64-4a4e-94fd-3bb43aec57dd",
+            "key": "Document"
+          },
+          {
+            "id": "04b0cab5-5f98-4237-b3bf-04b340481ee1",
+            "key": "Audio"
+          },
+          {
+            "id": "e71ec304-12df-4e9f-b56a-522239da1fc8",
+            "key": "Source"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "9337b7c7-e638-4d1e-81ed-c5315426108d",
+        "type": "string",
+        "key": "aiExtraction",
+        "displayName": "AI Description",
+        "hidden": false,
+        "description": "This field is a description of the image from metadata extraction. It should list people and objects detected in the image. If possible be specific on type of person or item. If there is food, describe the food. Describe the primary colors found in the image. Describe the overall scene and location. Describe any other details that would make it easy to search for this image. ",
+        "isActive": false
+      },
+      {
+        "id": "7ee73376-5c64-41b6-910a-85d5b92e77db",
+        "type": "float",
+        "key": "numberOfPeopleInImage",
+        "displayName": "AI Number of People in Image",
+        "hidden": false,
+        "description": "How many people are in the image? Only list the number like 0, 1, 2 ,3 etc. ",
+        "isActive": true
+      },
+      {
+        "id": "d70f189e-351b-4926-bad0-3651bd7a3d55",
+        "type": "enum",
+        "key": "subAssetType",
+        "displayName": "Sub Asset Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "1c51bad8-384b-4382-b944-762699e06c44",
+            "key": "LifeStyle"
+          },
+          {
+            "id": "9579d803-b2c0-41b2-ae34-430cf0c725ad",
+            "key": "Product"
+          },
+          {
+            "id": "638a5eba-5d76-4216-a73d-a2bea7bb0a30",
+            "key": "Stock"
+          },
+          {
+            "id": "ff28888d-20f7-4f72-8bf9-d19362454965",
+            "key": "Event"
+          },
+          {
+            "id": "ae9d4221-f148-4103-8a51-e26cc1235c6e",
+            "key": "Social"
+          },
+          {
+            "id": "d3ebf280-80cb-499c-8cf5-452ed7eb6497",
+            "key": "Source"
+          },
+          {
+            "id": "490749b2-f783-44b7-9f2a-578e0735b86d",
+            "key": "Website"
+          },
+          {
+            "id": "3f61abc0-ee50-4f8f-8183-fc2efa733212",
+            "key": "Logos"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "a4a89f54-fa73-46f1-8f6a-01e14d54cf43",
+        "type": "string",
+        "key": "keywords",
+        "displayName": "Keywords",
+        "hidden": false,
+        "description": "List up to 10 descriptive keywords for this image.",
+        "isActive": true
+      },
+      {
+        "id": "7fa32976-2b4f-4d3b-a347-cc9dcfa7d157",
+        "type": "multiSelect",
+        "key": "color",
+        "displayName": "Color",
+        "hidden": false,
+        "options": [
+          {
+            "id": "69c12782-b8f2-4b72-b377-0afcc34818c6",
+            "key": "Black"
+          },
+          {
+            "id": "51bbb6d7-e473-4ca2-9c26-3c0d7410fe82",
+            "key": "White"
+          },
+          {
+            "id": "0074c1c8-e4ff-4d5d-9fb3-ac40e1d273c2",
+            "key": "Gold"
+          },
+          {
+            "id": "d38ddde7-5908-4068-a76d-2f7460356b6f",
+            "key": "Blue"
+          },
+          {
+            "id": "bf7c3b3e-f370-4ee0-98fa-0d44910bfb08",
+            "key": "Brown"
+          },
+          {
+            "id": "0c87a6b0-56bf-42ad-9d51-5e4ed2801ac1",
+            "key": "Gray"
+          },
+          {
+            "id": "fa117a4b-16d3-4977-a593-8481a9df08f2",
+            "key": "Green"
+          },
+          {
+            "id": "3ad93bae-9e26-4b44-867b-4034110a7076",
+            "key": "Orange"
+          },
+          {
+            "id": "b907dbb6-6892-4495-bbfa-d235e8f1ed78",
+            "key": "Pink"
+          },
+          {
+            "id": "27216081-ce13-4b8f-8101-ecccea69b70d",
+            "key": "Purple"
+          },
+          {
+            "id": "ccda7b42-42b7-4fff-b29f-b4674f61917f",
+            "key": "Red"
+          },
+          {
+            "id": "e6ee1d08-f880-4fdc-a8e5-db72b1971f52",
+            "key": "Yellow"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "a87dbc93-a1df-492e-9db9-e94a5205f200",
+        "type": "string",
+        "key": "resolution",
+        "displayName": "Dimensions",
+        "hidden": false,
+        "description": "Extract the image's dimensions in pixels (format: width x height). If the dimensions cannot be directly extracted, attempt to retrieve them from file metadata.",
+        "isActive": true
+      },
+      {
+        "id": "5aaeadde-dc88-49de-aa7a-38d57433e781",
+        "type": "enum",
+        "key": "rating",
+        "displayName": "Rating",
+        "hidden": false,
+        "options": [
+          {
+            "id": "2d3f34d4-3ff0-43fd-9a19-9c08ca0201f3",
+            "key": "Hero"
+          },
+          {
+            "id": "3c7d04f0-828c-42d8-8a7d-398a73863c43",
+            "key": "Normal"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "f52bdb9b-774f-49ff-a71e-70f63dc5defe",
+        "type": "enum",
+        "key": "orientation",
+        "displayName": "Orientation",
+        "hidden": false,
+        "description": "Image will be one of the following. Portrait, Landscape, or Square",
+        "options": [
+          {
+            "id": "d9c8ce27-d956-4560-983b-da31f380ff5a",
+            "key": "Landscape"
+          },
+          {
+            "id": "21fa364c-9066-422d-87c5-c2def158ed5b",
+            "key": "Portrait"
+          },
+          {
+            "id": "8bd3d60d-6435-4edd-a33d-7e256d6bd45b",
+            "key": "Square"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "706c3b1f-97c0-488c-8ae5-6126bca77e7d",
+        "type": "string",
+        "key": "photographer",
+        "displayName": "Photographer",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "d0ac7fce-44d7-4759-bc7a-0c232148454b",
+        "type": "date",
+        "key": "dateTaken",
+        "displayName": "Date Taken",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "dd907c2d-8db0-4e3e-b6e8-c0521b45e5f5",
+        "type": "string",
+        "key": "comments",
+        "displayName": "Comments",
+        "hidden": false,
+        "description": "If text is visible, extract it as 'Copy: [extracted text]",
+        "isActive": false
+      },
+      {
+        "id": "1a1b5920-700b-4e0b-8cc3-98d58c79c0fd",
+        "type": "enum",
+        "key": "maturity",
+        "displayName": "Maturity",
+        "hidden": false,
+        "options": [
+          {
+            "id": "229482ab-83b0-4656-a28b-df6f9aed8f6a",
+            "key": "Discovery"
+          },
+          {
+            "id": "e5ba4e60-cff7-4a4c-afef-2b8aa1828776",
+            "key": "Pre-Production"
+          },
+          {
+            "id": "fe91ec8f-ab03-4ecb-b038-f3adc01f8556",
+            "key": "Production"
+          },
+          {
+            "id": "c5d5c29f-7e47-4786-a686-3362147d7765",
+            "key": "Post-Production"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "ffb59d35-c5b4-4ea2-98c3-7957717590bb",
+        "type": "enum",
+        "key": "vertical",
+        "displayName": "Vertical",
+        "hidden": false,
+        "options": [
+          {
+            "id": "92c7abb1-df7a-433d-92cc-8a1ae10ae127",
+            "key": "FNB"
+          },
+          {
+            "id": "105bc11c-0ab3-4386-ac53-0b2085a21f93",
+            "key": "SLE"
+          },
+          {
+            "id": "345f1bff-acc8-4a86-b649-66e59711dbc5",
+            "key": "RWB"
+          },
+          {
+            "id": "30040a28-053b-434c-a9c0-02965ddb1dc0",
+            "key": "ZLV"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "7eb07acf-ef6d-4dd0-b1df-3657c6c3c51f",
+        "type": "enum",
+        "key": "status",
+        "displayName": "Status",
+        "hidden": false,
+        "options": [
+          {
+            "id": "b20f58f7-8f1a-4273-a6d3-7e4927e2de22",
+            "key": "Ideation"
+          },
+          {
+            "id": "11af01c0-fa5c-48b2-946f-16954bd90e6b",
+            "key": "In Progress"
+          },
+          {
+            "id": "3a0ad0e7-79bd-4adb-a440-41d3193a9d6e",
+            "key": "In Review"
+          },
+          {
+            "id": "2aab66e1-96ef-470f-9a68-990aa7234790",
+            "key": "Approved"
+          },
+          {
+            "id": "e82a377e-fc42-4346-9ec3-3259144650a4",
+            "key": "Revisions Requested"
+          }
+        ],
+        "isActive": false
+      },
+      {
+        "id": "70679c6b-5497-4eb8-b509-82d42edb3d85",
+        "type": "string",
+        "key": "venueLocation",
+        "displayName": "Venue Location",
+        "hidden": false,
+        "isActive": false
+      },
+      {
+        "id": "3fa019f0-2d8c-4731-b284-ebdd2c982e3d",
+        "type": "taxonomy",
+        "key": "keywordsTaxonomy",
+        "displayName": "Keywords Taxonomy",
+        "hidden": false,
+        "description": "",
+        "taxonomyId": "341cdad7-b0c6-48c8-981b-5356e7732d62",
+        "taxonomyKey": "keywords",
+        "namespace": "enterprise_1218697394",
+        "optionsRules": {
+          "selectableLevels": [
+            1
+          ],
+          "multiSelect": true
+        },
+        "isActive": false
+      }
+    ]
+  },
+  {
+    "id": "12cca18e-f9d1-45d9-a11a-f8f1bbadafd3",
+    "type": "metadata_template",
+    "templateKey": "fincen",
+    "scope": "enterprise_1218697394",
+    "displayName": "FinCEN",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "73b86d29-5a0a-4994-a375-a124b9afbafb",
+        "type": "string",
+        "key": "legalName",
+        "displayName": "Legal Name",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "36e7d75a-ad42-4160-8e6d-0fa8162827c9",
+        "type": "string",
+        "key": "dbaDoingBusinessAs",
+        "displayName": "DBA (Doing Business As)",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "339d1940-eda0-44b3-be4d-4484b677500d",
+        "type": "date",
+        "key": "dateOfBirth",
+        "displayName": "Date of birth",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "590c5768-48e3-4a79-b6d6-7d8a0d623d3c",
+        "type": "string",
+        "key": "residentialAddress",
+        "displayName": "Residential address",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "03a86b71-ead5-4335-9f9a-2553160f39ef",
+        "type": "string",
+        "key": "primaryUsBusinessLocation",
+        "displayName": "Primary U.S. Business Location",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "7ca1990c-3d67-425c-8a7e-40293a8e7033",
+        "type": "string",
+        "key": "noUsAddressCheckbox",
+        "displayName": "No U.S. Address Checkbox",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "258c11b8-637f-4476-81c9-0b9502687da4",
+        "type": "string",
+        "key": "nationality",
+        "displayName": "Nationality",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "ebca412f-5fbc-414f-be96-d326461cf43c",
+        "type": "enum",
+        "key": "personType",
+        "displayName": "Person type",
+        "hidden": false,
+        "description": "",
+        "options": [
+          {
+            "id": "82dae8c2-0a04-43f4-bf9e-af94b4247521",
+            "key": "Beneficial Owner"
+          },
+          {
+            "id": "f0ae7b07-ed0a-48f4-8511-8f74a9e68a0f",
+            "key": "Signing Individual"
+          },
+          {
+            "id": "43b1bf06-5297-45ad-915f-447899f1f10d",
+            "key": "Legal Entity Trustee"
+          },
+          {
+            "id": "4137a4fb-2d80-4197-b98c-93ca09f5d97d",
+            "key": "Both Beneficial Owner & Signing Individual"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "384e945b-5ab7-4752-8c98-b1da9c2a6ab1",
+        "type": "string",
+        "key": "beneficialOwnerCategory",
+        "displayName": "Beneficial owner category",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "ff9234c0-23a6-4207-afb1-896f0b4fc3dd",
+        "type": "string",
+        "key": "controlType",
+        "displayName": "Control type",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "982bc9cb-13a6-4c70-aa5f-b491ef91261d",
+        "type": "string",
+        "key": "minorStatus",
+        "displayName": "Minor status",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "f7064ac7-ae90-4074-aa8d-2e9e18255f01",
+        "type": "string",
+        "key": "parentOrGuardianName",
+        "displayName": "Parent or guardian name",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "9e3f4ab4-7940-4d73-b5f4-085c2ce476ed",
+        "type": "string",
+        "key": "trusteeOrGuardianStatus",
+        "displayName": "Trustee or guardian status",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "9f782f00-03ff-4da6-b3ec-8640bfa32122",
+        "type": "string",
+        "key": "authorizationCapacitySigningIndividualsOnly",
+        "displayName": "Authorization Capacity (Signing Individuals Only)",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "3600bc6b-c68f-488d-ac21-600c7ec8a35a",
+        "type": "string",
+        "key": "employerprincipalpartnershipNameSigningIndividualsOnly",
+        "displayName": "Employer/Principal/Partnership Name (Signing Individuals Only)",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "ddf26ea3-140c-405b-86e8-0b57c6f498e1",
+        "type": "string",
+        "key": "idType",
+        "displayName": "Type of Unique Identification (ID)",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "e13ffe59-ffde-486f-9e84-50068d6bfdc1",
+        "type": "string",
+        "key": "idNumber",
+        "displayName": "Unique Identification Number",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      },
+      {
+        "id": "118179d7-08ae-4d83-b0cb-74ee58431a3a",
+        "type": "string",
+        "key": "idJurisdiction",
+        "displayName": "Issuing Jurisdiction",
+        "hidden": false,
+        "description": "",
+        "isActive": true
+      }
+    ]
+  },
+  {
+    "id": "9ab888a4-b22a-4a31-804d-dcea915ff2ba",
+    "type": "metadata_template",
+    "templateKey": "hrRecords",
+    "scope": "enterprise_1218697394",
+    "displayName": "HR Records",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "482a3424-561c-42d5-9e80-3483379f6849",
+        "type": "enum",
+        "key": "status",
+        "displayName": "Status",
+        "hidden": false,
+        "options": [
+          {
+            "id": "c05218f8-5ee3-4b93-8092-0d96f289be1a",
+            "key": "Active"
+          },
+          {
+            "id": "8e7c6d34-c8ae-4e3e-a91d-763a8fbd3a8a",
+            "key": "In Active"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "7e2756e1-8b1a-46a6-acac-ec2cf2b1657b",
+        "type": "string",
+        "key": "employeeName1",
+        "displayName": "Employee Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "a081980d-a0a8-4cd8-afc0-8b939e3e1126",
+        "type": "enum",
+        "key": "employeeType",
+        "displayName": "Employee Type",
+        "hidden": false,
+        "options": [
+          {
+            "id": "49c80c84-6616-4edb-aa46-173b9e9d7d85",
+            "key": "Full Time"
+          },
+          {
+            "id": "e22df9b1-5335-488e-b254-4203286de7ba",
+            "key": "Part Time"
+          },
+          {
+            "id": "fb071755-d1b7-493a-84b9-e46c8a29fd6a",
+            "key": "Contractor"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "dbbf9786-15a0-479b-9bff-ec49fed2b533",
+        "type": "string",
+        "key": "employeeAddress",
+        "displayName": "Employee Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "f55c319e-19c3-4a72-a24c-ead76abb860f",
+        "type": "enum",
         "key": "documentType",
         "displayName": "Document Type",
         "hidden": false,
-        "description": "Type of payoff document. Return as 'Payoff Statement' (title case) for standard payoffs, not all caps like 'PAYOFF REQUEST'.",
+        "options": [
+          {
+            "id": "6e98dfc0-cf7a-4be7-a9a6-aaf2e7e1834b",
+            "key": "ID"
+          },
+          {
+            "id": "31579936-72ba-48bd-b384-4fd396b8bdc8",
+            "key": "Resume"
+          },
+          {
+            "id": "dba4bdf1-53be-4de2-abdd-0494ec78cc31",
+            "key": "Employment Agreement"
+          },
+          {
+            "id": "929dc202-f0c5-4dea-89a2-db0449da4fe5",
+            "key": "Offer Letter"
+          },
+          {
+            "id": "fe158732-3da5-4177-9686-d03c0dbe43f1",
+            "key": "Handbook"
+          }
+        ],
         "isActive": true
       },
       {
-        "id": "94d00d71-8749-46a1-815f-c2eb5dcbd3ee",
-        "type": "string",
-        "key": "loanType",
-        "displayName": "Loan Type",
+        "id": "326bdde5-5f74-4550-b53d-868fca0fe75e",
+        "type": "date",
+        "key": "hireDate",
+        "displayName": "Hire Date",
         "hidden": false,
-        "description": "Type of loan (e.g., conventional, FHA, VA). You can infer that the loan type is 'HELOC' if document refers to a 'line of credit' or similar statement which would imply a HELOC in the context of a title or section heading. Disambiguate this from 'credit line' or something not referenced in a title which does not imply a HELOC. Use judgement like a loan processor. Return exact text 'Not Present' when field is absent or you are not COMPLETELY SURE that the loan is a HELOC.",
         "isActive": true
       },
       {
-        "id": "50622e1f-16e5-4499-826d-7b56d041a39d",
-        "type": "string",
-        "key": "helocText",
-        "displayName": "HELOC Text",
+        "id": "b14e07c9-2591-4e62-a306-3fc2091b6530",
+        "type": "date",
+        "key": "endDate",
+        "displayName": "End Date",
         "hidden": false,
-        "description": "The text you used to determine if the loan type was HELOC. Otherwise, 'Not Present'. ONLY PRESENT FOR HELOCs.",
         "isActive": true
       },
       {
-        "id": "2525658a-1674-4ee1-a12e-88a68e20b633",
+        "id": "eda78780-0532-4c2f-8279-5a9fa6022945",
         "type": "string",
-        "key": "goodThroughDate",
-        "displayName": "Good Through Date",
+        "key": "comments",
+        "displayName": "Comments",
         "hidden": false,
-        "description": "Date through which the payoff amount is valid. Return in MM/DD/YYYY format exactly (e.g., 05/21/2025), never ISO format. Return exact text 'Not Present' when field is absent.",
         "isActive": true
       },
       {
-        "id": "dbb45877-ca53-4a5b-a45e-75c528806758",
+        "id": "7d5c7cab-cbed-41cc-93cd-2d19002b58a5",
+        "type": "enum",
+        "key": "signedOff",
+        "displayName": "Signed Off",
+        "hidden": false,
+        "options": [
+          {
+            "id": "2ab3790f-f9ed-4cb2-b22d-b51ad0b7e9ee",
+            "key": "Yes"
+          },
+          {
+            "id": "e264cbd9-fdba-4237-9ae3-7bb5a6b3d5c9",
+            "key": "No"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "75de0631-01ca-4411-8a17-f02236d98ae8",
         "type": "string",
-        "key": "goodThroughText",
-        "displayName": "Good Through Text",
+        "key": "employeeId",
+        "displayName": "Employee ID",
         "hidden": false,
-        "description": "Text describing when the payoff amount is valid through. Provide the full text including terms and conditions for which payout amount is valid. Include the FULL valid text including these conditions that impact the date and not overall cost. Return the exact text found, or leave empty/null if this information is not present in the document.",
         "isActive": true
       },
       {
-        "id": "850f59cc-1b45-46a6-b68c-addcf31e16e0",
+        "id": "eb2e4fd7-b376-4b9e-b8e7-6755766b83a9",
         "type": "string",
-        "key": "perDiem",
-        "displayName": "Per Diem",
+        "key": "licenseId",
+        "displayName": "License ID",
         "hidden": false,
-        "description": "Daily interest amount. Return with currency symbol and decimals (e.g., '$76.39'). Return exact text 'Not Present' when field is absent.",
         "isActive": true
-      },
+      }
+    ]
+  },
+  {
+    "id": "fe4fb0a9-cf3e-42d1-b340-83ae04762116",
+    "type": "metadata_template",
+    "templateKey": "invoice",
+    "scope": "enterprise_1218697394",
+    "displayName": "Invoices",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
       {
-        "id": "a005353e-f152-494f-89a5-9cbee9d130ea",
+        "id": "39f86638-19b0-45f2-8428-a2c723e9574f",
         "type": "string",
-        "key": "chargeCount",
-        "displayName": "Charge Count",
+        "key": "vendor",
+        "displayName": "Vendor",
         "hidden": false,
-        "description": "Number of charges or fees. Return as a number. Return exact text 'Not Present' when field is absent.",
         "isActive": true
       },
       {
-        "id": "be6c9737-e017-40d3-9d04-b3a2dec746f4",
+        "id": "37356873-bc47-4558-bdd2-514f1d94f1ab",
         "type": "string",
-        "key": "borrowerName",
-        "displayName": "Borrower Name",
+        "key": "description",
+        "displayName": "Description",
         "hidden": false,
-        "description": "Full legal name(s) of the borrower(s). Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       },
       {
-        "id": "5c597fc2-d432-41d0-9a97-9b02303e5fe7",
+        "id": "1ff089cb-660e-49c0-bca1-dd0ce08037c6",
+        "type": "date",
+        "key": "invoiceDate",
+        "displayName": "Invoice Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "874e74b1-4035-4ca3-974a-fc1f46c7d6a1",
+        "type": "float",
+        "key": "amountDue",
+        "displayName": "Amount Due",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "77c69232-dabb-4816-872d-100df588d061",
+        "type": "date",
+        "key": "dueDate",
+        "displayName": "Due Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "6461e4c9-a8aa-4974-85d1-dc1ccb990f85",
         "type": "string",
-        "key": "doesDisbursementNotesIncludeBorrower",
-        "displayName": "Does Disbursement Notes Include Borrower",
+        "key": "items",
+        "displayName": "Items",
         "hidden": false,
-        "description": "Whether disbursement notes include borrower information. Return 'TRUE' or 'FALSE' in uppercase exactly.",
         "isActive": true
       },
       {
-        "id": "b29a110b-f71d-460b-a2fc-0038f19f1ca8",
+        "id": "7bf366cf-83c4-4098-9dae-a009643711aa",
         "type": "string",
-        "key": "lenderName",
-        "displayName": "Lender Name",
+        "key": "term",
+        "displayName": "Term",
         "hidden": false,
-        "description": "Name of the lending institution. Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       },
       {
-        "id": "65ca3dc0-fb03-4564-abbe-2ea483acdfbe",
+        "id": "fa5f84e6-5863-49d9-b98c-a19fcb41ed25",
         "type": "string",
-        "key": "lenderAddress",
-        "displayName": "Lender Address",
+        "key": "poNumber",
+        "displayName": "PO Number",
         "hidden": false,
-        "description": "Complete lender address including street, city, state, ZIP, and country on separate lines. Format as multi-line address. Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       },
       {
-        "id": "6c343c03-db2c-4415-a0ef-2f7bc8f830b9",
+        "id": "eefcc9f0-e41f-4675-89b6-c538707f734a",
+        "type": "float",
+        "key": "salesAmountNumber",
+        "displayName": "Sales Amount Number",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "2950d96a-33b6-4f60-a46e-355564628631",
+        "type": "float",
+        "key": "salesTax",
+        "displayName": "Sales Tax",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "c768044f-69f2-4076-9bd6-98aafc6fd581",
+        "type": "float",
+        "key": "freightAmount",
+        "displayName": "Freight Amount",
+        "hidden": false,
+        "isActive": true
+      }
+    ]
+  },
+  {
+    "id": "a6fc00d4-0f83-4d66-a652-7d6a9c5e4d62",
+    "type": "metadata_template",
+    "templateKey": "lease",
+    "scope": "enterprise_1218697394",
+    "displayName": "Leases",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "494cd35a-f942-4b93-8be1-295cd77a1e6e",
         "type": "string",
-        "key": "beneficiaryName",
-        "displayName": "Beneficiary Name",
+        "key": "tenantName",
+        "displayName": "Tenant Name",
         "hidden": false,
-        "description": "Name of the beneficiary. Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       },
       {
-        "id": "658668d4-9a92-4100-8c1c-56254d438507",
+        "id": "494553bc-eedc-449f-a628-027909bd2170",
         "type": "string",
-        "key": "beneficiaryAddress",
-        "displayName": "Beneficiary Address",
+        "key": "tenantAddress",
+        "displayName": "Tenant Address",
         "hidden": false,
-        "description": "Full address of the beneficiary. Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       },
       {
-        "id": "52e2ddfd-23b3-40cb-8243-d07dc239c3a0",
+        "id": "21c41fc6-5268-4964-8f2c-49fa78084551",
+        "type": "date",
+        "key": "startDate",
+        "displayName": "Start Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "62db2b2b-c9d4-4475-8056-39540e6e8714",
+        "type": "date",
+        "key": "endDate",
+        "displayName": "End Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "05795305-3aaf-4305-a777-b982f9c35042",
+        "type": "string",
+        "key": "squareFootage",
+        "displayName": "Square Footage",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "9a4f1d18-3e1d-4476-80f0-a8246f65df10",
+        "type": "string",
+        "key": "renewalOptions",
+        "displayName": "Renewal Options",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "81e722b1-a784-4992-b4f8-2a773485b9dc",
+        "type": "string",
+        "key": "initialContractTerm",
+        "displayName": "Initial Contract Term",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "cd26fa15-e7aa-4fcc-b1a8-993ecc12549d",
+        "type": "string",
+        "key": "baseRent",
+        "displayName": "Base Rent",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "adb08790-2c43-472a-9e8a-67b7fd181ce9",
+        "type": "string",
+        "key": "additionalRent",
+        "displayName": "Additional Rent",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "e21818e1-6d56-490f-9fa1-084628011955",
+        "type": "string",
+        "key": "securityDeposit",
+        "displayName": "Security Deposit",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "a5891ea0-b600-41ae-844f-a6f7e0cf074b",
+        "type": "string",
+        "key": "landlordName",
+        "displayName": "Landlord Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "a4803c0e-92c9-4e22-b48c-e1f8b27a5af8",
         "type": "string",
         "key": "propertyAddress",
         "displayName": "Property Address",
         "hidden": false,
-        "description": "Complete property address including street, city, state, ZIP, and country on separate lines. Format as multi-line address. Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       },
       {
-        "id": "17ae4911-3709-4937-bcf6-029e3e5f496a",
+        "id": "6544893d-bd5a-49b0-9bb1-a98f2e937528",
         "type": "string",
-        "key": "bankName",
+        "key": "leaseAgreementNumber",
+        "displayName": "Lease Agreement Number",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "7dad9536-cc75-400c-b9c7-b37c0b005c9b",
+        "type": "enum",
+        "key": "rightOfFirstRefusal",
+        "displayName": "Right of First Refusal",
+        "hidden": false,
+        "options": [
+          {
+            "id": "438d65b7-8531-443a-9e76-baab76bbbb39",
+            "key": "Yes"
+          },
+          {
+            "id": "8764545b-6d99-444a-87cd-f11c98f4b1eb",
+            "key": "No"
+          },
+          {
+            "id": "a21371f5-d56c-4927-85e0-1beb81d71f8a",
+            "key": "Not Applicable"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "870ca9d5-d02a-4483-9450-87b9f91fb8c3",
+        "type": "enum",
+        "key": "purchaseOption",
+        "displayName": "Purchase Option",
+        "hidden": false,
+        "options": [
+          {
+            "id": "4ff5ce4f-b64c-4c7f-a01c-252b1ed3f442",
+            "key": "Yes"
+          },
+          {
+            "id": "ca093c49-33d8-45ea-a51e-c3723c256587",
+            "key": "No"
+          },
+          {
+            "id": "38f88405-c01b-4bb3-8640-a30c76b9d496",
+            "key": "Not Applicable"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "e4b8c2ee-b9eb-4f87-a896-bb51e72c53a7",
+        "type": "multiSelect",
+        "key": "landlordMaintenanceAndRepairResponsibilities",
+        "displayName": "Landlord Maintenance and Repair Responsibilities",
+        "hidden": false,
+        "options": [
+          {
+            "id": "ce7b3ba9-c7e4-435b-a08f-9496d44a2dab",
+            "key": "Landlord"
+          },
+          {
+            "id": "30dc5a32-78c7-4ea2-bde8-b708f0183c2c",
+            "key": "Tenant"
+          },
+          {
+            "id": "6875bfa7-f87c-4af2-9138-3a160b72c550",
+            "key": "Shared"
+          },
+          {
+            "id": "62383094-29d0-44d3-8cb0-dcfd465ef52b",
+            "key": "Not Specified"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "aec889de-30e5-43a1-823c-f2fb3cfbcb71",
+        "type": "date",
+        "key": "renewalOptionNoticeDate",
+        "displayName": "Renewal Option Notice Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "55e7fdb0-fe68-436a-b20b-88411b9d8831",
+        "type": "enum",
+        "key": "taxes",
+        "displayName": "Taxes",
+        "hidden": false,
+        "options": [
+          {
+            "id": "499f2ceb-5fb7-486c-a0ca-b34ded9e9db9",
+            "key": "Landlord"
+          },
+          {
+            "id": "8ada4db3-f406-49b8-a35a-90ee76c0d402",
+            "key": "Tenant"
+          },
+          {
+            "id": "51881b6e-f2dd-4245-896d-0bc444a30e75",
+            "key": "Shared"
+          },
+          {
+            "id": "fc3196b5-01d7-45a1-b3ca-487d859ff2e5",
+            "key": "Not Specified"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "8436d912-5525-4779-920c-4ee6d0cf06e1",
+        "type": "enum",
+        "key": "insurance",
+        "displayName": "Insurance",
+        "hidden": false,
+        "options": [
+          {
+            "id": "b6085249-757f-482e-9f1d-ce52760cbd48",
+            "key": "Landlord"
+          },
+          {
+            "id": "5636a9cb-75f6-4be2-bf7f-8e3bb7f2ac53",
+            "key": "Tenant"
+          },
+          {
+            "id": "5ac3c173-a58d-408e-9fe4-703729b928e0",
+            "key": "Both Parties"
+          },
+          {
+            "id": "795a6655-c99e-436f-8f80-27059a004a8a",
+            "key": "Not Specified"
+          }
+        ],
+        "isActive": true
+      },
+      {
+        "id": "11416fb9-e6ee-47a1-9bb8-22cbd469c0c7",
+        "type": "string",
+        "key": "utilities",
+        "displayName": "Utilities",
+        "hidden": false,
+        "isActive": true
+      }
+    ]
+  },
+  {
+    "id": "a4226bbf-f9d2-46ee-8944-e2c231327825",
+    "type": "metadata_template",
+    "templateKey": "payoff_statements",
+    "scope": "enterprise_1218697394",
+    "displayName": "Payoff Statements",
+    "hidden": false,
+    "copyInstanceOnItemCopy": false,
+    "fields": [
+      {
+        "id": "05391675-da5d-49e5-ae0b-7c881a58586c",
+        "type": "string",
+        "key": "document_type",
+        "displayName": "Document Type",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "e1a8af47-1641-4078-b05e-6a6f63852596",
+        "type": "string",
+        "key": "loan_type",
+        "displayName": "Loan Type",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "06b952bb-c485-46e7-ac5c-9e4c585cf952",
+        "type": "string",
+        "key": "heloc_text",
+        "displayName": "HELOC Text",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "f315eee5-b5ac-4a82-a2fd-6949654e07e5",
+        "type": "date",
+        "key": "good_through_date",
+        "displayName": "Good Through Date",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "4a1fe8c5-3a56-444a-97b3-d3a294028fdb",
+        "type": "string",
+        "key": "good_through_text",
+        "displayName": "Good Through Text",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "443406a5-cfb9-41be-9652-8b4c493a10a3",
+        "type": "string",
+        "key": "per_diem",
+        "displayName": "Per Diem",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "3394639e-9ab5-482b-a56d-e4e57d987423",
+        "type": "string",
+        "key": "charge_count",
+        "displayName": "Charge Count",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "517d50c4-b8a6-4187-b04c-34fd026e142c",
+        "type": "string",
+        "key": "borrower_name",
+        "displayName": "Borrower Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "08e6d541-c948-4074-89f4-dd370fb3ad1a",
+        "type": "string",
+        "key": "does_disbursement_notes_include_borrower",
+        "displayName": "Does Disbursement Notes Include Borrower",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "a5befc71-cfe0-4db9-b276-8509d00b7668",
+        "type": "string",
+        "key": "lender_name",
+        "displayName": "Lender Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "2c749a62-d464-4380-8405-5d76eb6a9cf8",
+        "type": "string",
+        "key": "lender_address",
+        "displayName": "Lender Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "4884b2f7-5375-4366-a1fe-5f714fce60af",
+        "type": "string",
+        "key": "beneficiary_name",
+        "displayName": "Beneficiary Name",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "c3c09aa5-2852-4051-a0dd-9486acc67753",
+        "type": "string",
+        "key": "beneficiary_address",
+        "displayName": "Beneficiary Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "e6ee791e-d29d-4da1-9de7-2bcf08b5bf93",
+        "type": "string",
+        "key": "property_address",
+        "displayName": "Property Address",
+        "hidden": false,
+        "isActive": true
+      },
+      {
+        "id": "d744122e-abc6-4252-b5f4-7adc671a2b14",
+        "type": "string",
+        "key": "bank_name",
         "displayName": "Bank Name",
         "hidden": false,
-        "description": "Full name of the bank for wire transfer. Include DBA information if relevant. Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       },
       {
-        "id": "1f2445aa-d58d-4b76-8bc1-09d3528cea77",
+        "id": "2ca4caf7-0375-409e-8df8-28c5a8e373c0",
         "type": "string",
-        "key": "wireInstructions",
+        "key": "wire_instructions",
         "displayName": "Wire Instructions",
         "hidden": false,
-        "description": "Complete wire transfer instructions. Return all associated fields, including but not limited to Mortgagor, Account Numbers, Loan Numbers, or anything found in this section. You must include ALL information. Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       },
       {
-        "id": "f0feffbb-fcf7-47d4-bac0-56016bc0d725",
+        "id": "9ad6102c-67b1-4f9f-817b-081d369206d4",
         "type": "string",
-        "key": "wireTransferAddress",
+        "key": "wire_transfer_address",
         "displayName": "Wire Transfer Address",
         "hidden": false,
-        "description": "Complete address for wire transfers including street, city, state, ZIP on separate lines. Format as multi-line address. Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       },
       {
-        "id": "7beb6491-0ebb-43c6-97c7-2a88be0766b9",
+        "id": "d42f4f9e-db12-4839-992d-fda8999197fc",
         "type": "string",
-        "key": "overnightDeliveriesAddress",
-        "displayName": "Overnight Deliveries Address",
+        "key": "overnight_deliveries_address1",
+        "displayName": "Overnight Deliveries Address1",
         "hidden": false,
-        "description": "Complete address for overnight deliveries including street, city, state, ZIP on separate lines. Format as multi-line address. Return exact text 'Not Present' when field is absent or not applicable.",
         "isActive": true
       }
     ]

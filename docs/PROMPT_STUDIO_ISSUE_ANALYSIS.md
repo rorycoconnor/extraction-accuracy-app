@@ -122,3 +122,4 @@ After the fix, test both scenarios:
 Both flows should produce consistent results because they'll use the same extraction approach (inline fields without templateKey).
 
 
+

@@ -9,7 +9,20 @@ import { logger } from '@/lib/logger';
 
 if (typeof window === 'undefined' && typeof global !== 'undefined') {
   // Only polyfill on server-side
-  if (!global.localStorage || typeof global.localStorage.getItem !== 'function') {
+  let needsPolyfill = false;
+  
+  try {
+    // Check if localStorage exists and is functional
+    // Some environments (like jsdom) may have localStorage that throws SecurityError
+    if (!global.localStorage || typeof global.localStorage.getItem !== 'function') {
+      needsPolyfill = true;
+    }
+  } catch (e) {
+    // If accessing localStorage throws an error (e.g., SecurityError), we need to polyfill
+    needsPolyfill = true;
+  }
+  
+  if (needsPolyfill) {
     logger.debug('Installing localStorage polyfill for SSR');
     
     class LocalStoragePolyfill implements Storage {
