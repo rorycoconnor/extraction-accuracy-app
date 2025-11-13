@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
+import { useAccuracyDataCompat } from '@/store/AccuracyDataStore';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -86,6 +87,7 @@ import { logger } from '@/lib/logger';
 
 export default function TemplatesPage() {
   const { toast } = useToast();
+  const compatData = useAccuracyDataCompat();
   const [configuredTemplates, setConfiguredTemplates] = useState<BoxTemplate[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<BoxTemplate | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -173,7 +175,7 @@ export default function TemplatesPage() {
   const cancelDeleteTemplate = () => {
     setTemplateToDelete(null);
   };
-
+  
   const handleToggleField = (templateId: string, fieldId: string) => {
     toggleTemplateFieldActive(templateId, fieldId);
     const updated = getConfiguredTemplates();
@@ -260,14 +262,18 @@ export default function TemplatesPage() {
 
   // Handle Prompt Studio open
   const handleOpenPromptStudio = (field: BoxTemplateField) => {
+    // Find the field in accuracy data to get the actual prompt
+    const accuracyDataField = compatData?.accuracyData?.fields?.find(f => f.key === field.key);
+    
     // Convert BoxTemplateField to AccuracyField for Prompt Studio
     const accuracyField: AccuracyField = {
       name: field.displayName,
       key: field.key,
       type: field.type === 'enum' ? 'enum' : field.type,
-      prompt: '',
-      templatePrompt: '',
-      promptHistory: [],
+      prompt: accuracyDataField?.prompt || '',
+      templatePrompt: accuracyDataField?.templatePrompt || '',
+      promptHistory: accuracyDataField?.promptHistory || [],
+      options: field.options,
     };
     
     setSelectedFieldForPromptStudio(accuracyField);
@@ -394,7 +400,7 @@ export default function TemplatesPage() {
     }
 
     if (configuredTemplates.length === 0) {
-      return (
+        return (
         <div className="flex flex-col items-center justify-center h-64 text-center text-muted-foreground p-4">
           <Info className="h-12 w-12 mb-3 opacity-50" />
           <p className="text-sm">No templates configured</p>
@@ -413,7 +419,7 @@ export default function TemplatesPage() {
             return (
               <div
                 key={template.id}
-                className={cn(
+                      className={cn(
                   'group relative flex items-center justify-between p-3 rounded-md cursor-pointer transition-all',
                   isSelected
                     ? 'bg-primary/10 border border-primary/20'
@@ -510,11 +516,11 @@ export default function TemplatesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[20%]">Metadata Field</TableHead>
-                <TableHead className="w-[10%]">Type</TableHead>
-                <TableHead className="w-[40%]">Compare Type</TableHead>
+                <TableHead className="w-[25%]">Metadata Field</TableHead>
+                <TableHead className="w-[15%]">Type</TableHead>
+                <TableHead className="w-[25%]">Compare Type</TableHead>
                 <TableHead className="w-[15%]">Parameters</TableHead>
-                <TableHead className="w-[15%] text-right">Prompt Studio</TableHead>
+                <TableHead className="w-[20%] text-right">Prompt Studio</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -524,6 +530,19 @@ export default function TemplatesPage() {
 
                 const showConfigureButton = CONFIGURABLE_COMPARE_TYPES.includes(compareField.compareType);
                 const isActive = field.isActive !== false;
+
+                // Map Box field types to display names
+                const getBoxTypeName = (type: string): string => {
+                  const typeMap: Record<string, string> = {
+                    'string': 'Text',
+                    'enum': 'Dropdown',
+                    'multiSelect': 'Dropdown - Multi Value',
+                    'number': 'Number',
+                    'float': 'Number',
+                    'date': 'Date',
+                  };
+                  return typeMap[type] || type;
+                };
 
                 return (
                   <TableRow key={field.id}>
@@ -537,14 +556,14 @@ export default function TemplatesPage() {
                           'font-medium truncate',
                           !isActive && 'text-muted-foreground'
                         )}>
-                          {field.displayName}
+                      {field.displayName}
                         </span>
                       </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant="outline" className="font-normal">
-                        {field.type}
-                      </Badge>
+                        {getBoxTypeName(field.type)}
+                    </Badge>
                     </TableCell>
                     <TableCell>
                       <Select
@@ -563,15 +582,10 @@ export default function TemplatesPage() {
                               </div>
                               {types.map((type) => (
                                 <SelectItem key={type} value={type}>
-                                  <div className="flex flex-col text-left">
-                                    <span className="truncate">{COMPARE_TYPE_LABELS[type]}</span>
-                                    <span className="text-xs text-muted-foreground truncate">
-                                      {COMPARE_TYPE_DESCRIPTIONS[type]}
-                                    </span>
-                                  </div>
+                                  {COMPARE_TYPE_LABELS[type]}
                                 </SelectItem>
-                              ))}
-                            </div>
+                ))}
+              </div>
                           ))}
                         </SelectContent>
                       </Select>
@@ -587,7 +601,7 @@ export default function TemplatesPage() {
                           Configure
                         </Button>
                       )}
-                    </TableCell>
+            </TableCell>
                     <TableCell className="text-right">
                       {isActive && (
                         <Button
@@ -597,13 +611,13 @@ export default function TemplatesPage() {
                         >
                           <Wand2 className="mr-2 h-4 w-4" />
                           Open
-                        </Button>
+                </Button>
                       )}
-                    </TableCell>
-                  </TableRow>
+            </TableCell>
+          </TableRow>
                 );
               })}
-            </TableBody>
+      </TableBody>
           </Table>
         </div>
       </div>
@@ -623,12 +637,12 @@ export default function TemplatesPage() {
         <div className="grid grid-cols-12 gap-4 h-[calc(100vh-200px)]">
           {/* Left Panel - Template List */}
           <Card className="col-span-2 flex flex-col">
-            <CardHeader>
-              <div className="flex items-center justify-between">
+          <CardHeader>
+            <div className="flex items-center justify-between">
                 <CardTitle className="text-lg">Templates</CardTitle>
                 <Button size="sm" onClick={() => setIsDialogOpen(true)}>
                   Add
-                </Button>
+              </Button>
               </div>
               <CardDescription className="text-xs">
                 Select a template to configure
@@ -648,22 +662,22 @@ export default function TemplatesPage() {
               <CardDescription className="text-xs">
                 Configure metadata fields, comparison types, and prompts
               </CardDescription>
-            </CardHeader>
+          </CardHeader>
             <CardContent className="flex-1 overflow-auto">
               {renderRightPanel()}
-            </CardContent>
-          </Card>
+          </CardContent>
+        </Card>
         </div>
       </div>
 
       {/* New Template Dialog */}
-      <NewTemplateDialog
+      <NewTemplateDialog 
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         onAddTemplates={handleAddTemplates}
         existingTemplates={configuredTemplates}
       />
-
+      
       {/* Delete Template Confirmation */}
       <AlertDialog open={!!templateToDelete} onOpenChange={cancelDeleteTemplate}>
         <AlertDialogContent>
@@ -788,13 +802,17 @@ export default function TemplatesPage() {
         onClose={() => setIsPromptStudioOpen(false)}
         field={selectedFieldForPromptStudio}
         templateName={selectedTemplate?.displayName}
-        onUpdatePrompt={() => {}}
+        onUpdatePrompt={(fieldKey: string, newPrompt: string) => {
+          if (compatData?.updatePrompt) {
+            compatData.updatePrompt(fieldKey, newPrompt);
+          }
+        }}
         onUsePromptVersion={() => {}}
         onToggleFavorite={() => {}}
         onDeletePromptVersion={() => {}}
-        selectedFileIds={[]}
-        accuracyData={null}
-        shownColumns={{}}
+        selectedFileIds={compatData?.accuracyData?.results?.map(r => r.id) ?? []}
+        accuracyData={compatData?.accuracyData ?? null}
+        shownColumns={compatData?.shownColumns ?? {}}
       />
     </>
   );
