@@ -18,7 +18,7 @@ import { cn, formatModelName, NOT_PRESENT_VALUE } from '@/lib/utils';
 import { compareValues, type ComparisonResult as LegacyComparisonResult } from '@/lib/metrics';
 import { compareValuesPreview } from '@/lib/compare-engine';
 import type { ComparisonResult as EngineComparisonResult } from '@/lib/compare-types';
-import { MousePointer2, Play, RotateCcw, Clock, Settings2 } from 'lucide-react';
+import { MousePointer2, Play, RotateCcw, Clock } from 'lucide-react';
 
 // Union type to handle both legacy and new comparison results
 type ComparisonResult = LegacyComparisonResult | EngineComparisonResult;
@@ -27,7 +27,6 @@ import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils'
 import { ImageThumbnailHover } from '@/components/image-thumbnail-hover';
 import { logger } from '@/lib/logger';
 import { getCompareConfigForField } from '@/lib/compare-type-storage';
-import { COMPARE_TYPE_LABELS } from '@/lib/compare-types';
 import { ComparisonResultModal } from '@/components/comparison-result-modal';
 
 // Extend TanStack's ColumnMeta to include our custom properties
@@ -97,13 +96,6 @@ const FieldHeaderGroup = ({
   onToggleMetrics?: (include: boolean) => void;
   templateKey?: string;
 }) => {
-  const router = useRouter();
-
-  // Get compare type for this field
-  const compareConfig = templateKey ? getCompareConfigForField(templateKey, field.key) : null;
-  const compareType = compareConfig?.compareType;
-  const compareLabel = compareType ? COMPARE_TYPE_LABELS[compareType] : null;
-
   return (
     <div className="relative px-4 py-2">
       {/* Centered label with equal side padding = toggle width (44px) + gap */}
@@ -134,28 +126,6 @@ const FieldHeaderGroup = ({
             )}
           </div>
         </div>
-
-        {/* Compare Type Badge */}
-        {compareLabel && (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge
-                variant="outline"
-                className="cursor-pointer hover:bg-muted text-[10px] py-0.5 px-1.5 h-5 flex items-center gap-1"
-                onClick={() => router.push('/compare-types')}
-              >
-                <Settings2 className="h-2.5 w-2.5" />
-                {compareLabel}
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <div className="text-xs">
-                <div className="font-semibold">Compare Type: {compareLabel}</div>
-                <div className="text-muted-foreground mt-1">Click to configure</div>
-              </div>
-            </TooltipContent>
-          </Tooltip>
-        )}
       </div>
 
       {/* Toggle fixed to the right, vertically centered */}
