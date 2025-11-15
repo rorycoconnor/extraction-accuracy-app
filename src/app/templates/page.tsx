@@ -644,9 +644,6 @@ export default function TemplatesPage() {
                   Add
               </Button>
               </div>
-              <CardDescription className="text-xs">
-                Select a template to configure
-              </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 overflow-hidden">
               {renderLeftPanel()}
@@ -657,11 +654,8 @@ export default function TemplatesPage() {
           <Card className="col-span-10 flex flex-col">
             <CardHeader>
               <CardTitle className="text-lg">
-                {selectedTemplate ? `${selectedTemplate.displayName} - Fields` : 'Field Configuration'}
+                {selectedTemplate ? selectedTemplate.displayName : 'Field Configuration'}
               </CardTitle>
-              <CardDescription className="text-xs">
-                Configure metadata fields, comparison types, and prompts
-              </CardDescription>
           </CardHeader>
             <CardContent className="flex-1 overflow-auto">
               {renderRightPanel()}
