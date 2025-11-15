@@ -10,6 +10,16 @@ import {
   DropdownMenuLabel, 
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { 
   Play, 
   Loader2, 
@@ -97,6 +107,9 @@ const ControlBar: React.FC<ControlBarProps> = ({
   // Filter state for pills
   const [premiumFilter, setPremiumFilter] = useState<'all' | 'premium' | 'standard'>('all');
   const [showMultiModalOnly, setShowMultiModalOnly] = useState(false);
+  
+  // DSPy Alpha confirmation dialog state
+  const [showDSpyConfirmDialog, setShowDSpyConfirmDialog] = useState(false);
 
   // Filter available models based on pill selections
   const filteredModels = useMemo(() => {
@@ -293,27 +306,18 @@ const ControlBar: React.FC<ControlBarProps> = ({
 
       
       <div className="ml-auto mr-12 flex items-center gap-2">
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                onClick={onRunOptimizer}
-                disabled={optimizerDisabled}
-                variant="outline"
-              >
-                {isOptimizerRunning ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <AlertTriangle className="mr-2 h-4 w-4" />
-                )}
-                {optimizerButtonLabel}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs font-medium">Warning: This feature is a work in progress. Selecting this button will add versions to all targeted fields automatically.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Button
+          onClick={() => setShowDSpyConfirmDialog(true)}
+          disabled={optimizerDisabled}
+          variant="outline"
+        >
+          {isOptimizerRunning ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <AlertTriangle className="mr-2 h-4 w-4" />
+          )}
+          {optimizerButtonLabel}
+        </Button>
         <div className="hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -335,6 +339,33 @@ const ControlBar: React.FC<ControlBarProps> = ({
           </DropdownMenu>
         </div>
       </div>
+
+      {/* DSPy Alpha Confirmation Dialog */}
+      <AlertDialog open={showDSpyConfirmDialog} onOpenChange={setShowDSpyConfirmDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-amber-600" />
+              DSPy Alpha - Confirm Action
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
+              Warning: This feature is a work in progress. Selecting this button will add versions to all targeted fields automatically.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowDSpyConfirmDialog(false);
+                onRunOptimizer();
+              }}
+              className="bg-amber-600 hover:bg-amber-700"
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
