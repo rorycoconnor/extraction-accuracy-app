@@ -161,11 +161,11 @@ const PromptHeader = ({
   onOpenPromptStudio: (field: AccuracyField) => void;
 }) => (
   <div 
-    className="group/prompt flex cursor-pointer items-start justify-start hover:text-primary"
+    className="group/prompt flex cursor-pointer items-center justify-center hover:text-primary"
     onClick={() => onOpenPromptStudio(field)}
   >
     <span 
-      className="min-w-0 break-words text-xs leading-tight" 
+      className="min-w-0 break-words text-xs leading-tight text-center" 
       style={{
         display: '-webkit-box',
         WebkitLineClamp: 2,
@@ -174,8 +174,8 @@ const PromptHeader = ({
       }}
     >
       {field.prompt || (
-        <span className="italic text-muted-foreground/70">
-          Only if required add prompt to improve results (optional)
+        <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+          <span className="font-bold">Add Prompt</span> to improve results, if needed (optional)
         </span>
       )}
     </span>
@@ -290,7 +290,7 @@ const getCellBackgroundColor = (cellData: CellData, templateKey?: string): strin
   const matchType = comparison.matchType as string;
 
   // Green for exact matches (all types of exact/normalized matches)
-  if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered'].includes(matchType)) {
+  if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered', 'date-exact'].includes(matchType)) {
     return 'bg-green-100/80 dark:bg-green-900/55';
   }
 
@@ -299,8 +299,8 @@ const getCellBackgroundColor = (cellData: CellData, templateKey?: string): strin
     return 'bg-blue-100/80 dark:bg-blue-900/55';
   }
 
-  // Yellow for date matches
-  if (['date_format', 'date-exact'].includes(matchType)) {
+  // Yellow for date format differences (legacy - when dates match but formats differ)
+  if (matchType === 'date_format') {
     return 'bg-yellow-100/80 dark:bg-yellow-900/55';
   }
 
@@ -380,7 +380,7 @@ const ModelValueCell = ({
     const matchType = comparison.matchType as string;
 
     // Green for exact matches (all types of exact/normalized matches)
-    if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered'].includes(matchType)) {
+    if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered', 'date-exact'].includes(matchType)) {
       return 'bg-green-100/80 text-green-800 dark:bg-green-900/55 dark:text-green-50';
     }
 
@@ -389,8 +389,8 @@ const ModelValueCell = ({
       return 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/55 dark:text-blue-50';
     }
 
-    // Yellow for date matches
-    if (['date_format', 'date-exact'].includes(matchType)) {
+    // Yellow for date format differences (legacy - when dates match but formats differ)
+    if (matchType === 'date_format') {
       return 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/55 dark:text-yellow-50';
     }
 
@@ -804,7 +804,7 @@ export default function TanStackExtractionTable({
                       key={`${field.key}-prompt`}
                       colSpan={visibleColumns.length || 1}
                       className={cn(
-                        'header-cell align-top text-xs font-normal text-muted-foreground whitespace-normal text-left px-2 py-2',
+                        'header-cell align-middle text-xs font-normal text-muted-foreground whitespace-normal text-center px-2 py-2',
                         groupIdx % 2 === 0 ? 'bg-background' : 'bg-muted',
                         fieldIndex < fields.length - 1 ? 'border-r' : ''
                       )}

@@ -92,8 +92,8 @@ export function saveCompareTypeConfig(
  * Generate default compare type configuration based on template fields
  */
 export function getDefaultCompareTypes(template: BoxTemplate): CompareTypeConfig {
+  // Include ALL fields regardless of isActive status
   const fields: FieldCompareConfig[] = template.fields
-    .filter(field => field.isActive !== false)
     .map(field => ({
       fieldKey: field.key,
       fieldName: field.displayName,
@@ -124,14 +124,14 @@ export function getOrCreateCompareTypeConfig(template: BoxTemplate): CompareType
     saveCompareTypeConfig(template.templateKey, config);
   }
 
-  // Ensure config has all active template fields
+  // Ensure config has ALL template fields (active and inactive)
   const existingFieldKeys = new Set(config.fields.map(f => f.fieldKey));
-  const activeTemplateFields = template.fields.filter(f => f.isActive !== false);
+  const allTemplateFields = template.fields; // Include all fields, not just active ones
 
   let needsUpdate = false;
 
   // Add missing fields
-  for (const field of activeTemplateFields) {
+  for (const field of allTemplateFields) {
     if (!existingFieldKeys.has(field.key)) {
       logger.debug('Adding missing field to compare type config', {
         fieldKey: field.key
@@ -146,13 +146,13 @@ export function getOrCreateCompareTypeConfig(template: BoxTemplate): CompareType
     }
   }
 
-  // Remove fields that are no longer active
-  const activeFieldKeys = new Set(activeTemplateFields.map(f => f.key));
+  // Remove fields that are no longer in the template at all
+  const allFieldKeys = new Set(allTemplateFields.map(f => f.key));
   const originalFieldCount = config.fields.length;
-  config.fields = config.fields.filter(f => activeFieldKeys.has(f.fieldKey));
+  config.fields = config.fields.filter(f => allFieldKeys.has(f.fieldKey));
 
   if (config.fields.length !== originalFieldCount) {
-    logger.debug('Removed inactive fields from compare type config');
+    logger.debug('Removed obsolete fields from compare type config');
     needsUpdate = true;
   }
 

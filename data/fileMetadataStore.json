@@ -2,9 +2,6 @@
   "1920031763042": {
     "templateKey": "contracts",
     "groundTruth": {
-      "status": "",
-      "comments": "",
-      "assignee": "",
       "contractType": "Master Agreement",
       "counterPartyName": "NewTron Technologies",
       "counterPartyAddress": "44 Space Port, Cape Canaveral, Florida 32920",
@@ -18,11 +15,6 @@
       "governingLaw": "Florida",
       "venue": "Florida",
       "contractValue": "Not Present",
-      "requestor": "",
-      "dateNeeded": "",
-      "submissionDate": "",
-      "companySignerEmail": "",
-      "counterPartySignerEmail": "",
       "ndaStatus": "Pending...",
       "freightAmount": "Not Present",
       "limitationOfLiability": "Pending...",
@@ -32,15 +24,14 @@
       "confidentialityDuration": "Pending...",
       "paymentTerms": "Pending...",
       "disputeResolution": "Pending...",
-      "keyObligationsSummary": "Pending..."
+      "keyObligationsSummary": "Pending...",
+      "folder_path": "Selected Files",
+      "folder_id": "selected"
     }
   },
   "1918860970908": {
     "templateKey": "contracts",
     "groundTruth": {
-      "status": "",
-      "comments": "",
-      "assignee": "",
       "contractType": "Master Agreement",
       "counterPartyName": "Noko Industies",
       "counterPartyAddress": "8945 Industrial Park, Houston, TX 78701",
@@ -54,11 +45,6 @@
       "governingLaw": "Delaware",
       "venue": "New York",
       "contractValue": "Not Present",
-      "requestor": "",
-      "dateNeeded": "",
-      "submissionDate": "",
-      "companySignerEmail": "",
-      "counterPartySignerEmail": "",
       "ndaStatus": "Pending...",
       "limitationOfLiability": "Pending...",
       "warrantyPeriodMonths": "Pending...",
@@ -67,15 +53,14 @@
       "confidentialityDuration": "Pending...",
       "paymentTerms": "Pending...",
       "disputeResolution": "Pending...",
-      "keyObligationsSummary": "Pending..."
+      "keyObligationsSummary": "Pending...",
+      "folder_path": "Selected Files",
+      "folder_id": "selected"
     }
   },
   "1912834427833": {
     "templateKey": "contracts",
     "groundTruth": {
-      "status": "",
-      "comments": "",
-      "assignee": "",
       "contractType": "NDA",
       "counterPartyName": "VoltEdge Power Systems, Inc.",
       "counterPartyAddress": "34875 Edison Drive, Novi, MI 48375",
@@ -89,11 +74,6 @@
       "governingLaw": "Delaware",
       "venue": "Nevada",
       "contractValue": "Not Present",
-      "requestor": "",
-      "dateNeeded": "",
-      "submissionDate": "",
-      "companySignerEmail": "",
-      "counterPartySignerEmail": "",
       "ndaStatus": "Pending...",
       "limitationOfLiability": "Pending...",
       "warrantyPeriodMonths": "Pending...",
@@ -102,17 +82,16 @@
       "confidentialityDuration": "Pending...",
       "paymentTerms": "Pending...",
       "disputeResolution": "Pending...",
-      "keyObligationsSummary": "Pending..."
+      "keyObligationsSummary": "Pending...",
+      "folder_path": "Selected Files",
+      "folder_id": "selected"
     }
   },
   "1918858263705": {
     "templateKey": "contracts",
     "groundTruth": {
-      "status": "",
-      "comments": "",
-      "assignee": "",
       "contractType": "NDA",
-      "counterPartyName": "Test",
+      "counterPartyName": "Copper State Fabrication",
       "counterPartyAddress": "2450 W Industrial Ave Phoenix, AZ 85009",
       "effectiveDate": "2024-04-05",
       "contractTerm": "1 Year",
@@ -121,31 +100,16 @@
       "noticePeriod": "Not Present",
       "terminationForConvenience": "No",
       "terminationForCause": "No",
-      "governingLaw": "Not Present",
+      "governingLaw": "Delaware",
       "venue": "Nevada",
       "contractValue": "Not Present",
-      "requestor": "",
-      "dateNeeded": "",
-      "submissionDate": "",
-      "companySignerEmail": "",
-      "counterPartySignerEmail": "",
-      "ndaStatus": "",
-      "limitationOfLiability": "",
-      "warrantyPeriodMonths": "",
-      "indemnification": "",
-      "confidentiality": "",
-      "confidentialityDuration": "",
-      "paymentTerms": "",
-      "disputeResolution": "",
-      "keyObligationsSummary": ""
+      "folder_path": "Selected Files",
+      "folder_id": "selected"
     }
   },
   "1918922486299": {
     "templateKey": "contracts",
     "groundTruth": {
-      "status": "",
-      "comments": "",
-      "assignee": "",
       "contractType": "Master Agreement",
       "counterPartyName": "Great Lakes Precision Metals",
       "counterPartyAddress": "15840 Commerce Drive Novi, MI 48375",
@@ -159,11 +123,6 @@
       "governingLaw": "Delaware",
       "venue": "New York",
       "contractValue": "Not Present",
-      "requestor": "",
-      "dateNeeded": "",
-      "submissionDate": "",
-      "companySignerEmail": "",
-      "counterPartySignerEmail": "",
       "ndaStatus": "Pending...",
       "limitationOfLiability": "Pending...",
       "warrantyPeriodMonths": "Pending...",
@@ -172,15 +131,14 @@
       "confidentialityDuration": "Pending...",
       "paymentTerms": "Pending...",
       "disputeResolution": "Pending...",
-      "keyObligationsSummary": "Pending..."
+      "keyObligationsSummary": "Pending...",
+      "folder_path": "Selected Files",
+      "folder_id": "selected"
     }
   },
   "1912827412690": {
     "templateKey": "contracts",
     "groundTruth": {
-      "status": "",
-      "comments": "",
-      "assignee": "",
       "contractType": "NDA",
       "counterPartyName": "Techstar, Inc.",
       "counterPartyAddress": "1 Market Street, San Jose, CA 95432",
@@ -194,11 +152,6 @@
       "governingLaw": "Delaware",
       "venue": "Nevada",
       "contractValue": "Not Present",
-      "requestor": "",
-      "dateNeeded": "",
-      "submissionDate": "",
-      "companySignerEmail": "",
-      "counterPartySignerEmail": "",
       "ndaStatus": "Pending...",
       "limitationOfLiability": "Pending...",
       "warrantyPeriodMonths": "Pending...",
@@ -207,15 +160,14 @@
       "confidentialityDuration": "Pending...",
       "paymentTerms": "Pending...",
       "disputeResolution": "Pending...",
-      "keyObligationsSummary": "Pending..."
+      "keyObligationsSummary": "Pending...",
+      "folder_path": "Selected Files",
+      "folder_id": "selected"
     }
   },
   "1918854938133": {
     "templateKey": "contracts",
     "groundTruth": {
-      "status": "",
-      "comments": "",
-      "assignee": "",
       "contractType": "Master Agreement",
       "counterPartyName": "Precision Plastics Co.",
       "counterPartyAddress": "410 Polymer Road, Columbus, OH 43215",
@@ -229,11 +181,6 @@
       "governingLaw": "Delaware",
       "venue": "New York",
       "contractValue": "Not Present",
-      "requestor": "",
-      "dateNeeded": "",
-      "submissionDate": "",
-      "companySignerEmail": "",
-      "counterPartySignerEmail": "",
       "ndaStatus": "Pending...",
       "limitationOfLiability": "Pending...",
       "warrantyPeriodMonths": "Pending...",
@@ -242,15 +189,14 @@
       "confidentialityDuration": "Pending...",
       "paymentTerms": "Pending...",
       "disputeResolution": "Pending...",
-      "keyObligationsSummary": "Pending..."
+      "keyObligationsSummary": "Pending...",
+      "folder_path": "Selected Files",
+      "folder_id": "selected"
     }
   },
   "1918885002919": {
     "templateKey": "contracts",
     "groundTruth": {
-      "status": "",
-      "comments": "",
-      "assignee": "",
       "contractType": "Master Agreement",
       "counterPartyName": "PlainsTech Manufacturing Co.",
       "counterPartyAddress": "1525 Steel Ridge Road Fremont, NE 68025",
@@ -264,11 +210,6 @@
       "governingLaw": "Delaware",
       "venue": "New York",
       "contractValue": "Not Present",
-      "requestor": "",
-      "dateNeeded": "",
-      "submissionDate": "",
-      "companySignerEmail": "",
-      "counterPartySignerEmail": "",
       "ndaStatus": "Pending...",
       "limitationOfLiability": "Pending...",
       "warrantyPeriodMonths": "Pending...",
@@ -277,7 +218,9 @@
       "confidentialityDuration": "Pending...",
       "paymentTerms": "Pending...",
       "disputeResolution": "Pending...",
-      "keyObligationsSummary": "Pending..."
+      "keyObligationsSummary": "Pending...",
+      "folder_path": "Selected Files",
+      "folder_id": "selected"
     }
   },
   "1924377124618": {

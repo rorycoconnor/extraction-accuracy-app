@@ -340,18 +340,18 @@ export default function ExtractionTable({
                   key={`${field.key}-prompt`}
                   colSpan={visibleColumns.length || 1}
                   className={cn(
-                    'p-2 align-top text-xs font-normal text-muted-foreground whitespace-normal text-left',
+                    'p-2 align-middle text-xs font-normal text-muted-foreground whitespace-normal text-center',
                      index % 2 === 1 ? 'bg-muted' : 'bg-card',
                      index < fields.length - 1 ? 'thick-border-right' : ''
                   )}
                 >
                   <div 
-                    className="group/prompt flex cursor-pointer items-start justify-start gap-2 hover:text-primary"
+                    className="group/prompt flex cursor-pointer items-center justify-center gap-2 hover:text-primary"
                     onClick={() => onOpenPromptStudio(field)}
                   >
                     <MousePointer2 className="h-3 w-3 shrink-0 mt-0.5 opacity-50 group-hover/prompt:opacity-100" />
                     <span 
-                      className="min-w-0 break-words text-xs leading-tight" 
+                      className="min-w-0 break-words text-xs leading-tight text-center" 
                       style={{
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
@@ -360,8 +360,8 @@ export default function ExtractionTable({
                       }}
                     >
                       {field.prompt || (
-                        <span className="italic text-muted-foreground/70">
-                          Only if required add prompt to improve results (optional)
+                        <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+                          <span className="font-bold">Add Prompt</span> to improve results, if needed (optional)
                         </span>
                       )}
                     </span>

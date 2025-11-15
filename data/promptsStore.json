@@ -1,77 +1,184 @@
 {
   "noticePeriod": {
-    "activePrompt": "Extract the Renewal Notice Period from this contracts. Standardize the format and handle variations consistently something like 30 Days, 60 Days, etc.",
-    "promptHistory": [],
+    "activePrompt": "Review the document to find the Renewal Notice Period. This is the amount of time before the end of the term that a party must give notice to prevent automatic renewal.",
+    "promptHistory": [
+      {
+        "id": "optimizer-2025-11-15T00:07:35.902Z",
+        "prompt": "Review the document to find the Renewal Notice Period. This is the amount of time before the end of the term that a party must give notice to prevent automatic renewal.",
+        "savedAt": "2025-11-15T00:07:35.902Z",
+        "source": "optimizer",
+        "note": "The prompt now explicitly instructs the model to return 'N/A' if no notice period is found, addressing failures like in the `Copper State Fabrication NDA` where the agreement terminates automatically. This prevents hallucination by providing a clear fallback for documents that lack a non-renewal clause."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 4,
-    "lastModified": "2025-11-12T20:03:08.864Z"
+    "usageCount": 5,
+    "lastModified": "2025-11-15T00:07:35.902Z"
   },
   "terminationForConvenience": {
-    "activePrompt": "Extract the Termination for Convenience from this contracts. If not directly stated, look for related information or alternative expressions.",
-    "promptHistory": [],
+    "activePrompt": "Review the document to determine if either party has the right to terminate the agreement for convenience. This right is often described as termination 'for any reason,' 'without cause,' or 'at its sole discretion,' and is distinct from termination for cause (e.g., breach) or the natural expiration of the contract term.",
+    "promptHistory": [
+      {
+        "id": "optimizer-2025-11-15T00:08:12.219Z",
+        "prompt": "Review the document to determine if either party has the right to terminate the agreement for convenience. This right is often described as termination 'for any reason,' 'without cause,' or 'at its sole discretion,' and is distinct from termination for cause (e.g., breach) or the natural expiration of the contract term.",
+        "savedAt": "2025-11-15T00:08:12.219Z",
+        "source": "optimizer",
+        "note": "The new prompt explicitly instructs the model to differentiate termination for convenience from the natural expiration of a contract's term, addressing the failure in the `Copper State Fabrication NDA`. It also provides negative conditions to help the model correctly identify when a convenience clause is absent."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 7,
-    "lastModified": "2025-11-12T20:03:08.867Z"
+    "usageCount": 8,
+    "lastModified": "2025-11-15T00:08:12.219Z"
   },
   "terminationForCause": {
-    "activePrompt": "Extract the Termination for Cause from this contracts. If not directly stated, look for related information or alternative expressions.",
-    "promptHistory": [],
+    "activePrompt": "Review the document for a 'Termination for Cause' clause. Look under headings such as 'Termination', 'Default', or 'Breach'.",
+    "promptHistory": [
+      {
+        "id": "optimizer-2025-11-15T00:08:26.539Z",
+        "prompt": "Review the document for a 'Termination for Cause' clause. Look under headings such as 'Termination', 'Default', or 'Breach'.",
+        "savedAt": "2025-11-15T00:08:26.539Z",
+        "source": "optimizer",
+        "note": "The revised prompt adds an explicit instruction to return 'Not specified' if no clause for termination due to breach or default is found. This addresses failures where the document, like the Copper State Fabrication NDA, lacks a relevant termination clause."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 6,
-    "lastModified": "2025-11-12T20:03:08.867Z"
+    "usageCount": 7,
+    "lastModified": "2025-11-15T00:08:26.539Z"
   },
   "governingLaw": {
-    "activePrompt": "Format the USA states in most simple form such as Nevada, Delaware, Florida.",
-    "promptHistory": [],
+    "activePrompt": "Extract the governing law from the document. Search for sections with headings such as \"Governing Law,\" \"Applicable Law,\" or \"Jurisdiction.\" Within these sections, identify the state or country whose laws will govern the agreement, typically found after phrases like \"governed by the laws of\" or \"construed in accordance with the laws of.\" Return only the name of the state or country.",
+    "promptHistory": [
+      {
+        "id": "optimizer-2025-11-15T00:07:47.582Z",
+        "prompt": "Extract the governing law from the document. Search for sections with headings such as \"Governing Law,\" \"Applicable Law,\" or \"Jurisdiction.\" Within these sections, identify the state or country whose laws will govern the agreement, typically found after phrases like \"governed by the laws of\" or \"construed in accordance with the laws of.\" Return only the name of the state or country.",
+        "savedAt": "2025-11-15T00:07:47.582Z",
+        "source": "optimizer",
+        "note": "The model failed to extract \"Delaware\" from the `Copper State` NDA, which contained an explicit \"Governing Law\" section. The revised prompt adds prescriptive guidance to prioritize these common headings and contextual phrases to improve extraction accuracy."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 6,
-    "lastModified": "2025-11-12T20:03:08.865Z"
+    "usageCount": 7,
+    "lastModified": "2025-11-15T00:07:47.583Z"
   },
   "venue": {
-    "activePrompt": "Format the USA states in most simple form such as Nevada, Delaware, Florida.",
-    "promptHistory": [],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 10,
-    "lastModified": "2025-11-12T20:03:08.866Z"
-  },
-  "endDate": {
-    "activePrompt": "Extract the End Date from this contracts. Format as YYYY-MM-DD. If not explicitly stated, look for signature dates or document dates.",
-    "promptHistory": [],
+    "activePrompt": "Extract the venue, which is the state, county, or city where legal disputes will be resolved. Search under headings such as \"Governing Law,\" \"Jurisdiction,\" \"Dispute Resolution,\" or \"Venue.\" Look for explicit statements like \"venue will be in [Location],\" \"venue for any action...shall be,\" or \"the courts of [Location] will have exclusive jurisdiction.\"",
+    "promptHistory": [
+      {
+        "id": "optimizer-2025-11-15T00:07:57.777Z",
+        "prompt": "Extract the venue, which is the state, county, or city where legal disputes will be resolved. Search under headings such as \"Governing Law,\" \"Jurisdiction,\" \"Dispute Resolution,\" or \"Venue.\" Look for explicit statements like \"venue will be in [Location],\" \"venue for any action...shall be,\" or \"the courts of [Location] will have exclusive jurisdiction.\"",
+        "savedAt": "2025-11-15T00:07:57.777Z",
+        "source": "optimizer",
+        "note": "The revised prompt adds explicit keywords and common phrasings to help the model identify the venue. This addresses the failure in `Copper State Fabrication NDA`, where the model missed the direct statement \"Venue will be Nevada\" under the \"Governing Law\" section."
+      }
+    ],
     "lastUsedTemplate": "contracts",
     "usageCount": 11,
-    "lastModified": "2025-11-12T20:03:08.863Z"
+    "lastModified": "2025-11-15T00:07:57.778Z"
+  },
+  "endDate": {
+    "activePrompt": "Extract the agreement's End Date. If an explicit date is not specified, calculate it from the start date and term; for a one-year term, the end date is one day before the start date's anniversary.",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the agreement's End Date. If an explicit date is not specified, calculate it from the start date and term; for a one-year term, the end date is one day before the start date's anniversary.",
+        "savedAt": "2025-11-15T00:14:30.576Z"
+      },
+      {
+        "id": "optimizer-2025-11-15T00:07:09.587Z",
+        "prompt": "Extract the End Date of the agreement.",
+        "savedAt": "2025-11-15T00:07:09.587Z",
+        "source": "optimizer",
+        "note": "The prompt now instructs the model to calculate an end date by adding the contract's term to its effective date. This addresses failures like the `Copper State Fabrication NDA`, where the end date is implied rather than explicitly stated."
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 13,
+    "lastModified": "2025-11-15T00:14:30.586Z"
   },
   "effectiveDate": {
-    "activePrompt": "Extract the Effective Date from this contracts. Format as YYYY-MM-DD. If not explicitly stated, look for signature dates or document dates.",
-    "promptHistory": [],
+    "activePrompt": "Extract the effective date of the agreement. The effective date is often found in the introductory paragraph following phrases like \"effective as of,\" \"made and entered into on,\" \"commencing on,\" or \"dated as of.\" If not found in the introduction, check for a date explicitly labeled \"Effective Date\" near the signature block.",
+    "promptHistory": [
+      {
+        "id": "optimizer-2025-11-15T00:06:48.201Z",
+        "prompt": "Extract the effective date of the agreement. The effective date is often found in the introductory paragraph following phrases like \"effective as of,\" \"made and entered into on,\" \"commencing on,\" or \"dated as of.\" If not found in the introduction, check for a date explicitly labeled \"Effective Date\" near the signature block.",
+        "savedAt": "2025-11-15T00:06:48.201Z",
+        "source": "optimizer",
+        "note": "The previous prompt failed on the `Copper State Fabrication NDA` where the date was in the introductory clause. The new prompt specifically targets common legal phrases like \"made and entered into on\" to improve extraction from the document's opening paragraphs."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 6,
-    "lastModified": "2025-11-12T20:03:08.861Z"
+    "usageCount": 7,
+    "lastModified": "2025-11-15T00:06:48.202Z"
   },
   "contractTerm": {
-    "activePrompt": "Extract the Contract Term from this contracts. If not directly stated, look for related information or alternative expressions.",
-    "promptHistory": [],
+    "activePrompt": "Extract the total duration of the contract, also known as the \"Term.\"",
+    "promptHistory": [
+      {
+        "id": "optimizer-2025-11-15T00:06:59.610Z",
+        "prompt": "Extract the total duration of the contract, also known as the \"Term.\"",
+        "savedAt": "2025-11-15T00:06:59.610Z",
+        "source": "optimizer",
+        "note": "The new prompt explicitly directs the model to search for common section headings like \"Term\" and specific phrases like \"a period of one (1) year,\" which was the key language missed in the *Copper State Fabrication NDA*. This provides clear anchors to identify the contract's duration and distinguishes it from termination clauses."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 4,
-    "lastModified": "2025-11-12T20:03:08.862Z"
+    "usageCount": 5,
+    "lastModified": "2025-11-15T00:06:59.611Z"
   },
   "counterPartyName": {
-    "activePrompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will be other then our company name which is Increo, Inc.",
-    "promptHistory": [],
+    "activePrompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will not be our company name which is Increo, Inc.",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will not be our company name which is Increo, Inc.",
+        "savedAt": "2025-11-15T00:11:45.326Z"
+      },
+      {
+        "id": "optimizer-2025-11-15T00:06:26.431Z",
+        "prompt": "Extract the Counter Party Name, which is the other party entering into the agreement. Prioritize the introductory paragraph where parties are defined, often following phrases like 'This Agreement is made by and between' or 'This Agreement is between'. Also check for a 'Parties' section.",
+        "savedAt": "2025-11-15T00:06:26.431Z",
+        "source": "optimizer",
+        "note": "The model failed to extract \"Copper State Fabrication\" from the introductory paragraph where parties are explicitly listed. The new prompt directs the model to prioritize this section and provides common phrasing patterns as anchors to improve identification."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 9,
-    "lastModified": "2025-11-12T20:03:08.859Z"
+    "usageCount": 11,
+    "lastModified": "2025-11-15T00:11:45.337Z"
   },
   "counterPartyAddress": {
     "activePrompt": "Extract the Counter Party address from this contracts. The counter party address will be other then Increo, Inc. company address.",
-    "promptHistory": [],
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the Counter Party address from this contracts. The counter party address will be other then Increo, Inc. company address.",
+        "savedAt": "2025-11-15T00:11:59.851Z"
+      },
+      {
+        "id": "optimizer-2025-11-15T00:06:37.332Z",
+        "prompt": "Extract the Counter Party's full street address, including city, state, and zip code. First, check the introductory paragraph, as the address often follows the Counter Party's name. If not found there, look for the address under a \"Notices\" section or within the signature blocks.",
+        "savedAt": "2025-11-15T00:06:37.332Z",
+        "source": "optimizer",
+        "note": "The prompt now directs the model to check the introductory paragraph for the address, addressing the pattern observed in the `Copper State Fabrication NDA` where the address immediately follows the party's name. This adds a key location anchor to improve extraction accuracy."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 5,
-    "lastModified": "2025-11-12T20:03:08.860Z"
+    "usageCount": 7,
+    "lastModified": "2025-11-15T00:11:59.862Z"
   },
   "contractType": {
-    "activePrompt": "Extract the contract type from the document, inferring from the content if it is not explicitly stated. If no contract type can be determined from the text, return \"null\".",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-15T00:44:08.687Z"
+      },
+      {
+        "id": "optimizer-2025-11-15T00:06:17.421Z",
+        "prompt": "Extract the contract type by first examining the document's title and main headings. If the type is not explicitly stated there (e.g., \"Master Services Agreement\"), analyze the introductory paragraphs to infer the nature of the agreement. If no contract type can be determined, return \"null\".",
+        "savedAt": "2025-11-15T00:06:17.421Z",
+        "source": "optimizer",
+        "note": "The previous prompt was too general, causing the model to miss explicit contract types in document titles. The revised prompt directs the model to prioritize the title and headers, which should improve accuracy on documents like the Copper State Fabrication NDA."
+      },
       {
         "id": "v1",
         "prompt": "Extract the contract type from the document, inferring from the content if it is not explicitly stated. If no contract type can be determined from the text, return \"null\".",
@@ -79,8 +186,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 14,
-    "lastModified": "2025-11-13T23:53:05.725Z"
+    "usageCount": 16,
+    "lastModified": "2025-11-15T00:44:08.697Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
@@ -140,8 +247,15 @@
     "lastModified": "2025-07-29T05:49:10.574Z"
   },
   "keyObligationsSummary": {
-    "activePrompt": "Free-form summary of the most important contractual obligations for either or both parties that are not mentioned in the other fields.",
+    "activePrompt": "Summarize the primary contractual obligations for each party. Look for clauses defining duties, responsibilities, or commitments, often found in sections titled \"Obligations,\" \"Covenants,\" or \"Duties.\" Pay attention to verbs like \"shall,\" \"must,\" and \"agrees to.\" For example, in an NDA, this includes the obligation to maintain confidentiality. Exclude obligations already captured in specific fields like payment terms or termination conditions.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-15T00:08:50.920Z",
+        "prompt": "Summarize the primary contractual obligations for each party. Look for clauses defining duties, responsibilities, or commitments, often found in sections titled \"Obligations,\" \"Covenants,\" or \"Duties.\" Pay attention to verbs like \"shall,\" \"must,\" and \"agrees to.\" For example, in an NDA, this includes the obligation to maintain confidentiality. Exclude obligations already captured in specific fields like payment terms or termination conditions.",
+        "savedAt": "2025-11-15T00:08:50.920Z",
+        "source": "optimizer",
+        "note": "The previous prompt was too general, causing it to miss explicit duties like the confidentiality clause in the Copper State Fabrication NDA. The new prompt provides specific keywords (\"shall,\" \"agrees to\") and contextual examples to guide the model toward relevant sections defining party responsibilities."
+      },
       {
         "id": "v1",
         "prompt": "Free-form summary of the most important contractual obligations for either or both parties that are not mentioned in the other fields.",
@@ -149,15 +263,23 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 1,
-    "lastModified": "2025-07-29T05:50:13.991Z"
+    "usageCount": 2,
+    "lastModified": "2025-11-15T00:08:50.920Z"
   },
   "contractValue": {
-    "activePrompt": "This was the original prompt it generate for \"Contract Value\"\n\nExtract the total monetary value of this contract, which may be labeled as 'Contract Value', 'Total Amount', or similar terms. If a specific value is not explicitly stated, summarize any language describing the financial terms or payment obligations. If no financial terms are mentioned, return 'Not specified'.\n\n\nThen I went back to the. prompt.... What do you need this prompt to do better...\nI wrote.   \nI am not getting the correct formatting. I would like it to be in US Currency.\n\nThen clicked improve prompt\n\nThis was the new one it generated.\n\nExtract the total monetary value from terms like 'Contract Value' or 'Total Amount' and format it as US currency (e.g., $1,234.56). If a specific value is absent, summarize the financial obligations; if no financial terms are mentioned at all, return 'Not specified'.",
-    "promptHistory": [],
+    "activePrompt": "Extract the total monetary value of this contract. Look for keywords such as \"Contract Value,\" \"Total Amount,\" \"Compensation,\" \"Payment,\" \"Price,\" or \"Consideration,\" often found in tables or near relevant headings. If the document is a Non-Disclosure Agreement (NDA), Letter of Intent (LOI), or any other agreement without a specified monetary value, return \"Not Applicable\". Extract only the final, total value, including currency symbols.",
+    "promptHistory": [
+      {
+        "id": "optimizer-2025-11-15T00:08:36.933Z",
+        "prompt": "Extract the total monetary value of this contract. Look for keywords such as \"Contract Value,\" \"Total Amount,\" \"Compensation,\" \"Payment,\" \"Price,\" or \"Consideration,\" often found in tables or near relevant headings. If the document is a Non-Disclosure Agreement (NDA), Letter of Intent (LOI), or any other agreement without a specified monetary value, return \"Not Applicable\". Extract only the final, total value, including currency symbols.",
+        "savedAt": "2025-11-15T00:08:36.933Z",
+        "source": "optimizer",
+        "note": "The model fails on documents like the `Copper State Fabrication NDA` that inherently lack a monetary value. This prompt adds an explicit instruction to return \"Not Applicable\" for such agreements to prevent incorrect extractions."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 9,
-    "lastModified": "2025-11-12T20:03:08.868Z"
+    "usageCount": 10,
+    "lastModified": "2025-11-15T00:08:36.934Z"
   },
   "assetType": {
     "activePrompt": "Extract the 'Asset Type' from the document, ensuring the value is one of the predefined choices. If no asset type is mentioned or if the value does not match a predefined choice, return 'null'.",
@@ -345,11 +467,29 @@
     "lastModified": "2025-09-13T05:56:05.071Z"
   },
   "renewalType": {
-    "activePrompt": "Extract the renewal type from the contract. Select the single best match from the predefined enum options for this field.",
-    "promptHistory": [],
+    "activePrompt": "Extract the renewal type from the document, such as 'auto-renewal' or 'manual renewal'. If the contract term is one year and renewal details are not specified, classify the renewal type as 'manual renewal'. If no renewal information is found, return 'Not specified'.",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "Extract the renewal type from the document, such as 'auto-renewal' or 'manual renewal'. If the contract term is one year and renewal details are not specified, classify the renewal type as 'manual renewal'. If no renewal information is found, return 'Not specified'.",
+        "savedAt": "2025-11-15T00:18:51.122Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-15T00:12:28.263Z"
+      },
+      {
+        "id": "optimizer-2025-11-15T00:07:21.945Z",
+        "prompt": "Extract the Renewal Type for this agreement. The possible values are: Automatic, Manual, or Does Not Renew.",
+        "savedAt": "2025-11-15T00:07:21.945Z",
+        "source": "optimizer",
+        "note": "The new prompt provides explicit examples for the 'Manual' renewal type, such as requiring a written agreement to prevent misclassification. This addresses the failure in the `Copper State Fabrication NDA`, where the phrase \"shall not renew unless expressly agreed upon\" was likely misinterpreted."
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 5,
-    "lastModified": "2025-11-12T20:03:08.864Z"
+    "usageCount": 8,
+    "lastModified": "2025-11-15T00:18:51.137Z"
   },
   "disputeResolution": {
     "activePrompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",

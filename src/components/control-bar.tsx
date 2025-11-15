@@ -149,7 +149,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
     if (isOptimizerRunning) {
       return 'Optimizing…';
     }
-    return 'Run Optimizer';
+    return 'DSPy Alpha';
   })();
 
   const optimizerDisabled =
@@ -257,29 +257,6 @@ const ControlBar: React.FC<ControlBarProps> = ({
         )}
         {comparisonButtonLabel}
       </Button>
-
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              onClick={onRunOptimizer}
-              disabled={optimizerDisabled}
-              variant="outline"
-              className="min-w-[180px] justify-start"
-            >
-              {isOptimizerRunning ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Wand2 className="mr-2 h-4 w-4" />
-              )}
-              {optimizerButtonLabel}
-            </Button>
-          </TooltipTrigger>
-          {optimizerDisabled && isOptimizerRunning && (
-            <TooltipContent>Optimizer running…</TooltipContent>
-          )}
-        </Tooltip>
-      </TooltipProvider>
       
       <Button variant="outline" onClick={onClearResults}>
         <Trash2 className="mr-2 h-4 w-4" />
@@ -304,13 +281,6 @@ const ControlBar: React.FC<ControlBarProps> = ({
             <Copy className="mr-2 h-4 w-4" />
             Copy Ground Truth
           </DropdownMenuItem>
-          <DropdownMenuItem
-            onClick={onResetPrompts}
-            disabled={!accuracyData}
-          >
-            <RotateCcw className="mr-2 h-4 w-4" />
-            Reset Prompt Overrides
-          </DropdownMenuItem>
           <DropdownMenuItem 
             onClick={onDownloadResults}
             disabled={!accuracyData || !accuracyData.results || accuracyData.results.length === 0}
@@ -323,6 +293,27 @@ const ControlBar: React.FC<ControlBarProps> = ({
 
       
       <div className="ml-auto mr-12 flex items-center gap-2">
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={onRunOptimizer}
+                disabled={optimizerDisabled}
+                variant="outline"
+              >
+                {isOptimizerRunning ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <AlertTriangle className="mr-2 h-4 w-4" />
+                )}
+                {optimizerButtonLabel}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs font-medium">Warning: This feature is a work in progress. Selecting this button will add versions to all targeted fields automatically.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <div className="hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -874,17 +874,15 @@ export default function PromptStudioSheet({
                                     bgClass = 'bg-red-100/80 dark:bg-red-900/55';
                                   } else if (groundTruth && value) {
                                     if (comparison.isMatch) {
-                                      switch (comparison.matchType) {
-                                        case 'exact':
-                                        case 'normalized':
-                                          bgClass = 'bg-green-100/80 dark:bg-green-900/55';
-                                          break;
-                                        case 'partial':
-                                          bgClass = 'bg-blue-100/80 dark:bg-blue-900/55';
-                                          break;
-                                        case 'date_format':
-                                          bgClass = 'bg-yellow-100/80 dark:bg-yellow-900/55';
-                                          break;
+                                      const matchType = comparison.matchType as string;
+                                      // Green for exact matches including date-exact
+                                      if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'date-exact'].includes(matchType)) {
+                                        bgClass = 'bg-green-100/80 dark:bg-green-900/55';
+                                      } else if (matchType === 'partial') {
+                                        bgClass = 'bg-blue-100/80 dark:bg-blue-900/55';
+                                      } else if (matchType === 'date_format') {
+                                        // Yellow only for legacy date_format (different formats, same date)
+                                        bgClass = 'bg-yellow-100/80 dark:bg-yellow-900/55';
                                       }
                                     } else {
                                       bgClass = 'bg-red-100/80 dark:bg-red-900/55';

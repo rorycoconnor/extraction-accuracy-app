@@ -516,11 +516,11 @@ export default function TemplatesPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[25%]">Metadata Field</TableHead>
-                <TableHead className="w-[15%]">Type</TableHead>
-                <TableHead className="w-[25%]">Compare Type</TableHead>
-                <TableHead className="w-[15%]">Parameters</TableHead>
-                <TableHead className="w-[20%] text-right">Prompt Studio</TableHead>
+                <TableHead className="w-[240px]">Metadata Field</TableHead>
+                <TableHead className="w-[140px]">Type</TableHead>
+                <TableHead className="w-[200px]">Compare Type</TableHead>
+                <TableHead className="w-[140px]">Parameters</TableHead>
+                <TableHead className="w-[140px] text-right">Prompt Studio</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -546,8 +546,8 @@ export default function TemplatesPage() {
 
                 return (
                   <TableRow key={field.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
+                    <TableCell className="w-[240px]">
+                      <div className="flex items-center gap-2 min-w-0">
                         <Switch
                           checked={isActive}
                           onCheckedChange={() => handleToggleField(selectedTemplate.id, field.id)}
@@ -560,12 +560,12 @@ export default function TemplatesPage() {
                         </span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-[140px]">
                       <Badge variant="outline" className="font-normal">
                         {getBoxTypeName(field.type)}
                     </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-[200px]">
                       <Select
                         value={compareField.compareType}
                         onValueChange={(value) => handleCompareTypeChange(field.key, value as CompareType)}
@@ -590,7 +590,7 @@ export default function TemplatesPage() {
                         </SelectContent>
                       </Select>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="w-[140px]">
                       {showConfigureButton && isActive && (
                         <Button
                           variant="outline"
@@ -602,7 +602,7 @@ export default function TemplatesPage() {
                         </Button>
                       )}
             </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="w-[140px] text-right">
                       {isActive && (
                         <Button
                           variant="ghost"

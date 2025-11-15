@@ -245,14 +245,41 @@ function compareNearExactString(extracted: string, groundTruth: string): Compari
 /**
  * Normalize text for near-exact comparison
  * - Convert to lowercase
- * - Remove all punctuation
+ * - Remove redundant parenthetical numbers (e.g., "sixty (60)" → "sixty")
+ * - Convert written numbers to digits (e.g., "sixty" → "60")
+ * - Remove all punctuation except numbers
  * - Normalize whitespace (multiple spaces → single space, trim)
  */
 function normalizeText(text: string): string {
   if (!text || typeof text !== 'string') return '';
 
-  return text
-    .toLowerCase()
+  // Word-to-number mappings
+  const wordToNumber: Record<string, string> = {
+    'zero': '0', 'one': '1', 'two': '2', 'three': '3', 'four': '4',
+    'five': '5', 'six': '6', 'seven': '7', 'eight': '8', 'nine': '9',
+    'ten': '10', 'eleven': '11', 'twelve': '12', 'thirteen': '13',
+    'fourteen': '14', 'fifteen': '15', 'sixteen': '16', 'seventeen': '17',
+    'eighteen': '18', 'nineteen': '19', 'twenty': '20', 'thirty': '30',
+    'forty': '40', 'fifty': '50', 'sixty': '60', 'seventy': '70',
+    'eighty': '80', 'ninety': '90', 'hundred': '100', 'thousand': '1000'
+  };
+
+  let normalized = text.toLowerCase();
+
+  // Remove redundant parenthetical numbers that match written words
+  // e.g., "sixty (60)" → "sixty", "thirty (30)" → "thirty"
+  Object.entries(wordToNumber).forEach(([word, digit]) => {
+    const parenPattern = new RegExp('\\b' + word + '\\s*\\(' + digit + '\\)', 'gi');
+    normalized = normalized.replace(parenPattern, word);
+  });
+
+  // Convert written numbers to digits
+  Object.entries(wordToNumber).forEach(([word, digit]) => {
+    const regex = new RegExp('\\b' + word + '\\b', 'gi');
+    normalized = normalized.replace(regex, digit);
+  });
+
+  return normalized
     .replace(/[^\w\s]/g, '') // Remove punctuation
     .replace(/\s+/g, ' ')    // Normalize whitespace
     .trim();

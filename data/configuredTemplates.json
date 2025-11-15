@@ -436,7 +436,7 @@
         "key": "keyObligationsSummary",
         "displayName": "Key Obligations Summary",
         "hidden": false,
-        "isActive": false
+        "isActive": true
       },
       {
         "id": "dcc0383a-770a-427d-8d2f-81b7226134f2",

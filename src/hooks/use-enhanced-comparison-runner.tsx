@@ -461,9 +461,19 @@ export const useEnhancedComparisonRunner = (
       const fileIds = processedResults.map((fileResult) => fileResult.id);
 
       // Get compare config for this field
-      const compareConfig = templateKey
+      let compareConfig = templateKey
         ? getCompareConfigForField(templateKey, fieldKey)
         : null;
+
+      // IMPORTANT: Override LLM-judge to prevent it from being used in Run Comparison
+      // LLM-judge should only be used in the Optimizer flow (DSPy Alpha)
+      if (compareConfig && compareConfig.compareType === 'llm-judge') {
+        logger.debug('Overriding llm-judge with near-exact-string for Run Comparison', { fieldKey });
+        compareConfig = {
+          ...compareConfig,
+          compareType: 'near-exact-string'
+        };
+      }
 
       // Process only the models that were active for this run
       for (const modelName of activeModelsForRun) {
