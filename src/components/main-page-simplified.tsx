@@ -64,6 +64,7 @@ import { useUIHandlers } from '@/hooks/use-ui-handlers';
 import { useDataHandlers } from '@/hooks/use-data-handlers';
 import { useExtractionSetup } from '@/hooks/use-extraction-setup';
 import { useEnhancedComparisonRunner } from '@/hooks/use-enhanced-comparison-runner';
+import { useOptimizerRunner } from '@/hooks/use-optimizer-runner';
 import { useAccuracyDataCompat, useOptimizerState } from '@/store/AccuracyDataStore';
 import { quickExportToCSV } from '@/lib/csv-export';
 
@@ -287,6 +288,11 @@ const MainPage: React.FC = () => {
   
   // ===== ENHANCED COMPARISON RUNNER =====
   const enhancedRunner = useEnhancedComparisonRunner(selectedTemplate);
+  
+  // ===== OPTIMIZER RUNNER HOOK =====
+  const optimizerRunner = useOptimizerRunner({ 
+    runComparison: enhancedRunner.handleRunComparison 
+  });
 
   // ===== UI HANDLERS HOOK =====
   const { handleOpenPromptStudio, handleToggleFavorite, handleCompleteReset } = useUIHandlers({
@@ -299,7 +305,7 @@ const MainPage: React.FC = () => {
   });
 
   // ===== DATA HANDLERS HOOK =====
-  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, updatePromptVersionMetrics } = useDataHandlers({
+  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, handleResetAllPrompts, updatePromptVersionMetrics } = useDataHandlers({
     accuracyData,
     setAccuracyData,
     selectedCellForEdit,
@@ -569,6 +575,8 @@ const MainPage: React.FC = () => {
        <ControlBar
         accuracyData={accuracyData}
         isExtracting={enhancedRunner.isExtracting}
+        isOptimizerRunning={optimizerRunner.optimizerState.status !== 'idle'}
+        optimizerProgressLabel={optimizerRunner.optimizerProgressLabel}
         progress={enhancedRunner.progress}
         shownColumns={shownColumns}
         onSelectDocuments={() => {
@@ -582,10 +590,12 @@ const MainPage: React.FC = () => {
           }
         }}
         onRunComparison={handleRunComparison}
+        onRunOptimizer={optimizerRunner.runOptimizer}
          onAutoPopulateGroundTruth={handleAutoPopulateGroundTruth}
          onOpenSummary={openPerformanceModal}
          onClearResults={clearResults}
          onResetData={() => setShowResetDialog(true)}
+         onResetPrompts={handleResetAllPrompts}
          onColumnToggle={toggleColumn}
          onDownloadResults={handleDownloadResults}
        />

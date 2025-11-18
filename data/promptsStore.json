@@ -130,8 +130,14 @@
     "lastModified": "2025-11-18T01:30:45.265Z"
   },
   "contractType": {
-    "activePrompt": "",
+    "activePrompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
+        "savedAt": "2025-11-18T19:15:10.543Z",
+        "generationMethod": "standard"
+      },
       {
         "id": "v3",
         "prompt": "",
@@ -151,8 +157,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 16,
-    "lastModified": "2025-11-15T00:44:08.697Z"
+    "usageCount": 17,
+    "lastModified": "2025-11-18T19:15:10.550Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
