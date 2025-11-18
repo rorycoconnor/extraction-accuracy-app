@@ -13,7 +13,7 @@
  */
 
 // ===== REACT & HOOKS IMPORTS =====
-import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccuracyData } from '@/hooks/use-accuracy-data';
 import { useExtractionProgress } from '@/hooks/use-extraction-progress';
@@ -64,9 +64,8 @@ import { useUIHandlers } from '@/hooks/use-ui-handlers';
 import { useDataHandlers } from '@/hooks/use-data-handlers';
 import { useExtractionSetup } from '@/hooks/use-extraction-setup';
 import { useEnhancedComparisonRunner } from '@/hooks/use-enhanced-comparison-runner';
-import { useAccuracyDataCompat } from '@/store/AccuracyDataStore';
+import { useAccuracyDataCompat, useOptimizerState } from '@/store/AccuracyDataStore';
 import { quickExportToCSV } from '@/lib/csv-export';
-import { useOptimizerRunner } from '@/hooks/use-optimizer-runner';
 
 // ===== TYPE IMPORTS =====
 import type { 
@@ -257,6 +256,10 @@ const MainPage: React.FC = () => {
   } | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<BoxTemplate | null>(null);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [isOptimizerSummaryOpen, setIsOptimizerSummaryOpen] = useState(false);
+  
+  // ===== OPTIMIZER STATE =====
+  const optimizerState = useOptimizerState();
   
   // 🔧 DEFENSIVE: Force close all modals handler (recovery mechanism)
   const forceCloseAllModals = () => {
@@ -265,6 +268,7 @@ const MainPage: React.FC = () => {
     setIsPromptStudioOpen(false);
     setIsInlineEditorOpen(false);
     setShowResetDialog(false);
+    setIsOptimizerSummaryOpen(false);
   };
   
   // 🔧 DEFENSIVE: Add keyboard escape handler for recovery
@@ -283,21 +287,6 @@ const MainPage: React.FC = () => {
   
   // ===== ENHANCED COMPARISON RUNNER =====
   const enhancedRunner = useEnhancedComparisonRunner(selectedTemplate);
-  const {
-    runOptimizer,
-    optimizerState,
-    optimizerProgressLabel,
-    resetOptimizer,
-  } = useOptimizerRunner({ runComparison: enhancedRunner.handleRunComparison });
-  const [isOptimizerSummaryOpen, setIsOptimizerSummaryOpen] = useState(false);
-
-  useEffect(() => {
-    if (optimizerState.status === 'review') {
-      setIsOptimizerSummaryOpen(true);
-    } else if (optimizerState.status === 'idle') {
-      setIsOptimizerSummaryOpen(false);
-    }
-  }, [optimizerState.status, optimizerState.completedAt]);
 
   // ===== UI HANDLERS HOOK =====
   const { handleOpenPromptStudio, handleToggleFavorite, handleCompleteReset } = useUIHandlers({
@@ -309,17 +298,8 @@ const MainPage: React.FC = () => {
     clearResults,
   });
 
-  const handleOpenPromptStudioByKey = useCallback((fieldKey: string) => {
-    const field = accuracyData?.fields.find((current) => current.key === fieldKey);
-    if (!field) {
-      logger.warn('Optimizer modal attempted to open Prompt Studio for missing field', { fieldKey });
-      return;
-    }
-    handleOpenPromptStudio(field);
-  }, [accuracyData, handleOpenPromptStudio]);
-
   // ===== DATA HANDLERS HOOK =====
-  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, handleResetAllPrompts, updatePromptVersionMetrics } = useDataHandlers({
+  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, updatePromptVersionMetrics } = useDataHandlers({
     accuracyData,
     setAccuracyData,
     selectedCellForEdit,
@@ -345,6 +325,16 @@ const MainPage: React.FC = () => {
   }, [refreshGroundTruth]);
 
   // ===== EVENT HANDLERS =====
+  
+  // Handle opening prompt studio from optimizer summary
+  const handleOpenPromptStudioFromOptimizer = (fieldKey: string) => {
+    const field = accuracyData?.fields.find(f => f.key === fieldKey);
+    if (field) {
+      setSelectedFieldForPromptStudio(field);
+      setIsPromptStudioOpen(true);
+      setIsOptimizerSummaryOpen(false);
+    }
+  };
   
   // Handle downloading CSV results
   const handleDownloadResults = () => {
@@ -377,28 +367,6 @@ const MainPage: React.FC = () => {
    * Handle running AI comparison across selected models - ENHANCED VERSION
    */
   const handleRunComparison = enhancedRunner.handleRunComparison;
-  const handleCloseOptimizerSummary = () => {
-    setIsOptimizerSummaryOpen(false);
-    resetOptimizer();
-  };
-
-  const handleResetPromptsConfirmation = useCallback(() => {
-    if (!accuracyData) {
-      toast({
-        variant: 'destructive',
-        title: 'No accuracy data',
-        description: 'Load a template before resetting prompts.',
-      });
-      return;
-    }
-
-    const shouldReset = window.confirm('Reset all prompt overrides back to their template defaults? This cannot be undone.');
-    if (!shouldReset) {
-      return;
-    }
-
-    handleResetAllPrompts();
-  }, [accuracyData, handleResetAllPrompts, toast]);
 
   /**
    * Handle toggling field inclusion in metrics calculation
@@ -446,238 +414,81 @@ const MainPage: React.FC = () => {
     }
 
     let totalUpdated = 0;
-    let totalSkipped = 0;
-    let skippedReasons: Record<string, number> = {};
     const enhancedExtractModel = 'enhanced_extract_agent';
 
-    logger.info('Processing data', {
+    logger.debug('Processing data', {
       filesCount: accuracyData.results.length,
       fieldsCount: accuracyData.fields.length,
-      templateKey: selectedTemplate.templateKey,
       enhancedExtractModel
     });
 
-    // Check if Enhanced Extract Agent was actually run in the comparison
-    const firstFileResult = accuracyData.results[0];
-    const firstFieldKey = accuracyData.fields[0]?.key;
-    let hasEnhancedExtract = false;
-    
-    if (firstFileResult && firstFieldKey && firstFileResult.fields[firstFieldKey]) {
-      const availableModels = Object.keys(firstFileResult.fields[firstFieldKey]);
-      hasEnhancedExtract = availableModels.some(m => m.toLowerCase().includes('enhanced'));
-      
-      logger.info('Checking for Enhanced Extract model', {
-        availableModels,
-        hasEnhancedExtract
-      });
-      
-      if (!hasEnhancedExtract) {
-        toast({
-          title: 'Enhanced Extract Not Found',
-          description: 'Please run a comparison with the Enhanced Extract Agent model first, then try copying to ground truth.',
-          variant: 'destructive'
-        });
-        return;
-      }
-    }
-
-    // Check if extractions are still in progress
-    let pendingCount = 0;
-    let totalFieldCount = 0;
-    
-    for (const fileResult of accuracyData.results) {
-      for (const fieldConfig of accuracyData.fields) {
-        const fieldKey = fieldConfig.key;
-        const fieldData = fileResult.fields[fieldKey];
-        
-        if (fieldData) {
-          totalFieldCount++;
-          const enhancedValue = fieldData[enhancedExtractModel] || 
-            Object.keys(fieldData).find(m => 
-              m.toLowerCase().includes('enhanced') && 
-              !m.toLowerCase().includes('no prompt')
-            );
-          
-          if (enhancedValue && (fieldData[enhancedValue] === 'Pending...' || !fieldData[enhancedValue])) {
-            pendingCount++;
-          }
-        }
-      }
-    }
-    
-    const pendingPercentage = totalFieldCount > 0 ? (pendingCount / totalFieldCount) * 100 : 0;
-    
-    logger.info('Extraction progress check', {
-      pendingCount,
-      totalFieldCount,
-      pendingPercentage: pendingPercentage.toFixed(1) + '%'
-    });
-    
-    // Warn if more than 20% of fields are still pending
-    if (pendingPercentage > 20) {
-      toast({
-        title: 'Extractions Still In Progress',
-        description: `${pendingCount} of ${totalFieldCount} fields are still being extracted (${pendingPercentage.toFixed(0)}%). Only completed fields will be copied. Consider waiting for extractions to finish for better results.`,
-        variant: 'default'
-      });
-      // Continue anyway - user can still copy what's available
-    }
-
     try {
-      // 🔧 OPTIMIZED: Batch ground truth updates per file to avoid 50+ toast notifications
-      // Build up ground truth data for each file, then save once per file
-      
       // Process each file
       for (const fileResult of accuracyData.results) {
         logger.debug(`Processing file`, { fileName: fileResult.fileName, fileId: fileResult.id });
-        
-        // Build ground truth object for this file
-        const fileGroundTruthUpdates: Record<string, string> = {};
         
         // Process each field for this file
         for (const fieldConfig of accuracyData.fields) {
           const fieldKey = fieldConfig.key;
           const fieldData = fileResult.fields[fieldKey];
           
+          logger.debug(`Processing field`, { 
+            fieldKey, 
+            hasFieldData: !!fieldData,
+            availableModels: fieldData ? Object.keys(fieldData) : []
+          });
+          
           if (!fieldData) {
-            logger.debug(`No field data for field`, { fieldKey, fileName: fileResult.fileName });
-            totalSkipped++;
-            skippedReasons['no_field_data'] = (skippedReasons['no_field_data'] || 0) + 1;
+            logger.debug(`No field data`, { fieldKey });
             continue;
           }
-          
-          // Log all available models for this field
-          const availableModels = Object.keys(fieldData);
-          logger.debug(`Field data available`, { 
-            fieldKey, 
-            fileName: fileResult.fileName,
-            availableModels: availableModels,
-            allValues: fieldData
-          });
           
           // Get the value from Enhanced Extract
-          let extractedValue = fieldData[enhancedExtractModel];
+          const extractedValue = fieldData[enhancedExtractModel];
           
-          // If enhanced_extract_agent is not available, check if any model with "enhanced" exists
-          if (!extractedValue || extractedValue === '' || extractedValue === 'Pending...' || extractedValue.startsWith('Error:')) {
-            const enhancedModel = availableModels.find(m => 
-              m.toLowerCase().includes('enhanced') && 
-              !m.toLowerCase().includes('no prompt') &&
-              fieldData[m] && 
-              fieldData[m] !== '' && 
-              fieldData[m] !== 'Pending...' &&
-              !fieldData[m].startsWith('Error:')
+          logger.debug(`Enhanced Extract value`, { fieldKey, value: extractedValue });
+          
+          if (extractedValue && extractedValue !== '' && extractedValue !== null && extractedValue !== undefined) {
+            logger.debug(`Saving field value`, { fieldKey, value: extractedValue });
+            
+            // 🔧 Normalize date format to match manual ground truth editor format
+            let valueToSave = extractedValue;
+            if (fieldConfig.type === 'date') {
+              const parsedDate = new Date(extractedValue);
+              if (!isNaN(parsedDate.getTime())) {
+                // Convert to ISO format (YYYY-MM-DD) to match ground truth editor
+                valueToSave = parsedDate.toISOString().split('T')[0];
+                logger.debug(`Normalized date`, { fieldKey, original: extractedValue, normalized: valueToSave });
+              }
+            }
+            
+            const success = await saveGroundTruth(
+              fileResult.id,
+              selectedTemplate.templateKey,
+              fieldKey,
+              valueToSave
             );
             
-            if (enhancedModel) {
-              logger.info(`Using alternative enhanced model`, { 
-                fieldKey, 
-                fileName: fileResult.fileName,
-                originalModel: enhancedExtractModel,
-                foundModel: enhancedModel 
-              });
-              extractedValue = fieldData[enhancedModel];
+            logger.debug(`Save result`, { fieldKey, success });
+            
+            if (success) {
+              totalUpdated++;
             }
-          }
-          
-          logger.debug(`Extracted value for field`, { 
-            fieldKey, 
-            fileName: fileResult.fileName,
-            value: extractedValue,
-            valueType: typeof extractedValue
-          });
-          
-          // Check if value is valid
-          if (!extractedValue || extractedValue === '' || extractedValue === null || extractedValue === undefined) {
-            logger.debug(`Skipping field - empty or null value`, { fieldKey, fileName: fileResult.fileName });
-            totalSkipped++;
-            skippedReasons['empty_value'] = (skippedReasons['empty_value'] || 0) + 1;
-            continue;
-          }
-          
-          if (extractedValue === 'Pending...') {
-            logger.debug(`Skipping field - still pending`, { fieldKey, fileName: fileResult.fileName });
-            totalSkipped++;
-            skippedReasons['pending'] = (skippedReasons['pending'] || 0) + 1;
-            continue;
-          }
-          
-          if (extractedValue.startsWith('Error:')) {
-            logger.debug(`Skipping field - extraction error`, { fieldKey, fileName: fileResult.fileName, error: extractedValue });
-            totalSkipped++;
-            skippedReasons['error'] = (skippedReasons['error'] || 0) + 1;
-            continue;
-          }
-          
-          logger.info(`Queueing valid field value for save`, { fieldKey, fileName: fileResult.fileName, value: extractedValue });
-          
-          // 🔧 Normalize date format to match manual ground truth editor format
-          let valueToSave = extractedValue;
-          if (fieldConfig.type === 'date') {
-            const parsedDate = new Date(extractedValue);
-            if (!isNaN(parsedDate.getTime())) {
-              // Convert to ISO format (YYYY-MM-DD) to match ground truth editor
-              valueToSave = parsedDate.toISOString().split('T')[0];
-              logger.debug(`Normalized date`, { fieldKey, original: extractedValue, normalized: valueToSave });
-            }
-          }
-          
-          // Add to batch for this file
-          fileGroundTruthUpdates[fieldKey] = valueToSave;
-          totalUpdated++;
-        }
-        
-        // 🔧 OPTIMIZED: Save all fields for this file at once (no individual toasts)
-        if (Object.keys(fileGroundTruthUpdates).length > 0) {
-          logger.info(`Saving ${Object.keys(fileGroundTruthUpdates).length} ground truth values for file`, { 
-            fileName: fileResult.fileName,
-            fileId: fileResult.id
-          });
-          
-          try {
-            saveGroundTruthForFile(fileResult.id, selectedTemplate.templateKey, fileGroundTruthUpdates);
-            logger.debug(`Batch save successful for file`, { fileName: fileResult.fileName });
-          } catch (error) {
-            logger.error(`Batch save failed for file`, { fileName: fileResult.fileName, error });
-            // Count all fields in this batch as failed
-            const fieldsInBatch = Object.keys(fileGroundTruthUpdates).length;
-            totalSkipped += fieldsInBatch;
-            totalUpdated -= fieldsInBatch; // Remove from successful count
-            skippedReasons['save_failed'] = (skippedReasons['save_failed'] || 0) + fieldsInBatch;
+          } else {
+            logger.debug(`Skipping field - no valid value`, { fieldKey });
           }
         }
       }
 
-      logger.info(`Auto-populate complete`, { 
-        totalUpdated, 
-        totalSkipped,
-        skippedReasons 
-      });
-
-      // Create detailed description message
-      let description = `Successfully copied ${totalUpdated} field${totalUpdated !== 1 ? 's' : ''}.`;
-      if (totalSkipped > 0) {
-        description += ` Skipped ${totalSkipped} field${totalSkipped !== 1 ? 's' : ''}`;
-        const reasons = [];
-        if (skippedReasons['pending']) reasons.push(`${skippedReasons['pending']} pending`);
-        if (skippedReasons['empty_value']) reasons.push(`${skippedReasons['empty_value']} empty`);
-        if (skippedReasons['error']) reasons.push(`${skippedReasons['error']} errors`);
-        if (skippedReasons['no_field_data']) reasons.push(`${skippedReasons['no_field_data']} no data`);
-        if (skippedReasons['save_failed']) reasons.push(`${skippedReasons['save_failed']} save failed`);
-        if (reasons.length > 0) {
-          description += ` (${reasons.join(', ')})`;
-        }
-      }
+      logger.info(`Auto-populate complete`, { totalUpdated });
 
       toast({
-        title: totalUpdated > 0 ? 'Ground Truth Updated' : 'No Fields Copied',
-        description: description,
-        variant: totalUpdated > 0 ? 'default' : 'destructive'
+        title: 'Ground Truth Updated',
+        description: `Successfully copied ${totalUpdated} fields from Enhanced Extract to ground truth.`,
       });
 
-      // 🔧 FIX: AWAIT the refresh so data is actually loaded before we try to use it
-      logger.debug('Refreshing ground truth context to reload data from storage');
-      await refreshGroundTruth();
+      // Refresh ground truth to show the updates
+      refreshGroundTruth();
 
       // 🔧 ADDED: Force refresh of the main accuracy data to show ground truth in the grid
       logger.debug('Triggering accuracy data refresh to update grid');
@@ -694,33 +505,15 @@ const MainPage: React.FC = () => {
         updatedAccuracyData.results.forEach((fileResult: any) => {
           const fileGroundTruth = refreshedGroundTruthData[fileResult.id]?.groundTruth || {};
           
-          logger.debug('Updating ground truth for file', { 
-            fileId: fileResult.id, 
-            fileName: fileResult.fileName,
-            fieldCount: Object.keys(fileGroundTruth).length 
-          });
-          
           // Update each field's ground truth value
           Object.keys(fileResult.fields).forEach(fieldKey => {
             if (fileResult.fields[fieldKey]) {
-              const gtValue = fileGroundTruth[fieldKey] || '';
-              fileResult.fields[fieldKey]['Ground Truth'] = gtValue;
-              
-              if (gtValue) {
-                logger.debug('Updated ground truth value', { 
-                  fileId: fileResult.id, 
-                  fieldKey, 
-                  value: gtValue 
-                });
-              }
+              fileResult.fields[fieldKey]['Ground Truth'] = fileGroundTruth[fieldKey] || '';
             }
           });
         });
         
-        logger.info('Setting updated accuracy data with ground truth', {
-          filesUpdated: updatedAccuracyData.results.length,
-          fieldsPerFile: updatedAccuracyData.fields.length
-        });
+        logger.debug('Setting updated accuracy data with ground truth');
         setAccuracyData(updatedAccuracyData);
       }
 
@@ -774,12 +567,11 @@ const MainPage: React.FC = () => {
  return (
      <div className="flex flex-col h-full">
        <ControlBar
-       accuracyData={accuracyData}
-       isExtracting={enhancedRunner.isExtracting}
-       isJudging={enhancedRunner.isJudging}
-       progress={enhancedRunner.progress}
+        accuracyData={accuracyData}
+        isExtracting={enhancedRunner.isExtracting}
+        progress={enhancedRunner.progress}
         shownColumns={shownColumns}
-       onSelectDocuments={() => {
+        onSelectDocuments={() => {
           logger.debug('Select Documents button clicked');
           try {
             setIsModalOpen(true);
@@ -789,15 +581,11 @@ const MainPage: React.FC = () => {
             setTimeout(() => setIsModalOpen(true), 100);
           }
         }}
-       onRunComparison={handleRunComparison}
-        onRunOptimizer={runOptimizer}
-        isOptimizerRunning={['precheck', 'sampling', 'diagnostics', 'prompting'].includes(optimizerState.status)}
-        optimizerProgressLabel={optimizerProgressLabel ?? undefined}
-        onAutoPopulateGroundTruth={handleAutoPopulateGroundTruth}
+        onRunComparison={handleRunComparison}
+         onAutoPopulateGroundTruth={handleAutoPopulateGroundTruth}
          onOpenSummary={openPerformanceModal}
          onClearResults={clearResults}
          onResetData={() => setShowResetDialog(true)}
-         onResetPrompts={handleResetPromptsConfirmation}
          onColumnToggle={toggleColumn}
          onDownloadResults={handleDownloadResults}
        />
@@ -862,8 +650,8 @@ const MainPage: React.FC = () => {
          isOptimizerSummaryOpen={isOptimizerSummaryOpen}
          optimizerSampledDocs={optimizerState.sampledDocs}
          optimizerFieldSummaries={optimizerState.fieldSummaries}
-         onCloseOptimizerSummary={handleCloseOptimizerSummary}
-         onOpenPromptStudio={handleOpenPromptStudioByKey}
+         onCloseOptimizerSummary={() => setIsOptimizerSummaryOpen(false)}
+         onOpenPromptStudio={handleOpenPromptStudioFromOptimizer}
          showResetDialog={showResetDialog}
          onCloseResetDialog={() => setShowResetDialog(false)}
          onConfirmReset={handleCompleteReset}

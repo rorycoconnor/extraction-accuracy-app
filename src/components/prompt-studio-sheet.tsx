@@ -42,7 +42,7 @@ type PromptStudioSheetProps = {
   onClose: () => void;
   field: AccuracyField | null;
   templateName?: string | null;
-  onUpdatePrompt: (fieldKey: string, newPrompt: string) => void;
+  onUpdatePrompt: (fieldKey: string, newPrompt: string, generationMethod?: 'standard' | 'dspy' | 'agent') => void;
   onUsePromptVersion: (fieldKey: string, promptVersion: PromptVersion) => void;
   onToggleFavorite?: (fieldKey: string, versionId: string) => void;
   onDeletePromptVersion?: (fieldKey: string, versionId: string) => void;
@@ -68,6 +68,7 @@ export default function PromptStudioSheet({
   const [originalPromptText, setOriginalPromptText] = React.useState('');
   const [improvementInstructions, setImprovementInstructions] = React.useState('');
   const [isGenerating, setIsGenerating] = React.useState(false);
+  const [currentGenerationMethod, setCurrentGenerationMethod] = React.useState<'standard' | 'dspy' | 'agent' | undefined>(undefined);
   const [deleteConfirmation, setDeleteConfirmation] = React.useState<{
     isOpen: boolean;
     versionId: string;
@@ -86,6 +87,7 @@ export default function PromptStudioSheet({
       setActivePromptText(field.prompt);
       setOriginalPromptText(field.prompt);
       setImprovementInstructions('');
+      setCurrentGenerationMethod(undefined);
       // Reset test results when switching fields
       setShowTestResults(false);
       setShowFileSelection(false);
@@ -158,9 +160,11 @@ export default function PromptStudioSheet({
   }
   
   const handleSaveChanges = () => {
-      onUpdatePrompt(field.key, activePromptText);
+      onUpdatePrompt(field.key, activePromptText, currentGenerationMethod);
       // Update original text after saving to reset the "changed" state
       setOriginalPromptText(activePromptText);
+      // Reset generation method after saving
+      setCurrentGenerationMethod(undefined);
   };
 
   // Determine if we have existing prompt text
@@ -228,8 +232,9 @@ export default function PromptStudioSheet({
         }
         
         // Replace the current prompt text with the new one
-        logger.debug('Replacing prompt text', { promptLength: result.prompt.length });
+        logger.debug('Replacing prompt text', { promptLength: result.prompt.length, generationMethod: result.generationMethod });
         setActivePromptText(result.prompt);
+        setCurrentGenerationMethod(result.generationMethod);
         
     } catch (error) {
         // Type guard for error handling
@@ -317,6 +322,24 @@ export default function PromptStudioSheet({
     }
     
     return value;
+  };
+
+  // Helper function to get generation method badge
+  const getGenerationMethodBadge = (method?: 'standard' | 'dspy' | 'agent') => {
+    if (!method) return null;
+    
+    const badges = {
+      standard: { label: 'Gen w/Standard', className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
+      dspy: { label: 'Gen w/DSPy Style', className: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' },
+      agent: { label: 'Gen w/Agent', className: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' },
+    };
+    
+    const badge = badges[method];
+    return (
+      <span className={`text-xs px-2 py-1 rounded-full ${badge.className}`}>
+        {badge.label}
+      </span>
+    );
   };
 
   const handleOpenFileSelection = () => {
@@ -1066,11 +1089,12 @@ export default function PromptStudioSheet({
                                     return (
                       <div key={`${version.id}-${index}`} className={`space-y-3 ${isLatestVersion ? 'bg-muted/20 p-4 rounded-lg' : 'p-4'}`}>
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <h4 className="text-base font-medium flex items-center gap-2">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <h4 className="text-base font-medium flex items-center gap-2 flex-wrap">
                                                     Version {versionNumber}
                                                     {isLatestVersion && <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded-full">Latest</span>}
-                                                    {isCurrentVersion && <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Same as Active</span>}
+                                                    {isCurrentVersion && <span className="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 px-2 py-1 rounded-full">Same as Active</span>}
+                                                    {getGenerationMethodBadge(version.generationMethod)}
                                                 </h4>
                                                 {performanceIndicator}
                                             </div>

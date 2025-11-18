@@ -1852,5 +1852,27 @@
       "wireTransferAddress": "1801 MAIN STREET HOUSTON TX 77002",
       "overnightDeliveriesAddress": "1801 MAIN STREET HOUSTON TX"
     }
+  },
+  "2039106342981": {
+    "templateKey": "payoff_statements",
+    "groundTruth": {
+      "document_type": "Payoff Statement",
+      "loan_type": "CONV W/O PMI",
+      "heloc_text": "Not Present",
+      "good_through_date": "2025-05-06",
+      "good_through_text": "The enclosed amount is good through the date indicated",
+      "borrower_name": "Linnea Dudas and Joshua Dudas",
+      "does_disbursement_notes_include_borrower": "Yes",
+      "lender_name": "WELLS FARGO HOME MORTGAGE",
+      "lender_address": "Wells Fargo Home Mortgage 1 Home Campus Des Moines, IA 50328",
+      "beneficiary_name": "Wells Fargo Bank N.A.",
+      "beneficiary_address": "1 Home Campus Des Moines IA 50328",
+      "property_address": "8024 S Lismore Ln West Jordan UT 84088",
+      "bank_name": "Wells Fargo Bank N.A.",
+      "wire_instructions": "Beneciary Wells Fargo Bank N.A. ABA 121000248 Account 4221906665 1 Home Campus Des Moines IA 50328 Ref: Loan number 0094194877 and property address",
+      "wire_transfer_address": "1 Home Campus Des Moines IA 50328",
+      "overnight_deliveries_address1": "Not Present",
+      "per_diem": "19.75"
+    }
   }
 }

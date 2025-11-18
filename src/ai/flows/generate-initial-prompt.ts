@@ -12,7 +12,7 @@ import { SYSTEM_MESSAGES, FIELD_TYPE_HEURISTICS, FIELD_KEY_HEURISTICS } from '@/
 
 export async function generateInitialPrompt(
   { templateName, field, fileIds }: { templateName: string; field: { name: string; key: string; type: string; }; fileIds?: string[] }
-): Promise<{ prompt: string }> {
+): Promise<{ prompt: string; generationMethod: 'standard' | 'dspy' | 'agent' }> {
 
   const guidelines = [
     ...(FIELD_TYPE_HEURISTICS[field.type] || []),
@@ -54,12 +54,12 @@ export async function generateInitialPrompt(
     }
   );
 
-  return { prompt: response.answer };
+  return { prompt: response.answer, generationMethod: 'standard' };
 }
 
 export async function improvePrompt(
   { originalPrompt, userFeedback, templateName, field, fileIds }: { originalPrompt: string; userFeedback: string; templateName: string; field: { name: string; key: string; type: string; }; fileIds?: string[] }
-): Promise<{ prompt: string }> {
+): Promise<{ prompt: string; generationMethod: 'standard' | 'dspy' | 'agent' }> {
   
   // Use selected files for context, fallback to empty items if none provided
   // Box AI Text Gen API only allows 1 file maximum
@@ -93,5 +93,5 @@ export async function improvePrompt(
     }
   );
 
-  return { prompt: response.answer };
+  return { prompt: response.answer, generationMethod: 'standard' };
 }

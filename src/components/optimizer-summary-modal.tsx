@@ -41,8 +41,8 @@ export const OptimizerSummaryModal: React.FC<OptimizerSummaryModalProps> = ({
   }, [accuracyData]);
 
   const runStats = React.useMemo(() => {
-    const updated = fieldSummaries.filter((summary) => summary.newPrompt).length;
-    const failed = fieldSummaries.filter((summary) => summary.error).length;
+    const updated = fieldSummaries?.filter((summary) => summary.newPrompt).length ?? 0;
+    const failed = fieldSummaries?.filter((summary) => summary.error).length ?? 0;
     return { updated, failed };
   }, [fieldSummaries]);
 
@@ -56,13 +56,13 @@ export const OptimizerSummaryModal: React.FC<OptimizerSummaryModalProps> = ({
         <div className="space-y-6">
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatCard label="Fields optimized" value={runStats.updated} />
-            <StatCard label="Documents analyzed" value={sampledDocs.length} />
+            <StatCard label="Documents analyzed" value={sampledDocs?.length ?? 0} />
             <StatCard label="Failures" value={runStats.failed} variant={runStats.failed ? 'error' : 'success'} />
           </section>
 
           <section>
             <h3 className="text-lg font-semibold mb-3">Document Theories</h3>
-            {sampledDocs.length === 0 ? (
+            {!sampledDocs || sampledDocs.length === 0 ? (
               <p className="text-sm text-muted-foreground">No document theories were captured.</p>
             ) : (
               <Accordion type="single" collapsible>
@@ -95,7 +95,7 @@ export const OptimizerSummaryModal: React.FC<OptimizerSummaryModalProps> = ({
           <section>
             <h3 className="text-lg font-semibold mb-3">Field Updates</h3>
             <div className="space-y-4">
-              {fieldSummaries.map((summary) => {
+              {fieldSummaries?.map((summary) => {
                 const meta = fieldMeta.get(summary.fieldKey);
                 const status = summary.error ? 'error' : summary.newPrompt ? 'success' : 'skipped';
                 const badgeConfig = statusCopy[status];
@@ -121,8 +121,8 @@ export const OptimizerSummaryModal: React.FC<OptimizerSummaryModalProps> = ({
                           </p>
                         )}
                         <div className="flex flex-wrap gap-2">
-                          {summary.sampledDocIds.map((docId) => {
-                            const docName = sampledDocs.find((doc) => doc.docId === docId)?.docName ?? docId;
+                          {summary.sampledDocIds?.map((docId) => {
+                            const docName = sampledDocs?.find((doc) => doc.docId === docId)?.docName ?? docId;
                             return (
                               <Badge key={`${summary.fieldKey}-${docId}`} variant="secondary">
                                 {docName}

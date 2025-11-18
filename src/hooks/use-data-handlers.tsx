@@ -146,7 +146,7 @@ export const useDataHandlers = ({
    * @param fieldKey - The key of the field to update
    * @param newPrompt - The new prompt text
    */
-  const handleUpdatePrompt = (fieldKey: string, newPrompt: string) => {
+  const handleUpdatePrompt = (fieldKey: string, newPrompt: string, generationMethod?: 'standard' | 'dspy' | 'agent') => {
     if (!accuracyData) return;
 
     const fieldInCurrentState = accuracyData.fields.find(f => f.key === fieldKey);
@@ -171,6 +171,7 @@ export const useDataHandlers = ({
       id: `${UI_LABELS.VERSION_PREFIX}${newVersionNumber}`,
       prompt: newPrompt,
       savedAt: new Date().toISOString(),
+      generationMethod: generationMethod,
       metrics: undefined, // 🔧 No metrics until after running comparison
     });
     

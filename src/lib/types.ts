@@ -77,6 +77,7 @@ export type PromptVersion = {
   savedAt: string;
   isFavorite?: boolean;
   source?: 'manual' | 'optimizer' | 'imported';
+  generationMethod?: 'standard' | 'dspy' | 'agent'; // How the prompt was generated
   note?: string;
   metrics?: {
     // Individual model metrics instead of aggregated averages
