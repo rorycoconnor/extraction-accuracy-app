@@ -149,35 +149,36 @@ export interface ModelConfig {
 // ALL Models supported by the Box AI extract_structured endpoint
 // Based on official Box AI documentation: https://developer.box.com/guides/box-ai/ai-models/
 export const MODEL_CONFIGS: ModelConfig[] = [
+  // OpenAI Models (Core)
+  {
+    id: 'openai__gpt_5_1',
+    name: 'OpenAI GPT-5.1',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_1_no_prompt',
+    name: 'OpenAI GPT-5.1 (no prompt)',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5',
+    name: 'OpenAI GPT-5',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_no_prompt',
+    name: 'OpenAI GPT-5 (no prompt)',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
   // Google Gemini Models
-  {
-    id: 'google__gemini_2_0_flash_001',
-    name: 'Google 2.0 Flash',
-    vendor: 'Google',
-    isPremium: false, // Standard tier
-    isMultiModal: true
-  },
-  {
-    id: 'google__gemini_2_0_flash_001_no_prompt',
-    name: 'Google 2.0 Flash (no prompt)',
-    vendor: 'Google',
-    isPremium: false, // Standard tier
-    isMultiModal: true
-  },
-  {
-    id: 'google__gemini_2_0_flash_lite_preview',
-    name: 'Google 2.0 Flash Lite',
-    vendor: 'Google',
-    isPremium: false, // Standard tier
-    isMultiModal: true
-  },
-  {
-    id: 'google__gemini_2_0_flash_lite_preview_no_prompt',
-    name: 'Google 2.0 Flash Lite (no prompt)',
-    vendor: 'Google',
-    isPremium: false, // Standard tier
-    isMultiModal: true
-  },
   {
     id: 'google__gemini_2_5_pro',
     name: 'Gemini 2.5 Pro',
@@ -190,6 +191,48 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     name: 'Gemini 2.5 Pro (no prompt)',
     vendor: 'Google',
     isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_2_5_flash',
+    name: 'Gemini 2.5 Flash',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_2_5_flash_no_prompt',
+    name: 'Gemini 2.5 Flash (no prompt)',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_2_0_flash_001',
+    name: 'Gemini 2.0 Flash',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_2_0_flash_001_no_prompt',
+    name: 'Gemini 2.0 Flash (no prompt)',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_2_0_flash_lite_preview',
+    name: 'Gemini 2.0 Flash Lite',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_2_0_flash_lite_preview_no_prompt',
+    name: 'Gemini 2.0 Flash Lite (no prompt)',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
     isMultiModal: true
   },
   {
@@ -238,59 +281,31 @@ export const MODEL_CONFIGS: ModelConfig[] = [
 
   // AWS Claude Models
   {
-    id: 'aws__claude_3_haiku',
-    name: 'Claude 3 Haiku',
+    id: 'aws__claude_4_5_sonnet',
+    name: 'Claude 4.5 Sonnet',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_4_5_sonnet_no_prompt',
+    name: 'Claude 4.5 Sonnet (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_4_5_haiku',
+    name: 'Claude 4.5 Haiku',
     vendor: 'Anthropic',
     isPremium: false, // Standard tier
     isMultiModal: false
   },
   {
-    id: 'aws__claude_3_haiku_no_prompt',
-    name: 'Claude 3 Haiku (no prompt)',
+    id: 'aws__claude_4_5_haiku_no_prompt',
+    name: 'Claude 4.5 Haiku (no prompt)',
     vendor: 'Anthropic',
     isPremium: false, // Standard tier
-    isMultiModal: false
-  },
-  {
-    id: 'aws__claude_3_sonnet',
-    name: 'Claude 3 Sonnet',
-    vendor: 'Anthropic',
-    isPremium: true, // Premium tier
-    isMultiModal: false
-  },
-  {
-    id: 'aws__claude_3_sonnet_no_prompt',
-    name: 'Claude 3 Sonnet (no prompt)',
-    vendor: 'Anthropic',
-    isPremium: true, // Premium tier
-    isMultiModal: false
-  },
-  {
-    id: 'aws__claude_3_5_sonnet',
-    name: 'Claude 3.5 Sonnet',
-    vendor: 'Anthropic',
-    isPremium: true, // Premium tier
-    isMultiModal: false
-  },
-  {
-    id: 'aws__claude_3_5_sonnet_no_prompt',
-    name: 'Claude 3.5 Sonnet (no prompt)',
-    vendor: 'Anthropic',
-    isPremium: true, // Premium tier
-    isMultiModal: false
-  },
-  {
-    id: 'aws__claude_3_7_sonnet',
-    name: 'Claude 3.7 Sonnet',
-    vendor: 'Anthropic',
-    isPremium: true, // Premium tier
-    isMultiModal: false
-  },
-  {
-    id: 'aws__claude_3_7_sonnet_no_prompt',
-    name: 'Claude 3.7 Sonnet (no prompt)',
-    vendor: 'Anthropic',
-    isPremium: true, // Premium tier
     isMultiModal: false
   },
   {
@@ -319,6 +334,62 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     name: 'Claude 4 Opus (no prompt)',
     vendor: 'Anthropic',
     isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_7_sonnet',
+    name: 'Claude 3.7 Sonnet',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_7_sonnet_no_prompt',
+    name: 'Claude 3.7 Sonnet (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_5_sonnet',
+    name: 'Claude 3.5 Sonnet',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_5_sonnet_no_prompt',
+    name: 'Claude 3.5 Sonnet (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_sonnet',
+    name: 'Claude 3 Sonnet',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_sonnet_no_prompt',
+    name: 'Claude 3 Sonnet (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_haiku',
+    name: 'Claude 3 Haiku',
+    vendor: 'Anthropic',
+    isPremium: false, // Standard tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_haiku_no_prompt',
+    name: 'Claude 3 Haiku (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: false, // Standard tier
     isMultiModal: false
   },
   {
@@ -402,43 +473,29 @@ export const MODEL_CONFIGS: ModelConfig[] = [
   // OpenAI Models (Customer-enabled)
   {
     id: 'openai__gpt_o3',
-    name: 'OpenAI O3',
+    name: 'OpenAI GPT O3',
     vendor: 'OpenAI',
     isPremium: true, // Premium tier (Beta)
     isMultiModal: true
   },
   {
     id: 'openai__gpt_o3_no_prompt',
-    name: 'OpenAI O3 (no prompt)',
+    name: 'OpenAI GPT O3 (no prompt)',
     vendor: 'OpenAI',
     isPremium: true, // Premium tier (Beta)
     isMultiModal: true
   },
-  {
-    id: 'openai__gpt_5_reasoning_alpha',
-    name: 'OpenAI GPT-5',
-    vendor: 'OpenAI',
-    isPremium: true, // Premium tier
-    isMultiModal: true
-  },
-  {
-    id: 'openai__gpt_5_reasoning_alpha_no_prompt',
-    name: 'OpenAI GPT-5 (no prompt)',
-    vendor: 'OpenAI',
-    isPremium: true, // Premium tier
-    isMultiModal: true
-  },
   // IBM Models
   {
-    id: 'ibm__llama_3_2_90b_vision_instruct',
-    name: 'IBM Llama 3.2 Vision',
+    id: 'ibm__llama_4_maverick',
+    name: 'IBM Llama 4 Maverick',
     vendor: 'IBM',
     isPremium: false, // Standard tier
     isMultiModal: true
   },
   {
-    id: 'ibm__llama_3_2_90b_vision_instruct_no_prompt',
-    name: 'IBM Llama 3.2 Vision (no prompt)',
+    id: 'ibm__llama_4_maverick_no_prompt',
+    name: 'IBM Llama 4 Maverick (no prompt)',
     vendor: 'IBM',
     isPremium: false, // Standard tier
     isMultiModal: true
@@ -456,6 +513,48 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     vendor: 'IBM',
     isPremium: false, // Standard tier
     isMultiModal: true
+  },
+  {
+    id: 'ibm__llama_3_2_90b_vision_instruct',
+    name: 'IBM Llama 3.2 Vision Instruct',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'ibm__llama_3_2_90b_vision_instruct_no_prompt',
+    name: 'IBM Llama 3.2 Vision Instruct (no prompt)',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'ibm__mistral_medium_2505',
+    name: 'IBM Mistral Medium 3',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier (Preview)
+    isMultiModal: false
+  },
+  {
+    id: 'ibm__mistral_medium_2505_no_prompt',
+    name: 'IBM Mistral Medium 3 (no prompt)',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier (Preview)
+    isMultiModal: false
+  },
+  {
+    id: 'ibm__mistral_small_3_1_24b_instruct_2503',
+    name: 'IBM Mistral Small 3.1x',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier (Preview)
+    isMultiModal: false
+  },
+  {
+    id: 'ibm__mistral_small_3_1_24b_instruct_2503_no_prompt',
+    name: 'IBM Mistral Small 3.1x (no prompt)',
+    vendor: 'IBM',
+    isPremium: false, // Standard tier (Preview)
+    isMultiModal: false
   },
   // Customer-enabled models (xAI Grok)
   {
