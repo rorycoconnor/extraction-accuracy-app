@@ -93,15 +93,30 @@ const initialState: AccuracyDataState = {
 
 // Helper function to create initial unified data structure
 function createInitialUnifiedData(): UnifiedAccuracyData {
+  const timestamp = new Date().toISOString();
+  const defaultSessionId = uuidv4();
+  
+  // Create a default session so comparison runs have somewhere to save
+  const defaultSession: ComparisonSession = {
+    id: defaultSessionId,
+    name: 'Default Session',
+    createdAt: timestamp,
+    lastModified: timestamp,
+    templateKey: '',
+    baseModel: '',
+    runs: []
+  };
+  
   return {
     templateKey: '',
     baseModel: '',
     fields: [],
     results: [],
     averages: {},
-    sessions: [],
+    sessions: [defaultSession],
+    currentSessionId: defaultSessionId,
     shownColumns: { 'Ground Truth': true },
-    lastModified: new Date().toISOString(),
+    lastModified: timestamp,
   };
 }
 
@@ -176,13 +191,32 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
       
       if (isAlreadyUnified) {
         // If already unified, just update the core data while preserving structure
+        const updatedData = {
+          ...state.data!,
+          ...action.payload,
+          lastModified: new Date().toISOString()
+        };
+        
+        // 🔧 SAFETY CHECK: Ensure there's always a currentSessionId and at least one session
+        if (!updatedData.currentSessionId || updatedData.sessions.length === 0) {
+          const timestamp = new Date().toISOString();
+          const defaultSessionId = uuidv4();
+          const defaultSession: ComparisonSession = {
+            id: defaultSessionId,
+            name: 'Default Session',
+            createdAt: timestamp,
+            lastModified: timestamp,
+            templateKey: updatedData.templateKey || '',
+            baseModel: updatedData.baseModel || '',
+            runs: []
+          };
+          updatedData.sessions = [defaultSession];
+          updatedData.currentSessionId = defaultSessionId;
+        }
+        
         return {
           ...state,
-          data: {
-            ...state.data!,
-            ...action.payload,
-            lastModified: new Date().toISOString()
-          },
+          data: updatedData,
           hasUnsavedChanges: true
         };
       } else {
@@ -338,7 +372,13 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
       
       // Update the current session with the new run
       const currentSession = currentData.sessions.find(s => s.id === currentData.currentSessionId);
-      if (!currentSession) return state;
+      if (!currentSession) {
+        logger.error('No matching session found for comparison run', {
+          currentSessionId: currentData.currentSessionId,
+          availableSessionCount: currentData.sessions.length
+        });
+        return state;
+      }
 
       const newRun: ComparisonRun = {
         id: runId,

@@ -208,8 +208,9 @@ export function useAccuracyData() {
   }, [configuredTemplates, syncAccuracyDataWithTemplates]);
 
   // Helper function to recalculate metrics for specific fields
+  // NOTE: This is now only used for manual recalculation, not automatic
   const recalculateFieldMetrics = useCallback((data: AccuracyData, fieldsToRecalculate?: string[]): AccuracyData => {
-    logger.debug('useAccuracyData: Auto-recalculating metrics for Model Performance Summary');
+    logger.debug('useAccuracyData: Manually recalculating metrics');
     const fieldsToUpdate = fieldsToRecalculate || data.fields.map(f => f.key);
     const newAverages: Record<string, ModelAverages> = { ...data.averages };
     
@@ -270,24 +271,15 @@ export function useAccuracyData() {
     return { ...data, results: updatedResults, averages: newAverages };
   }, [getGroundTruth]);
 
-  // CRITICAL FIX: Automatically refresh accuracy data when ground truth changes
-  useEffect(() => {
-    if (!accuracyData) return;
-    
-    logger.debug('useAccuracyData: Ground truth data changed, refreshing accuracy data');
-    
-    // Recalculate all metrics to reflect the new ground truth data
-    const updatedData = recalculateFieldMetrics(accuracyData);
-    
-    // Only update if the data actually changed to avoid infinite loops
-    const hasGroundTruthChanged = JSON.stringify(updatedData.results) !== JSON.stringify(accuracyData.results);
-    
-    if (hasGroundTruthChanged) {
-      logger.info('useAccuracyData: Ground truth values changed, updating accuracy data');
-      setAccuracyData(updatedData);
-      saveAccuracyData(updatedData);
-    }
-  }, [groundTruthData, accuracyData, recalculateFieldMetrics]);
+  // DISABLED: This was causing averages to be overwritten after comparison runs
+  // The comparison runner now handles all metric calculations and store updates
+  // Ground truth syncing happens in the comparison runner's processExtractionResults
+  // 
+  // useEffect(() => {
+  //   if (!accuracyData) return;
+  //   logger.debug('useAccuracyData: Ground truth data changed, refreshing accuracy data');
+  //   // ... (disabled to prevent overwriting fresh metrics from comparison runs)
+  // }, [groundTruthData, accuracyData, getGroundTruth]);
 
   // Data operations
   const saveAccuracyDataState = useCallback((data: AccuracyData | null) => {
