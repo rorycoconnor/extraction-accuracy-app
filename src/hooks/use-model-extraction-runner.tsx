@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { extractMetadataBatch, type BatchExtractionJob } from '@/ai/flows/batch-metadata-extraction';
+import { extractMetadataBatch, type BatchExtractionJob, type BatchExtractionResult } from '@/ai/flows/batch-metadata-extraction';
 import { formatModelName } from '@/lib/utils';
 import { 
   createExtractionSummaryMessage,
