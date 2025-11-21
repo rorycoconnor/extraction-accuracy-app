@@ -5,13 +5,12 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { extractMetadata } from '@/ai/flows/metadata-extraction';
+import { extractMetadataBatch, type BatchExtractionJob, type BatchExtractionResult } from '@/ai/flows/batch-metadata-extraction';
 import { formatModelName } from '@/lib/utils';
 import { 
-  executeExtractionWithRetry, 
-  createExtractionSummaryMessage 
+  createExtractionSummaryMessage,
+  createExtractionError
 } from '@/lib/error-handler';
-import { processWithConcurrency } from '@/lib/concurrency';
 import type { 
   AccuracyData, 
   BoxTemplate, 
@@ -127,7 +126,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
   const retryFailedFiles = async (
     originalResults: ApiExtractionResult[],
     originalJobs: ExtractionJob[],
-    extractionProcessor: (job: ExtractionJob) => Promise<ApiExtractionResult>
+    fieldsForExtraction: any[]
   ): Promise<ApiExtractionResult[]> => {
     // Group results by file and model to analyze failures
     const resultsByFile = new Map<string, Map<string, ApiExtractionResult>>();
@@ -160,16 +159,64 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
     // Create retry jobs only for the failed files
     const retryJobs = originalJobs.filter(job => filesToRetry.has(job.fileResult.id));
     
-    // Execute retry extractions
-    const retryResults = await processWithConcurrency(retryJobs, 3, async (job) => {
-      extractionLogger.debug('Retrying extraction', { model: job.modelName, fileId: job.fileResult.id });
-      const result = await extractionProcessor(job);
+    // Prepare batch jobs for retry
+    const retryBatchJobs: BatchExtractionJob[] = retryJobs.map((job, index) => {
+      const actualModelName = DUAL_SYSTEM.getBaseModelName(job.modelName);
+      const fieldsToUse = prepareFieldsForModel(fieldsForExtraction, job.modelName);
       
-      // Mark this as a retry attempt
+      const mappedFields = fieldsToUse.map(field => {
+        let mappedType: 'string' | 'number' | 'date' | 'enum' | 'multiSelect';
+        if (field.type === 'float') {
+          mappedType = 'number';
+        } else if (field.type === 'string' || field.type === 'date' || field.type === 'enum' || field.type === 'multiSelect') {
+          mappedType = field.type;
+        } else {
+          mappedType = 'string';
+        }
+        
+        return {
+          ...field,
+          type: mappedType
+        };
+      });
+
       return {
-        ...result,
-        retryCount: (result.retryCount || 0) + 1,
+        jobId: `retry-${index}`,
+        fileId: job.fileResult.id,
+        fields: mappedFields,
+        model: actualModelName,
+        templateKey: undefined
       };
+    });
+
+    // Execute retry extractions with lower concurrency
+    const retryBatchResults = await extractMetadataBatch(retryBatchJobs, 3);
+
+    // Convert batch results to ApiExtractionResult format
+    const retryResults: ApiExtractionResult[] = retryBatchResults.map((batchResult, index) => {
+      const job = retryJobs[index];
+      
+      const apiResult: ApiExtractionResult = {
+        fileId: job.fileResult.id,
+        modelName: job.modelName,
+        extractedMetadata: batchResult.data || {},
+        success: batchResult.success,
+        duration: batchResult.duration,
+        retryCount: 1 // Mark as retry
+      };
+
+      if (!batchResult.success && batchResult.error) {
+        apiResult.error = createExtractionError(
+          new Error(batchResult.error),
+          {
+            fileId: job.fileResult.id,
+            fileName: job.fileResult.fileName,
+            modelName: job.modelName
+          }
+        );
+      }
+
+      return apiResult;
     });
 
     const successfulRetries = retryResults.filter(result => result.success);
@@ -327,74 +374,150 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       setApiRequestDebugData(null);
     }
 
-    const CONCURRENCY_LIMIT = 5;
+    const CONCURRENCY_LIMIT = 10; // Increased from 5 to 10 for better performance
 
-    // Execute extractions in controlled batches
-    const extractionProcessor = async (job: ExtractionJob) => {
+    // Prepare all batch extraction jobs
+    const batchJobs: BatchExtractionJob[] = extractionJobs.map((job, index) => {
       // Use centralized dual-system utilities
-      const prepInfo = getFieldPreparationInfo(job.modelName, fieldsForExtraction.length);
       const actualModelName = DUAL_SYSTEM.getBaseModelName(job.modelName);
       const fieldsToUse = prepareFieldsForModel(fieldsForExtraction, job.modelName);
       
-      extractionLogger.debug('Processing extraction', {
-        ...prepInfo,
-        fileId: job.fileResult.id,
-        fileName: job.fileResult.fileName
+      // Map BoxFieldType to BoxAIField type (convert 'float' to 'number')
+      const mappedFields = fieldsToUse.map(field => {
+        let mappedType: 'string' | 'number' | 'date' | 'enum' | 'multiSelect';
+        if (field.type === 'float') {
+          mappedType = 'number';
+        } else if (field.type === 'string' || field.type === 'date' || field.type === 'enum' || field.type === 'multiSelect') {
+          mappedType = field.type;
+        } else {
+          mappedType = 'string'; // fallback to string for unknown types
+        }
+        
+        return {
+          ...field,
+          type: mappedType
+        };
       });
+
+      return {
+        jobId: `extraction-${index}`,
+        fileId: job.fileResult.id,
+        fields: mappedFields,
+        model: actualModelName,
+        templateKey: undefined // Always use fields-based extraction for prompt testing
+      };
+    });
+
+    extractionLogger.info('Starting batch extraction', { 
+      jobCount: batchJobs.length,
+      concurrencyLimit: CONCURRENCY_LIMIT 
+    });
+
+    // Split into smaller chunks for progress updates (can't pass callbacks across server boundary)
+    // Process in chunks of 10 to show incremental progress
+    const CHUNK_SIZE = 10;
+    const chunks: BatchExtractionJob[][] = [];
+    for (let i = 0; i < batchJobs.length; i += CHUNK_SIZE) {
+      chunks.push(batchJobs.slice(i, i + CHUNK_SIZE));
+    }
+
+    extractionLogger.info('Processing in chunks for progress updates', { 
+      totalJobs: batchJobs.length,
+      chunkCount: chunks.length,
+      chunkSize: CHUNK_SIZE
+    });
+
+    const allResults: BatchExtractionResult[] = [];
+    const startTime = Date.now();
+
+    // Process each chunk sequentially for progress updates
+    for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
+      const chunk = chunks[chunkIndex];
       
-      const result = await executeExtractionWithRetry(
-        async () => {
-          // Map BoxFieldType to BoxAIField type (convert 'float' to 'number')
-          const mappedFields = fieldsToUse.map(field => {
-            let mappedType: 'string' | 'number' | 'date' | 'enum' | 'multiSelect';
-            if (field.type === 'float') {
-              mappedType = 'number';
-            } else if (field.type === 'string' || field.type === 'date' || field.type === 'enum' || field.type === 'multiSelect') {
-              mappedType = field.type;
-            } else {
-              mappedType = 'string'; // fallback to string for unknown types
+      extractionLogger.debug(`Processing chunk ${chunkIndex + 1}/${chunks.length}`, {
+        chunkSize: chunk.length
+      });
+
+      // Execute this chunk with full parallelism
+      const chunkResults = await extractMetadataBatch(chunk, CONCURRENCY_LIMIT);
+      allResults.push(...chunkResults);
+
+      // Convert results and trigger progress updates after each chunk
+      const startIndex = chunkIndex * CHUNK_SIZE;
+      chunkResults.forEach((batchResult, indexInChunk) => {
+        const globalIndex = startIndex + indexInChunk;
+        const job = extractionJobs[globalIndex];
+        
+        const apiResult: ApiExtractionResult = {
+          fileId: job.fileResult.id,
+          modelName: job.modelName,
+          extractedMetadata: batchResult.data || {},
+          success: batchResult.success,
+          duration: batchResult.duration,
+          retryCount: 0
+        };
+
+        // Add error information if extraction failed
+        if (!batchResult.success && batchResult.error) {
+          apiResult.error = createExtractionError(
+            new Error(batchResult.error),
+            {
+              fileId: job.fileResult.id,
+              fileName: job.fileResult.fileName,
+              modelName: job.modelName
             }
-            
-            return {
-              ...field,
-              type: mappedType
-            };
-          });
-          
-          const response = await extractMetadata({
-            fileId: job.fileResult.id,
-            fields: mappedFields,
-            model: actualModelName,
-          });
-          
-          extractionLogger.debug('Box AI response received', { 
-            modelName: actualModelName,
+          );
+        }
+
+        // Call progress update callback for UI updates
+        onProgressUpdate(job, apiResult);
+      });
+
+      extractionLogger.info(`Chunk ${chunkIndex + 1}/${chunks.length} complete`, {
+        completed: allResults.length,
+        total: batchJobs.length
+      });
+    }
+
+    const totalDuration = Date.now() - startTime;
+
+    extractionLogger.info('All batch extraction completed', {
+      totalJobs: allResults.length,
+      totalDuration,
+      averageDuration: totalDuration / allResults.length
+    });
+
+    // Convert all results to ApiExtractionResult format for final storage
+    const apiResults: ApiExtractionResult[] = allResults.map((batchResult, index) => {
+      const job = extractionJobs[index];
+      
+      const apiResult: ApiExtractionResult = {
+        fileId: job.fileResult.id,
+        modelName: job.modelName,
+        extractedMetadata: batchResult.data || {},
+        success: batchResult.success,
+        duration: batchResult.duration,
+        retryCount: 0
+      };
+
+      if (!batchResult.success && batchResult.error) {
+        apiResult.error = createExtractionError(
+          new Error(batchResult.error),
+          {
             fileId: job.fileResult.id,
             fileName: job.fileResult.fileName,
-            extractedFieldCount: response?.data ? Object.keys(response.data).length : 0
-          });
-          
-          return response;
-        },
-        {
-          fileId: job.fileResult.id,
-          fileName: job.fileResult.fileName,
-          modelName: job.modelName,
-        }
-      );
+            modelName: job.modelName
+          }
+        );
+      }
       
-      // Call progress update callback
-      onProgressUpdate(job, result);
-      
-      return result;
-    };
+      return apiResult;
+    });
 
-    // Wait for all extractions to complete
-    const apiResults = await processWithConcurrency(extractionJobs, CONCURRENCY_LIMIT, extractionProcessor);
     setApiDebugData(apiResults);
 
     // Check for files where ALL fields failed and retry once
-    const retryResults = await retryFailedFiles(apiResults, extractionJobs, extractionProcessor);
+    const retryResults = await retryFailedFiles(apiResults, extractionJobs, fieldsForExtraction);
     const finalResults = [...apiResults, ...retryResults];
     
     // Update debug data with final results including retries

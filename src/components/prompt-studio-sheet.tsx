@@ -33,7 +33,7 @@ import { Save, History, Star, Play, Copy, Sparkles, Loader2, TrendingUp, Trendin
 import { format } from 'date-fns';
 import { generateInitialPrompt, improvePrompt } from '@/ai/flows/generate-initial-prompt';
 import { PromptPickerDialog } from '@/features/prompt-library/components/prompt-picker-dialog';
-import { extractMetadata } from '@/ai/flows/metadata-extraction';
+import { extractMetadataBatch, type BatchExtractionJob } from '@/ai/flows/batch-metadata-extraction';
 import { compareValues } from '@/lib/metrics';
 import { cn, findFieldValue, formatModelName } from '@/lib/utils';
 
@@ -446,26 +446,32 @@ export default function PromptStudioSheet({
         }
       }
 
-      // Run extractions with concurrency limit (5 to avoid Box AI rate limiting)
-      const CONCURRENCY_LIMIT = 5;
+      // Run extractions with concurrency limit (10 for better performance)
+      const CONCURRENCY_LIMIT = 10;
       
-      const runExtraction = async (job: { fileIndex: number; fileId: string; modelName: string }) => {
-        const startTime = Date.now();
-        logger.debug('Starting extraction', { modelName: job.modelName, fileIndex: job.fileIndex + 1 });
-        
-        try {
-          // IMPORTANT: Don't pass templateKey here - we need to use inline fields to test custom prompts
-          // When templateKey is provided, Box AI uses the template which ignores custom prompts
-          // This matches the approach used in use-model-extraction-runner.tsx
-          const result = await extractMetadata({
-            fileId: job.fileId,
-            fields: [testField],
-            model: job.modelName,
-            // templateKey intentionally omitted to enable prompt testing
-          });
+      // Prepare all batch extraction jobs
+      const batchJobs: BatchExtractionJob[] = extractionJobs.map((job) => ({
+        jobId: `prompt-test-${job.fileIndex}-${job.modelName}`,
+        fileId: job.fileId,
+        fields: [testField],
+        model: job.modelName,
+        // templateKey intentionally omitted to enable prompt testing
+        templateKey: undefined
+      }));
 
+      // Execute all extractions - callback can't cross server action boundary
+      const startTime = Date.now();
+      logger.info('Starting batch extractions', { jobCount: batchJobs.length, concurrencyLimit: CONCURRENCY_LIMIT });
+
+      const batchResults = await extractMetadataBatch(batchJobs, CONCURRENCY_LIMIT);
+
+      // Process results and update UI
+      batchResults.forEach((batchResult, index) => {
+        const job = extractionJobs[index];
+        
+        if (batchResult.success && batchResult.data) {
           // Store the extracted value using the same field matching logic as home page
-          const extractedValue = findFieldValue(result.data, field.key);
+          const extractedValue = findFieldValue(batchResult.data, field.key);
           let formattedValue = '';
           if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
             formattedValue = String(extractedValue).trim();
@@ -474,48 +480,28 @@ export default function PromptStudioSheet({
           }
           testResultsData[job.fileIndex].fields[field.key][job.modelName] = formattedValue;
           
-          const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-          logger.debug('Extraction completed', { modelName: job.modelName, fileIndex: job.fileIndex + 1, duration });
-        } catch (error) {
-          const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-          logger.error('Extraction failed', { modelName: job.modelName, fileIndex: job.fileIndex + 1, duration, error: error instanceof Error ? error : String(error) });
+          logger.debug('Extraction completed', { 
+            modelName: job.modelName, 
+            fileIndex: job.fileIndex + 1, 
+            duration: batchResult.duration ? (batchResult.duration / 1000).toFixed(1) : 'N/A'
+          });
+        } else {
+          logger.error('Extraction failed', { 
+            modelName: job.modelName, 
+            fileIndex: job.fileIndex + 1, 
+            error: batchResult.error,
+            duration: batchResult.duration ? (batchResult.duration / 1000).toFixed(1) : 'N/A'
+          });
           testResultsData[job.fileIndex].fields[field.key][job.modelName] = 'ERROR';
         }
 
-        // Update progress
+        // Update progress incrementally
         currentOperation++;
         setTestProgress({ current: currentOperation, total: totalOperations });
         
         // Update table with results so far
         setTestResults([...testResultsData]);
-      };
-
-      // Process jobs with concurrency limit using proper queue
-      const startTime = Date.now();
-      logger.info('Starting extractions', { jobCount: extractionJobs.length, concurrencyLimit: CONCURRENCY_LIMIT });
-
-      const executeWithLimit = async () => {
-        const executing: Set<Promise<void>> = new Set();
-        
-        for (const job of extractionJobs) {
-          // Start the extraction
-          const promise = runExtraction(job);
-          executing.add(promise);
-          
-          // Remove from set when done
-          promise.finally(() => executing.delete(promise));
-
-          // If we've hit the limit, wait for one to finish
-          if (executing.size >= CONCURRENCY_LIMIT) {
-            await Promise.race(executing);
-          }
-        }
-
-        // Wait for all remaining to finish
-        await Promise.all(Array.from(executing));
-      };
-
-      await executeWithLimit();
+      });
       
       const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
       logger.info('All extractions completed', {

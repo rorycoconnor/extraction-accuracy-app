@@ -68,6 +68,142 @@
     "activePrompt": "",
     "promptHistory": [
       {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:32:10.021Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 7,
+    "lastModified": "2025-11-18T01:32:12.813Z"
+  },
+  "terminationForConvenience": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:32:44.441Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 10,
+    "lastModified": "2025-11-18T01:32:46.977Z"
+  },
+  "terminationForCause": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:32:56.741Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 9,
+    "lastModified": "2025-11-18T01:32:59.186Z"
+  },
+  "governingLaw": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:32:19.269Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 9,
+    "lastModified": "2025-11-18T01:32:21.537Z"
+  },
+  "venue": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-21T01:04:29.893Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 17,
+    "lastModified": "2025-11-21T01:04:40.745Z"
+  },
+  "endDate": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:31:29.819Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 16,
+    "lastModified": "2025-11-18T01:31:35.093Z"
+  },
+  "effectiveDate": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:30:56.416Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 9,
+    "lastModified": "2025-11-18T01:30:59.051Z"
+  },
+  "contractTerm": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:31:12.903Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 7,
+    "lastModified": "2025-11-18T01:31:15.544Z"
+  },
+  "counterPartyName": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:30:22.788Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 14,
+    "lastModified": "2025-11-18T01:30:26.164Z"
+  },
+  "counterPartyAddress": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:30:38.882Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 10,
+    "lastModified": "2025-11-18T01:30:45.265Z"
+  },
+  "contractType": {
+    "activePrompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
+    "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
+        "savedAt": "2025-11-18T19:15:10.543Z",
+        "generationMethod": "standard"
+      },
+      {
         "id": "v3",
         "prompt": "",
         "savedAt": "2025-11-18T01:31:29.819Z"
