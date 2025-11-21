@@ -16,14 +16,29 @@
     "activePrompt": "",
     "promptHistory": [
       {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:29:55.239Z"
+      },
+      {
+        "id": "v3",
+        "prompt": "Does the agreement contain a 'Termination for Convenience' clause, allowing a party to terminate without cause? Carefully review the text for any language that permits termination for any reason, and consider the right absent if it requires mutual consent.",
+        "savedAt": "2025-11-21T02:02:44.228Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Determine if the agreement allows for 'Termination for Convenience' and classify it as 'Allowed', 'Not Allowed', or requires 'Mutual Agreement'. ",
+        "savedAt": "2025-11-21T02:01:02.730Z"
+      },
+      {
         "id": "v2",
         "prompt": "",
         "savedAt": "2025-11-18T01:32:44.441Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 10,
-    "lastModified": "2025-11-18T01:32:46.977Z"
+    "usageCount": 13,
+    "lastModified": "2025-11-21T06:29:55.243Z"
   },
   "terminationForCause": {
     "activePrompt": "",
@@ -70,12 +85,22 @@
       {
         "id": "v3",
         "prompt": "",
+        "savedAt": "2025-11-21T06:29:43.977Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Extract the contract's end date.  If not explicitly stated, calculate it by adding the contract term to the start date (or last signature date if the start is missing) and then subtracting one day.",
+        "savedAt": "2025-11-21T01:55:32.160Z"
+      },
+      {
+        "id": "v3",
+        "prompt": "",
         "savedAt": "2025-11-18T01:31:29.819Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 16,
-    "lastModified": "2025-11-18T01:31:35.093Z"
+    "usageCount": 18,
+    "lastModified": "2025-11-21T06:29:43.981Z"
   },
   "effectiveDate": {
     "activePrompt": "",
@@ -107,14 +132,24 @@
     "activePrompt": "",
     "promptHistory": [
       {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:29:22.908Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Extract the full name of the counterparty, which is the other party in the agreement and not \"Increo, Inc.\". If the counterparty is not explicitly labeled, identify the other signatory or the entity the agreement is with. ",
+        "savedAt": "2025-11-21T01:53:41.568Z"
+      },
+      {
         "id": "v2",
         "prompt": "",
         "savedAt": "2025-11-18T01:30:22.788Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 14,
-    "lastModified": "2025-11-18T01:30:26.164Z"
+    "usageCount": 16,
+    "lastModified": "2025-11-21T06:29:22.911Z"
   },
   "counterPartyAddress": {
     "activePrompt": "",
@@ -122,16 +157,31 @@
       {
         "id": "v3",
         "prompt": "",
+        "savedAt": "2025-11-21T06:29:32.904Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Extract the full mailing address of the counterparty, which is the party other than Increo, Inc. If a full address is not explicitly stated, extract the city and state of their primary place of business.",
+        "savedAt": "2025-11-21T01:54:53.347Z"
+      },
+      {
+        "id": "v3",
+        "prompt": "",
         "savedAt": "2025-11-18T01:30:38.882Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 10,
-    "lastModified": "2025-11-18T01:30:45.265Z"
+    "usageCount": 12,
+    "lastModified": "2025-11-21T06:29:32.907Z"
   },
   "contractType": {
-    "activePrompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:29:16.090Z"
+      },
       {
         "id": "v4",
         "prompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
@@ -157,8 +207,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 17,
-    "lastModified": "2025-11-18T19:15:10.550Z"
+    "usageCount": 18,
+    "lastModified": "2025-11-21T06:29:16.094Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
@@ -695,8 +745,13 @@
     "lastModified": "2025-09-18T01:45:27.769Z"
   },
   "document_type": {
-    "activePrompt": "Extract the specific document type from the text, prioritizing prominent titles or headings in the main document body. Ignore text from fax cover sheets or general page headers. If a type is not explicitly stated, classify the document by its content. For any document concerning a loan payoff, such as a \"PAYOFF STATEMENT\", use the value \"Payoff Statement\".",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:30:19.468Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:31:48.453Z",
         "prompt": "Extract the specific document type from the text, prioritizing prominent titles or headings in the main document body. Ignore text from fax cover sheets or general page headers. If a type is not explicitly stated, classify the document by its content. For any document concerning a loan payoff, such as a \"PAYOFF STATEMENT\", use the value \"Payoff Statement\".",
@@ -711,12 +766,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-17T17:31:48.454Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-21T06:30:19.476Z"
   },
   "loan_type": {
-    "activePrompt": "Extract the loan type. First, look for an explicit label such as 'Loan Type:' and extract its value (e.g., 'CONV W/O PMI', 'Conventional', 'FHA', 'VA').",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:30:27.130Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:32:01.454Z",
         "prompt": "Extract the loan type. First, look for an explicit label such as 'Loan Type:' and extract its value (e.g., 'CONV W/O PMI', 'Conventional', 'FHA', 'VA').",
@@ -862,12 +922,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:32:01.455Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:30:27.138Z"
   },
   "heloc_text": {
-    "activePrompt": "Extract the sentence or phrase that explicitly identifies the loan as a \"Home Equity Line of Credit\" or \"HELOC\". Only extract text containing these exact phrases. If these phrases are not found, or if the loan is identified as a different type (e.g., \"Conventional\"), return \"Not Present\".",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:30:38.443Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:32:16.983Z",
         "prompt": "Extract the sentence or phrase that explicitly identifies the loan as a \"Home Equity Line of Credit\" or \"HELOC\". Only extract text containing these exact phrases. If these phrases are not found, or if the loan is identified as a different type (e.g., \"Conventional\"), return \"Not Present\".",
@@ -1013,12 +1078,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:32:16.983Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:30:38.452Z"
   },
   "good_through_date": {
-    "activePrompt": "Extract the \"Good Through Date\" from the payoff statement, which is the expiration date for the payoff quote. This date is explicitly labeled with terms like \"good thru,\" \"valid until,\" \"expires on,\" or \"quote good through.\" Prioritize the date directly associated with these labels over other dates in the document, such as the document creation date or fax date. Format the extracted date as YYYY-MM-DD.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:37:14.271Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:32:27.665Z",
         "prompt": "Extract the \"Good Through Date\" from the payoff statement, which is the expiration date for the payoff quote. This date is explicitly labeled with terms like \"good thru,\" \"valid until,\" \"expires on,\" or \"quote good through.\" Prioritize the date directly associated with these labels over other dates in the document, such as the document creation date or fax date. Format the extracted date as YYYY-MM-DD.",
@@ -1164,12 +1234,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:32:27.666Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:37:14.291Z"
   },
   "good_through_text": {
-    "activePrompt": "Extract the full sentence or phrase containing the expiration date, often labeled \"good through,\" \"valid until,\" or \"expires on.\" Prioritize text found near payoff amounts, in tables, or under relevant headings. If no explicit expiration language is found, extract the latest date mentioned near a payoff amount.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:37:19.375Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:32:43.332Z",
         "prompt": "Extract the full sentence or phrase containing the expiration date, often labeled \"good through,\" \"valid until,\" or \"expires on.\" Prioritize text found near payoff amounts, in tables, or under relevant headings. If no explicit expiration language is found, extract the latest date mentioned near a payoff amount.",
@@ -1315,12 +1390,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:32:43.333Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:37:19.388Z"
   },
   "per_diem": {
-    "activePrompt": "Extract the per diem amount. Search for explicit labels like 'Per Diem', 'Daily Interest', or 'Interest Per Day'. The value may appear in tables, lists, or within sentence text (e.g., \"...the interest per Day is $19.75...\"). If an explicit per diem is not found, calculate it by dividing the total interest amount by the number of days in the corresponding period.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:37:31.402Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:32:56.028Z",
         "prompt": "Extract the per diem amount. Search for explicit labels like 'Per Diem', 'Daily Interest', or 'Interest Per Day'. The value may appear in tables, lists, or within sentence text (e.g., \"...the interest per Day is $19.75...\"). If an explicit per diem is not found, calculate it by dividing the total interest amount by the number of days in the corresponding period.",
@@ -1466,12 +1546,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:32:56.028Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:37:31.441Z"
   },
   "charge_count": {
-    "activePrompt": "Extract the total number of charges from the payoff statement. In any table or section listing fees and charges, count only the individual line items that have a corresponding monetary value greater than $0.00.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:37:39.500Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:33:09.239Z",
         "prompt": "Extract the total number of charges from the payoff statement. In any table or section listing fees and charges, count only the individual line items that have a corresponding monetary value greater than $0.00.",
@@ -1748,12 +1833,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 4,
-    "lastModified": "2025-11-17T17:33:09.240Z"
+    "usageCount": 5,
+    "lastModified": "2025-11-21T06:37:39.518Z"
   },
   "borrower_name": {
-    "activePrompt": "Extract the full name of the Borrower. Look for labels such as 'Borrower', 'Borrower Name', or 'Mortgagor'. If the document lists a 'Co-Borrower', 'Co-Mortgagor', or a second borrower on a separate line, combine both names, separated by 'and'. If no specific label is found, identify the primary individual or entity to whom the document is addressed.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:37:46.157Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:33:20.875Z",
         "prompt": "Extract the full name of the Borrower. Look for labels such as 'Borrower', 'Borrower Name', or 'Mortgagor'. If the document lists a 'Co-Borrower', 'Co-Mortgagor', or a second borrower on a separate line, combine both names, separated by 'and'. If no specific label is found, identify the primary individual or entity to whom the document is addressed.",
@@ -1899,12 +1989,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:33:20.876Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:37:46.170Z"
   },
   "does_disbursement_notes_include_borrower": {
-    "activePrompt": "Carefully review the document in sections titled 'Disbursement Notes', 'Wire Transfer', 'Wire Instructions', 'Funding Details', or similar. Look for any mention of the borrower's name or keywords like 'Borrower' or 'Mortgagor'. If a mention is found, extract 'Yes'. If no such section exists or if the borrower is not mentioned, extract 'No'.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:37:54.360Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:33:32.078Z",
         "prompt": "Carefully review the document in sections titled 'Disbursement Notes', 'Wire Transfer', 'Wire Instructions', 'Funding Details', or similar. Look for any mention of the borrower's name or keywords like 'Borrower' or 'Mortgagor'. If a mention is found, extract 'Yes'. If no such section exists or if the borrower is not mentioned, extract 'No'.",
@@ -2050,12 +2145,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:33:32.078Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:37:54.366Z"
   },
   "lender_name": {
-    "activePrompt": "Extract the lender's name from the payoff statement. This is the company name prominently displayed in the header, letterhead, or sender's mailing address. Prioritize the name in the header over names associated with terms like 'Beneficiary' or 'Payable to' if they differ.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:37:59.318Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:33:43.437Z",
         "prompt": "Extract the lender's name from the payoff statement. This is the company name prominently displayed in the header, letterhead, or sender's mailing address. Prioritize the name in the header over names associated with terms like 'Beneficiary' or 'Payable to' if they differ.",
@@ -2201,12 +2301,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:33:43.438Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:37:59.336Z"
   },
   "lender_address": {
-    "activePrompt": "Extract the lender's full mailing address. Prioritize the address for mailing payments or checks, often found under headings like \"Remittance,\" \"Payoff Address,\" or \"Cashier's Check.\" Do not extract addresses intended for wire transfers, such as the \"Beneficiary Bank Address.\" If a specific payment address is not found, use the primary business address from the header, footer, or contact section.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:38:07.069Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:33:54.403Z",
         "prompt": "Extract the lender's full mailing address. Prioritize the address for mailing payments or checks, often found under headings like \"Remittance,\" \"Payoff Address,\" or \"Cashier's Check.\" Do not extract addresses intended for wire transfers, such as the \"Beneficiary Bank Address.\" If a specific payment address is not found, use the primary business address from the header, footer, or contact section.",
@@ -2352,12 +2457,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:33:54.404Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:38:07.082Z"
   },
   "beneficiary_name": {
-    "activePrompt": "Extract the Beneficiary Name from the payoff statement. Prioritize the name explicitly labeled 'Beneficiary', 'Payee', or 'Payable To', especially within payment instruction sections like 'Wire Transfer' or 'ACH'. If a specific beneficiary is not found in the payment instructions, identify the primary lender or creditor to whom the payment is directed.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:38:12.563Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:34:09.453Z",
         "prompt": "Extract the Beneficiary Name from the payoff statement. Prioritize the name explicitly labeled 'Beneficiary', 'Payee', or 'Payable To', especially within payment instruction sections like 'Wire Transfer' or 'ACH'. If a specific beneficiary is not found in the payment instructions, identify the primary lender or creditor to whom the payment is directed.",
@@ -2503,12 +2613,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:34:09.454Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:38:12.575Z"
   },
   "beneficiary_address": {
-    "activePrompt": "Extract the full mailing address for the beneficiary or lender. Prioritize addresses listed under headings such as \"Pay To,\" \"Mail Payments To,\" or \"Correspondence Address.\" Explicitly exclude any bank addresses found within \"Wire Transfer Instructions\" or \"ACH Instructions.\"",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:38:20.247Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:34:21.395Z",
         "prompt": "Extract the full mailing address for the beneficiary or lender. Prioritize addresses listed under headings such as \"Pay To,\" \"Mail Payments To,\" or \"Correspondence Address.\" Explicitly exclude any bank addresses found within \"Wire Transfer Instructions\" or \"ACH Instructions.\"",
@@ -2785,12 +2900,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 4,
-    "lastModified": "2025-11-17T17:34:21.395Z"
+    "usageCount": 5,
+    "lastModified": "2025-11-21T06:38:20.269Z"
   },
   "property_address": {
-    "activePrompt": "Extract the full property address, including street, city, state, and zip code. Prioritize the address explicitly labeled \"Property address\" or \"Property Location\". Do not extract the lender, beneficiary, or mailing address.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:38:27.346Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:34:33.925Z",
         "prompt": "Extract the full property address, including street, city, state, and zip code. Prioritize the address explicitly labeled \"Property address\" or \"Property Location\". Do not extract the lender, beneficiary, or mailing address.",
@@ -3067,12 +3187,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 4,
-    "lastModified": "2025-11-17T17:34:33.926Z"
+    "usageCount": 5,
+    "lastModified": "2025-11-21T06:38:27.375Z"
   },
   "bank_name": {
-    "activePrompt": "Extract the full name of the bank, financial institution, or credit union. When reviewing sections for wire transfers or payment instructions, prioritize the name explicitly labeled as 'Beneficiary' or 'Beneficiary Bank'. Do not extract the lender or mortgage company name if a separate beneficiary bank is specified.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:38:35.305Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:34:45.294Z",
         "prompt": "Extract the full name of the bank, financial institution, or credit union. When reviewing sections for wire transfers or payment instructions, prioritize the name explicitly labeled as 'Beneficiary' or 'Beneficiary Bank'. Do not extract the lender or mortgage company name if a separate beneficiary bank is specified.",
@@ -3218,12 +3343,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:34:45.295Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:38:35.321Z"
   },
   "wire_instructions": {
-    "activePrompt": "Look for a section or table with a heading like 'Wire Transfer Instructions,' 'Wire Instructions,' or 'Bank Details.' Extract the entire block of text under this heading, including the bank name, account number, routing number (ABA), SWIFT code, and any additional instructions or special information for the beneficiary. If no such labeled section is found, extract the bank name, account number, and routing number provided for sending funds.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:38:40.631Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:34:58.572Z",
         "prompt": "Look for a section or table with a heading like 'Wire Transfer Instructions,' 'Wire Instructions,' or 'Bank Details.' Extract the entire block of text under this heading, including the bank name, account number, routing number (ABA), SWIFT code, and any additional instructions or special information for the beneficiary. If no such labeled section is found, extract the bank name, account number, and routing number provided for sending funds.",
@@ -3369,12 +3499,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:34:58.573Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:38:40.639Z"
   },
   "wire_transfer_address": {
-    "activePrompt": "Extract the full physical address for the wire transfer, including street, city, state, and postal code. Search within sections titled 'Wire Instructions', 'Banking Information', or 'Payment Instructions'. Prioritize the address explicitly labeled 'Beneficiary Bank Address' or the bank's physical address. Exclude any mailing addresses for checks or property addresses, even if they appear within the same section.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:38:50.339Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:35:13.246Z",
         "prompt": "Extract the full physical address for the wire transfer, including street, city, state, and postal code. Search within sections titled 'Wire Instructions', 'Banking Information', or 'Payment Instructions'. Prioritize the address explicitly labeled 'Beneficiary Bank Address' or the bank's physical address. Exclude any mailing addresses for checks or property addresses, even if they appear within the same section.",
@@ -3520,12 +3655,17 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-17T17:35:13.246Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-21T06:38:50.354Z"
   },
   "overnight_deliveries_address1": {
-    "activePrompt": "Extract the street address (line 1) for overnight deliveries or courier. If an overnight delivery address is not specified, extract the physical street address for 'payments', 'payoffs', or 'mailing checks'. Do not extract PO Box addresses or bank addresses from wire transfer instructions.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-21T06:38:56.641Z"
+      },
       {
         "id": "optimizer-2025-11-17T17:35:25.738Z",
         "prompt": "Extract the street address (line 1) for overnight deliveries or courier. If an overnight delivery address is not specified, extract the physical street address for 'payments', 'payoffs', or 'mailing checks'. Do not extract PO Box addresses or bank addresses from wire transfer instructions.",
@@ -3802,7 +3942,7 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 4,
-    "lastModified": "2025-11-17T17:35:25.738Z"
+    "usageCount": 5,
+    "lastModified": "2025-11-21T06:38:56.663Z"
   }
 }

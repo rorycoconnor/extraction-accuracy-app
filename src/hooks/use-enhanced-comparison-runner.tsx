@@ -535,6 +535,13 @@ export const useEnhancedComparisonRunner = (
       averages: newAverages
     });
     
+    // 🔍 DEBUG: Log averages before dispatch
+    logger.info('Averages calculated', {
+      fieldCount: Object.keys(newAverages).length,
+      fields: Object.keys(newAverages),
+      sampleAverage: newAverages[Object.keys(newAverages)[0]]
+    });
+
     // Atomically update the store with the complete new state including metrics
     dispatch({
       type: 'COMPLETE_COMPARISON_RUN',
@@ -546,7 +553,9 @@ export const useEnhancedComparisonRunner = (
       }
     });
     
-    logger.info('Results processed and stored with versioning');
+    logger.info('Results processed and stored with versioning', {
+      averagesCount: Object.keys(newAverages).length
+    });
   };
 
   return {
