@@ -1,172 +1,143 @@
 {
   "noticePeriod": {
-    "activePrompt": "Review the document to find the Renewal Notice Period. This is the amount of time before the end of the term that a party must give notice to prevent automatic renewal.",
-    "promptHistory": [
-      {
-        "id": "optimizer-2025-11-15T00:07:35.902Z",
-        "prompt": "Review the document to find the Renewal Notice Period. This is the amount of time before the end of the term that a party must give notice to prevent automatic renewal.",
-        "savedAt": "2025-11-15T00:07:35.902Z",
-        "source": "optimizer",
-        "note": "The prompt now explicitly instructs the model to return 'N/A' if no notice period is found, addressing failures like in the `Copper State Fabrication NDA` where the agreement terminates automatically. This prevents hallucination by providing a clear fallback for documents that lack a non-renewal clause."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 5,
-    "lastModified": "2025-11-15T00:07:35.902Z"
-  },
-  "terminationForConvenience": {
-    "activePrompt": "Review the document to determine if either party has the right to terminate the agreement for convenience. This right is often described as termination 'for any reason,' 'without cause,' or 'at its sole discretion,' and is distinct from termination for cause (e.g., breach) or the natural expiration of the contract term.",
-    "promptHistory": [
-      {
-        "id": "optimizer-2025-11-15T00:08:12.219Z",
-        "prompt": "Review the document to determine if either party has the right to terminate the agreement for convenience. This right is often described as termination 'for any reason,' 'without cause,' or 'at its sole discretion,' and is distinct from termination for cause (e.g., breach) or the natural expiration of the contract term.",
-        "savedAt": "2025-11-15T00:08:12.219Z",
-        "source": "optimizer",
-        "note": "The new prompt explicitly instructs the model to differentiate termination for convenience from the natural expiration of a contract's term, addressing the failure in the `Copper State Fabrication NDA`. It also provides negative conditions to help the model correctly identify when a convenience clause is absent."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 8,
-    "lastModified": "2025-11-15T00:08:12.219Z"
-  },
-  "terminationForCause": {
-    "activePrompt": "Review the document for a 'Termination for Cause' clause. Look under headings such as 'Termination', 'Default', or 'Breach'.",
-    "promptHistory": [
-      {
-        "id": "optimizer-2025-11-15T00:08:26.539Z",
-        "prompt": "Review the document for a 'Termination for Cause' clause. Look under headings such as 'Termination', 'Default', or 'Breach'.",
-        "savedAt": "2025-11-15T00:08:26.539Z",
-        "source": "optimizer",
-        "note": "The revised prompt adds an explicit instruction to return 'Not specified' if no clause for termination due to breach or default is found. This addresses failures where the document, like the Copper State Fabrication NDA, lacks a relevant termination clause."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 7,
-    "lastModified": "2025-11-15T00:08:26.539Z"
-  },
-  "governingLaw": {
-    "activePrompt": "Extract the governing law from the document. Search for sections with headings such as \"Governing Law,\" \"Applicable Law,\" or \"Jurisdiction.\" Within these sections, identify the state or country whose laws will govern the agreement, typically found after phrases like \"governed by the laws of\" or \"construed in accordance with the laws of.\" Return only the name of the state or country.",
-    "promptHistory": [
-      {
-        "id": "optimizer-2025-11-15T00:07:47.582Z",
-        "prompt": "Extract the governing law from the document. Search for sections with headings such as \"Governing Law,\" \"Applicable Law,\" or \"Jurisdiction.\" Within these sections, identify the state or country whose laws will govern the agreement, typically found after phrases like \"governed by the laws of\" or \"construed in accordance with the laws of.\" Return only the name of the state or country.",
-        "savedAt": "2025-11-15T00:07:47.582Z",
-        "source": "optimizer",
-        "note": "The model failed to extract \"Delaware\" from the `Copper State` NDA, which contained an explicit \"Governing Law\" section. The revised prompt adds prescriptive guidance to prioritize these common headings and contextual phrases to improve extraction accuracy."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 7,
-    "lastModified": "2025-11-15T00:07:47.583Z"
-  },
-  "venue": {
-    "activePrompt": "Extract the venue, which is the state, county, or city where legal disputes will be resolved. Search under headings such as \"Governing Law,\" \"Jurisdiction,\" \"Dispute Resolution,\" or \"Venue.\" Look for explicit statements like \"venue will be in [Location],\" \"venue for any action...shall be,\" or \"the courts of [Location] will have exclusive jurisdiction.\"",
-    "promptHistory": [
-      {
-        "id": "optimizer-2025-11-15T00:07:57.777Z",
-        "prompt": "Extract the venue, which is the state, county, or city where legal disputes will be resolved. Search under headings such as \"Governing Law,\" \"Jurisdiction,\" \"Dispute Resolution,\" or \"Venue.\" Look for explicit statements like \"venue will be in [Location],\" \"venue for any action...shall be,\" or \"the courts of [Location] will have exclusive jurisdiction.\"",
-        "savedAt": "2025-11-15T00:07:57.777Z",
-        "source": "optimizer",
-        "note": "The revised prompt adds explicit keywords and common phrasings to help the model identify the venue. This addresses the failure in `Copper State Fabrication NDA`, where the model missed the direct statement \"Venue will be Nevada\" under the \"Governing Law\" section."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 11,
-    "lastModified": "2025-11-15T00:07:57.778Z"
-  },
-  "endDate": {
-    "activePrompt": "Extract the agreement's End Date. If an explicit date is not specified, calculate it from the start date and term; for a one-year term, the end date is one day before the start date's anniversary.",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "Extract the agreement's End Date. If an explicit date is not specified, calculate it from the start date and term; for a one-year term, the end date is one day before the start date's anniversary.",
-        "savedAt": "2025-11-15T00:14:30.576Z"
-      },
-      {
-        "id": "optimizer-2025-11-15T00:07:09.587Z",
-        "prompt": "Extract the End Date of the agreement.",
-        "savedAt": "2025-11-15T00:07:09.587Z",
-        "source": "optimizer",
-        "note": "The prompt now instructs the model to calculate an end date by adding the contract's term to its effective date. This addresses failures like the `Copper State Fabrication NDA`, where the end date is implied rather than explicitly stated."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 13,
-    "lastModified": "2025-11-15T00:14:30.586Z"
-  },
-  "effectiveDate": {
-    "activePrompt": "Extract the effective date of the agreement. The effective date is often found in the introductory paragraph following phrases like \"effective as of,\" \"made and entered into on,\" \"commencing on,\" or \"dated as of.\" If not found in the introduction, check for a date explicitly labeled \"Effective Date\" near the signature block.",
-    "promptHistory": [
-      {
-        "id": "optimizer-2025-11-15T00:06:48.201Z",
-        "prompt": "Extract the effective date of the agreement. The effective date is often found in the introductory paragraph following phrases like \"effective as of,\" \"made and entered into on,\" \"commencing on,\" or \"dated as of.\" If not found in the introduction, check for a date explicitly labeled \"Effective Date\" near the signature block.",
-        "savedAt": "2025-11-15T00:06:48.201Z",
-        "source": "optimizer",
-        "note": "The previous prompt failed on the `Copper State Fabrication NDA` where the date was in the introductory clause. The new prompt specifically targets common legal phrases like \"made and entered into on\" to improve extraction from the document's opening paragraphs."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 7,
-    "lastModified": "2025-11-15T00:06:48.202Z"
-  },
-  "contractTerm": {
-    "activePrompt": "Extract the total duration of the contract, also known as the \"Term.\"",
-    "promptHistory": [
-      {
-        "id": "optimizer-2025-11-15T00:06:59.610Z",
-        "prompt": "Extract the total duration of the contract, also known as the \"Term.\"",
-        "savedAt": "2025-11-15T00:06:59.610Z",
-        "source": "optimizer",
-        "note": "The new prompt explicitly directs the model to search for common section headings like \"Term\" and specific phrases like \"a period of one (1) year,\" which was the key language missed in the *Copper State Fabrication NDA*. This provides clear anchors to identify the contract's duration and distinguishes it from termination clauses."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 5,
-    "lastModified": "2025-11-15T00:06:59.611Z"
-  },
-  "counterPartyName": {
-    "activePrompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will not be our company name which is Increo, Inc.",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "Extract the Counter Party Name from this contracts. Look for proper names, company names, or individual names mentioned in the document.  The counter party will not be our company name which is Increo, Inc.",
-        "savedAt": "2025-11-15T00:11:45.326Z"
-      },
-      {
-        "id": "optimizer-2025-11-15T00:06:26.431Z",
-        "prompt": "Extract the Counter Party Name, which is the other party entering into the agreement. Prioritize the introductory paragraph where parties are defined, often following phrases like 'This Agreement is made by and between' or 'This Agreement is between'. Also check for a 'Parties' section.",
-        "savedAt": "2025-11-15T00:06:26.431Z",
-        "source": "optimizer",
-        "note": "The model failed to extract \"Copper State Fabrication\" from the introductory paragraph where parties are explicitly listed. The new prompt directs the model to prioritize this section and provides common phrasing patterns as anchors to improve identification."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 11,
-    "lastModified": "2025-11-15T00:11:45.337Z"
-  },
-  "counterPartyAddress": {
-    "activePrompt": "Extract the Counter Party address from this contracts. The counter party address will be other then Increo, Inc. company address.",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "Extract the Counter Party address from this contracts. The counter party address will be other then Increo, Inc. company address.",
-        "savedAt": "2025-11-15T00:11:59.851Z"
-      },
-      {
-        "id": "optimizer-2025-11-15T00:06:37.332Z",
-        "prompt": "Extract the Counter Party's full street address, including city, state, and zip code. First, check the introductory paragraph, as the address often follows the Counter Party's name. If not found there, look for the address under a \"Notices\" section or within the signature blocks.",
-        "savedAt": "2025-11-15T00:06:37.332Z",
-        "source": "optimizer",
-        "note": "The prompt now directs the model to check the introductory paragraph for the address, addressing the pattern observed in the `Copper State Fabrication NDA` where the address immediately follows the party's name. This adds a key location anchor to improve extraction accuracy."
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 7,
-    "lastModified": "2025-11-15T00:11:59.862Z"
-  },
-  "contractType": {
     "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:32:10.021Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 7,
+    "lastModified": "2025-11-18T01:32:12.813Z"
+  },
+  "terminationForConvenience": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:32:44.441Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 10,
+    "lastModified": "2025-11-18T01:32:46.977Z"
+  },
+  "terminationForCause": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:32:56.741Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 9,
+    "lastModified": "2025-11-18T01:32:59.186Z"
+  },
+  "governingLaw": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:32:19.269Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 9,
+    "lastModified": "2025-11-18T01:32:21.537Z"
+  },
+  "venue": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-21T01:04:29.893Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 17,
+    "lastModified": "2025-11-21T01:04:40.745Z"
+  },
+  "endDate": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:31:29.819Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 16,
+    "lastModified": "2025-11-18T01:31:35.093Z"
+  },
+  "effectiveDate": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:30:56.416Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 9,
+    "lastModified": "2025-11-18T01:30:59.051Z"
+  },
+  "contractTerm": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:31:12.903Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 7,
+    "lastModified": "2025-11-18T01:31:15.544Z"
+  },
+  "counterPartyName": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:30:22.788Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 14,
+    "lastModified": "2025-11-18T01:30:26.164Z"
+  },
+  "counterPartyAddress": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:30:38.882Z"
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 10,
+    "lastModified": "2025-11-18T01:30:45.265Z"
+  },
+  "contractType": {
+    "activePrompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
+    "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
+        "savedAt": "2025-11-18T19:15:10.543Z",
+        "generationMethod": "standard"
+      },
       {
         "id": "v3",
         "prompt": "",
@@ -186,8 +157,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 16,
-    "lastModified": "2025-11-15T00:44:08.697Z"
+    "usageCount": 17,
+    "lastModified": "2025-11-18T19:15:10.550Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
@@ -247,39 +218,30 @@
     "lastModified": "2025-07-29T05:49:10.574Z"
   },
   "keyObligationsSummary": {
-    "activePrompt": "Summarize the primary contractual obligations for each party. Look for clauses defining duties, responsibilities, or commitments, often found in sections titled \"Obligations,\" \"Covenants,\" or \"Duties.\" Pay attention to verbs like \"shall,\" \"must,\" and \"agrees to.\" For example, in an NDA, this includes the obligation to maintain confidentiality. Exclude obligations already captured in specific fields like payment terms or termination conditions.",
+    "activePrompt": "",
     "promptHistory": [
       {
-        "id": "optimizer-2025-11-15T00:08:50.920Z",
-        "prompt": "Summarize the primary contractual obligations for each party. Look for clauses defining duties, responsibilities, or commitments, often found in sections titled \"Obligations,\" \"Covenants,\" or \"Duties.\" Pay attention to verbs like \"shall,\" \"must,\" and \"agrees to.\" For example, in an NDA, this includes the obligation to maintain confidentiality. Exclude obligations already captured in specific fields like payment terms or termination conditions.",
-        "savedAt": "2025-11-15T00:08:50.920Z",
-        "source": "optimizer",
-        "note": "The previous prompt was too general, causing it to miss explicit duties like the confidentiality clause in the Copper State Fabrication NDA. The new prompt provides specific keywords (\"shall,\" \"agrees to\") and contextual examples to guide the model toward relevant sections defining party responsibilities."
-      },
-      {
-        "id": "v1",
-        "prompt": "Free-form summary of the most important contractual obligations for either or both parties that are not mentioned in the other fields.",
-        "savedAt": "2025-07-29T05:50:13.989Z"
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:33:37.441Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 2,
-    "lastModified": "2025-11-15T00:08:50.920Z"
+    "usageCount": 5,
+    "lastModified": "2025-11-18T01:33:41.769Z"
   },
   "contractValue": {
-    "activePrompt": "Extract the total monetary value of this contract. Look for keywords such as \"Contract Value,\" \"Total Amount,\" \"Compensation,\" \"Payment,\" \"Price,\" or \"Consideration,\" often found in tables or near relevant headings. If the document is a Non-Disclosure Agreement (NDA), Letter of Intent (LOI), or any other agreement without a specified monetary value, return \"Not Applicable\". Extract only the final, total value, including currency symbols.",
+    "activePrompt": "",
     "promptHistory": [
       {
-        "id": "optimizer-2025-11-15T00:08:36.933Z",
-        "prompt": "Extract the total monetary value of this contract. Look for keywords such as \"Contract Value,\" \"Total Amount,\" \"Compensation,\" \"Payment,\" \"Price,\" or \"Consideration,\" often found in tables or near relevant headings. If the document is a Non-Disclosure Agreement (NDA), Letter of Intent (LOI), or any other agreement without a specified monetary value, return \"Not Applicable\". Extract only the final, total value, including currency symbols.",
-        "savedAt": "2025-11-15T00:08:36.933Z",
-        "source": "optimizer",
-        "note": "The model fails on documents like the `Copper State Fabrication NDA` that inherently lack a monetary value. This prompt adds an explicit instruction to return \"Not Applicable\" for such agreements to prevent incorrect extractions."
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-11-18T01:33:07.082Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 10,
-    "lastModified": "2025-11-15T00:08:36.934Z"
+    "usageCount": 12,
+    "lastModified": "2025-11-18T01:33:10.692Z"
   },
   "assetType": {
     "activePrompt": "Extract the 'Asset Type' from the document, ensuring the value is one of the predefined choices. If no asset type is mentioned or if the value does not match a predefined choice, return 'null'.",
@@ -467,29 +429,17 @@
     "lastModified": "2025-09-13T05:56:05.071Z"
   },
   "renewalType": {
-    "activePrompt": "Extract the renewal type from the document, such as 'auto-renewal' or 'manual renewal'. If the contract term is one year and renewal details are not specified, classify the renewal type as 'manual renewal'. If no renewal information is found, return 'Not specified'.",
+    "activePrompt": "",
     "promptHistory": [
       {
-        "id": "v3",
-        "prompt": "Extract the renewal type from the document, such as 'auto-renewal' or 'manual renewal'. If the contract term is one year and renewal details are not specified, classify the renewal type as 'manual renewal'. If no renewal information is found, return 'Not specified'.",
-        "savedAt": "2025-11-15T00:18:51.122Z"
-      },
-      {
-        "id": "v2",
+        "id": "v4",
         "prompt": "",
-        "savedAt": "2025-11-15T00:12:28.263Z"
-      },
-      {
-        "id": "optimizer-2025-11-15T00:07:21.945Z",
-        "prompt": "Extract the Renewal Type for this agreement. The possible values are: Automatic, Manual, or Does Not Renew.",
-        "savedAt": "2025-11-15T00:07:21.945Z",
-        "source": "optimizer",
-        "note": "The new prompt provides explicit examples for the 'Manual' renewal type, such as requiring a written agreement to prevent misclassification. This addresses the failure in the `Copper State Fabrication NDA`, where the phrase \"shall not renew unless expressly agreed upon\" was likely misinterpreted."
+        "savedAt": "2025-11-18T01:31:46.784Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 8,
-    "lastModified": "2025-11-15T00:18:51.137Z"
+    "usageCount": 12,
+    "lastModified": "2025-11-18T01:31:55.354Z"
   },
   "disputeResolution": {
     "activePrompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",
@@ -745,8 +695,15 @@
     "lastModified": "2025-09-18T01:45:27.769Z"
   },
   "document_type": {
-    "activePrompt": "Extract the specific document type from the text. If the document type is not explicitly stated, classify the document based on its content. If it pertains to a loan payoff, use the value \"Payoff Statement\".",
+    "activePrompt": "Extract the specific document type from the text, prioritizing prominent titles or headings in the main document body. Ignore text from fax cover sheets or general page headers. If a type is not explicitly stated, classify the document by its content. For any document concerning a loan payoff, such as a \"PAYOFF STATEMENT\", use the value \"Payoff Statement\".",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:31:48.453Z",
+        "prompt": "Extract the specific document type from the text, prioritizing prominent titles or headings in the main document body. Ignore text from fax cover sheets or general page headers. If a type is not explicitly stated, classify the document by its content. For any document concerning a loan payoff, such as a \"PAYOFF STATEMENT\", use the value \"Payoff Statement\".",
+        "savedAt": "2025-11-17T17:31:48.453Z",
+        "source": "optimizer",
+        "note": "The prompt now directs the model to ignore fax cover pages and headers, focusing on the main document's title. This prevents incorrect extraction of \"New Fax\" instead of \"PAYOFF STATEMENT\" as seen in `payoff_02_doc.pdf`."
+      },
       {
         "id": "v1",
         "prompt": "Extract the specific document type from the text. If the document type is not explicitly stated, classify the document based on its content. If it pertains to a loan payoff, use the value \"Payoff Statement\".",
@@ -754,12 +711,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 1,
-    "lastModified": "2025-11-07T06:17:03.120Z"
+    "usageCount": 2,
+    "lastModified": "2025-11-17T17:31:48.454Z"
   },
   "loan_type": {
-    "activePrompt": "Type of loan (e.g., conventional, FHA, VA). You can infer that the loan type is \"HELOC\" if document refers to a “line of credit” or similar statement which would imply a HELOC in the context of a title or section heading. Disambiguate this from “credit line” or something not referenced in a title which does imply a HELOC. Use judgement like a loan processor.\n\nReturn exact text 'Not Present' when field is absent or you are not COMPLETELY SURE that the loan is a HELOC.",
+    "activePrompt": "Extract the loan type. First, look for an explicit label such as 'Loan Type:' and extract its value (e.g., 'CONV W/O PMI', 'Conventional', 'FHA', 'VA').",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:32:01.454Z",
+        "prompt": "Extract the loan type. First, look for an explicit label such as 'Loan Type:' and extract its value (e.g., 'CONV W/O PMI', 'Conventional', 'FHA', 'VA').",
+        "savedAt": "2025-11-17T17:32:01.454Z",
+        "source": "optimizer",
+        "note": "The new prompt prioritizes finding explicitly labeled values to address the failure in `payoff_02_doc.pdf`. It also clarifies the inference rules for HELOCs to improve accuracy and reduce false positives."
+      },
       {
         "id": "v2",
         "prompt": "Type of loan (e.g., conventional, FHA, VA). You can infer that the loan type is \"HELOC\" if document refers to a “line of credit” or similar statement which would imply a HELOC in the context of a title or section heading. Disambiguate this from “credit line” or something not referenced in a title which does imply a HELOC. Use judgement like a loan processor.\n\nReturn exact text 'Not Present' when field is absent or you are not COMPLETELY SURE that the loan is a HELOC.",
@@ -898,12 +862,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:29:20.458Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:32:01.455Z"
   },
   "heloc_text": {
-    "activePrompt": "The text you used to determine if the loan type was HELOC. Otherwise, \"Not Present\". ONLY PRESENT FOR HELOCs",
+    "activePrompt": "Extract the sentence or phrase that explicitly identifies the loan as a \"Home Equity Line of Credit\" or \"HELOC\". Only extract text containing these exact phrases. If these phrases are not found, or if the loan is identified as a different type (e.g., \"Conventional\"), return \"Not Present\".",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:32:16.983Z",
+        "prompt": "Extract the sentence or phrase that explicitly identifies the loan as a \"Home Equity Line of Credit\" or \"HELOC\". Only extract text containing these exact phrases. If these phrases are not found, or if the loan is identified as a different type (e.g., \"Conventional\"), return \"Not Present\".",
+        "savedAt": "2025-11-17T17:32:16.983Z",
+        "source": "optimizer",
+        "note": "The revised prompt adds a negative constraint to prevent incorrect extraction when a document, like `payoff_02_doc.pdf`, specifies a different loan type. It also focuses the model on finding the exact keywords \"HELOC\" or \"Home Equity Line of Credit\" rather than inferring the loan type."
+      },
       {
         "id": "v2",
         "prompt": "The text you used to determine if the loan type was HELOC. Otherwise, \"Not Present\". ONLY PRESENT FOR HELOCs",
@@ -1042,12 +1013,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:30:47.754Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:32:16.983Z"
   },
   "good_through_date": {
-    "activePrompt": "Extract the \"Good Through Date\" from the payoff statement and format it as YYYY-MM-DD. Look for labels such as \"good thru,\" \"valid until,\" or \"expires on.\" ",
+    "activePrompt": "Extract the \"Good Through Date\" from the payoff statement, which is the expiration date for the payoff quote. This date is explicitly labeled with terms like \"good thru,\" \"valid until,\" \"expires on,\" or \"quote good through.\" Prioritize the date directly associated with these labels over other dates in the document, such as the document creation date or fax date. Format the extracted date as YYYY-MM-DD.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:32:27.665Z",
+        "prompt": "Extract the \"Good Through Date\" from the payoff statement, which is the expiration date for the payoff quote. This date is explicitly labeled with terms like \"good thru,\" \"valid until,\" \"expires on,\" or \"quote good through.\" Prioritize the date directly associated with these labels over other dates in the document, such as the document creation date or fax date. Format the extracted date as YYYY-MM-DD.",
+        "savedAt": "2025-11-17T17:32:27.665Z",
+        "source": "optimizer",
+        "note": "The revised prompt instructs the model to prioritize the date explicitly linked to expiration labels, helping it differentiate the correct date from other dates like the document or fax date, as seen in `payoff_02_doc.pdf`."
+      },
       {
         "id": "v2",
         "prompt": "Extract the \"Good Through Date\" from the payoff statement and format it as YYYY-MM-DD. Look for labels such as \"good thru,\" \"valid until,\" or \"expires on.\" ",
@@ -1186,12 +1164,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:31:33.476Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:32:27.666Z"
   },
   "good_through_text": {
-    "activePrompt": "Extract the text or date associated with the \"good through,\" \"valid until,\" or expiration date. If no explicit date is found, extract the latest date mentioned in the document, especially if it is near a payoff amount. ",
+    "activePrompt": "Extract the full sentence or phrase containing the expiration date, often labeled \"good through,\" \"valid until,\" or \"expires on.\" Prioritize text found near payoff amounts, in tables, or under relevant headings. If no explicit expiration language is found, extract the latest date mentioned near a payoff amount.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:32:43.332Z",
+        "prompt": "Extract the full sentence or phrase containing the expiration date, often labeled \"good through,\" \"valid until,\" or \"expires on.\" Prioritize text found near payoff amounts, in tables, or under relevant headings. If no explicit expiration language is found, extract the latest date mentioned near a payoff amount.",
+        "savedAt": "2025-11-17T17:32:43.332Z",
+        "source": "optimizer",
+        "note": "The revised prompt instructs the model to extract the full sentence to prevent partial matches, as seen in payoff_02_doc.pdf. Adding contextual anchors like \"near payoff amounts\" helps the model prioritize the correct statement over other mentions of the date."
+      },
       {
         "id": "v2",
         "prompt": "Extract the text or date associated with the \"good through,\" \"valid until,\" or expiration date. If no explicit date is found, extract the latest date mentioned in the document, especially if it is near a payoff amount. ",
@@ -1330,12 +1315,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:31:14.087Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:32:43.333Z"
   },
   "per_diem": {
-    "activePrompt": "Extract the per diem amount, which may be labeled as \"daily interest.\" If the per diem is not explicitly stated, calculate it using the total interest and the number of days in the period.",
+    "activePrompt": "Extract the per diem amount. Search for explicit labels like 'Per Diem', 'Daily Interest', or 'Interest Per Day'. The value may appear in tables, lists, or within sentence text (e.g., \"...the interest per Day is $19.75...\"). If an explicit per diem is not found, calculate it by dividing the total interest amount by the number of days in the corresponding period.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:32:56.028Z",
+        "prompt": "Extract the per diem amount. Search for explicit labels like 'Per Diem', 'Daily Interest', or 'Interest Per Day'. The value may appear in tables, lists, or within sentence text (e.g., \"...the interest per Day is $19.75...\"). If an explicit per diem is not found, calculate it by dividing the total interest amount by the number of days in the corresponding period.",
+        "savedAt": "2025-11-17T17:32:56.028Z",
+        "source": "optimizer",
+        "note": "The revised prompt adds 'Interest Per Day' as a key phrase and instructs the model to search within sentence text. This addresses failures where the value is described in a paragraph rather than a table, as seen in `payoff_02_doc.pdf`."
+      },
       {
         "id": "v2",
         "prompt": "Extract the per diem amount, which may be labeled as \"daily interest.\" If the per diem is not explicitly stated, calculate it using the total interest and the number of days in the period.",
@@ -1474,12 +1466,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:31:58.315Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:32:56.028Z"
   },
   "charge_count": {
-    "activePrompt": "",
+    "activePrompt": "Extract the total number of charges from the payoff statement. In any table or section listing fees and charges, count only the individual line items that have a corresponding monetary value greater than $0.00.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:33:09.239Z",
+        "prompt": "Extract the total number of charges from the payoff statement. In any table or section listing fees and charges, count only the individual line items that have a corresponding monetary value greater than $0.00.",
+        "savedAt": "2025-11-17T17:33:09.239Z",
+        "source": "optimizer",
+        "note": "The prompt now specifies counting only line items with a value greater than $0.00, which prevents the model from overcounting in documents like `payoff_02_doc.pdf` where zero-dollar charges are listed. This instruction improves accuracy by focusing on actual charges rather than all potential charge categories."
+      },
       {
         "id": "v3",
         "prompt": "",
@@ -1749,12 +1748,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-07T06:45:10.962Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-17T17:33:09.240Z"
   },
   "borrower_name": {
-    "activePrompt": "",
+    "activePrompt": "Extract the full name of the Borrower. Look for labels such as 'Borrower', 'Borrower Name', or 'Mortgagor'. If the document lists a 'Co-Borrower', 'Co-Mortgagor', or a second borrower on a separate line, combine both names, separated by 'and'. If no specific label is found, identify the primary individual or entity to whom the document is addressed.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:33:20.875Z",
+        "prompt": "Extract the full name of the Borrower. Look for labels such as 'Borrower', 'Borrower Name', or 'Mortgagor'. If the document lists a 'Co-Borrower', 'Co-Mortgagor', or a second borrower on a separate line, combine both names, separated by 'and'. If no specific label is found, identify the primary individual or entity to whom the document is addressed.",
+        "savedAt": "2025-11-17T17:33:20.875Z",
+        "source": "optimizer",
+        "note": "The revised prompt explicitly instructs the model to identify and combine names from fields like 'Co-Mortgagor' or 'Co-Borrower', separating them with 'and'. This is designed to correct failures seen in `payoff_02_doc.pdf` where multiple borrowers were listed separately and only the first was extracted."
+      },
       {
         "id": "v2",
         "prompt": "",
@@ -1893,12 +1899,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:45:36.872Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:33:20.876Z"
   },
   "does_disbursement_notes_include_borrower": {
-    "activePrompt": "",
+    "activePrompt": "Carefully review the document in sections titled 'Disbursement Notes', 'Wire Transfer', 'Wire Instructions', 'Funding Details', or similar. Look for any mention of the borrower's name or keywords like 'Borrower' or 'Mortgagor'. If a mention is found, extract 'Yes'. If no such section exists or if the borrower is not mentioned, extract 'No'.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:33:32.078Z",
+        "prompt": "Carefully review the document in sections titled 'Disbursement Notes', 'Wire Transfer', 'Wire Instructions', 'Funding Details', or similar. Look for any mention of the borrower's name or keywords like 'Borrower' or 'Mortgagor'. If a mention is found, extract 'Yes'. If no such section exists or if the borrower is not mentioned, extract 'No'.",
+        "savedAt": "2025-11-17T17:33:32.078Z",
+        "source": "optimizer",
+        "note": "The prompt now directs the model to check related sections like 'Wire Transfer' and look for synonyms like 'Mortgagor', addressing the failure in `payoff_02_doc.pdf` where this information was missed."
+      },
       {
         "id": "v2",
         "prompt": "",
@@ -2037,12 +2050,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:45:51.706Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:33:32.078Z"
   },
   "lender_name": {
-    "activePrompt": "Extract the lender's name from the payoff statement, which is typically the company name in the header or letterhead. ",
+    "activePrompt": "Extract the lender's name from the payoff statement. This is the company name prominently displayed in the header, letterhead, or sender's mailing address. Prioritize the name in the header over names associated with terms like 'Beneficiary' or 'Payable to' if they differ.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:33:43.437Z",
+        "prompt": "Extract the lender's name from the payoff statement. This is the company name prominently displayed in the header, letterhead, or sender's mailing address. Prioritize the name in the header over names associated with terms like 'Beneficiary' or 'Payable to' if they differ.",
+        "savedAt": "2025-11-17T17:33:43.437Z",
+        "source": "optimizer",
+        "note": "The model may confuse the header name with the 'Beneficiary' name, as seen in `payoff_02_doc.pdf`. The revised prompt clarifies to prioritize the name in the header or letterhead over other labels."
+      },
       {
         "id": "v2",
         "prompt": "Extract the lender's name from the payoff statement, which is typically the company name in the header or letterhead. ",
@@ -2181,12 +2201,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:33:19.902Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:33:43.438Z"
   },
   "lender_address": {
-    "activePrompt": "Extract the lender's full mailing address from the document. If not explicitly labeled, use the primary business address found in the header, footer, or contact section. ",
+    "activePrompt": "Extract the lender's full mailing address. Prioritize the address for mailing payments or checks, often found under headings like \"Remittance,\" \"Payoff Address,\" or \"Cashier's Check.\" Do not extract addresses intended for wire transfers, such as the \"Beneficiary Bank Address.\" If a specific payment address is not found, use the primary business address from the header, footer, or contact section.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:33:54.403Z",
+        "prompt": "Extract the lender's full mailing address. Prioritize the address for mailing payments or checks, often found under headings like \"Remittance,\" \"Payoff Address,\" or \"Cashier's Check.\" Do not extract addresses intended for wire transfers, such as the \"Beneficiary Bank Address.\" If a specific payment address is not found, use the primary business address from the header, footer, or contact section.",
+        "savedAt": "2025-11-17T17:33:54.403Z",
+        "source": "optimizer",
+        "note": "The new prompt adds explicit instructions to prioritize the payment mailing address and ignore wire transfer addresses. This helps the model distinguish between multiple valid addresses, as seen in `payoff_02_doc.pdf`."
+      },
       {
         "id": "v2",
         "prompt": "Extract the lender's full mailing address from the document. If not explicitly labeled, use the primary business address found in the header, footer, or contact section. ",
@@ -2325,12 +2352,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:33:50.205Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:33:54.404Z"
   },
   "beneficiary_name": {
-    "activePrompt": "Extract the Beneficiary Name from the payoff statement. If not explicitly labeled, identify the lender, creditor, or company to whom the payment is directed. ",
+    "activePrompt": "Extract the Beneficiary Name from the payoff statement. Prioritize the name explicitly labeled 'Beneficiary', 'Payee', or 'Payable To', especially within payment instruction sections like 'Wire Transfer' or 'ACH'. If a specific beneficiary is not found in the payment instructions, identify the primary lender or creditor to whom the payment is directed.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:34:09.453Z",
+        "prompt": "Extract the Beneficiary Name from the payoff statement. Prioritize the name explicitly labeled 'Beneficiary', 'Payee', or 'Payable To', especially within payment instruction sections like 'Wire Transfer' or 'ACH'. If a specific beneficiary is not found in the payment instructions, identify the primary lender or creditor to whom the payment is directed.",
+        "savedAt": "2025-11-17T17:34:09.453Z",
+        "source": "optimizer",
+        "note": "The revised prompt directs the model to prioritize the name within payment instruction sections to avoid incorrectly extracting the general lender name from the header. This addresses the failure in `payoff_02_doc.pdf`, where the specific beneficiary is listed under \"WIRE TRANSFER\"."
+      },
       {
         "id": "v2",
         "prompt": "Extract the Beneficiary Name from the payoff statement. If not explicitly labeled, identify the lender, creditor, or company to whom the payment is directed. ",
@@ -2469,12 +2503,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:34:58.877Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:34:09.454Z"
   },
   "beneficiary_address": {
-    "activePrompt": "",
+    "activePrompt": "Extract the full mailing address for the beneficiary or lender. Prioritize addresses listed under headings such as \"Pay To,\" \"Mail Payments To,\" or \"Correspondence Address.\" Explicitly exclude any bank addresses found within \"Wire Transfer Instructions\" or \"ACH Instructions.\"",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:34:21.395Z",
+        "prompt": "Extract the full mailing address for the beneficiary or lender. Prioritize addresses listed under headings such as \"Pay To,\" \"Mail Payments To,\" or \"Correspondence Address.\" Explicitly exclude any bank addresses found within \"Wire Transfer Instructions\" or \"ACH Instructions.\"",
+        "savedAt": "2025-11-17T17:34:21.395Z",
+        "source": "optimizer",
+        "note": "The new prompt clarifies the distinction between a mailing address for checks and a bank address for wire transfers, which was a point of confusion in `payoff_02_doc.pdf`. It instructs the model to ignore addresses within wire instruction sections and prioritize those under payment or correspondence headings."
+      },
       {
         "id": "v3",
         "prompt": "",
@@ -2744,12 +2785,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-07T06:46:48.767Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-17T17:34:21.395Z"
   },
   "property_address": {
-    "activePrompt": "",
+    "activePrompt": "Extract the full property address, including street, city, state, and zip code. Prioritize the address explicitly labeled \"Property address\" or \"Property Location\". Do not extract the lender, beneficiary, or mailing address.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:34:33.925Z",
+        "prompt": "Extract the full property address, including street, city, state, and zip code. Prioritize the address explicitly labeled \"Property address\" or \"Property Location\". Do not extract the lender, beneficiary, or mailing address.",
+        "savedAt": "2025-11-17T17:34:33.925Z",
+        "source": "optimizer",
+        "note": "This prompt adds explicit instructions to prioritize labels like \"Property address,\" preventing the model from incorrectly extracting the lender's or beneficiary's address as seen in `payoff_02_doc.pdf`. Anchoring to specific labels also improves resilience to minor OCR errors."
+      },
       {
         "id": "v3",
         "prompt": "",
@@ -3019,12 +3067,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-07T06:46:59.426Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-17T17:34:33.926Z"
   },
   "bank_name": {
-    "activePrompt": "Extract the full name of the bank mentioned in the document. If a specific bank name is not explicitly stated, identify the name of any financial institution or credit union. ",
+    "activePrompt": "Extract the full name of the bank, financial institution, or credit union. When reviewing sections for wire transfers or payment instructions, prioritize the name explicitly labeled as 'Beneficiary' or 'Beneficiary Bank'. Do not extract the lender or mortgage company name if a separate beneficiary bank is specified.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:34:45.294Z",
+        "prompt": "Extract the full name of the bank, financial institution, or credit union. When reviewing sections for wire transfers or payment instructions, prioritize the name explicitly labeled as 'Beneficiary' or 'Beneficiary Bank'. Do not extract the lender or mortgage company name if a separate beneficiary bank is specified.",
+        "savedAt": "2025-11-17T17:34:45.294Z",
+        "source": "optimizer",
+        "note": "The revised prompt helps the model distinguish the beneficiary bank from the lender in `payoff_02_doc.pdf` by instructing it to prioritize names labeled 'Beneficiary' within payment or wire instruction sections."
+      },
       {
         "id": "v2",
         "prompt": "Extract the full name of the bank mentioned in the document. If a specific bank name is not explicitly stated, identify the name of any financial institution or credit union. ",
@@ -3163,12 +3218,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:36:25.246Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:34:45.295Z"
   },
   "wire_instructions": {
-    "activePrompt": "Extract the complete wire transfer instructions, including the bank name, account number, routing number (ABA), and SWIFT code. If these details are not explicitly labeled as \"Wire Instructions,\" extract the bank name, account number, and routing number provided for sending funds.",
+    "activePrompt": "Look for a section or table with a heading like 'Wire Transfer Instructions,' 'Wire Instructions,' or 'Bank Details.' Extract the entire block of text under this heading, including the bank name, account number, routing number (ABA), SWIFT code, and any additional instructions or special information for the beneficiary. If no such labeled section is found, extract the bank name, account number, and routing number provided for sending funds.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:34:58.572Z",
+        "prompt": "Look for a section or table with a heading like 'Wire Transfer Instructions,' 'Wire Instructions,' or 'Bank Details.' Extract the entire block of text under this heading, including the bank name, account number, routing number (ABA), SWIFT code, and any additional instructions or special information for the beneficiary. If no such labeled section is found, extract the bank name, account number, and routing number provided for sending funds.",
+        "savedAt": "2025-11-17T17:34:58.572Z",
+        "source": "optimizer",
+        "note": "The revised prompt explicitly instructs the model to find a labeled section and extract the entire text block, which should prevent truncation of details like 'Special Information' as seen in `payoff_02_doc.pdf`. This approach provides a stronger anchor for the model while retaining the fallback for less structured documents."
+      },
       {
         "id": "v2",
         "prompt": "Extract the complete wire transfer instructions, including the bank name, account number, routing number (ABA), and SWIFT code. If these details are not explicitly labeled as \"Wire Instructions,\" extract the bank name, account number, and routing number provided for sending funds.",
@@ -3307,12 +3369,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:36:53.053Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:34:58.573Z"
   },
   "wire_transfer_address": {
-    "activePrompt": "Extract the full Wire Transfer Address, including the street, city, state, and postal code. If not explicitly labeled, find the bank's physical address under a \"Banking Information\" or \"Payment Instructions\" section.",
+    "activePrompt": "Extract the full physical address for the wire transfer, including street, city, state, and postal code. Search within sections titled 'Wire Instructions', 'Banking Information', or 'Payment Instructions'. Prioritize the address explicitly labeled 'Beneficiary Bank Address' or the bank's physical address. Exclude any mailing addresses for checks or property addresses, even if they appear within the same section.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:35:13.246Z",
+        "prompt": "Extract the full physical address for the wire transfer, including street, city, state, and postal code. Search within sections titled 'Wire Instructions', 'Banking Information', or 'Payment Instructions'. Prioritize the address explicitly labeled 'Beneficiary Bank Address' or the bank's physical address. Exclude any mailing addresses for checks or property addresses, even if they appear within the same section.",
+        "savedAt": "2025-11-17T17:35:13.246Z",
+        "source": "optimizer",
+        "note": "The revised prompt directs the model to prioritize the 'Beneficiary Bank Address' to resolve ambiguity noted in `payoff_02_doc.pdf`. It also adds explicit exclusions for nearby but incorrect addresses, such as those for mailing checks or the property itself."
+      },
       {
         "id": "v2",
         "prompt": "Extract the full Wire Transfer Address, including the street, city, state, and postal code. If not explicitly labeled, find the bank's physical address under a \"Banking Information\" or \"Payment Instructions\" section.",
@@ -3451,12 +3520,19 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 2,
-    "lastModified": "2025-11-07T06:37:12.622Z"
+    "usageCount": 3,
+    "lastModified": "2025-11-17T17:35:13.246Z"
   },
   "overnight_deliveries_address1": {
-    "activePrompt": "",
+    "activePrompt": "Extract the street address (line 1) for overnight deliveries or courier. If an overnight delivery address is not specified, extract the physical street address for 'payments', 'payoffs', or 'mailing checks'. Do not extract PO Box addresses or bank addresses from wire transfer instructions.",
     "promptHistory": [
+      {
+        "id": "optimizer-2025-11-17T17:35:25.738Z",
+        "prompt": "Extract the street address (line 1) for overnight deliveries or courier. If an overnight delivery address is not specified, extract the physical street address for 'payments', 'payoffs', or 'mailing checks'. Do not extract PO Box addresses or bank addresses from wire transfer instructions.",
+        "savedAt": "2025-11-17T17:35:25.738Z",
+        "source": "optimizer",
+        "note": "The revised prompt adds a fallback to find physical payment/check addresses, which is necessary for documents like `payoff_02_doc.pdf` that lack an explicit 'overnight' label. It also explicitly excludes PO Boxes and bank wire addresses to prevent common extraction errors."
+      },
       {
         "id": "v3",
         "prompt": "",
@@ -3726,7 +3802,7 @@
       }
     ],
     "lastUsedTemplate": "payoff_statements",
-    "usageCount": 3,
-    "lastModified": "2025-11-07T06:47:46.879Z"
+    "usageCount": 4,
+    "lastModified": "2025-11-17T17:35:25.738Z"
   }
 }
