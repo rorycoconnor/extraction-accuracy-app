@@ -912,7 +912,22 @@ export default function TanStackExtractionTable({
                         // Check if field is included in metrics calculation
                         const isFieldIncluded = data.fieldSettings?.[field.key]?.includeInMetrics !== false;
                         
+                        // 🔍 DEBUG: Log averages lookup
                         const metrics = averages[field.key]?.[modelName] ?? { accuracy: 0, precision: 0, recall: 0, f1: 0 };
+                        
+                        if (fieldIndex === 0 && modelName !== 'Ground Truth') {
+                          console.log('🔍 TABLE: Looking up averages', {
+                            fieldKey: field.key,
+                            modelName,
+                            hasAveragesForField: !!averages[field.key],
+                            availableModelsInAverages: averages[field.key] ? Object.keys(averages[field.key]) : [],
+                            metricsFound: averages[field.key]?.[modelName],
+                            actualMetricsUsed: metrics,
+                            accuracyValue: metrics.accuracy,
+                            accuracyType: typeof metrics.accuracy
+                          });
+                        }
+                        
                         const accuracy = metrics.accuracy;
                         
                         // Check if there's any ground truth data for this field across all files
