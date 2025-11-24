@@ -144,15 +144,15 @@ export interface ModelConfig {
 export const MODEL_CONFIGS: ModelConfig[] = [
   // Google Gemini Models
   {
-    id: 'google__gemini_2_0_flash_001',
-    name: 'Google 2.0 Flash',
+    id: 'google__gemini_2_5_flash',
+    name: 'Google 2.5 Flash',
     vendor: 'Google',
     isPremium: false, // Standard tier
     isMultiModal: true
   },
   {
-    id: 'google__gemini_2_0_flash_001_no_prompt',
-    name: 'Google 2.0 Flash (no prompt)',
+    id: 'google__gemini_2_5_flash_no_prompt',
+    name: 'Google 2.5 Flash (no prompt)',
     vendor: 'Google',
     isPremium: false, // Standard tier
     isMultiModal: true
@@ -217,15 +217,15 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     isMultiModal: false
   },
   {
-    id: 'aws__claude_4_opus',
-    name: 'Claude 4 Opus',
+    id: 'aws__claude_4_5_sonnet',
+    name: 'Claude 4.5 Sonnet',
     vendor: 'Anthropic',
     isPremium: true, // Premium tier
     isMultiModal: false
   },
   {
-    id: 'aws__claude_4_opus_no_prompt',
-    name: 'Claude 4 Opus (no prompt)',
+    id: 'aws__claude_4_5_sonnet_no_prompt',
+    name: 'Claude 4.5 Sonnet (no prompt)',
     vendor: 'Anthropic',
     isPremium: true, // Premium tier
     isMultiModal: false
@@ -257,6 +257,20 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     name: 'GPT-4.1 Mini (no prompt)',
     vendor: 'Azure',
     isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_1',
+    name: 'GPT-5.1',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_1_no_prompt',
+    name: 'GPT-5.1 (no prompt)',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
     isMultiModal: true
   },
   {
