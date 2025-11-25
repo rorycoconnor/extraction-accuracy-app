@@ -76,7 +76,7 @@ export type PromptVersion = {
   prompt: string;
   savedAt: string;
   isFavorite?: boolean;
-  source?: 'manual' | 'optimizer' | 'imported';
+  source?: 'manual' | 'optimizer' | 'imported' | 'agent-alpha';
   generationMethod?: 'standard' | 'dspy' | 'agent'; // How the prompt was generated
   note?: string;
   metrics?: {

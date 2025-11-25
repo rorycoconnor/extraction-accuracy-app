@@ -3,18 +3,83 @@
     "activePrompt": "",
     "promptHistory": [
       {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-25T15:49:54.132Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T06:10:31.185Z-7db412aa-7ef9-4e08-ab25-2fb24d38da66",
+        "prompt": "Search the \"Term\", \"Renewal\", \"Termination\", or \"Notice\" sections for the advance notice period required to prevent automatic renewal or to terminate before renewal. Look for phrases like \"notice period\", \"days prior notice\", \"advance notice\", \"written notice\", or \"terminate with X days notice\". Return the time period in format \"X Days\" (e.g., \"30 Days\", \"60 Days\", \"90 Days\") - convert written numbers to digits and always use \"Days\" as the unit. Do NOT extract general termination notice periods unrelated to renewal. If no renewal notice period is specified, return \"Not Present\".",
+        "savedAt": "2025-11-25T06:10:31.185Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 100.0% (1 iterations)"
+      },
+      {
         "id": "v2",
         "prompt": "",
         "savedAt": "2025-11-18T01:32:10.021Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 7,
-    "lastModified": "2025-11-18T01:32:12.813Z"
+    "usageCount": 9,
+    "lastModified": "2025-11-25T15:49:54.134Z"
   },
   "terminationForConvenience": {
     "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v12",
+        "prompt": "",
+        "savedAt": "2025-11-25T15:50:03.714Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T06:10:31.186Z-60805a90-a412-4a99-b9c4-27287e888069",
+        "prompt": "Search the \"Termination\" or \"Term\" sections for whether either party can terminate the contract WITHOUT requiring cause, breach, or default. Look for phrases like: \"terminate for convenience\", \"terminate without cause\", \"terminate at will\", \"terminate for any reason\", \"terminate at its sole discretion\", or \"terminate upon [X] days notice\" where no breach is required. Return \"Yes\" if either party has the right to terminate without cause. Return \"No\" if termination only allows for cause, breach, default, or specific triggering events. Do NOT classify breach-based or cause-based termination as convenience termination.",
+        "savedAt": "2025-11-25T06:10:31.186Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 37.5% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v10",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:59:06.905Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T00:34:06.144Z-ab2c7ab6-6ddb-4069-ab52-d9d45840a42b",
+        "prompt": "Search the entire document for termination clauses. Extract 'Yes' if either party can terminate the agreement without cause, using phrases like 'for convenience', 'without cause', 'at will', or 'for any reason'. Extract 'No' if all termination rights require a specific cause (e.g., breach, default, insolvency). Do NOT classify termination for cause as termination for convenience.",
+        "savedAt": "2025-11-25T00:34:06.144Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 37.5% → Final: 50.0% (3 iterations)"
+      },
+      {
+        "id": "v8",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:25:07.388Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T23:36:04.925Z-68a69e7c-03ed-443b-a71f-ad3947d43081",
+        "prompt": "Search the entire document for termination clauses. Extract 'Yes' if the agreement allows either party to terminate without cause (described as 'for convenience', 'at will', 'for any reason', or 'at its sole discretion'). Extract 'No' if all termination rights require a specific cause (such as breach, insolvency, or default). Do NOT classify termination due to breach or default as a termination for convenience.",
+        "savedAt": "2025-11-24T23:36:04.925Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 37.5% → Final: 50.0% (3 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-11-24T21:56:15.809Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T18:01:04.867Z-41f2a7e2-7d3a-4f38-9abf-af8d5fd281dd",
+        "prompt": "Does the agreement allow either party to terminate for convenience (without cause)?\\n\\n1. **Search the entire document** for language allowing termination without a specified reason.\\n2. **Extract 'Yes'** if a party can terminate simply by providing a notice period (e.g., \\",
+        "savedAt": "2025-11-24T18:01:04.867Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 50.0% → Final: 0.0% (5 iterations)"
+      },
       {
         "id": "v4",
         "prompt": "",
@@ -37,12 +102,59 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 13,
-    "lastModified": "2025-11-21T06:29:55.243Z"
+    "usageCount": 21,
+    "lastModified": "2025-11-25T15:50:03.718Z"
   },
   "terminationForCause": {
     "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v8",
+        "prompt": "",
+        "savedAt": "2025-11-25T15:50:10.971Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T15:32:43.161Z-d626c4d0-3159-45c4-890c-4fc526449b20",
+        "prompt": "Search the 'Termination', 'Default', 'Events of Default', or 'Breach' sections for cause-based termination provisions. Look for phrases like: 'terminate for cause', 'material breach', 'default', 'failure to cure', 'insolvency', 'bankruptcy', or 'breach of contract'. Return 'Yes' if either party can terminate the agreement due to cause, breach, or default. Return 'No' only if the contract explicitly states no cause-based termination or if no such provisions exist. Do NOT confuse with termination for convenience or expiration.",
+        "savedAt": "2025-11-25T15:32:43.161Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 50.0% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T06:10:31.187Z-5c857f73-a90a-4dff-a15d-cf753219b8ea",
+        "prompt": "Search the 'Termination', 'Default', 'Events of Default', or 'Breach' sections for cause-based termination provisions. Look for phrases like: 'terminate for cause', 'material breach', 'default', 'failure to cure', 'insolvency', 'bankruptcy', or 'breach of contract'. Return 'Yes' if either party can terminate the agreement due to cause, breach, or default. Return 'No' only if the contract explicitly states no cause-based termination or if no such provisions exist. Do NOT confuse with termination for convenience or expiration.",
+        "savedAt": "2025-11-25T06:10:31.187Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:59:14.247Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T00:34:06.145Z-8c546d6e-3e08-403a-a75d-3ff04cdce549",
+        "prompt": "Search the entire document for termination clauses. Extract 'Yes' if the agreement allows termination for a specific reason, such as 'material breach', 'default', 'insolvency', or 'failure to perform'. Extract 'No' if the termination section only describes termination for convenience ('without cause', 'for any reason') or if no grounds for termination are mentioned at all. Do NOT confuse termination at the end of a term with termination for cause.",
+        "savedAt": "2025-11-25T00:34:06.145Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 50.0% (3 iterations)"
+      },
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:25:15.637Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T23:36:04.926Z-b4c4d4ca-9d1e-4337-9dc5-5b07eeeee148",
+        "prompt": "Search the entire document for termination clauses. Extract 'Yes' if the agreement allows termination due to specific events like material breach, default, insolvency, or failure to perform. Extract 'No' if the agreement only allows for termination for convenience (e.g., 'at will', 'for any reason') or if it lacks any termination clauses entirely. Do NOT confuse termination for convenience with termination for cause.",
+        "savedAt": "2025-11-24T23:36:04.926Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 50.0% (3 iterations)"
+      },
       {
         "id": "v2",
         "prompt": "",
@@ -50,73 +162,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 9,
-    "lastModified": "2025-11-18T01:32:59.186Z"
-  },
-  "governingLaw": {
-    "activePrompt": "",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:32:19.269Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 9,
-    "lastModified": "2025-11-18T01:32:21.537Z"
-  },
-  "venue": {
-    "activePrompt": "",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:32:33.069Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 13,
-    "lastModified": "2025-11-18T01:32:35.779Z"
-  },
-  "endDate": {
-    "activePrompt": "",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:32:10.021Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 7,
-    "lastModified": "2025-11-18T01:32:12.813Z"
-  },
-  "terminationForConvenience": {
-    "activePrompt": "",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:32:44.441Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 10,
-    "lastModified": "2025-11-18T01:32:46.977Z"
-  },
-  "terminationForCause": {
-    "activePrompt": "",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:32:56.741Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 9,
-    "lastModified": "2025-11-18T01:32:59.186Z"
+    "usageCount": 16,
+    "lastModified": "2025-11-25T15:50:10.975Z"
   },
   "governingLaw": {
     "activePrompt": "",
@@ -148,6 +195,64 @@
     "activePrompt": "",
     "promptHistory": [
       {
+        "id": "v12",
+        "prompt": "",
+        "savedAt": "2025-11-25T15:49:37.261Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T06:10:31.182Z-3773192a-9fcb-428f-8b3b-d32d59be6c62",
+        "prompt": "Extract the contract end date by searching for phrases like 'expires on', 'terminates on', 'term ends', 'valid until', 'expiration date', or 'shall remain in effect until'. If no explicit end date is stated, CALCULATE it by adding the contract term duration to the effective/start date (e.g., start date '2024-01-01' + term '2 years' = end date '2025-12-31'). When calculating, subtract ONE DAY from anniversary dates to avoid overlap (e.g., 2-year term starting Jan 1, 2024 ends Dec 31, 2025, not Jan 1, 2026). Return date in YYYY-MM-DD format. For perpetual agreements, return 'Perpetual'. Do NOT confuse with notice periods, renewal deadlines, or payment due dates.",
+        "savedAt": "2025-11-25T06:10:31.182Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v10",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:58:48.492Z"
+      },
+      {
+        "id": "v9",
+        "prompt": "Extract the agreement's expiration date (YYYY-MM-DD) by finding terms like 'expires on' or by calculating it from a start date and duration, ensuring the end date is one day before the term's anniversary (e.g., a 1-year term from 2024-01-01 ends on 2024-12-31). Do not extract the signature, effective, or notice date unless it is explicitly defined as the termination date.",
+        "savedAt": "2025-11-25T00:41:25.543Z",
+        "generationMethod": "standard"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T00:34:06.141Z-5da12ea7-9c4a-44ec-9e74-20c19ca654ae",
+        "prompt": "Search the entire document to extract the date when the agreement or term expires, formatted as YYYY-MM-DD. Look for keywords like 'expires on', 'expiration date', 'term ends on', or 'termination date'. If a start date and a duration are provided (e.g., 'a term of two years from the Effective Date'), calculate the end date. Do NOT extract the signature date, effective date, or notice date unless it is also explicitly defined as the termination date.",
+        "savedAt": "2025-11-25T00:34:06.141Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 50.0% (3 iterations)"
+      },
+      {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:24:44.136Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T23:36:04.922Z-bb2e6eae-1dc0-4dc8-ab1a-8cfef3015774",
+        "prompt": "Search the entire document for the agreement's expiration or termination date and extract it in YYYY-MM-DD format. Look for keywords like 'expires on', 'term ends', 'termination date', or 'until'. If the end date is defined by a duration from a start date (e.g., 'a term of 2 years from January 1, 2024'), calculate the end date. Do NOT extract the signature date, effective date, or notice date unless it is explicitly the termination date. If the term is perpetual, evergreen, or no end date is specified, return 'Not Present'.",
+        "savedAt": "2025-11-24T23:36:04.922Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 50.0% (4 iterations)"
+      },
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-24T21:56:06.852Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T18:01:04.866Z-df591cea-61ef-427b-a9bb-1d9f8eb4030d",
+        "prompt": "Follow these steps in order: 1. Search for an explicit end date near labels like 'Expiration Date' or 'Termination Date'. 2. If no explicit date is found, you MUST calculate it by adding the contract term to the start date. The calculated end date is one day *before* the anniversary of the start date (e.g., a 1-year term starting 2024-05-24 ends 2025-05-23).",
+        "savedAt": "2025-11-24T18:01:04.866Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 0.0% (5 iterations)"
+      },
+      {
         "id": "v3",
         "prompt": "",
         "savedAt": "2025-11-21T06:29:43.977Z"
@@ -164,8 +269,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 18,
-    "lastModified": "2025-11-21T06:29:43.981Z"
+    "usageCount": 27,
+    "lastModified": "2025-11-25T15:49:37.266Z"
   },
   "effectiveDate": {
     "activePrompt": "",
@@ -196,6 +301,68 @@
   "counterPartyName": {
     "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v13",
+        "prompt": "",
+        "savedAt": "2025-11-25T15:31:27.846Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T06:10:31.176Z-bda1e821-1191-4d8a-a266-f84b0453c236",
+        "prompt": "Extract the OTHER contracting party name from this agreement. Look in: (1) opening paragraphs for phrases like 'by and between', 'Agreement between', 'entered into by', or 'parties are' - identify BOTH parties and return the one that is NOT 'Increo' or 'Increo, Inc.', (2) signature blocks at document end - find the company name that differs from Increo, (3) party definition sections that assign names like 'Company', 'Vendor', 'Client'. Return ONLY the complete legal entity name exactly as written (including LLC, Inc., Corp., etc.). Do NOT return any variation of 'Increo'. If multiple counter parties exist, return the primary one. If no clear counter party is identified, return 'Not Present'.",
+        "savedAt": "2025-11-25T06:10:31.176Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 62.5% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v11",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:58:39.732Z"
+      },
+      {
+        "id": "v10",
+        "prompt": "Extract the Counter Party Name from this document. ",
+        "savedAt": "2025-11-25T00:39:27.557Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T00:34:06.133Z-55121c79-1a30-47d0-bdcb-ac2fdf1f0d00",
+        "prompt": "Extract the Counter Party Name from this document.",
+        "savedAt": "2025-11-25T00:34:06.133Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 75.0% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v8",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:24:21.900Z"
+      },
+      {
+        "id": "v7",
+        "prompt": "Search the introductory clause or 'PARTIES' section to identify the entities entering the agreement. Extract the full legal name of the second distinct party mentioned in the preamble (e.g., 'This agreement is between Party A and Party B'). Do NOT extract the party name that appears on the document's letterhead or is explicitly defined as the 'Company' when the other is the 'Contractor'. If only one party is clearly defined, return 'Not Present'. Our Company is Increo, Inc.",
+        "savedAt": "2025-11-25T00:23:09.709Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T23:36:04.914Z-a28cdf7c-26f3-4a23-b16e-c94b1f3794f7",
+        "prompt": "Search the introductory clause or 'PARTIES' section to identify the entities entering the agreement. Extract the full legal name of the second distinct party mentioned in the preamble (e.g., 'This agreement is between Party A and Party B'). Do NOT extract the party name that appears on the document's letterhead or is explicitly defined as the 'Company' when the other is the 'Contractor'. If only one party is clearly defined, return 'Not Present'.",
+        "savedAt": "2025-11-24T23:36:04.914Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 75.0% → Final: 100.0% (3 iterations)"
+      },
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-24T21:55:52.229Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T18:01:04.856Z-d934c963-b699-423c-8c27-d408334f5cba",
+        "prompt": "In the introductory clause that establishes the agreement between two parties (e.g., '...between Party A and Party B...'), extract the name of the second party mentioned. If the parties listed are 'Increo, Inc.' and 'VoltEdge Power Systems, Inc.', extract 'VoltEdge Power Systems, Inc.'.",
+        "savedAt": "2025-11-24T18:01:04.856Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 50.0% (5 iterations)"
+      },
       {
         "id": "v3",
         "prompt": "",
@@ -213,12 +380,74 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 16,
-    "lastModified": "2025-11-21T06:29:22.911Z"
+    "usageCount": 26,
+    "lastModified": "2025-11-25T15:31:27.853Z"
   },
   "counterPartyAddress": {
     "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v13",
+        "prompt": "",
+        "savedAt": "2025-11-25T15:49:19.005Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T06:10:31.181Z-da123dcf-9852-457e-ac7c-8e351172952c",
+        "prompt": "Extract the counter party's complete business address (the OTHER party in the agreement, not the extracting company). Look in: (1) opening recitals or party definitions, (2) 'Notices', 'Communications', or 'Address for Service' sections, (3) signature blocks. Search for phrases like 'address', 'located at', 'principal place of business', 'mailing address', or 'registered office'. Return the full address on a single line without extra punctuation at the end, including street number, street name, city, state, and ZIP code. Do NOT return the extracting company's own address. If multiple addresses exist for the counter party, prioritize the one in the Notices section. Return 'Not Present' if no counter party address is found.",
+        "savedAt": "2025-11-25T06:10:31.181Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 62.5% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v11",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:58:31.685Z"
+      },
+      {
+        "id": "v10",
+        "prompt": "Search the entire document to identify the address of the counter party, which is typically the second party named in the agreement or the entity identified as the 'Customer', 'Client', 'Tenant', or 'Lessee'. Extract the full street address, including city, state, and postal code as a single string. Do NOT extract the address of the primary party, 'Landlord', or the entity drafting the agreement. If multiple addresses are listed for the counter party, extract the one specified for notices. County Party Address will not be our company address for Increo, Inc.",
+        "savedAt": "2025-11-25T00:40:00.886Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T00:34:06.139Z-77d906a7-cdc7-4dd4-87e6-6e4cada2f70f",
+        "prompt": "Search the entire document to identify the address of the counter party, which is typically the second party named in the agreement or the entity identified as the 'Customer', 'Client', 'Tenant', or 'Lessee'. Extract the full street address, including city, state, and postal code as a single string. Do NOT extract the address of the primary party, 'Landlord', or the entity drafting the agreement. If multiple addresses are listed for the counter party, extract the one specified for notices.",
+        "savedAt": "2025-11-25T00:34:06.139Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 75.0% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v8",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:24:28.399Z"
+      },
+      {
+        "id": "v7",
+        "prompt": "Search the entire document to identify the second party named in the introductory clause (e.g., 'This agreement is between Party A and Party B'). Extract the full mailing address associated with that second party, often found immediately after their name or in the 'Notices' section. Do NOT extract the address of the first party mentioned or any address listed in the document's letterhead or footer. If no address is found for the counterparty, return 'Not Present'. Our Company is Increo, Inc.",
+        "savedAt": "2025-11-25T00:23:26.794Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T23:36:04.921Z-c8e40898-e533-4ad9-ae2e-232c9b43f38b",
+        "prompt": "Search the entire document to identify the second party named in the introductory clause (e.g., 'This agreement is between Party A and Party B'). Extract the full mailing address associated with that second party, often found immediately after their name or in the 'Notices' section. Do NOT extract the address of the first party mentioned or any address listed in the document's letterhead or footer. If no address is found for the counterparty, return 'Not Present'.",
+        "savedAt": "2025-11-24T23:36:04.921Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 75.0% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-24T21:55:57.835Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T18:01:04.864Z-245904a4-c526-4399-b941-c44c59343d29",
+        "prompt": "Extract the full mailing address of the customer being billed, which is located under a 'Bill To:', 'Sold To:', or 'Invoice To:' heading. This is the customer's address, not the sender's address (often in the header) or the payment address (often labeled 'Remit To:' or 'Pay To:'). If both 'Bill To' and 'Ship To' addresses are present, you must extract the 'Bill To' address.",
+        "savedAt": "2025-11-24T18:01:04.864Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 50.0% (5 iterations)"
+      },
       {
         "id": "v3",
         "prompt": "",
@@ -236,88 +465,28 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 12,
-    "lastModified": "2025-11-21T06:29:32.907Z"
+    "usageCount": 22,
+    "lastModified": "2025-11-25T15:49:19.010Z"
   },
   "contractType": {
     "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-11-24T21:55:27.934Z"
+      },
+      {
+        "id": "v6",
+        "prompt": "Extract the contract type, ensuring it matches one of the predefined choices. If the type is not explicitly mentioned, infer the most suitable choice from the document's content. ",
+        "savedAt": "2025-11-22T00:21:42.799Z",
+        "generationMethod": "standard"
+      },
       {
         "id": "v5",
         "prompt": "",
         "savedAt": "2025-11-21T06:29:16.090Z"
       },
-      {
-        "id": "v4",
-        "prompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
-        "savedAt": "2025-11-18T19:15:10.543Z",
-        "generationMethod": "standard"
-      },
-      {
-        "id": "v3",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:31:29.819Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 16,
-    "lastModified": "2025-11-18T01:31:35.093Z"
-  },
-  "effectiveDate": {
-    "activePrompt": "",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:30:56.416Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 9,
-    "lastModified": "2025-11-18T01:30:59.051Z"
-  },
-  "contractTerm": {
-    "activePrompt": "",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:31:12.903Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 7,
-    "lastModified": "2025-11-18T01:31:15.544Z"
-  },
-  "counterPartyName": {
-    "activePrompt": "",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:30:22.788Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 14,
-    "lastModified": "2025-11-18T01:30:26.164Z"
-  },
-  "counterPartyAddress": {
-    "activePrompt": "",
-    "promptHistory": [
-      {
-        "id": "v3",
-        "prompt": "",
-        "savedAt": "2025-11-18T01:30:38.882Z"
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 10,
-    "lastModified": "2025-11-18T01:30:45.265Z"
-  },
-  "contractType": {
-    "activePrompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
-    "promptHistory": [
       {
         "id": "v4",
         "prompt": "Extract the contract type from the document, ensuring the value is one of the predefined choices. If the contract type is not explicitly mentioned or does not match any of the choices, return \"null\".",
@@ -343,8 +512,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 18,
-    "lastModified": "2025-11-21T06:29:16.094Z"
+    "usageCount": 20,
+    "lastModified": "2025-11-24T21:55:27.940Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
@@ -618,14 +787,53 @@
     "activePrompt": "",
     "promptHistory": [
       {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-11-25T15:49:46.291Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T06:10:31.184Z-c783fa38-d650-4967-8b00-9deaa7a26abf",
+        "prompt": "Search the \"Term\", \"Renewal\", \"Duration\", or \"Termination\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given (look for \"automatically renew\", \"shall renew\", \"auto-renew\"). \"Manual Renewal\" = requires explicit action to renew (look for \"may be renewed\", \"option to renew\", \"upon mutual agreement\"). \"Evergreen Renewal\" = continues indefinitely until terminated (look for \"perpetual\", \"indefinite term\", \"until terminated\"). Do NOT guess - if renewal mechanism is unclear, return \"Manual Renewal\" as default.",
+        "savedAt": "2025-11-25T06:10:31.184Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:58:58.880Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-25T00:34:06.142Z-aa45e99c-438f-41b5-8409-7ce053f94125",
+        "prompt": "Search the entire document, focusing on the 'Term' or 'Renewal' sections, for the contract's renewal mechanism. Extract 'Autorenewal' if the term extends automatically unless a party gives notice of non-renewal (e.g., 'renews for successive periods'). Extract 'Manual Renewal' if renewal requires an explicit action, such as 'mutual agreement', 'written consent', or an 'affirmative notice to renew'. Extract 'Evergreen Renewal' for contracts with a 'perpetual' or 'indefinite' term. Do NOT classify a requirement to provide notice of *non-renewal* as a 'Manual Renewal'.",
+        "savedAt": "2025-11-25T00:34:06.142Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 0.0% (3 iterations)"
+      },
+      {
+        "id": "v3",
+        "prompt": "",
+        "savedAt": "2025-11-25T00:24:54.712Z"
+      },
+      {
+        "id": "agent-alpha-2025-11-24T23:36:04.923Z-25a52ff6-da9c-494b-9fa9-89dbb0db8eb3",
+        "prompt": "Search the entire document, focusing on the 'Term' and 'Renewal' sections, to identify the agreement's renewal mechanism. Extract 'Autorenewal' if the contract renews automatically for successive periods without action. Extract 'Manual Renewal' if renewal requires an explicit action, such as 'written notice', 'mutual agreement', or exercising an 'option to renew'. Extract 'Evergreen Renewal' if the term is described as 'indefinite' or 'perpetual' until terminated. Do NOT classify the initial contract term or termination rights as a renewal type.",
+        "savedAt": "2025-11-24T23:36:04.923Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 0.0% (3 iterations)"
+      },
+      {
         "id": "v4",
         "prompt": "",
         "savedAt": "2025-11-18T01:31:46.784Z"
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 12,
-    "lastModified": "2025-11-18T01:31:55.354Z"
+    "usageCount": 18,
+    "lastModified": "2025-11-25T15:49:46.295Z"
   },
   "disputeResolution": {
     "activePrompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",
@@ -4080,5 +4288,19 @@
     "lastUsedTemplate": "payoff_statements",
     "usageCount": 5,
     "lastModified": "2025-11-21T06:38:56.663Z"
+  },
+  "contracts": {
+    "activePrompt": "terminationForConvenience",
+    "promptHistory": "Does the agreement permit any party to terminate without cause (for convenience)? The answer must be 'Yes' or 'No'.\\n\\n- Extract **'Yes'** if a clause allows termination 'for convenience', 'at will', 'for any reason', or simply by providing notice without an associated cause (e.g., 'upon 30 days written notice').\\n\\n- Extract **'No'** if termination is only allowed 'for cause' (e.g., material breach, insolvency) OR if a right to terminate without cause is not mentioned. The absence of a termination for convenience clause means the answer is 'No'.",
+    "lastUsedTemplate": {
+      "id": "agent-alpha-2025-11-24T17:36:11.542Z-3af8dd4a-121d-41f4-ab56-e55aa2c4a607",
+      "prompt": "Does the agreement permit any party to terminate without cause (for convenience)? The answer must be 'Yes' or 'No'.\\n\\n- Extract **'Yes'** if a clause allows termination 'for convenience', 'at will', 'for any reason', or simply by providing notice without an associated cause (e.g., 'upon 30 days written notice').\\n\\n- Extract **'No'** if termination is only allowed 'for cause' (e.g., material breach, insolvency) OR if a right to terminate without cause is not mentioned. The absence of a termination for convenience clause means the answer is 'No'.",
+      "savedAt": "2025-11-24T17:36:11.542Z",
+      "source": "agent-alpha",
+      "generationMethod": "agent",
+      "note": "Agent-Alpha optimized. Initial: 50.0% → Final: 0.0% (5 iterations)"
+    },
+    "usageCount": 4,
+    "lastModified": "2025-11-24T17:36:11.542Z"
   }
 }

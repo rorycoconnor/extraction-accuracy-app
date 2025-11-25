@@ -36,7 +36,8 @@ import {
   Crown,
   FileImage,
   Wand2,
-  RotateCcw
+  RotateCcw,
+  Sparkles
 } from 'lucide-react';
 import { formatModelName } from '@/lib/utils';
 import type { AccuracyData } from '@/lib/types';
@@ -64,6 +65,11 @@ interface ControlBarProps {
   onResetPrompts: () => void;
   onColumnToggle: (modelName: string, checked: boolean) => void;
   onDownloadResults: () => void;
+  // Agent-Alpha props
+  isAgentAlphaRunning?: boolean;
+  selectedAgentAlphaModel?: string | null;
+  onRunAgentAlpha?: () => void;
+  onSelectAgentAlphaModel?: (model: string) => void;
 }
 
 const ControlBar: React.FC<ControlBarProps> = ({
@@ -86,6 +92,11 @@ const ControlBar: React.FC<ControlBarProps> = ({
   onResetPrompts,
   onColumnToggle,
   onDownloadResults,
+  // Agent-Alpha props
+  isAgentAlphaRunning = false,
+  selectedAgentAlphaModel,
+  onRunAgentAlpha,
+  onSelectAgentAlphaModel,
 }) => {
   // Get available model names for the dropdown
   const availableModels = React.useMemo(() => {
@@ -110,6 +121,9 @@ const ControlBar: React.FC<ControlBarProps> = ({
   
   // DSPy Alpha confirmation dialog state
   const [showDSpyConfirmDialog, setShowDSpyConfirmDialog] = useState(false);
+  
+  // Agent-Alpha confirmation dialog state
+  const [showAgentAlphaDialog, setShowAgentAlphaDialog] = useState(false);
 
   // Filter available models based on pill selections
   const filteredModels = useMemo(() => {
@@ -165,8 +179,30 @@ const ControlBar: React.FC<ControlBarProps> = ({
     return 'DSPy Alpha';
   })();
 
+  // Check if comparison has been run (actual model extraction results exist, not just "Pending...")
+  // When documents are selected, results exist but field values are "Pending..."
+  // After comparison runs, field values contain actual extracted data from models
+  const hasComparisonResults = React.useMemo(() => {
+    if (!accuracyData?.results || accuracyData.results.length === 0) return false;
+    
+    // Check if any field has actual model results (not just Ground Truth and not "Pending...")
+    return accuracyData.results.some(result => {
+      if (!result.fields) return false;
+      
+      return Object.values(result.fields).some(fieldData => {
+        // fieldData is Record<modelName, extractedValue>
+        // Check if any model (excluding Ground Truth) has a non-pending value
+        return Object.entries(fieldData).some(([modelName, value]) => {
+          if (modelName === 'Ground Truth') return false;
+          // Check if value exists and is not "Pending..."
+          return value && typeof value === 'string' && !value.includes('Pending');
+        });
+      });
+    });
+  }, [accuracyData]);
+
   const optimizerDisabled =
-    isOptimizerRunning || isExtracting || isJudging || !accuracyData;
+    isOptimizerRunning || isExtracting || isJudging || !accuracyData || !hasComparisonResults;
 
   return (
     <div className="flex items-center gap-2 px-6 py-4 mb-2">
@@ -318,6 +354,47 @@ const ControlBar: React.FC<ControlBarProps> = ({
           )}
           {optimizerButtonLabel}
         </Button>
+
+        {/* Agent Model Selection Dropdown */}
+        {onSelectAgentAlphaModel && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" disabled={isAgentAlphaRunning || isExtracting || !hasComparisonResults}>
+                {selectedAgentAlphaModel ? formatModelName(selectedAgentAlphaModel) : 'Select Agent Model'}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="max-h-96 overflow-y-auto">
+              <DropdownMenuLabel>Model for Agent</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {availableModels.map((model) => (
+                <DropdownMenuItem
+                  key={model}
+                  onClick={() => onSelectAgentAlphaModel(model)}
+                  className={selectedAgentAlphaModel === model ? 'bg-accent' : ''}
+                >
+                  {formatModelName(model)}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* Run Agent Button */}
+        {onRunAgentAlpha && (
+          <Button
+            onClick={() => setShowAgentAlphaDialog(true)}
+            disabled={!accuracyData || isExtracting || isAgentAlphaRunning || !selectedAgentAlphaModel || !hasComparisonResults}
+            variant="outline"
+          >
+            {isAgentAlphaRunning ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="mr-2 h-4 w-4" />
+            )}
+            {isAgentAlphaRunning ? 'Processing...' : 'Run Agent'}
+          </Button>
+        )}
+
         <div className="hidden">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -366,6 +443,47 @@ const ControlBar: React.FC<ControlBarProps> = ({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Agent Confirmation Dialog */}
+      {onRunAgentAlpha && (
+        <AlertDialog open={showAgentAlphaDialog} onOpenChange={setShowAgentAlphaDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-blue-600" />
+                Agent Confirmation
+              </AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="text-base space-y-2">
+                  <p>Agent will iteratively test and refine prompts for failing fields.</p>
+                  <p>This process:</p>
+                  <ul className="list-disc list-inside ml-2 space-y-1">
+                    <li>Tests extractions on up to 3 documents</li>
+                    <li>Analyzes failures and generates improved prompts</li>
+                    <li>Repeats up to 5 times per field until 100% accuracy</li>
+                    <li>Uses <strong>{selectedAgentAlphaModel ? formatModelName(selectedAgentAlphaModel) : 'selected model'}</strong> for testing</li>
+                  </ul>
+                  <p className="font-medium">Prompts will be shown in a preview modal for your approval before saving.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Estimated time: 3-5 minutes for typical runs.
+                  </p>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  setShowAgentAlphaDialog(false);
+                  onRunAgentAlpha();
+                }}
+              >
+                Start Agent
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 };
