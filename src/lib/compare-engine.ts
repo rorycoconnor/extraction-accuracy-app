@@ -34,6 +34,14 @@ export function compareValuesPreview(
     };
   }
 
+  // Special handling for boolean fields: "Not Present" is semantically equivalent to "No"
+  // If a document doesn't have a "termination for convenience" clause, the answer is "No"
+  if (compareConfig.compareType === 'boolean') {
+    const normalizedExtracted = extractedValue === NOT_PRESENT_VALUE ? 'No' : extractedValue;
+    const normalizedGroundTruth = groundTruthValue === NOT_PRESENT_VALUE ? 'No' : groundTruthValue;
+    return compareBoolean(normalizedExtracted, normalizedGroundTruth);
+  }
+
   if (extractedValue === NOT_PRESENT_VALUE || groundTruthValue === NOT_PRESENT_VALUE) {
     return {
       isMatch: false,
@@ -81,8 +89,8 @@ export function compareValuesPreview(
       case 'date-exact':
         return compareDateExact(extractedValue, groundTruthValue);
 
-      case 'boolean':
-        return compareBoolean(extractedValue, groundTruthValue);
+      // Note: 'boolean' is handled above before the switch statement
+      // to support "Not Present" = "No" semantic equivalence
 
       case 'list-unordered':
         return compareListUnordered(extractedValue, groundTruthValue, compareConfig);
@@ -91,16 +99,16 @@ export function compareValuesPreview(
         return compareListOrdered(extractedValue, groundTruthValue, compareConfig);
 
       default:
-        logger.error('Unknown compare type', { compareType: compareConfig.compareType });
+        logger.error('Unknown compare type in preview', { compareType: compareConfig.compareType });
         return {
           isMatch: false,
-          matchType: compareConfig.compareType,
+          matchType: compareConfig.compareType as CompareType,
           confidence: 'low',
           error: `Unknown compare type: ${compareConfig.compareType}`,
         };
     }
   } catch (error) {
-    logger.error('Comparison failed', {
+    logger.error('Comparison failed in preview', {
       compareType: compareConfig.compareType,
       error: error as Error,
     });
@@ -138,6 +146,14 @@ export async function compareValues(
       matchType: compareConfig.compareType,
       confidence: 'high',
     };
+  }
+
+  // Special handling for boolean fields: "Not Present" is semantically equivalent to "No"
+  // If a document doesn't have a "termination for convenience" clause, the answer is "No"
+  if (compareConfig.compareType === 'boolean') {
+    const normalizedExtracted = extractedValue === NOT_PRESENT_VALUE ? 'No' : extractedValue;
+    const normalizedGroundTruth = groundTruthValue === NOT_PRESENT_VALUE ? 'No' : groundTruthValue;
+    return compareBoolean(normalizedExtracted, normalizedGroundTruth);
   }
 
   if (extractedValue === NOT_PRESENT_VALUE || groundTruthValue === NOT_PRESENT_VALUE) {
@@ -180,8 +196,8 @@ export async function compareValues(
       case 'date-exact':
         return compareDateExact(extractedValue, groundTruthValue);
 
-      case 'boolean':
-        return compareBoolean(extractedValue, groundTruthValue);
+      // Note: 'boolean' is handled above before the switch statement
+      // to support "Not Present" = "No" semantic equivalence
 
       case 'list-unordered':
         return compareListUnordered(extractedValue, groundTruthValue, compareConfig);
@@ -190,16 +206,16 @@ export async function compareValues(
         return compareListOrdered(extractedValue, groundTruthValue, compareConfig);
 
       default:
-        logger.error('Unknown compare type', { compareType: compareConfig.compareType });
+        logger.error('Unknown compare type in async compare', { compareType: compareConfig.compareType });
         return {
           isMatch: false,
-          matchType: compareConfig.compareType,
+          matchType: compareConfig.compareType as CompareType,
           confidence: 'low',
           error: `Unknown compare type: ${compareConfig.compareType}`,
         };
     }
   } catch (error) {
-    logger.error('Comparison failed', {
+    logger.error('Comparison failed in async compare', {
       compareType: compareConfig.compareType,
       error: error as Error,
     });

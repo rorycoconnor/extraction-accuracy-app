@@ -28,6 +28,7 @@ import ComparisonResults from '@/components/comparison-results';
 import EmptyState from '@/components/empty-state';
 import ModalContainer from '@/components/modal-container';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
+import { AgentAlphaModal } from '@/components/agent-alpha-modal';
 
 // ===== AI & BUSINESS LOGIC IMPORTS =====
 import { calculateFieldMetrics, calculateFieldMetricsWithDebug } from '@/lib/metrics';
@@ -65,6 +66,7 @@ import { useDataHandlers } from '@/hooks/use-data-handlers';
 import { useExtractionSetup } from '@/hooks/use-extraction-setup';
 import { useEnhancedComparisonRunner } from '@/hooks/use-enhanced-comparison-runner';
 import { useOptimizerRunner } from '@/hooks/use-optimizer-runner';
+import { useAgentAlphaRunner } from '@/hooks/use-agent-alpha-runner';
 import { useAccuracyDataCompat, useOptimizerState } from '@/store/AccuracyDataStore';
 import { quickExportToCSV } from '@/lib/csv-export';
 
@@ -293,6 +295,9 @@ const MainPage: React.FC = () => {
   const optimizerRunner = useOptimizerRunner({ 
     runComparison: enhancedRunner.handleRunComparison 
   });
+
+  // ===== AGENT-ALPHA RUNNER =====
+  const agentAlphaRunner = useAgentAlphaRunner();
 
   // ===== UI HANDLERS HOOK =====
   const { handleOpenPromptStudio, handleToggleFavorite, handleCompleteReset } = useUIHandlers({
@@ -598,6 +603,10 @@ const MainPage: React.FC = () => {
          onResetPrompts={handleResetAllPrompts}
          onColumnToggle={toggleColumn}
          onDownloadResults={handleDownloadResults}
+         isAgentAlphaRunning={agentAlphaRunner.isRunning}
+         selectedAgentAlphaModel={agentAlphaRunner.selectedModel}
+         onRunAgentAlpha={agentAlphaRunner.runAgentAlpha}
+         onSelectAgentAlphaModel={agentAlphaRunner.setSelectedModel}
        />
        
        <div className="flex-1 min-h-0">
@@ -665,6 +674,15 @@ const MainPage: React.FC = () => {
          showResetDialog={showResetDialog}
          onCloseResetDialog={() => setShowResetDialog(false)}
          onConfirmReset={handleCompleteReset}
+       />
+
+       {/* Agent-Alpha Modal */}
+       <AgentAlphaModal
+         isOpen={agentAlphaRunner.isRunning || agentAlphaRunner.isPreview}
+         agentAlphaState={agentAlphaRunner.agentAlphaState}
+         results={agentAlphaRunner.pendingResults}
+         onApply={agentAlphaRunner.applyResults}
+         onCancel={agentAlphaRunner.discardResults}
        />
      </div>
    );

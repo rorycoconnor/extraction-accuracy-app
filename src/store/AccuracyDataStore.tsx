@@ -10,6 +10,7 @@ import {
   type OptimizerFieldSummary,
   type OptimizerState,
 } from '@/lib/optimizer-types';
+import type { AgentAlphaState, AgentAlphaPendingResults } from '@/lib/agent-alpha-types';
 import { saveAccuracyData, getAccuracyData } from '@/lib/mock-data';
 
 // Enhanced types for our unified store
@@ -49,6 +50,8 @@ interface AccuracyDataState {
   error: string | null;
   hasUnsavedChanges: boolean;
   optimizer: OptimizerState;
+  agentAlpha: AgentAlphaState;
+  agentAlphaPendingResults: AgentAlphaPendingResults | null;
 }
 
 // Action types
@@ -72,7 +75,14 @@ type AccuracyDataAction =
   | { type: 'OPTIMIZER_UPDATE'; payload: Partial<OptimizerState> }
   | { type: 'OPTIMIZER_COMPLETE'; payload: { sampledDocs: OptimizerDocumentTheory[]; fieldSummaries: OptimizerFieldSummary[] } }
   | { type: 'OPTIMIZER_FAIL'; payload: { error: string } }
-  | { type: 'OPTIMIZER_RESET' };
+  | { type: 'OPTIMIZER_RESET' }
+  | { type: 'AGENT_ALPHA_START'; payload: { runId: string; selectedModel: string; totalFields: number } }
+  | { type: 'AGENT_ALPHA_UPDATE_PROGRESS'; payload: { currentField: string | null; currentFieldName: string | null; fieldsProcessed: number; currentIteration: number; currentAccuracy: number; processedFieldInfo?: import('@/lib/agent-alpha-types').ProcessedFieldInfo } }
+  | { type: 'AGENT_ALPHA_COMPLETE'; payload: AgentAlphaPendingResults }
+  | { type: 'AGENT_ALPHA_ERROR'; payload: { error: string } }
+  | { type: 'AGENT_ALPHA_APPLY_RESULTS' }
+  | { type: 'AGENT_ALPHA_DISCARD_RESULTS' }
+  | { type: 'AGENT_ALPHA_RESET' };
 
 // Initial state
 const initialOptimizerState: OptimizerState = {
@@ -83,12 +93,28 @@ const initialOptimizerState: OptimizerState = {
   runId: undefined,
 };
 
+const initialAgentAlphaState: AgentAlphaState = {
+  status: 'idle',
+  selectedModel: null,
+  currentField: null,
+  currentFieldName: null,
+  currentIteration: 0,
+  currentAccuracy: 0,
+  fieldsProcessed: 0,
+  totalFields: 0,
+  runId: undefined,
+  errorMessage: undefined,
+  processedFields: [],
+};
+
 const initialState: AccuracyDataState = {
   data: null,
   isLoading: false,
   error: null,
   hasUnsavedChanges: false,
   optimizer: initialOptimizerState,
+  agentAlpha: initialAgentAlphaState,
+  agentAlphaPendingResults: null,
 };
 
 // Helper function to create initial unified data structure
@@ -514,6 +540,90 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
         ...state,
         optimizer: initialOptimizerState,
       };
+
+    case 'AGENT_ALPHA_START': {
+      return {
+        ...state,
+        agentAlpha: {
+          status: 'running',
+          selectedModel: action.payload.selectedModel,
+          currentField: null,
+          currentFieldName: null,
+          currentIteration: 0,
+          currentAccuracy: 0,
+          fieldsProcessed: 0,
+          totalFields: action.payload.totalFields,
+          startTime: Date.now(),
+          runId: action.payload.runId,
+          errorMessage: undefined,
+          processedFields: [], // Initialize empty array
+        },
+        agentAlphaPendingResults: null,
+      };
+    }
+
+    case 'AGENT_ALPHA_UPDATE_PROGRESS': {
+      const { processedFieldInfo, ...progressData } = action.payload;
+      return {
+        ...state,
+        agentAlpha: {
+          ...state.agentAlpha,
+          ...progressData,
+          status: 'running',
+          processedFields: processedFieldInfo 
+            ? [...state.agentAlpha.processedFields, processedFieldInfo]
+            : state.agentAlpha.processedFields,
+        },
+      };
+    }
+
+    case 'AGENT_ALPHA_COMPLETE': {
+      return {
+        ...state,
+        agentAlpha: {
+          ...state.agentAlpha,
+          status: 'preview',
+          currentField: null,
+          currentFieldName: null,
+        },
+        agentAlphaPendingResults: action.payload,
+      };
+    }
+
+    case 'AGENT_ALPHA_ERROR': {
+      return {
+        ...state,
+        agentAlpha: {
+          ...state.agentAlpha,
+          status: 'error',
+          errorMessage: action.payload.error,
+        },
+      };
+    }
+
+    case 'AGENT_ALPHA_APPLY_RESULTS': {
+      return {
+        ...state,
+        agentAlpha: initialAgentAlphaState,
+        agentAlphaPendingResults: null,
+      };
+    }
+
+    case 'AGENT_ALPHA_DISCARD_RESULTS': {
+      return {
+        ...state,
+        agentAlpha: initialAgentAlphaState,
+        agentAlphaPendingResults: null,
+      };
+    }
+
+    case 'AGENT_ALPHA_RESET': {
+      return {
+        ...state,
+        agentAlpha: initialAgentAlphaState,
+        agentAlphaPendingResults: null,
+      };
+    }
 
     default:
       return state;
