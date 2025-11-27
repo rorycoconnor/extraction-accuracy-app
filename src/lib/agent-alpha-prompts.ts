@@ -26,6 +26,7 @@ export type AgentAlphaPromptParams = {
   options?: Array<{ key: string }>;
   companyName?: string; // The company using this software (to exclude from counter party)
   documentType?: string;
+  customInstructions?: string; // If provided, replaces the default prompt template
 };
 
 /**
@@ -44,6 +45,7 @@ export function buildAgentAlphaPrompt(params: AgentAlphaPromptParams): string {
     options,
     companyName,
     documentType,
+    customInstructions,
   } = params;
   
   // For counter party fields, try to detect the common company that should be EXCLUDED
@@ -61,7 +63,26 @@ export function buildAgentAlphaPrompt(params: AgentAlphaPromptParams): string {
   // Pass the detected company name so counter party examples can reference it
   const examplePrompt = getExamplePromptForField(fieldName, fieldType, options, detectedCompany);
 
-  let prompt = `You are an expert at writing extraction prompts for contract AI systems.
+  // If custom instructions provided, use them as the base
+  // Otherwise use the default template
+  let prompt: string;
+  
+  if (customInstructions) {
+    // Use custom instructions as the intro, then add field-specific context
+    prompt = `${customInstructions}
+
+## FIELD TO OPTIMIZE
+Field: "${fieldName}" (type: ${fieldType})
+
+## EXAMPLE OF A HIGH-QUALITY PROMPT
+"${examplePrompt}"
+
+## CURRENT PROMPT (NOT WORKING WELL)
+"${currentPrompt || `Extract the ${fieldName}`}"
+`;
+  } else {
+    // Default template
+    prompt = `You are an expert at writing extraction prompts for contract AI systems.
 
 ## YOUR TASK
 Create a DETAILED extraction prompt for the field "${fieldName}" (type: ${fieldType}).
@@ -81,6 +102,7 @@ Notice how the example:
 ## CURRENT PROMPT (NOT WORKING WELL)
 "${currentPrompt || `Extract the ${fieldName}`}"
 `;
+  }
 
   // Add failures with analysis
   if (failureExamples.length > 0) {

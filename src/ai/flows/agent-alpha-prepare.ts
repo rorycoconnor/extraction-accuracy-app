@@ -31,26 +31,44 @@ export type AgentAlphaWorkPlan = {
 export async function prepareAgentAlphaWorkPlan(params: {
   accuracyData: AccuracyData;
   testModel: string;
+  maxDocs?: number;
 }): Promise<AgentAlphaWorkPlan> {
-  const { accuracyData, testModel } = params;
+  const { accuracyData, testModel, maxDocs = AGENT_ALPHA_CONFIG.MAX_DOCS } = params;
   const runId = uuidv4();
 
   logger.info(`🤖 Agent-Alpha: Preparing work plan (runId: ${runId})`);
+  logger.info(`   Test model: ${testModel}`);
 
-  // Step 1: Validate comparison results exist
-  const hasComparison = accuracyData.results?.some((file) => {
-    return Object.values(file.comparisonResults ?? {}).some((modelMap) =>
-      Object.values(modelMap).some((meta) => meta?.isMatch !== undefined)
-    );
+  // Step 1: Find models that have comparison results
+  const comparedModels = new Set<string>();
+  accuracyData.results?.forEach((file) => {
+    if (file.comparisonResults) {
+      Object.values(file.comparisonResults).forEach((modelMap) => {
+        Object.keys(modelMap).forEach((model) => {
+          if (modelMap[model]?.isMatch !== undefined) {
+            comparedModels.add(model);
+          }
+        });
+      });
+    }
   });
 
-  if (!hasComparison) {
+  if (comparedModels.size === 0) {
     throw new Error('No comparison results found. Please run comparison first.');
   }
 
-  // Step 2: Identify failing fields (< TARGET_ACCURACY on test model)
+  logger.info(`   Compared models: ${Array.from(comparedModels).join(', ')}`);
+
+  // Use the testModel if it was compared, otherwise use the first compared model
+  const referenceModel = comparedModels.has(testModel) 
+    ? testModel 
+    : Array.from(comparedModels)[0];
+  
+  logger.info(`   Reference model for accuracy: ${referenceModel}`);
+
+  // Step 2: Identify failing fields (< TARGET_ACCURACY on reference model)
   const fieldAccuracyEntries = accuracyData.fields.map((field) => {
-    const accuracy = accuracyData.averages?.[field.key]?.[testModel]?.accuracy ?? 0;
+    const accuracy = accuracyData.averages?.[field.key]?.[referenceModel]?.accuracy ?? 0;
     return {
       fieldKey: field.key,
       field,
@@ -63,7 +81,7 @@ export async function prepareAgentAlphaWorkPlan(params: {
   });
 
   if (failingFields.length === 0) {
-    logger.info(`✅ All fields already at 100% accuracy!`);
+    logger.info(`✅ All fields already at 100% accuracy on ${referenceModel}!`);
     return {
       runId,
       templateKey: accuracyData.templateKey,
@@ -75,9 +93,9 @@ export async function prepareAgentAlphaWorkPlan(params: {
 
   logger.info(`📊 Found ${failingFields.length} field(s) to optimize`);
 
-  // Step 3: Build failure map and sample documents
+  // Step 3: Build failure map using reference model (the model we have comparison data for)
   const failingFieldKeys = failingFields.map(({ fieldKey }) => fieldKey);
-  const failureMap = buildFieldFailureMap(accuracyData, failingFieldKeys, testModel);
+  const failureMap = buildFieldFailureMap(accuracyData, failingFieldKeys, referenceModel);
 
   // Filter out fields with no failures in sampled docs
   const fieldsWithFailures = failingFields.filter(({ fieldKey }) => failureMap[fieldKey]?.length > 0);
@@ -93,7 +111,7 @@ export async function prepareAgentAlphaWorkPlan(params: {
     };
   }
 
-  const samplingResult = selectDocsForAgentAlpha(failureMap);
+  const samplingResult = selectDocsForAgentAlpha(failureMap, maxDocs);
   const sampledDocIds = samplingResult.docs.map((doc) => doc.docId);
 
   logger.info(`📄 Selected ${sampledDocIds.length} document(s) for testing`);

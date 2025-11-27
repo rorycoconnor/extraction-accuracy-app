@@ -76,8 +76,11 @@ type AccuracyDataAction =
   | { type: 'OPTIMIZER_COMPLETE'; payload: { sampledDocs: OptimizerDocumentTheory[]; fieldSummaries: OptimizerFieldSummary[] } }
   | { type: 'OPTIMIZER_FAIL'; payload: { error: string } }
   | { type: 'OPTIMIZER_RESET' }
-  | { type: 'AGENT_ALPHA_START'; payload: { runId: string; selectedModel: string; totalFields: number } }
+  | { type: 'AGENT_ALPHA_CONFIGURE' }
+  | { type: 'AGENT_ALPHA_START'; payload: { runId: string; selectedModel: string; totalFields: number; runtimeConfig?: import('@/lib/agent-alpha-config').AgentAlphaRuntimeConfig; actualDocCount?: number } }
   | { type: 'AGENT_ALPHA_UPDATE_PROGRESS'; payload: { currentField: string | null; currentFieldName: string | null; fieldsProcessed: number; currentIteration: number; currentAccuracy: number; processedFieldInfo?: import('@/lib/agent-alpha-types').ProcessedFieldInfo } }
+  | { type: 'AGENT_ALPHA_FIELD_STARTED'; payload: import('@/lib/agent-alpha-types').ProcessingFieldInfo }
+  | { type: 'AGENT_ALPHA_FIELD_COMPLETED'; payload: { fieldKey: string; processedFieldInfo: import('@/lib/agent-alpha-types').ProcessedFieldInfo } }
   | { type: 'AGENT_ALPHA_COMPLETE'; payload: AgentAlphaPendingResults }
   | { type: 'AGENT_ALPHA_ERROR'; payload: { error: string } }
   | { type: 'AGENT_ALPHA_APPLY_RESULTS' }
@@ -105,6 +108,8 @@ const initialAgentAlphaState: AgentAlphaState = {
   runId: undefined,
   errorMessage: undefined,
   processedFields: [],
+  processingFields: [],
+  runtimeConfig: undefined,
 };
 
 const initialState: AccuracyDataState = {
@@ -541,6 +546,16 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
         optimizer: initialOptimizerState,
       };
 
+    case 'AGENT_ALPHA_CONFIGURE': {
+      return {
+        ...state,
+        agentAlpha: {
+          ...initialAgentAlphaState,
+          status: 'configure',
+        },
+      };
+    }
+
     case 'AGENT_ALPHA_START': {
       return {
         ...state,
@@ -556,9 +571,35 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
           startTime: Date.now(),
           runId: action.payload.runId,
           errorMessage: undefined,
-          processedFields: [], // Initialize empty array
+          processedFields: [],
+          processingFields: [],
+          runtimeConfig: action.payload.runtimeConfig,
+          actualDocCount: action.payload.actualDocCount,
         },
         agentAlphaPendingResults: null,
+      };
+    }
+
+    case 'AGENT_ALPHA_FIELD_STARTED': {
+      return {
+        ...state,
+        agentAlpha: {
+          ...state.agentAlpha,
+          processingFields: [...state.agentAlpha.processingFields, action.payload],
+        },
+      };
+    }
+
+    case 'AGENT_ALPHA_FIELD_COMPLETED': {
+      const { fieldKey, processedFieldInfo } = action.payload;
+      return {
+        ...state,
+        agentAlpha: {
+          ...state.agentAlpha,
+          processingFields: state.agentAlpha.processingFields.filter(f => f.fieldKey !== fieldKey),
+          processedFields: [...state.agentAlpha.processedFields, processedFieldInfo],
+          fieldsProcessed: state.agentAlpha.fieldsProcessed + 1,
+        },
       };
     }
 

@@ -55,10 +55,15 @@ export type AgentAlphaSamplingResult = {
 };
 
 /**
- * Select up to MAX_DOCS documents that cover the most failing fields
+ * Select up to maxDocs documents that cover the most failing fields
  * Uses greedy algorithm to maximize field coverage
+ * @param failureMap Map of field keys to their failures
+ * @param maxDocs Maximum number of documents to select (defaults to config value)
  */
-export function selectDocsForAgentAlpha(failureMap: FieldFailureMap): AgentAlphaSamplingResult {
+export function selectDocsForAgentAlpha(
+  failureMap: FieldFailureMap,
+  maxDocs: number = AGENT_ALPHA_CONFIG.MAX_DOCS
+): AgentAlphaSamplingResult {
   const fieldKeys = Object.keys(failureMap);
   const docToFields = new Map<string, Set<string>>();
 
@@ -81,7 +86,7 @@ export function selectDocsForAgentAlpha(failureMap: FieldFailureMap): AgentAlpha
     fields: Array.from(fields),
   }));
 
-  while (selectedDocs.length < AGENT_ALPHA_CONFIG.MAX_DOCS && remainingDocs.length > 0) {
+  while (selectedDocs.length < maxDocs && remainingDocs.length > 0) {
     // Find doc that covers the most uncovered fields
     let bestDoc: { docId: string; fields: string[] } | null = null;
     let bestScore = 0;

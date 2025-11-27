@@ -21,6 +21,8 @@ export type ProcessFieldParams = {
   testModel: string;
   fieldIndex: number; // For logging: "1 of 5"
   totalFields: number;
+  maxIterations?: number; // Override default max iterations
+  systemPromptOverride?: string; // Custom system prompt to prepend
 };
 
 /**
@@ -42,6 +44,8 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     testModel,
     fieldIndex,
     totalFields,
+    maxIterations = AGENT_ALPHA_CONFIG.MAX_ITERATIONS,
+    systemPromptOverride,
   } = params;
 
   logger.info(`\n📝 Agent-Alpha: [${fieldIndex}/${totalFields}] Processing field "${fieldName}"`);
@@ -59,12 +63,12 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
   let converged = false;
   let iterationCount = 0;
 
-  // Iterate up to MAX_ITERATIONS times
-  for (let iteration = 1; iteration <= AGENT_ALPHA_CONFIG.MAX_ITERATIONS; iteration++) {
+  // Iterate up to maxIterations times
+  for (let iteration = 1; iteration <= maxIterations; iteration++) {
     iterationCount = iteration;
 
     try {
-      logger.info(`   Iteration ${iteration}/${AGENT_ALPHA_CONFIG.MAX_ITERATIONS}...`);
+      logger.info(`   Iteration ${iteration}/${maxIterations}...`);
 
       const iterationResult = await runFieldIteration({
         fieldKey,
@@ -77,9 +81,10 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         templateKey,
         testModel,
         iterationNumber: iteration,
-        maxIterations: AGENT_ALPHA_CONFIG.MAX_ITERATIONS,
+        maxIterations,
         options: fieldOptions,
         compareConfig,
+        systemPromptOverride,
       });
 
       finalAccuracy = iterationResult.accuracy;
@@ -128,7 +133,7 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
       logger.info(`   📝 New prompt generated for next iteration (${currentPrompt.length} chars)`);
 
       // If this is the last iteration and still not converged
-      if (iteration === AGENT_ALPHA_CONFIG.MAX_ITERATIONS) {
+      if (iteration === maxIterations) {
         logger.info(`   ⚠️  Max iterations reached. Final accuracy: ${(finalAccuracy * 100).toFixed(1)}%`);
         // Use best accuracy/prompt if current iteration didn't improve
         if (bestAccuracy > finalAccuracy) {

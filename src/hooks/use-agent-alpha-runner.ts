@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccuracyDataStore } from '@/store/AccuracyDataStore';
 import { prepareAgentAlphaWorkPlan } from '@/ai/flows/agent-alpha-prepare';
@@ -10,19 +10,21 @@ import { logger } from '@/lib/logger';
 import { getCompareConfigForField } from '@/lib/compare-type-storage';
 import { v4 as uuidv4 } from 'uuid';
 import type { AgentAlphaFieldResult } from '@/lib/agent-alpha-types';
+import type { AgentAlphaRuntimeConfig } from '@/lib/agent-alpha-config';
+import { getDefaultRuntimeConfig, AGENT_ALPHA_CONFIG } from '@/lib/agent-alpha-config';
 
 export const useAgentAlphaRunner = () => {
   const { state, dispatch } = useAccuracyDataStore();
   const { toast } = useToast();
-  const [selectedModel, setSelectedModel] = useState<string | null>(null);
 
   const agentAlphaState = state.agentAlpha;
   const pendingResults = state.agentAlphaPendingResults;
   const accuracyData = state.data;
 
-  const runAgentAlpha = useCallback(async () => {
+  // Open the configuration modal
+  const openConfigureModal = useCallback(() => {
     if (agentAlphaState.status !== 'idle' && agentAlphaState.status !== 'error') {
-      logger.warn('Agent-Alpha already running');
+      logger.warn('Agent-Alpha already running or in another state');
       return;
     }
 
@@ -50,24 +52,31 @@ export const useAgentAlphaRunner = () => {
       return;
     }
 
-    if (!selectedModel) {
+    // Open configure modal
+    dispatch({ type: 'AGENT_ALPHA_CONFIGURE' });
+  }, [agentAlphaState.status, accuracyData, dispatch, toast]);
+
+  // Start the agent with the provided configuration
+  const runAgentAlphaWithConfig = useCallback(async (config: AgentAlphaRuntimeConfig) => {
+    if (!accuracyData) {
       toast({
-        title: 'Select Model',
-        description: 'Please select a model to use for testing extractions.',
+        title: 'No accuracy data',
+        description: 'Load comparison results before running Agent-Alpha.',
         variant: 'destructive',
       });
       return;
     }
 
     const runId = uuidv4();
-    const runStartTime = Date.now(); // Capture start time locally
+    const runStartTime = Date.now();
 
     try {
-      // Step 1: Prepare work plan
-      logger.info('Agent-Alpha: Preparing work plan...');
+      // Step 1: Prepare work plan with config
+      logger.info('Agent-Alpha: Preparing work plan...', { config });
       const workPlan = await prepareAgentAlphaWorkPlan({
         accuracyData,
-        testModel: selectedModel,
+        testModel: config.testModel,
+        maxDocs: config.maxDocs,
       });
 
       if (workPlan.fields.length === 0) {
@@ -75,44 +84,45 @@ export const useAgentAlphaRunner = () => {
           title: 'All Fields Accurate',
           description: 'All fields are already at 100% accuracy. No optimization needed.',
         });
+        dispatch({ type: 'AGENT_ALPHA_RESET' });
         return;
       }
 
-      // Start Agent-Alpha
+      // Start Agent-Alpha with runtime config
       dispatch({
         type: 'AGENT_ALPHA_START',
         payload: {
           runId,
-          selectedModel,
+          selectedModel: config.testModel,
           totalFields: workPlan.fields.length,
+          runtimeConfig: config,
+          actualDocCount: workPlan.sampledDocIds.length,
         },
       });
 
-      logger.info(`Agent-Alpha: Processing ${workPlan.fields.length} fields...`);
+      logger.info(`Agent-Alpha: Processing ${workPlan.fields.length} fields with concurrency ${AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY}...`);
       toast({
         title: 'Agent-Alpha Started',
-        description: `Processing ${workPlan.fields.length} field(s). This may take several minutes.`,
+        description: `Processing ${workPlan.fields.length} field(s) in parallel. This may take several minutes.`,
       });
 
-      // Step 2: Process each field sequentially
+      // Step 2: Process fields with controlled concurrency for speed
       const results: AgentAlphaFieldResult[] = [];
 
-      for (let i = 0; i < workPlan.fields.length; i++) {
-        const fieldPlan = workPlan.fields[i];
-        const fieldIndex = i + 1;
-        const fieldStartTime = Date.now(); // Track start time for this field
+      // Process fields in parallel with concurrency limit
+      const processField = async (fieldPlan: typeof workPlan.fields[0], fieldIndex: number) => {
+        const fieldStartTime = Date.now();
 
         logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] Processing ${fieldPlan.field.name}...`);
 
-        // Update progress
+        // Mark this field as started (for parallel processing UI)
         dispatch({
-          type: 'AGENT_ALPHA_UPDATE_PROGRESS',
+          type: 'AGENT_ALPHA_FIELD_STARTED',
           payload: {
-            currentField: fieldPlan.fieldKey,
-            currentFieldName: fieldPlan.field.name,
-            fieldsProcessed: i,
-            currentIteration: 0,
-            currentAccuracy: fieldPlan.initialAccuracy,
+            fieldKey: fieldPlan.fieldKey,
+            fieldName: fieldPlan.field.name,
+            initialAccuracy: fieldPlan.initialAccuracy,
+            startTime: fieldStartTime,
           },
         });
 
@@ -131,26 +141,23 @@ export const useAgentAlphaRunner = () => {
             groundTruth: fieldPlan.groundTruth,
             sampledDocIds: workPlan.sampledDocIds,
             templateKey: workPlan.templateKey,
-            testModel: selectedModel,
+            testModel: config.testModel,
             fieldIndex,
             totalFields: workPlan.fields.length,
+            maxIterations: config.maxIterations,
+            systemPromptOverride: config.customInstructions || config.systemPromptOverride,
           });
 
-          results.push(fieldResult);
-
-          // Update progress after field completes - add to processed fields list
+          // Mark field as completed (removes from processing, adds to processed)
           const fieldEndTime = Date.now();
-          const fieldTimeMs = fieldEndTime - fieldStartTime; // Time for just this field
+          const fieldTimeMs = fieldEndTime - fieldStartTime;
         
           dispatch({
-            type: 'AGENT_ALPHA_UPDATE_PROGRESS',
+            type: 'AGENT_ALPHA_FIELD_COMPLETED',
             payload: {
-              currentField: null,
-              currentFieldName: null,
-              fieldsProcessed: fieldIndex,
-              currentIteration: 0,
-              currentAccuracy: fieldResult.finalAccuracy,
+              fieldKey: fieldPlan.fieldKey,
               processedFieldInfo: {
+                fieldKey: fieldPlan.fieldKey,
                 fieldName: fieldPlan.field.name,
                 iterationCount: fieldResult.iterationCount,
                 initialAccuracy: fieldPlan.initialAccuracy,
@@ -160,18 +167,69 @@ export const useAgentAlphaRunner = () => {
               },
             },
           });
+
+          return fieldResult;
         } catch (error) {
           logger.error(`Agent-Alpha: Failed to process field ${fieldPlan.field.name}`, error as Error);
-          // Continue with other fields even if one fails
+          // Remove from processing on error
+          dispatch({
+            type: 'AGENT_ALPHA_FIELD_COMPLETED',
+            payload: {
+              fieldKey: fieldPlan.fieldKey,
+              processedFieldInfo: {
+                fieldKey: fieldPlan.fieldKey,
+                fieldName: fieldPlan.field.name,
+                iterationCount: 0,
+                initialAccuracy: fieldPlan.initialAccuracy,
+                finalAccuracy: fieldPlan.initialAccuracy,
+                finalPrompt: fieldPlan.field.prompt || '',
+                timeMs: Date.now() - fieldStartTime,
+              },
+            },
+          });
+          return null;
+        }
+      };
+
+      // Use a simple concurrency pool pattern
+      const executing: Promise<void>[] = [];
+      
+      for (let i = 0; i < workPlan.fields.length; i++) {
+        const fieldPlan = workPlan.fields[i];
+        const fieldIndex = i + 1;
+        
+        const p = processField(fieldPlan, fieldIndex).then((result) => {
+          if (result) {
+            results.push(result);
+          }
+          // Remove from executing pool
+          const idx = executing.indexOf(e);
+          if (idx > -1) executing.splice(idx, 1);
+        });
+        
+        const e = p.then(() => {});
+        executing.push(e);
+        
+        // Wait if we've hit the concurrency limit
+        if (executing.length >= AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY) {
+          await Promise.race(executing);
         }
       }
+      
+      // Wait for all remaining fields to complete
+      await Promise.all(executing);
 
       // Step 3: Calculate timing and prepare results
       const endTime = Date.now();
-      const actualTimeMs = endTime - runStartTime; // Use locally captured start time
+      const actualTimeMs = endTime - runStartTime;
       
-      // Estimate: ~12 seconds per iteration per field
-      const estimatedTimeMs = workPlan.fields.length * 3 * 12 * 1000; // 3 avg iterations * 12 sec
+      // Estimate based on config (with parallelization)
+      // Fields run in parallel (2 at a time), docs run in parallel (5 at a time)
+      const avgIterations = Math.min(config.maxIterations, 3);
+      const secondsPerIteration = 6 + (config.maxDocs / AGENT_ALPHA_CONFIG.EXTRACTION_CONCURRENCY) * 3;
+      const secondsPerField = avgIterations * secondsPerIteration;
+      const fieldBatches = Math.ceil(workPlan.fields.length / AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY);
+      const estimatedTimeMs = fieldBatches * secondsPerField * 1000;
       
       // Build document name mapping
       const sampledDocNames: Record<string, string> = {};
@@ -189,7 +247,7 @@ export const useAgentAlphaRunner = () => {
           runId,
           results,
           timestamp: new Date().toISOString(),
-          testModel: selectedModel,
+          testModel: config.testModel,
           sampledDocIds: workPlan.sampledDocIds,
           sampledDocNames,
           startTime: runStartTime,
@@ -216,7 +274,7 @@ export const useAgentAlphaRunner = () => {
         variant: 'destructive',
       });
     }
-  }, [agentAlphaState.status, accuracyData, selectedModel, dispatch, toast]);
+  }, [accuracyData, dispatch, toast]);
 
   const applyResults = useCallback(async () => {
     if (!pendingResults || !accuracyData) {
@@ -227,12 +285,13 @@ export const useAgentAlphaRunner = () => {
     logger.info('Agent-Alpha: Applying results', { count: pendingResults.results.length });
 
     try {
-      // Save each field's prompt to prompt studio
-      for (const result of pendingResults.results) {
-        const field = accuracyData.fields.find((f) => f.key === result.fieldKey);
-        if (!field) continue;
+      const timestamp = new Date().toISOString();
+      
+      // Build updated fields with new prompts and prompt history
+      const updatedFields = accuracyData.fields.map((field) => {
+        const result = pendingResults.results.find((r) => r.fieldKey === field.key);
+        if (!result) return field;
 
-        const timestamp = new Date().toISOString();
         const newVersion = {
           id: `agent-alpha-${timestamp}-${uuidv4()}`,
           prompt: result.finalPrompt,
@@ -242,14 +301,29 @@ export const useAgentAlphaRunner = () => {
           note: `Agent-Alpha optimized. Initial: ${(result.initialAccuracy * 100).toFixed(1)}% → Final: ${(result.finalAccuracy * 100).toFixed(1)}% (${result.iterationCount} iterations)`,
         };
 
-        // Create updated prompt history with new version at the front
-        const updatedPromptHistory = [newVersion, ...field.promptHistory];
+        return {
+          ...field,
+          prompt: result.finalPrompt,
+          promptHistory: [newVersion, ...field.promptHistory],
+        };
+      });
+
+      // Update React state FIRST so UI reflects changes immediately
+      dispatch({
+        type: 'SET_ACCURACY_DATA',
+        payload: { ...accuracyData, fields: updatedFields },
+      });
+
+      // Then persist to localStorage
+      for (const result of pendingResults.results) {
+        const updatedField = updatedFields.find((f) => f.key === result.fieldKey);
+        if (!updatedField) continue;
 
         // Save using correct parameter order: fieldKey, activePrompt, promptHistory, templateKey
         saveFieldPrompt(
           result.fieldKey,
-          result.finalPrompt,
-          updatedPromptHistory,
+          updatedField.prompt,
+          updatedField.promptHistory,
           accuracyData.templateKey
         );
 
@@ -289,16 +363,16 @@ export const useAgentAlphaRunner = () => {
   }, [dispatch]);
 
   return {
-    runAgentAlpha,
+    openConfigureModal,
+    runAgentAlphaWithConfig,
     applyResults,
     discardResults,
     resetState,
-    selectedModel,
-    setSelectedModel,
     agentAlphaState,
     pendingResults,
-    isRunning: agentAlphaState.status !== 'idle' && agentAlphaState.status !== 'error' && agentAlphaState.status !== 'preview',
+    isConfigure: agentAlphaState.status === 'configure',
+    isRunning: agentAlphaState.status === 'running',
     isPreview: agentAlphaState.status === 'preview',
+    isModalOpen: agentAlphaState.status === 'configure' || agentAlphaState.status === 'running' || agentAlphaState.status === 'preview',
   };
 };
-

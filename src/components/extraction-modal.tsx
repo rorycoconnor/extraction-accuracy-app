@@ -70,6 +70,9 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSearching, setIsSearching] = useState(false);
 
+  // Track last clicked file for shift-click range selection
+  const [lastClickedFileId, setLastClickedFileId] = useState<string | null>(null);
+
   const { toast } = useToast();
 
   // Load folder contents
@@ -112,6 +115,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
     setCurrentFolderId(folder.id);
     setBreadcrumbs(prev => [...prev, { id: folder.id, name: folder.name }]);
     loadFolderContents(folder.id);
+    setLastClickedFileId(null); // Reset shift-click anchor when changing folders
   };
 
   // Navigate to a breadcrumb (go back)
@@ -121,6 +125,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
       setCurrentFolderId(targetBreadcrumb.id);
       setBreadcrumbs(breadcrumbs.slice(0, targetIndex + 1));
       loadFolderContents(targetBreadcrumb.id);
+      setLastClickedFileId(null); // Reset shift-click anchor when changing folders
     }
   };
 
@@ -140,7 +145,45 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
   };
 
   // Handle file selection (adds to global selection)
-  const handleToggleFileSelection = (file: BoxFile) => {
+  // Supports shift-click for range selection
+  const handleToggleFileSelection = (file: BoxFile, event?: React.MouseEvent) => {
+    const folderPath = breadcrumbs.map(b => b.name).join(' > ');
+    const folderName = breadcrumbs[breadcrumbs.length - 1]?.name || 'Unknown';
+    
+    // Check if shift key is held for range selection
+    if (event?.shiftKey && lastClickedFileId && lastClickedFileId !== file.id) {
+      // Find indices of last clicked and current file
+      const lastClickedIndex = files.findIndex(f => f.id === lastClickedFileId);
+      const currentIndex = files.findIndex(f => f.id === file.id);
+      
+      if (lastClickedIndex !== -1 && currentIndex !== -1) {
+        // Get range of files between last clicked and current
+        const startIndex = Math.min(lastClickedIndex, currentIndex);
+        const endIndex = Math.max(lastClickedIndex, currentIndex);
+        const filesToSelect = files.slice(startIndex, endIndex + 1);
+        
+        setGlobalFileSelection(prev => {
+          const newSelection = { ...prev };
+          
+          // Add all files in range to selection
+          filesToSelect.forEach(f => {
+            newSelection[f.id] = {
+              file: f,
+              folderPath,
+              folderName
+            };
+          });
+          
+          return newSelection;
+        });
+        
+        // Update last clicked to current file
+        setLastClickedFileId(file.id);
+        return;
+      }
+    }
+    
+    // Regular click - toggle single file
     setGlobalFileSelection(prev => {
       const newSelection = { ...prev };
       const fileId = file.id;
@@ -150,8 +193,6 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
         delete newSelection[fileId];
       } else {
         // Add to selection with folder path info
-        const folderPath = breadcrumbs.map(b => b.name).join(' > ');
-        const folderName = breadcrumbs[breadcrumbs.length - 1]?.name || 'Unknown';
         newSelection[fileId] = {
           file,
           folderPath,
@@ -161,6 +202,9 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
       
       return newSelection;
     });
+    
+    // Track last clicked file for shift-click range selection
+    setLastClickedFileId(file.id);
   };
 
   // Handle folder selection (select all files in current folder)
@@ -527,17 +571,30 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
                                 </button>
                                 ))}
                                 
-                                {/* Show files */}
+                                {/* Show files - Click row or checkbox to select, Shift+Click for range selection */}
                                 {files.map(file => (
-                                <div key={file.id} className="flex items-center space-x-3 rounded-md">
-                                    <div className="flex-shrink-0 px-3">
+                                <div 
+                                  key={file.id} 
+                                  className={cn(
+                                    "flex items-center space-x-3 rounded-md cursor-pointer hover:bg-accent transition-colors select-none",
+                                    globalFileSelection[file.id] && "bg-blue-50 dark:bg-blue-950/30"
+                                  )}
+                                  onClick={(e) => handleToggleFileSelection(file, e)}
+                                >
+                                    <div 
+                                      className="flex-shrink-0 px-3"
+                                      onClick={(e) => {
+                                        // Allow checkbox clicks to bubble up to parent for shift-click support
+                                        // The parent onClick will handle the actual selection
+                                      }}
+                                    >
                                       <Checkbox
                                           id={`file-${file.id}`}
                                           checked={!!globalFileSelection[file.id]}
-                                          onCheckedChange={() => handleToggleFileSelection(file)}
+                                          className="pointer-events-none" // Let parent handle clicks
                                       />
                                     </div>
-                                    <Label htmlFor={`file-${file.id}`} className="cursor-pointer py-3 overflow-hidden flex-1">
+                                    <div className="py-3 overflow-hidden flex-1">
                                         <div className="flex items-center gap-2">
                                             <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                                             <span className="block truncate text-sm">{file.name}</span>
@@ -547,7 +604,7 @@ export default function ExtractionModal({ isOpen, onClose, templates, onRunExtra
                                               </span>
                                             )}
                                         </div>
-                                    </Label>
+                                    </div>
                                 </div>
                                 ))}
                             </div>

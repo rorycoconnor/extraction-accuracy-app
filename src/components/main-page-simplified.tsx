@@ -604,9 +604,7 @@ const MainPage: React.FC = () => {
          onColumnToggle={toggleColumn}
          onDownloadResults={handleDownloadResults}
          isAgentAlphaRunning={agentAlphaRunner.isRunning}
-         selectedAgentAlphaModel={agentAlphaRunner.selectedModel}
-         onRunAgentAlpha={agentAlphaRunner.runAgentAlpha}
-         onSelectAgentAlphaModel={agentAlphaRunner.setSelectedModel}
+         onOpenAgentConfig={agentAlphaRunner.openConfigureModal}
        />
        
        <div className="flex-1 min-h-0">
@@ -678,11 +676,12 @@ const MainPage: React.FC = () => {
 
        {/* Agent-Alpha Modal */}
        <AgentAlphaModal
-         isOpen={agentAlphaRunner.isRunning || agentAlphaRunner.isPreview}
+         isOpen={agentAlphaRunner.isModalOpen}
          agentAlphaState={agentAlphaRunner.agentAlphaState}
          results={agentAlphaRunner.pendingResults}
          onApply={agentAlphaRunner.applyResults}
          onCancel={agentAlphaRunner.discardResults}
+         onStartWithConfig={agentAlphaRunner.runAgentAlphaWithConfig}
        />
      </div>
    );

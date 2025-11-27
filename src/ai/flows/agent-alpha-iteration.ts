@@ -5,6 +5,7 @@ import { extractStructuredMetadataWithBoxAI, boxApiFetch, getBlankPlaceholderFil
 import { calculateFieldMetricsWithDebugAsync } from '@/lib/metrics';
 import { buildAgentAlphaPrompt, parseAgentAlphaPromptResponse } from '@/lib/agent-alpha-prompts';
 import { AGENT_ALPHA_CONFIG } from '@/lib/agent-alpha-config';
+import { processWithConcurrency } from '@/lib/concurrency';
 import type { AccuracyField } from '@/lib/types';
 import type { FieldCompareConfig } from '@/lib/compare-types';
 import type { BoxAIField } from '@/lib/schemas';
@@ -79,6 +80,7 @@ export async function runFieldIteration(params: {
   maxIterations: number;
   options?: Array<{ key: string }>;
   compareConfig?: FieldCompareConfig;
+  systemPromptOverride?: string; // Custom system prompt to prepend
 }): Promise<AgentAlphaIterationResult> {
   const {
     fieldKey,
@@ -94,53 +96,77 @@ export async function runFieldIteration(params: {
     maxIterations,
     options,
     compareConfig,
+    systemPromptOverride,
   } = params;
 
-  logger.info(`🔄 Agent-Alpha: [${iterationNumber}/${maxIterations}] Testing field "${fieldName}"`);
+  logger.info(`🔄 Agent-Alpha: [${iterationNumber}/${maxIterations}] Testing field "${fieldName}" (${sampledDocIds.length} docs in parallel)`);
 
-  // Step 1: Extract metadata from sampled documents using the test model
-  const predictions: string[] = [];
-  const groundTruths: string[] = [];
+  // Step 1: Extract metadata from sampled documents using the test model IN PARALLEL
+  // Map AccuracyField type to BoxAIField type once
+  const boxAIFieldType = mapToBoxAIFieldType(fieldType);
+  
+  // Define extraction job type for parallel processing
+  type ExtractionJob = {
+    docId: string;
+    expectedValue: string;
+  };
+
+  // Prepare jobs for parallel extraction
+  const extractionJobs: ExtractionJob[] = sampledDocIds.map(docId => ({
+    docId,
+    expectedValue: groundTruth[docId] || '',
+  }));
+
+  // Run extractions in parallel with concurrency limit
+  const extractionResults = await processWithConcurrency(
+    extractionJobs,
+    AGENT_ALPHA_CONFIG.EXTRACTION_CONCURRENCY,
+    async (job) => {
+      try {
+        // CRITICAL: Do NOT pass templateKey here!
+        // When templateKey is passed, Box uses the prompts from the template, ignoring our custom prompts.
+        // For Agent-Alpha to test custom prompts, we MUST use fields mode (not template mode).
+        const result = await extractStructuredMetadataWithBoxAI({
+          fileId: job.docId,
+          fields: [
+            {
+              key: fieldKey,
+              type: boxAIFieldType,
+              displayName: fieldName,
+              prompt: currentPrompt,
+              options,
+            },
+          ],
+          model: testModel,
+          // templateKey intentionally omitted - we need fields mode to test custom prompts
+        });
+
+        const extractedValue = result[fieldKey] || NOT_PRESENT_VALUE;
+        logger.debug(`   ✓ Extracted: "${extractedValue}" (expected: "${job.expectedValue}")`);
+        
+        return {
+          docId: job.docId,
+          extractedValue,
+          expectedValue: job.expectedValue,
+          success: true,
+        };
+      } catch (error) {
+        logger.error(`   ✗ Extraction failed for ${job.docId}:`, error as Error);
+        return {
+          docId: job.docId,
+          extractedValue: '',
+          expectedValue: job.expectedValue,
+          success: false,
+        };
+      }
+    }
+  );
+
+  // Collect results maintaining order
+  const predictions: string[] = extractionResults.map(r => r.extractedValue);
+  const groundTruths: string[] = extractionResults.map(r => r.expectedValue);
   const failureExamples: Array<{ docId: string; predicted: string; expected: string }> = [];
   const successExamples: Array<{ docId: string; value: string }> = [];
-
-  for (const docId of sampledDocIds) {
-    try {
-      // Map AccuracyField type to BoxAIField type
-      const boxAIFieldType = mapToBoxAIFieldType(fieldType);
-      
-      // CRITICAL: Do NOT pass templateKey here!
-      // When templateKey is passed, Box uses the prompts from the template, ignoring our custom prompts.
-      // For Agent-Alpha to test custom prompts, we MUST use fields mode (not template mode).
-      const result = await extractStructuredMetadataWithBoxAI({
-        fileId: docId,
-        fields: [
-          {
-            key: fieldKey,
-            type: boxAIFieldType,
-            displayName: fieldName,
-            prompt: currentPrompt,
-            options,
-          },
-        ],
-        model: testModel,
-        // templateKey intentionally omitted - we need fields mode to test custom prompts
-      });
-
-      const extractedValue = result[fieldKey] || NOT_PRESENT_VALUE;
-      const expectedValue = groundTruth[docId] || '';
-
-      predictions.push(extractedValue);
-      groundTruths.push(expectedValue);
-
-      logger.debug(`   ✓ Extracted: "${extractedValue}" (expected: "${expectedValue}")`);
-    } catch (error) {
-      logger.error(`   ✗ Extraction failed for ${docId}:`, error as Error);
-      // Use empty string for failed extractions
-      predictions.push('');
-      groundTruths.push(groundTruth[docId] || '');
-    }
-  }
 
   // Step 2: Calculate accuracy using the same comparison config as main comparison
   const metricsResult = await calculateFieldMetricsWithDebugAsync(predictions, groundTruths, compareConfig, sampledDocIds);
@@ -160,15 +186,16 @@ export async function runFieldIteration(params: {
 
   // Step 4: Build failure and success examples for prompt generation
   // We do this even when converged, because we may want to generate a more robust prompt
-  for (let i = 0; i < predictions.length; i++) {
-    const predicted = predictions[i];
-    const expected = groundTruths[i];
-    const docId = sampledDocIds[i];
-
-    if (predicted === expected || (predicted === NOT_PRESENT_VALUE && !expected)) {
-      successExamples.push({ docId, value: predicted });
+  for (const result of extractionResults) {
+    if (result.extractedValue === result.expectedValue || 
+        (result.extractedValue === NOT_PRESENT_VALUE && !result.expectedValue)) {
+      successExamples.push({ docId: result.docId, value: result.extractedValue });
     } else {
-      failureExamples.push({ docId, predicted, expected });
+      failureExamples.push({ 
+        docId: result.docId, 
+        predicted: result.extractedValue, 
+        expected: result.expectedValue 
+      });
     }
   }
 
@@ -212,6 +239,7 @@ export async function runFieldIteration(params: {
       maxIterations,
       options,
       documentType,
+      customInstructions: systemPromptOverride, // Pass custom instructions if provided
       // companyName would be passed if available from settings
     });
 

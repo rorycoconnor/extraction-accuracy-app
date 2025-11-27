@@ -2,10 +2,13 @@
  * Type definitions for Agent-Alpha agentic prompt optimization
  */
 
-export type AgentAlphaStatus = 'idle' | 'running' | 'preview' | 'error';
+import type { AgentAlphaRuntimeConfig } from './agent-alpha-config';
+
+export type AgentAlphaStatus = 'idle' | 'configure' | 'running' | 'preview' | 'error';
 
 export type ProcessedFieldInfo = {
   fieldName: string;
+  fieldKey: string;
   iterationCount: number;
   initialAccuracy: number;
   finalAccuracy: number;
@@ -13,11 +16,18 @@ export type ProcessedFieldInfo = {
   timeMs: number; // Time taken for this field
 };
 
+export type ProcessingFieldInfo = {
+  fieldKey: string;
+  fieldName: string;
+  initialAccuracy: number;
+  startTime: number; // When processing started
+};
+
 export type AgentAlphaState = {
   status: AgentAlphaStatus;
   selectedModel: string | null; // User-selected model for testing extractions
-  currentField: string | null; // Key of the current field being processed
-  currentFieldName: string | null; // Name of the current field being processed
+  currentField: string | null; // Key of the current field being processed (legacy, for single field)
+  currentFieldName: string | null; // Name of the current field being processed (legacy)
   currentIteration: number; // Current iteration number for the field
   currentAccuracy: number; // Current accuracy for the field (0-1)
   fieldsProcessed: number; // Number of fields completed
@@ -27,6 +37,12 @@ export type AgentAlphaState = {
   errorMessage?: string;
   // Track all processed fields for the table
   processedFields: ProcessedFieldInfo[];
+  // Track fields currently being processed in parallel
+  processingFields: ProcessingFieldInfo[];
+  // Runtime configuration (set during configure phase)
+  runtimeConfig?: AgentAlphaRuntimeConfig;
+  // Actual number of documents being tested (may be less than maxDocs)
+  actualDocCount?: number;
 };
 
 export type AgentAlphaFieldResult = {
