@@ -175,6 +175,18 @@ const MainPage: React.FC = () => {
       try {
         authLogger.debug('Checking OAuth status');
         const response = await fetch('/api/auth/box/status');
+        
+        // Check if response is JSON before parsing
+        const contentType = response.headers.get('content-type');
+        if (!contentType?.includes('application/json')) {
+          authLogger.warn('OAuth status endpoint returned non-JSON response', { 
+            contentType, 
+            status: response.status 
+          });
+          setOauthStatus('disconnected');
+          return;
+        }
+        
         const data = await response.json();
         
         if (data.success) {
@@ -217,6 +229,19 @@ const MainPage: React.FC = () => {
         authLogger.debug('Fetching user info');
         
         const response = await fetch('/api/auth/box/user');
+        
+        // Check if response is JSON before parsing
+        const contentType = response.headers.get('content-type');
+        if (!contentType?.includes('application/json')) {
+          authLogger.warn('User info endpoint returned non-JSON response', { 
+            contentType, 
+            status: response.status 
+          });
+          setIsBoxAuthenticated(false);
+          setAuthMethod('');
+          return;
+        }
+        
         const data = await response.json();
         
         authLogger.debug('User info response', {
