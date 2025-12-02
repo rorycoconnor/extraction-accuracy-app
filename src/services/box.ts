@@ -15,17 +15,15 @@ const BOX_UPLOAD_BASE_URL = 'https://upload.box.com/api/2.0';
 const BLANK_FILE_NAME = process.env.BOX_BLANK_FILE_NAME || '~BLANK_FILE_FOR_OPTIMIZER_AI.txt';
 const BLANK_FILE_FOLDER_ID = process.env.BOX_BLANK_FILE_FOLDER_ID || '0';
 
-let blankPlaceholderFileId: string | null = null;
-let blankPlaceholderInitPromise: Promise<string> | null = null;
-
-// Token cache to avoid expensive JWT operations on every request
-interface TokenCache {
-  token: string;
-  expiresAt: number;
-  tokenType: 'service_account' | 'developer' | 'oauth';
-}
-
-let cachedToken: TokenCache | null = null;
+// SECURITY NOTE: DO NOT cache tokens at the module level in serverless environments!
+// Module-level variables persist across requests from DIFFERENT users on Vercel,
+// which would cause User B to see User A's Box folders (cross-user data leakage).
+// 
+// Instead, we rely on:
+// 1. OAuth tokens stored in HTTP-only cookies (per-user, handled by oauth.ts)
+// 2. Service Account/Developer tokens from env vars (shared intentionally)
+//
+// The slight performance cost of not caching is worth the security guarantee.
 
 type BoxTemplatesResponse = {
   entries: BoxTemplate[];
@@ -96,34 +94,25 @@ type BoxMetadataTemplateResponse = {
 };
 
 /**
- * Gets a valid access token for the Box API with caching.
- * It checks for OAuth2.0 tokens first, then Service Account config, then falls back to Developer Token.
- * Caches tokens to avoid expensive JWT operations on every request.
+ * Gets a valid access token for the Box API.
+ * It checks for OAuth2.0 tokens first (per-user via cookies), then Service Account config, 
+ * then falls back to Developer Token.
+ * 
+ * SECURITY: Tokens are NOT cached at module level to prevent cross-user data leakage
+ * in serverless environments like Vercel where function instances are reused.
  */
 async function getAccessToken(): Promise<string> {
-    const now = Date.now();
-    
-    // Return cached token if it's still valid (with 5-minute buffer for safety)
-    if (cachedToken && now < cachedToken.expiresAt - (5 * 60 * 1000)) {
-        return cachedToken.token;
-    }
-    
-    // Check OAuth2.0 first
+    // Check OAuth2.0 first - this reads from per-user HTTP-only cookies
     if (await isOAuthConnected()) {
         const oauthToken = await getOAuthAccessToken();
         if (oauthToken) {
-            // Cache the OAuth token (typically expires in 60 minutes)
-            cachedToken = {
-                token: oauthToken,
-                expiresAt: now + (55 * 60 * 1000), // Cache for 55 minutes (5-minute safety buffer)
-                tokenType: 'oauth'
-            };
-            
-            boxLogger.info('OAuth2.0 token cached for 55 minutes');
+            boxLogger.debug('Using OAuth2.0 token from user cookies');
             return oauthToken;
         }
     }
     
+    // Service Account and Developer Token are shared credentials from env vars
+    // These are intentionally shared across all users (not user-specific)
     const boxConfigBase64 = process.env.BOX_CONFIG_JSON_BASE64;
     const developerToken = process.env.BOX_DEVELOPER_TOKEN;
 
@@ -135,14 +124,7 @@ async function getAccessToken(): Promise<string> {
             const sdk = new BoxSDK({ boxConfig });
             const tokenInfo = await sdk.getAppUserTokens(boxConfig.enterpriseID);
             
-            // Cache the Service Account token (typically expires in 60 minutes)
-            cachedToken = {
-                token: tokenInfo.accessToken,
-                expiresAt: now + (55 * 60 * 1000), // Cache for 55 minutes (5-minute safety buffer)
-                tokenType: 'service_account'
-            };
-            
-            boxLogger.info('Service Account token cached for 55 minutes');
+            boxLogger.debug('Using Service Account token');
             return tokenInfo.accessToken;
         } catch (error) {
              boxLogger.error("Failed to get access token using Service Account", error as Error);
@@ -151,15 +133,7 @@ async function getAccessToken(): Promise<string> {
     }
 
     if (developerToken) {
-        // Cache Developer Token (no expiration, but cache for consistency)
-        // Developer tokens don't expire but can be revoked, so cache for 1 hour
-        cachedToken = {
-            token: developerToken,
-            expiresAt: now + (60 * 60 * 1000), // Cache for 1 hour
-            tokenType: 'developer'
-        };
-        
-        boxLogger.info('Developer token cached for 1 hour');
+        boxLogger.debug('Using Developer token');
         return developerToken;
     }
     
@@ -167,46 +141,33 @@ async function getAccessToken(): Promise<string> {
 }
 
 /**
- * Clears the cached token (useful for testing or when credentials change)
+ * Clears the cached token - NO-OP since we no longer cache tokens at module level.
+ * Kept for backwards compatibility with any code that calls this.
  */
 export async function clearTokenCache(): Promise<void> {
-    cachedToken = null;
-    boxLogger.info('Token cache cleared');
+    // No-op: tokens are no longer cached at module level for security reasons
+    boxLogger.debug('clearTokenCache called (no-op - tokens not cached at module level)');
 }
 
 /**
- * Clears the cached blank placeholder file ID so the next request revalidates.
+ * Clears the cached blank placeholder file ID - NO-OP since we no longer cache.
+ * Kept for backwards compatibility.
  */
 export async function clearBlankPlaceholderFileCache(): Promise<void> {
-    blankPlaceholderFileId = null;
-    boxLogger.debug('Blank placeholder file cache cleared');
+    // No-op: placeholder file ID is no longer cached at module level for security reasons
+    boxLogger.debug('clearBlankPlaceholderFileCache called (no-op)');
 }
 
 /**
  * Ensures a blank placeholder file exists in Box and returns its ID.
- * The result is cached per runtime to avoid repeated search calls.
+ * 
+ * NOTE: This now searches for the file on every call instead of caching.
+ * This is intentional to prevent cross-user issues in serverless environments.
+ * The search is fast and the file is rarely needed.
  */
 export async function getBlankPlaceholderFileId(options: { refresh?: boolean } = {}): Promise<string> {
-    if (options.refresh) {
-        await clearBlankPlaceholderFileCache();
-    }
-
-    if (blankPlaceholderFileId) {
-        return blankPlaceholderFileId;
-    }
-
-    if (!blankPlaceholderInitPromise) {
-        blankPlaceholderInitPromise = ensureBlankPlaceholderFileExists()
-            .then(fileId => {
-                blankPlaceholderFileId = fileId;
-                return fileId;
-            })
-            .finally(() => {
-                blankPlaceholderInitPromise = null;
-            });
-    }
-
-    return blankPlaceholderInitPromise;
+    // Always search for the file - no caching to prevent cross-user issues
+    return await ensureBlankPlaceholderFileExists();
 }
 
 async function ensureBlankPlaceholderFileExists(): Promise<string> {
