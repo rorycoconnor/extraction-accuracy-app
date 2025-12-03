@@ -125,6 +125,11 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         bestAccuracy = finalAccuracy;
         bestPrompt = currentPrompt; // Save the prompt that achieved this accuracy
         logger.info(`   📈 New best accuracy: ${(bestAccuracy * 100).toFixed(1)}%`);
+      } else if (finalAccuracy === bestAccuracy && iterationResult.newPrompt.length > bestPrompt.length) {
+        // Same accuracy but we have a more detailed prompt - prefer the detailed one
+        // This helps when the simple prompt gets lucky but a detailed prompt is more robust
+        bestPrompt = iterationResult.newPrompt;
+        logger.info(`   📝 Same accuracy but using more detailed prompt (${bestPrompt.length} chars)`);
       }
 
       // Update for next iteration - the NEW prompt will be tested next

@@ -55,14 +55,21 @@ export type AgentAlphaSamplingResult = {
 };
 
 /**
- * Select up to maxDocs documents that cover the most failing fields
- * Uses greedy algorithm to maximize field coverage
+ * Select up to maxDocs documents for testing
+ * 
+ * Strategy:
+ * 1. First, use greedy algorithm to select documents that cover the most failing fields
+ * 2. Then, if we haven't reached maxDocs, add more documents (even successful ones) 
+ *    to improve testing coverage and robustness
+ * 
  * @param failureMap Map of field keys to their failures
  * @param maxDocs Maximum number of documents to select (defaults to config value)
+ * @param allDocIds Optional: all available document IDs to sample from (for padding)
  */
 export function selectDocsForAgentAlpha(
   failureMap: FieldFailureMap,
-  maxDocs: number = AGENT_ALPHA_CONFIG.MAX_DOCS
+  maxDocs: number = AGENT_ALPHA_CONFIG.MAX_DOCS,
+  allDocIds?: string[]
 ): AgentAlphaSamplingResult {
   const fieldKeys = Object.keys(failureMap);
   const docToFields = new Map<string, Set<string>>();
@@ -100,7 +107,7 @@ export function selectDocsForAgentAlpha(
     }
 
     if (!bestDoc || bestScore === 0) {
-      break; // No more useful documents
+      break; // No more useful documents for field coverage
     }
 
     // Add best doc to selection
@@ -123,12 +130,43 @@ export function selectDocsForAgentAlpha(
     }
   }
 
+  // IMPORTANT: If we haven't reached maxDocs yet, add more documents from the remaining failures
+  // This ensures we test on more documents even if field coverage is already complete
+  while (selectedDocs.length < maxDocs && remainingDocs.length > 0) {
+    const nextDoc = remainingDocs.shift()!;
+    const docName = failureMap[nextDoc.fields[0]]?.find((f) => f.docId === nextDoc.docId)?.docName ?? nextDoc.docId;
+    selectedDocs.push({
+      docId: nextDoc.docId,
+      docName,
+      fieldKeys: nextDoc.fields,
+    });
+  }
+
+  // If we STILL haven't reached maxDocs and we have allDocIds, add documents that passed
+  // This is important because testing only on failures doesn't catch regressions
+  if (allDocIds && selectedDocs.length < maxDocs) {
+    const selectedDocIdSet = new Set(selectedDocs.map(d => d.docId));
+    const unselectedDocs = allDocIds.filter(id => !selectedDocIdSet.has(id));
+    
+    for (const docId of unselectedDocs) {
+      if (selectedDocs.length >= maxDocs) break;
+      
+      // Add document with empty fieldKeys (no failures, but useful for testing)
+      selectedDocs.push({
+        docId,
+        docName: docId, // Name will be updated by caller
+        fieldKeys: [], // No failures in this doc
+      });
+    }
+  }
+
   // Build field-to-docs mapping
+  // For fields, include ALL selected docs (not just those with failures)
+  // This ensures we test prompts on both failing AND passing documents
   const fieldToDocIds: Record<string, string[]> = {};
   for (const fieldKey of fieldKeys) {
-    fieldToDocIds[fieldKey] = selectedDocs
-      .filter((doc) => doc.fieldKeys.includes(fieldKey))
-      .map((doc) => doc.docId);
+    // Include all selected docs for testing, not just those with failures
+    fieldToDocIds[fieldKey] = selectedDocs.map((doc) => doc.docId);
   }
 
   return {

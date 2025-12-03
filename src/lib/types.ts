@@ -44,9 +44,10 @@ export type FieldResult = {
 export type ComparisonMetadata = {
   isMatch: boolean;
   matchType: string;
-  confidence: 'high' | 'medium' | 'low';
+  confidence: 'high' | 'medium' | 'low';  // Comparison confidence (kept for future DSPy support)
   details?: string;  // LLM reasoning or other details
   error?: string;
+  extractionConfidence?: number;  // Box AI extraction confidence score (0-1)
 };
 
 export type FileResult = {
@@ -193,6 +194,7 @@ export interface ApiExtractionResult {
   fileId: string;
   modelName: string;
   extractedMetadata: Record<string, any>;
+  confidenceScores?: Record<string, number>;  // Per-field confidence scores from Box AI
   success: boolean;
   error?: ExtractionError;
   retryCount?: number;

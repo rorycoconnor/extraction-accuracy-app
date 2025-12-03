@@ -40,13 +40,16 @@ export default function DebugPage() {
       
       // Test AI extraction
       setDebugOutput(prev => prev + 'Testing AI extraction...\n');
-      const result = await extractStructuredMetadataWithBoxAI({
+      const { extractedData, confidenceScores } = await extractStructuredMetadataWithBoxAI({
         fileId,
         fields: testFields,
         model: 'box_ai_default'
       });
       
-      setDebugOutput(prev => prev + `AI Extraction Result: ${JSON.stringify(result, null, 2)}\n`);
+      setDebugOutput(prev => prev + `AI Extraction Result: ${JSON.stringify(extractedData, null, 2)}\n`);
+      if (confidenceScores) {
+        setDebugOutput(prev => prev + `Confidence Scores: ${JSON.stringify(confidenceScores, null, 2)}\n`);
+      }
       
     } catch (error) {
       setDebugOutput(prev => prev + `Error: ${error}\n`);

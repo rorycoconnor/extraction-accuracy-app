@@ -19,5 +19,6 @@ export type ExtractMetadataInput = z.infer<typeof ExtractMetadataInputSchema>;
 
 export const ExtractMetadataOutputSchema = z.object({
   data: z.record(z.string()).describe('The extracted metadata as key-value pairs.'),
+  confidenceScores: z.record(z.number()).optional().describe('Per-field confidence scores from Box AI (0-1).'),
 });
 export type ExtractMetadataOutput = z.infer<typeof ExtractMetadataOutputSchema>; 

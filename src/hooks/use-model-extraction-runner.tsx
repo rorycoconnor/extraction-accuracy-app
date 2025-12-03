@@ -200,6 +200,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         fileId: job.fileResult.id,
         modelName: job.modelName,
         extractedMetadata: batchResult.data || {},
+        confidenceScores: batchResult.confidenceScores,
         success: batchResult.success,
         duration: batchResult.duration,
         retryCount: 1 // Mark as retry
@@ -452,6 +453,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
           fileId: job.fileResult.id,
           modelName: job.modelName,
           extractedMetadata: batchResult.data || {},
+          confidenceScores: batchResult.confidenceScores,
           success: batchResult.success,
           duration: batchResult.duration,
           retryCount: 0
@@ -495,6 +497,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         fileId: job.fileResult.id,
         modelName: job.modelName,
         extractedMetadata: batchResult.data || {},
+        confidenceScores: batchResult.confidenceScores,
         success: batchResult.success,
         duration: batchResult.duration,
         retryCount: 0

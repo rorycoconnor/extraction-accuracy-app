@@ -8,6 +8,7 @@ import { processAgentAlphaField } from '@/ai/flows/agent-alpha-process-field';
 import { saveFieldPrompt } from '@/lib/prompt-storage';
 import { logger } from '@/lib/logger';
 import { getCompareConfigForField } from '@/lib/compare-type-storage';
+import { getConfiguredTemplates } from '@/lib/mock-data';
 import { v4 as uuidv4 } from 'uuid';
 import type { AgentAlphaFieldResult } from '@/lib/agent-alpha-types';
 import type { AgentAlphaRuntimeConfig } from '@/lib/agent-alpha-config';
@@ -71,12 +72,19 @@ export const useAgentAlphaRunner = () => {
     const runStartTime = Date.now();
 
     try {
-      // Step 1: Prepare work plan with config
+      // Step 1: Get configured template to check which fields are active
+      const configuredTemplates = getConfiguredTemplates();
+      const configuredTemplate = configuredTemplates.find(
+        (t) => t.templateKey === accuracyData.templateKey
+      );
+      
+      // Step 2: Prepare work plan with config (will filter out disabled fields)
       logger.info('Agent-Alpha: Preparing work plan...', { config });
       const workPlan = await prepareAgentAlphaWorkPlan({
         accuracyData,
         testModel: config.testModel,
         maxDocs: config.maxDocs,
+        configuredTemplate, // Pass template so we can check isActive status
       });
 
       if (workPlan.fields.length === 0) {

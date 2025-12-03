@@ -126,7 +126,7 @@ export async function runFieldIteration(params: {
         // CRITICAL: Do NOT pass templateKey here!
         // When templateKey is passed, Box uses the prompts from the template, ignoring our custom prompts.
         // For Agent-Alpha to test custom prompts, we MUST use fields mode (not template mode).
-        const result = await extractStructuredMetadataWithBoxAI({
+        const { extractedData } = await extractStructuredMetadataWithBoxAI({
           fileId: job.docId,
           fields: [
             {
@@ -141,7 +141,7 @@ export async function runFieldIteration(params: {
           // templateKey intentionally omitted - we need fields mode to test custom prompts
         });
 
-        const extractedValue = result[fieldKey] || NOT_PRESENT_VALUE;
+        const extractedValue = extractedData[fieldKey] || NOT_PRESENT_VALUE;
         logger.debug(`   ✓ Extracted: "${extractedValue}" (expected: "${job.expectedValue}")`);
         
         return {
