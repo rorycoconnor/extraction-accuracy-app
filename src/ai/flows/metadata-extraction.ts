@@ -14,7 +14,7 @@ export async function extractMetadata(input: ExtractMetadataInput): Promise<Extr
   const { fileId, fields, model, templateKey } = input;
   
   try {
-    const extractedData = await extractStructuredMetadataWithBoxAI({
+    const { extractedData, confidenceScores } = await extractStructuredMetadataWithBoxAI({
       fileId,
       fields,
       model,
@@ -22,7 +22,8 @@ export async function extractMetadata(input: ExtractMetadataInput): Promise<Extr
     });
     
     return {
-      data: extractedData
+      data: extractedData,
+      confidenceScores
     };
   } catch (error) {
     // Type guard for error handling

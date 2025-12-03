@@ -47,7 +47,7 @@ describe('Batch Extraction Performance', () => {
       await new Promise(resolve => setTimeout(resolve, 500));
       
       concurrentCount--;
-      return { testField: 'extracted value' };
+      return { extractedData: { testField: 'extracted value' }, confidenceScores: { testField: 0.95 } };
     });
 
     // Create 20 extraction jobs
@@ -93,7 +93,7 @@ describe('Batch Extraction Performance', () => {
     // Mock extraction with realistic timing
     vi.mocked(extractStructuredMetadataWithBoxAI).mockImplementation(async () => {
       await new Promise(resolve => setTimeout(resolve, 200));
-      return { testField: 'extracted value' };
+      return { extractedData: { testField: 'extracted value' }, confidenceScores: { testField: 0.95 } };
     });
 
     // Create 30 extraction jobs (simulating 10 files x 3 models)
@@ -123,7 +123,7 @@ describe('Batch Extraction Performance', () => {
     // Mock extraction
     vi.mocked(extractStructuredMetadataWithBoxAI).mockImplementation(async () => {
       await new Promise(resolve => setTimeout(resolve, 200));
-      return { testField: 'extracted value' };
+      return { extractedData: { testField: 'extracted value' }, confidenceScores: { testField: 0.95 } };
     });
 
     // Single job
@@ -158,7 +158,7 @@ describe('Batch Extraction Performance', () => {
       await new Promise(resolve => setTimeout(resolve, 100));
       
       currentConcurrent--;
-      return { testField: 'extracted value' };
+      return { extractedData: { testField: 'extracted value' }, confidenceScores: { testField: 0.95 } };
     });
 
     // Create 20 jobs
@@ -190,7 +190,7 @@ describe('Batch Extraction Performance', () => {
         throw new Error('Simulated extraction failure');
       }
       
-      return { testField: 'extracted value' };
+      return { extractedData: { testField: 'extracted value' }, confidenceScores: { testField: 0.95 } };
     });
 
     // Create 9 jobs
@@ -239,7 +239,7 @@ describe('Batch Extraction Performance', () => {
       const delay = 50 + Math.random() * 100;
       await new Promise(resolve => setTimeout(resolve, delay));
       
-      return { testField: `value-${fileId}` };
+      return { extractedData: { testField: `value-${fileId}` }, confidenceScores: { testField: 0.95 } };
     });
 
     // Create jobs with specific IDs
@@ -265,7 +265,7 @@ describe('Batch Extraction Performance', () => {
     // Mock extraction
     vi.mocked(extractStructuredMetadataWithBoxAI).mockImplementation(async () => {
       await new Promise(resolve => setTimeout(resolve, 150));
-      return { testField: 'extracted value' };
+      return { extractedData: { testField: 'extracted value' }, confidenceScores: { testField: 0.95 } };
     });
 
     const jobs: BatchExtractionJob[] = Array.from({ length: 5 }, (_, i) => ({
@@ -298,7 +298,7 @@ describe('Batch Extraction vs Sequential Comparison', () => {
     // Mock extraction
     vi.mocked(extractStructuredMetadataWithBoxAI).mockImplementation(async () => {
       await new Promise(resolve => setTimeout(resolve, SIMULATED_LATENCY));
-      return { testField: 'extracted value' };
+      return { extractedData: { testField: 'extracted value' }, confidenceScores: { testField: 0.95 } };
     });
 
     const jobs: BatchExtractionJob[] = Array.from({ length: JOB_COUNT }, (_, i) => ({

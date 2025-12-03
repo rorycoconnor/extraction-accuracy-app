@@ -519,8 +519,10 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                 {results.results.map((result) => (
                   <div key={result.fieldKey} className="rounded-xl border bg-white shadow-sm p-5">
                     {/* Header */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900">{result.fieldName}</h3>
+                    <div className="mb-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">{result.fieldName}</h3>
+                      </div>
                       <div className="flex items-center gap-2">
                         {result.converged ? (
                           <Badge className="bg-green-100 text-green-800 border-transparent">✓ 100% Accuracy</Badge>
@@ -533,14 +535,27 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                       </div>
                     </div>
 
-                    {/* Accuracy line */}
-                    <div className="flex items-center flex-wrap gap-x-1 gap-y-1 text-sm mb-4">
-                      <span className="text-gray-600">Previous Accuracy:</span>
-                      <span className="font-semibold text-gray-900">{(result.initialAccuracy * 100).toFixed(0)}%</span>
-                      <span className="text-gray-400 mx-2">→</span>
-                      <span className="text-gray-600">New Accuracy:</span>
-                      <span className="font-semibold text-green-600">{(result.finalAccuracy * 100).toFixed(0)}%</span>
-                      <span className="text-sm font-medium text-green-600">(+{((result.finalAccuracy - result.initialAccuracy) * 100).toFixed(0)}%)</span>
+                    {/* Accuracy - separate lines */}
+                    <div className="space-y-1 text-sm mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">Previous Accuracy:</span>
+                        <span className="font-semibold text-gray-900">{(result.initialAccuracy * 100).toFixed(0)}%</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-600">New Accuracy:</span>
+                        <span className={cn(
+                          "font-semibold",
+                          result.finalAccuracy >= result.initialAccuracy ? "text-green-600" : "text-red-600"
+                        )}>
+                          {(result.finalAccuracy * 100).toFixed(0)}%
+                        </span>
+                        <span className={cn(
+                          "text-sm font-medium",
+                          result.finalAccuracy >= result.initialAccuracy ? "text-green-600" : "text-red-600"
+                        )}>
+                          ({result.finalAccuracy >= result.initialAccuracy ? '+' : ''}{((result.finalAccuracy - result.initialAccuracy) * 100).toFixed(0)}%)
+                        </span>
+                      </div>
                     </div>
 
                     {/* Prompts */}

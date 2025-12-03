@@ -1874,5 +1874,22 @@
       "overnight_deliveries_address1": "Not Present",
       "per_diem": "19.75"
     }
+  },
+  "2064209344161": {
+    "templateKey": "msa",
+    "groundTruth": {
+      "access_and_use_order_limits_-_clause_risk_rating": "Low",
+      "overages_clause_risk": "Low",
+      "acceptable_use_suspension_-_clause_risk_rating": "Low",
+      "security_data_privacy_data_location_and_transfers_-_clause_risk": "Low",
+      "support_and_service_level_commitments_clause_risk": "Low",
+      "warranty_and_disclaimer_clause_risk": "Low",
+      "term_renewal_termination_post-term_data_handling_-_clause_risk": "Low",
+      "indemnification_ip_privacy_data_-_clause_risk": "Low",
+      "limitation_of_liability_clause_risk": "Low",
+      "force_majeure_clause_risk": "Low",
+      "risk_rollup": "Low",
+      "fees_and_payment_clause_risk": "Low"
+    }
   }
 }

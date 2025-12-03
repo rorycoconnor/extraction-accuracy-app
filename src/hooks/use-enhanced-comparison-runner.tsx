@@ -409,6 +409,28 @@ export const useEnhancedComparisonRunner = (
           if (modelResult.success) {
             const extractedValue = findFieldValue(modelResult.extractedMetadata as Record<string, any>, fieldKey);
             
+            // Store extraction confidence score if available
+            if (modelResult.confidenceScores) {
+              const confidenceScore = findFieldValue(modelResult.confidenceScores as Record<string, any>, fieldKey);
+              if (confidenceScore !== undefined && typeof confidenceScore === 'number') {
+                // Initialize comparisonResults structure if needed
+                if (!fileResult.comparisonResults) {
+                  fileResult.comparisonResults = {};
+                }
+                if (!fileResult.comparisonResults[fieldKey]) {
+                  fileResult.comparisonResults[fieldKey] = {};
+                }
+                if (!fileResult.comparisonResults[fieldKey][modelResult.modelName]) {
+                  fileResult.comparisonResults[fieldKey][modelResult.modelName] = {
+                    isMatch: false,
+                    matchType: 'pending',
+                    confidence: 'medium'
+                  };
+                }
+                fileResult.comparisonResults[fieldKey][modelResult.modelName].extractionConfidence = confidenceScore;
+              }
+            }
+            
             if (extractedValue === undefined) {
               logger.debug('Field not found in extraction response', {
                 fieldKey,
@@ -514,12 +536,16 @@ export const useEnhancedComparisonRunner = (
               fileResult.comparisonResults[fieldKey] = {};
             }
 
+            // Preserve existing extractionConfidence if it was set during extraction
+            const existingExtractionConfidence = fileResult.comparisonResults[fieldKey][modelName]?.extractionConfidence;
+
             fileResult.comparisonResults[fieldKey][modelName] = {
               isMatch: comparisonResult.isMatch,
               matchType: comparisonResult.matchType || (compareConfig?.compareType ?? 'near-exact-string'),
               confidence: comparisonResult.confidence || 'medium',
               details: 'details' in comparisonResult ? comparisonResult.details : undefined,
               error: 'error' in comparisonResult ? comparisonResult.error : undefined,
+              extractionConfidence: existingExtractionConfidence,
             };
           });
         }

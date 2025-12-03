@@ -3,7 +3,7 @@
 import { logger } from '@/lib/logger';
 import { buildFieldFailureMap, selectDocsForAgentAlpha } from '@/lib/agent-alpha-sampling';
 import { AGENT_ALPHA_CONFIG } from '@/lib/agent-alpha-config';
-import type { AccuracyData, AccuracyField } from '@/lib/types';
+import type { AccuracyData, AccuracyField, BoxTemplate } from '@/lib/types';
 import { v4 as uuidv4 } from 'uuid';
 
 export type FieldPlan = {
@@ -25,6 +25,7 @@ export type AgentAlphaWorkPlan = {
  * Prepares the work plan for Agent-Alpha
  * - Validates comparison results exist
  * - Identifies failing fields (< 100% accuracy)
+ * - Filters out disabled fields (isActive === false in template)
  * - Samples documents with most failures
  * - Builds ground truth map for sampled docs
  */
@@ -32,8 +33,9 @@ export async function prepareAgentAlphaWorkPlan(params: {
   accuracyData: AccuracyData;
   testModel: string;
   maxDocs?: number;
+  configuredTemplate?: BoxTemplate; // Template with isActive field status
 }): Promise<AgentAlphaWorkPlan> {
-  const { accuracyData, testModel, maxDocs = AGENT_ALPHA_CONFIG.MAX_DOCS } = params;
+  const { accuracyData, testModel, maxDocs = AGENT_ALPHA_CONFIG.MAX_DOCS, configuredTemplate } = params;
   const runId = uuidv4();
 
   logger.info(`🤖 Agent-Alpha: Preparing work plan (runId: ${runId})`);
@@ -66,21 +68,76 @@ export async function prepareAgentAlphaWorkPlan(params: {
   
   logger.info(`   Reference model for accuracy: ${referenceModel}`);
 
-  // Step 2: Identify failing fields (< TARGET_ACCURACY on reference model)
-  const fieldAccuracyEntries = accuracyData.fields.map((field) => {
-    const accuracy = accuracyData.averages?.[field.key]?.[referenceModel]?.accuracy ?? 0;
-    return {
-      fieldKey: field.key,
-      field,
-      accuracyBefore: accuracy,
-    };
+  // Step 2: Build set of active field keys (fields that are enabled)
+  // A field is active if:
+  // - isActive !== false in the template (Templates page toggle)
+  // - includeInMetrics !== false in fieldSettings (Main table toggle)
+  const activeFieldKeys = new Set<string>();
+  const skippedByTemplate: string[] = [];
+  const skippedByMetrics: string[] = [];
+  
+  for (const field of accuracyData.fields) {
+    // Check if field is disabled in template (isActive === false)
+    const templateField = configuredTemplate?.fields.find(f => f.key === field.key);
+    if (templateField && templateField.isActive === false) {
+      skippedByTemplate.push(field.name);
+      continue;
+    }
+    
+    // Check if field is excluded from metrics (includeInMetrics === false)
+    if (accuracyData.fieldSettings?.[field.key]?.includeInMetrics === false) {
+      skippedByMetrics.push(field.name);
+      continue;
+    }
+    
+    activeFieldKeys.add(field.key);
+  }
+  
+  logger.info(`   Active fields: ${activeFieldKeys.size}/${accuracyData.fields.length}`);
+  if (skippedByTemplate.length > 0) {
+    logger.info(`   Skipped (disabled in template): ${skippedByTemplate.length} - ${skippedByTemplate.join(', ')}`);
+  }
+  if (skippedByMetrics.length > 0) {
+    logger.info(`   Skipped (not included in metrics): ${skippedByMetrics.length} - ${skippedByMetrics.join(', ')}`);
+  }
+
+  // Step 3: Identify fields that need optimization
+  // A field needs optimization if:
+  // - It has < 100% accuracy on the reference model, OR
+  // - It has no ground truth data (we still want to create prompts for these)
+  // Only consider fields that are active in the template
+  const fieldAccuracyEntries = accuracyData.fields
+    .filter((field) => activeFieldKeys.has(field.key)) // Skip disabled fields
+    .map((field) => {
+      const accuracy = accuracyData.averages?.[field.key]?.[referenceModel]?.accuracy ?? 0;
+      
+      // Check if this field has ANY ground truth data across all documents
+      const hasGroundTruth = accuracyData.results.some((fileResult) => {
+        const gtValue = fileResult.fields[field.key]?.['Ground Truth'];
+        return gtValue && gtValue.trim() !== '';
+      });
+      
+      return {
+        fieldKey: field.key,
+        field,
+        accuracyBefore: accuracy,
+        hasGroundTruth,
+      };
+    });
+
+  // Include fields that either:
+  // 1. Have < 100% accuracy (need improvement), OR
+  // 2. Have no ground truth at all (need prompt creation anyway)
+  const fieldsToOptimize = fieldAccuracyEntries.filter(({ accuracyBefore, hasGroundTruth }) => {
+    // If field has 100% accuracy AND has ground truth, skip it (already working)
+    if (accuracyBefore >= AGENT_ALPHA_CONFIG.TARGET_ACCURACY && hasGroundTruth) {
+      return false;
+    }
+    // Include if accuracy is below target OR if there's no ground truth
+    return true;
   });
 
-  const failingFields = fieldAccuracyEntries.filter(({ accuracyBefore }) => {
-    return accuracyBefore < AGENT_ALPHA_CONFIG.TARGET_ACCURACY;
-  });
-
-  if (failingFields.length === 0) {
+  if (fieldsToOptimize.length === 0) {
     logger.info(`✅ All fields already at 100% accuracy on ${referenceModel}!`);
     return {
       runId,
@@ -91,35 +148,37 @@ export async function prepareAgentAlphaWorkPlan(params: {
     };
   }
 
-  logger.info(`📊 Found ${failingFields.length} field(s) to optimize`);
-
-  // Step 3: Build failure map using reference model (the model we have comparison data for)
-  const failingFieldKeys = failingFields.map(({ fieldKey }) => fieldKey);
-  const failureMap = buildFieldFailureMap(accuracyData, failingFieldKeys, referenceModel);
-
-  // Filter out fields with no failures in sampled docs
-  const fieldsWithFailures = failingFields.filter(({ fieldKey }) => failureMap[fieldKey]?.length > 0);
-
-  if (fieldsWithFailures.length === 0) {
-    logger.warn(`⚠️  No fields have failures in the sampled documents`);
-    return {
-      runId,
-      templateKey: accuracyData.templateKey,
-      testModel,
-      sampledDocIds: [],
-      fields: [],
-    };
+  // Log what we're optimizing and why
+  const noGtFields = fieldsToOptimize.filter(f => !f.hasGroundTruth);
+  const failingFields = fieldsToOptimize.filter(f => f.hasGroundTruth && f.accuracyBefore < AGENT_ALPHA_CONFIG.TARGET_ACCURACY);
+  
+  logger.info(`📊 Found ${fieldsToOptimize.length} field(s) to optimize:`);
+  if (failingFields.length > 0) {
+    logger.info(`   - ${failingFields.length} field(s) with < 100% accuracy`);
+  }
+  if (noGtFields.length > 0) {
+    logger.info(`   - ${noGtFields.length} field(s) without ground truth`);
   }
 
-  const samplingResult = selectDocsForAgentAlpha(failureMap, maxDocs);
+  // Step 4: Build failure map using reference model (for fields that have comparison data)
+  const fieldKeysToOptimize = fieldsToOptimize.map(({ fieldKey }) => fieldKey);
+  const failureMap = buildFieldFailureMap(accuracyData, fieldKeysToOptimize, referenceModel);
+
+  // NOTE: We no longer filter out fields with no failures in the failure map
+  // Fields without ground truth won't have failures but still need prompts
+
+  // Get all document IDs so we can pad the sample if needed
+  const allDocIds = accuracyData.results.map((r) => r.id);
+  
+  const samplingResult = selectDocsForAgentAlpha(failureMap, maxDocs, allDocIds);
   const sampledDocIds = samplingResult.docs.map((doc) => doc.docId);
 
   logger.info(`📄 Selected ${sampledDocIds.length} document(s) for testing`);
-  logger.info(`🎯 Processing ${fieldsWithFailures.length} field(s)`);
+  logger.info(`🎯 Processing ${fieldsToOptimize.length} field(s)`);
 
-  // Step 4: Build ground truth map for sampled documents and create field plans
+  // Step 5: Build ground truth map for sampled documents and create field plans
   const fieldPlans: FieldPlan[] = [];
-  for (const { fieldKey, field, accuracyBefore } of fieldsWithFailures) {
+  for (const { fieldKey, field, accuracyBefore } of fieldsToOptimize) {
     const groundTruth: Record<string, string> = {};
     for (const docId of sampledDocIds) {
       const fileResult = accuracyData.results.find((r) => r.id === docId);

@@ -374,6 +374,16 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
     cleanResponse = cleanResponse.replace(/^```\s*/, '').replace(/\s*```$/, '');
   }
   
+  // Helper to check if a prompt is too generic/short
+  const isGenericPrompt = (prompt: string): boolean => {
+    const trimmed = prompt.trim();
+    // Too short
+    if (trimmed.length < 100) return true;
+    // Generic "Extract the X" pattern without additional detail
+    if (/^extract the .{1,50}(from this document)?\.?$/i.test(trimmed)) return true;
+    return false;
+  };
+  
   try {
     // Try to parse as JSON first
     const parsed = JSON.parse(cleanResponse);
@@ -381,17 +391,15 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
     if (parsed.newPrompt && typeof parsed.newPrompt === 'string') {
       const prompt = parsed.newPrompt.trim();
       
-      // Check if the prompt is too short (bad prompt)
-      // NOTE: We no longer reject prompts starting with "Extract" - many good prompts do!
-      // We only reject if the prompt is too short (less than 100 chars is suspiciously brief)
-      if (prompt.length < 100) {
-        console.warn(`[Agent-Alpha] Generated prompt is too short (${prompt.length} chars): "${prompt.substring(0, 50)}..."`);
+      // Check if the prompt is too generic/short
+      if (isGenericPrompt(prompt)) {
+        console.warn(`[Agent-Alpha] Generated prompt is too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`);
         // Use fallback
         if (fieldName) {
           const fallbackPrompt = getExamplePromptForField(fieldName, 'string');
           return {
             newPrompt: fallbackPrompt,
-            reasoning: 'Used fallback prompt because generated prompt was too short',
+            reasoning: `Used fallback prompt because generated prompt was too generic: "${prompt.substring(0, 50)}..."`,
           };
         }
       }
@@ -412,14 +420,14 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
   if (newPromptMatch) {
     const prompt = newPromptMatch[1].replace(/\\"/g, '"').replace(/\\n/g, ' ').trim();
     
-    // Check if the prompt is too short
-    if (prompt.length < 100) {
-      console.warn(`[Agent-Alpha] Extracted prompt is too short (${prompt.length} chars): "${prompt.substring(0, 50)}..."`);
+    // Check if the prompt is too generic
+    if (isGenericPrompt(prompt)) {
+      console.warn(`[Agent-Alpha] Extracted prompt is too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`);
       if (fieldName) {
         const fallbackPrompt = getExamplePromptForField(fieldName, 'string');
         return {
           newPrompt: fallbackPrompt,
-          reasoning: 'Used fallback prompt because extracted prompt was too short',
+          reasoning: `Used fallback prompt because extracted prompt was too generic: "${prompt.substring(0, 50)}..."`,
         };
       }
     }
@@ -435,7 +443,7 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
   if (jsonMatch) {
     const prompt = jsonMatch[1].replace(/\\n/g, ' ').replace(/\s+/g, ' ').trim();
     
-    if (prompt.length >= 100) {
+    if (!isGenericPrompt(prompt)) {
       return {
         newPrompt: prompt,
         reasoning: 'Extracted from JSON block',

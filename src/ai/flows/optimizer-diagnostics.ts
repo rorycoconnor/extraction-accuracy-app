@@ -32,7 +32,7 @@ export async function generateDocumentTheories(
           prompt: buildTheoryPrompt(failure),
         }));
 
-        const response = await extractStructuredMetadataWithBoxAI({
+        const { extractedData } = await extractStructuredMetadataWithBoxAI({
           fileId: doc.fileId,
           fields,
           model: THEORY_MODEL,
@@ -40,11 +40,11 @@ export async function generateDocumentTheories(
 
         logger.info('optimizer_diagnostics_llm_answer', {
           fileId: doc.fileId,
-          rawAnswer: formatPayloadForLog(response),
+          rawAnswer: formatPayloadForLog(extractedData),
         });
 
         const theories: Record<string, string> = {};
-        Object.entries(response ?? {}).forEach(([fieldKey, value]) => {
+        Object.entries(extractedData ?? {}).forEach(([fieldKey, value]) => {
           if (typeof value === 'string') {
             theories[fieldKey] = truncateTheory(value);
           }

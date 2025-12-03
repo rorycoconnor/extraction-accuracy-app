@@ -19,6 +19,7 @@ export interface BatchExtractionResult {
   jobId: string;
   success: boolean;
   data?: Record<string, any>;
+  confidenceScores?: Record<string, number>;
   error?: string;
   duration?: number;
 }
@@ -73,7 +74,7 @@ export async function extractMetadataBatch(
         });
 
         // Call Box AI directly - token acquisition happens inside but is cached
-        const extractedData = await extractStructuredMetadataWithBoxAI({
+        const { extractedData, confidenceScores } = await extractStructuredMetadataWithBoxAI({
           fileId: job.fileId,
           fields: job.fields,
           model: job.model,
@@ -87,13 +88,15 @@ export async function extractMetadataBatch(
           fileId: job.fileId,
           model: job.model,
           duration,
-          extractedFieldCount: Object.keys(extractedData).length
+          extractedFieldCount: Object.keys(extractedData).length,
+          hasConfidenceScores: !!confidenceScores
         });
 
         const result: BatchExtractionResult = {
           jobId: job.jobId,
           success: true,
           data: extractedData,
+          confidenceScores,
           duration
         };
 
@@ -169,7 +172,8 @@ export async function extractMetadata(input: ExtractMetadataInput): Promise<Extr
   }
 
   return {
-    data: result.data || {}
+    data: result.data || {},
+    confidenceScores: result.confidenceScores
   };
 }
 

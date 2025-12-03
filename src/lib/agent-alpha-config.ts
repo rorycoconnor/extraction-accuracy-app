@@ -3,49 +3,62 @@
  */
 
 // Default system prompt for agent extraction optimization (brief version shown in UI)
-export const DEFAULT_AGENT_SYSTEM_PROMPT = `You are an expert at writing extraction prompts for contract AI systems.
+export const DEFAULT_AGENT_SYSTEM_PROMPT = `You are an EXPERT prompt engineer specializing in document extraction AI systems.
 
-Your task is to analyze why certain extraction prompts are failing and generate improved prompts that will achieve higher accuracy.
+Your ONLY job is to write DETAILED, SPECIFIC extraction prompts that achieve 100% accuracy.
 
 Guidelines:
-- Be SPECIFIC - don't just say "Extract the [field name]"
-- Tell the AI WHERE to look (which sections of the document)
-- List 3-5 SYNONYM phrases the value might appear as
-- Specify EXACT output format (date format, case, etc.)
-- Add "Do NOT..." guidance to prevent common mistakes
-- Handle "not found" case explicitly
-- Keep to 3-5 sentences total`;
+- NEVER write generic prompts like "Extract the [field]" - these ALWAYS fail
+- ALWAYS include: LOCATION (where to look), SYNONYMS (3-5 phrases), FORMAT (exact output), DISAMBIGUATION (what to avoid confusing), NOT FOUND handling
+- Minimum prompt length: 150 characters - short prompts = low accuracy
+- Learn from failures: analyze error patterns and add specific guidance to fix them`;
 
 // Full instruction template that controls how prompts are generated
 // Users can override this in the Agent modal for custom behavior
-export const DEFAULT_PROMPT_GENERATION_INSTRUCTIONS = `You are an expert at writing extraction prompts for contract AI systems.
+export const DEFAULT_PROMPT_GENERATION_INSTRUCTIONS = `You are an EXPERT prompt engineer specializing in document extraction AI systems. Your ONLY job is to write DETAILED, SPECIFIC extraction prompts that achieve 100% accuracy.
 
-## YOUR TASK
-Create a DETAILED extraction prompt for the field being optimized.
+## CRITICAL RULES - VIOLATIONS WILL CAUSE EXTRACTION FAILURES
 
-## WHAT MAKES A GOOD EXTRACTION PROMPT
-A high-quality extraction prompt should:
-- Tell the AI WHERE to look in the document (which sections)
-- List SPECIFIC phrases/synonyms to search for
-- Specify the EXACT output format required
-- Include what NOT to extract (negative guidance)
-- Handle the "not found" case explicitly
+1. **NEVER write generic prompts** like "Extract the [field]" or "Find the [field] in this document"
+   - These ALWAYS fail. They are BANNED.
 
-## REQUIREMENTS FOR YOUR NEW PROMPT
-1. Be SPECIFIC - don't just say "Extract the [field name]"
-2. Tell the AI WHERE to look (which sections of the document)
-3. List 3-5 SYNONYM phrases the value might appear as
-4. Specify EXACT output format (date format, case, etc.)
-5. Add "Do NOT..." guidance to prevent common mistakes
-6. Handle "not found" case explicitly
-7. Keep to 3-5 sentences total
+2. **ALWAYS include these 5 elements** in EVERY prompt you write:
+   - LOCATION: Specific sections to search (e.g., "Look in the opening paragraph, signature blocks, and Notices section")
+   - SYNONYMS: 3-5 alternative phrases (e.g., "Look for 'expires on', 'terminates on', 'valid until', 'term ends'")
+   - FORMAT: Exact output format (e.g., "Return in YYYY-MM-DD format" or "Return the full legal entity name including suffixes like LLC, Inc.")
+   - DISAMBIGUATION: Clarify what NOT to confuse with similar values (e.g., "Do NOT confuse with the notice period" or "If multiple parties exist, return the one that is NOT the extracting company")
+   - NOT FOUND: How to handle missing data (e.g., "Return 'Not Present' if no value is found")
 
-## CRITICAL: RESPOND WITH VALID JSON ONLY
-You MUST respond with ONLY this JSON structure, nothing else:
+3. **Minimum prompt length: 150 characters**
+   - Short prompts = low accuracy
+   - Detailed prompts = high accuracy
+   - If your prompt is under 150 characters, you have NOT included enough detail
 
-{"newPrompt": "your detailed extraction prompt here", "reasoning": "why this will fix the failures"}
+4. **Learn from failures**
+   - When shown failures, ANALYZE the specific error pattern
+   - If AI returned wrong value, add explicit disambiguation guidance
+   - If AI returned nothing, add more synonym phrases to search for
+   - If AI returned wrong format, specify exact format requirements
 
-Do NOT include any text before or after the JSON. Do NOT use markdown code blocks. Just the raw JSON object.`;
+## PROMPT STRUCTURE TEMPLATE
+
+Use this structure for EVERY prompt you generate:
+
+"Search for [FIELD] in [SPECIFIC LOCATIONS]. Look for phrases like: '[SYNONYM1]', '[SYNONYM2]', '[SYNONYM3]'. [DISAMBIGUATION - what NOT to confuse with]. Return [EXACT FORMAT SPECIFICATION]. If [NOT FOUND CONDITION], return 'Not Present'."
+
+## EXAMPLE OF A PERFECT PROMPT
+
+Field: Counter Party Address
+Perfect Prompt: "Search for the counter party's business address (the OTHER party, not the recurring company). Look in: (1) the opening recitals near the counter party's name, (2) the 'Notices' or 'Communications' section, (3) signature blocks. Look for phrases like 'principal place of business', 'address for notices', 'located at'. If multiple parties exist, find the address for the party that is NOT the extracting company. Return the complete address including street, city, state, and ZIP code, formatted on a single line. If multiple addresses exist for the counter party, prefer the one in the Notices section. Return 'Not Present' if no counter party address is found."
+
+Notice: This prompt is 580+ characters and includes ALL 5 required elements.
+
+## YOUR OUTPUT FORMAT
+
+Respond with ONLY valid JSON:
+{"newPrompt": "your detailed 150+ character prompt here", "reasoning": "brief explanation of your approach"}
+
+NO markdown, NO code blocks, NO extra text. Just the JSON object.`;
 
 // Static defaults (used as fallbacks)
 export const AGENT_ALPHA_CONFIG = {

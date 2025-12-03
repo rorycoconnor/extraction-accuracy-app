@@ -306,53 +306,151 @@ export async function getBoxAccessToken(): Promise<string> {
     return await getAccessToken();
 }
 
-// Centralized fetch function for Box API calls
+// Retry configuration for Box API calls
+const RETRY_CONFIG = {
+    maxRetries: 3,
+    initialDelayMs: 1000,
+    maxDelayMs: 10000,
+    backoffMultiplier: 2,
+    // Status codes that should trigger a retry
+    retryableStatusCodes: [
+        429, // Rate limit exceeded
+        500, // Internal server error
+        502, // Bad gateway
+        503, // Service unavailable
+        504, // Gateway timeout
+    ],
+};
+
+/**
+ * Sleep for a specified number of milliseconds
+ */
+function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Check if an error is retryable based on status code
+ */
+function isRetryableError(status: number): boolean {
+    return RETRY_CONFIG.retryableStatusCodes.includes(status);
+}
+
+/**
+ * Calculate delay for exponential backoff with jitter
+ */
+function calculateBackoffDelay(attempt: number): number {
+    const baseDelay = RETRY_CONFIG.initialDelayMs * Math.pow(RETRY_CONFIG.backoffMultiplier, attempt);
+    const jitter = Math.random() * 0.3 * baseDelay; // Add up to 30% jitter
+    return Math.min(baseDelay + jitter, RETRY_CONFIG.maxDelayMs);
+}
+
+// Centralized fetch function for Box API calls with retry logic
 export async function boxApiFetch(path: string, options: RequestInit = {}) {
-    const accessToken = await getAccessToken();
-
-    const defaultHeaders: Record<string, string> = {
-        'Authorization': `Bearer ${accessToken}`,
-    };
-
-    if (options.body) {
-        defaultHeaders['Content-Type'] = 'application/json';
-    }
-
-    const response = await fetch(`${BOX_API_BASE_URL}${path}`, {
-        ...options,
-        headers: {
-            ...defaultHeaders,
-            ...options.headers,
-        },
-        cache: 'no-store',
-    });
-
-    const responseText = await response.text();
-
-    if (!response.ok) {
-        const errorData = responseText;
-        boxLogger.error(`Box API Error on path ${path}`, { status: response.status, data: errorData, options });
-        
-        let errorMessage = `Failed to call Box API on path ${path}: ${response.status} ${response.statusText}`;
+    let lastError: Error | null = null;
+    
+    for (let attempt = 0; attempt <= RETRY_CONFIG.maxRetries; attempt++) {
         try {
-            const parsedError = JSON.parse(errorData);
-            if (parsedError && parsedError.message) {
-                errorMessage += `. Details: ${parsedError.message}`;
-            } else {
-                 errorMessage += `. Details: ${errorData}`;
+            const accessToken = await getAccessToken();
+
+            const defaultHeaders: Record<string, string> = {
+                'Authorization': `Bearer ${accessToken}`,
+            };
+
+            if (options.body) {
+                defaultHeaders['Content-Type'] = 'application/json';
             }
-        } catch (e) {
-            errorMessage += `. Details: ${errorData}`;
+
+            const response = await fetch(`${BOX_API_BASE_URL}${path}`, {
+                ...options,
+                headers: {
+                    ...defaultHeaders,
+                    ...options.headers,
+                },
+                cache: 'no-store',
+            });
+
+            const responseText = await response.text();
+
+            if (!response.ok) {
+                const errorData = responseText;
+                
+                // Check if this is a retryable error
+                if (isRetryableError(response.status) && attempt < RETRY_CONFIG.maxRetries) {
+                    const delayMs = calculateBackoffDelay(attempt);
+                    boxLogger.warn(`Box API Error (retryable) on path ${path}`, { 
+                        status: response.status, 
+                        attempt: attempt + 1, 
+                        maxRetries: RETRY_CONFIG.maxRetries,
+                        retryingIn: `${delayMs}ms`
+                    });
+                    await sleep(delayMs);
+                    continue; // Retry
+                }
+                
+                // Non-retryable error or max retries exceeded
+                boxLogger.error(`Box API Error on path ${path}`, { 
+                    status: response.status, 
+                    data: errorData, 
+                    options,
+                    attempt: attempt + 1,
+                    retriesExhausted: attempt >= RETRY_CONFIG.maxRetries
+                });
+                
+                let errorMessage = `Failed to call Box API on path ${path}: ${response.status} ${response.statusText}`;
+                try {
+                    const parsedError = JSON.parse(errorData);
+                    if (parsedError && parsedError.message) {
+                        errorMessage += `. Details: ${parsedError.message}`;
+                    } else {
+                        errorMessage += `. Details: ${errorData}`;
+                    }
+                } catch (e) {
+                    errorMessage += `. Details: ${errorData}`;
+                }
+                
+                if (attempt > 0) {
+                    errorMessage += ` (after ${attempt + 1} attempts)`;
+                }
+                
+                throw new Error(errorMessage);
+            }
+            
+            // Success - log if we had to retry
+            if (attempt > 0) {
+                boxLogger.info(`Box API call succeeded after ${attempt + 1} attempts`, { path });
+            }
+            
+            if (!responseText) {
+                return null;
+            }
+            
+            return JSON.parse(responseText);
+            
+        } catch (error) {
+            // Handle network errors (fetch failures, timeouts, etc.)
+            if (error instanceof TypeError || (error as Error).message?.includes('fetch')) {
+                if (attempt < RETRY_CONFIG.maxRetries) {
+                    const delayMs = calculateBackoffDelay(attempt);
+                    boxLogger.warn(`Network error on Box API call (retrying)`, { 
+                        path, 
+                        error: (error as Error).message,
+                        attempt: attempt + 1,
+                        retryingIn: `${delayMs}ms`
+                    });
+                    await sleep(delayMs);
+                    lastError = error as Error;
+                    continue; // Retry
+                }
+            }
+            
+            // Non-retryable error or already a processed Box API error
+            throw error;
         }
-        
-        throw new Error(errorMessage);
     }
     
-    if (!responseText) {
-        return null;
-    }
-    
-    return JSON.parse(responseText);
+    // Should not reach here, but just in case
+    throw lastError || new Error(`Box API call failed after ${RETRY_CONFIG.maxRetries + 1} attempts`);
 }
 
 
@@ -552,6 +650,7 @@ type BoxAIExtractRequestBody = {
         template_key: string;
         scope: 'enterprise';
     };
+    include_confidence_score?: boolean;
     ai_agent?: {
         id: string;
         type: 'ai_agent_id';
@@ -569,13 +668,20 @@ type BoxAIExtractRequestBody = {
     };
 }
 
+// Return type for extraction with confidence scores
+export type BoxAIExtractionResult = {
+    extractedData: Record<string, any>;
+    confidenceScores?: Record<string, number>;
+}
+
 export async function extractStructuredMetadataWithBoxAI(
   { fileId, fields, model, templateKey }: BoxAIExtractParams
-): Promise<Record<string, any>> {
+): Promise<BoxAIExtractionResult> {
   
   try {
     const requestBody: BoxAIExtractRequestBody = {
       items: [{ id: fileId, type: 'file' as const }],
+      include_confidence_score: true,
     };
     
     // CRITICAL FIX: Use Box metadata template when available
@@ -650,10 +756,16 @@ export async function extractStructuredMetadataWithBoxAI(
         throw new Error(`Failed to parse Box AI response: ${parseError}`);
     }
     
-    boxLogger.debug('Box AI response parsed successfully', { model, fileId, hasAnswer: !!result?.answer, hasEntries: !!result?.entries });
+    boxLogger.debug('Box AI response parsed successfully', { model, fileId, hasAnswer: !!result?.answer, hasEntries: !!result?.entries, hasConfidenceScore: !!result?.confidence_score });
 
     // Handle Box AI response formats - simplified based on actual API behavior
     let extractedData: Record<string, any> = {};
+    let confidenceScores: Record<string, number> | undefined = result?.confidence_score;
+    
+    // Log confidence scores if present
+    if (confidenceScores) {
+        boxLogger.debug('Confidence scores received', { fileId, model, scores: confidenceScores });
+    }
     
     // Check for the most common response format first (what we see in logs)
     if (result?.answer && typeof result.answer === 'object') {
@@ -661,9 +773,10 @@ export async function extractStructuredMetadataWithBoxAI(
         boxLogger.info(`Successfully extracted data using model "${model}"`, { 
           fileId, 
           fieldCount: Object.keys(extractedData).length,
-          extractionPath: 'answer field'
+          extractionPath: 'answer field',
+          hasConfidenceScores: !!confidenceScores
         });
-        return extractedData;
+        return { extractedData, confidenceScores };
     }
     
     // Handle array response format
@@ -671,15 +784,17 @@ export async function extractStructuredMetadataWithBoxAI(
         const firstResult = result[0];
         if (firstResult?.success) {
             extractedData = firstResult.extractedMetadata || firstResult.answer || {};
+            confidenceScores = firstResult.confidence_score || confidenceScores;
         } else {
             throw new Error(`Box AI extraction failed: ${firstResult?.error || 'Unknown error'}`);
         }
         boxLogger.info(`Successfully extracted data using model "${model}"`, { 
           fileId, 
           fieldCount: Object.keys(extractedData).length,
-          extractionPath: 'array format'
+          extractionPath: 'array format',
+          hasConfidenceScores: !!confidenceScores
         });
-        return extractedData;
+        return { extractedData, confidenceScores };
     }
     
     // Handle entries array format (legacy)
@@ -691,12 +806,14 @@ export async function extractStructuredMetadataWithBoxAI(
             throw new Error(errorMessage);
         }
         extractedData = firstResult?.answer || {};
+        confidenceScores = firstResult.confidence_score || confidenceScores;
         boxLogger.info(`Successfully extracted data using model "${model}"`, { 
           fileId, 
           fieldCount: Object.keys(extractedData).length,
-          extractionPath: 'entries format'
+          extractionPath: 'entries format',
+          hasConfidenceScores: !!confidenceScores
         });
-        return extractedData;
+        return { extractedData, confidenceScores };
     }
     
     // Fallback: try other possible response formats
@@ -710,10 +827,11 @@ export async function extractStructuredMetadataWithBoxAI(
     boxLogger.info(`Successfully extracted data using model "${model}"`, { 
       fileId, 
       fieldCount: Object.keys(extractedData).length,
-      extractionPath: 'fallback format'
+      extractionPath: 'fallback format',
+      hasConfidenceScores: !!confidenceScores
     });
     
-    return extractedData;
+    return { extractedData, confidenceScores };
 
   } catch (error) {
     boxLogger.error(`Error using model "${model}" for file ${fileId}`, error instanceof Error ? error : { error });
