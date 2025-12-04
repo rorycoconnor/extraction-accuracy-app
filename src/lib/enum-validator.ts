@@ -143,26 +143,37 @@ export function validateEnumValue(
   options: EnumOption[],
   fieldKey: string
 ): string {
-  // Handle empty/null values
-  if (!extractedValue || extractedValue === '' || extractedValue === NOT_PRESENT_VALUE) {
+  try {
+    // Handle empty/null values
+    if (!extractedValue || extractedValue === '' || extractedValue === NOT_PRESENT_VALUE) {
+      return NOT_PRESENT_VALUE;
+    }
+    
+    // Handle invalid options array
+    if (!options || !Array.isArray(options) || options.length === 0) {
+      logger.warn('validateEnumValue called with invalid options', { fieldKey, options });
+      return extractedValue; // Return original value if no options to validate against
+    }
+    
+    // Find matching option
+    const matchedOption = findMatchingOption(extractedValue, options, fieldKey);
+    
+    if (matchedOption) {
+      return matchedOption;
+    }
+    
+    // No match found - log warning and return Not Present
+    logger.warn('Extracted enum value does not match any option', {
+      fieldKey,
+      extractedValue,
+      availableOptions: options.map(o => o.key)
+    });
+    
     return NOT_PRESENT_VALUE;
+  } catch (error) {
+    logger.error('Error in validateEnumValue', { fieldKey, extractedValue, error: error as Error });
+    return extractedValue; // Return original value on error
   }
-  
-  // Find matching option
-  const matchedOption = findMatchingOption(extractedValue, options, fieldKey);
-  
-  if (matchedOption) {
-    return matchedOption;
-  }
-  
-  // No match found - log warning and return Not Present
-  logger.warn('Extracted enum value does not match any option', {
-    fieldKey,
-    extractedValue,
-    availableOptions: options.map(o => o.key)
-  });
-  
-  return NOT_PRESENT_VALUE;
 }
 
 /**
@@ -175,52 +186,71 @@ export function validateMultiSelectValue(
   options: EnumOption[],
   fieldKey: string
 ): string {
-  // Handle empty/null values
-  if (!extractedValue || extractedValue === '' || extractedValue === NOT_PRESENT_VALUE) {
-    return NOT_PRESENT_VALUE;
-  }
-  
-  // Parse into array of values
-  let values: string[];
-  if (Array.isArray(extractedValue)) {
-    values = extractedValue;
-  } else if (typeof extractedValue === 'string') {
-    // Split by pipe or comma
-    const separator = extractedValue.includes('|') ? '|' : ',';
-    values = extractedValue.split(separator).map(v => v.trim()).filter(v => v);
-  } else {
-    logger.warn('Invalid multiSelect value type', { fieldKey, extractedValue, type: typeof extractedValue });
-    return NOT_PRESENT_VALUE;
-  }
-  
-  // Find matching options for each value
-  const matchedOptions: string[] = [];
-  const unmatchedValues: string[] = [];
-  
-  for (const value of values) {
-    const matchedOption = findMatchingOption(value, options, fieldKey);
-    if (matchedOption) {
-      matchedOptions.push(matchedOption);
-    } else {
-      unmatchedValues.push(value);
+  try {
+    // Handle empty/null values
+    if (!extractedValue || extractedValue === '' || extractedValue === NOT_PRESENT_VALUE) {
+      return NOT_PRESENT_VALUE;
     }
+    
+    // Handle invalid options array
+    if (!options || !Array.isArray(options) || options.length === 0) {
+      logger.warn('validateMultiSelectValue called with invalid options', { fieldKey, options });
+      // Return original value formatted as string
+      if (Array.isArray(extractedValue)) {
+        return extractedValue.join(' | ');
+      }
+      return String(extractedValue);
+    }
+    
+    // Parse into array of values
+    let values: string[];
+    if (Array.isArray(extractedValue)) {
+      values = extractedValue;
+    } else if (typeof extractedValue === 'string') {
+      // Split by pipe or comma
+      const separator = extractedValue.includes('|') ? '|' : ',';
+      values = extractedValue.split(separator).map(v => v.trim()).filter(v => v);
+    } else {
+      logger.warn('Invalid multiSelect value type', { fieldKey, extractedValue, type: typeof extractedValue });
+      return NOT_PRESENT_VALUE;
+    }
+    
+    // Find matching options for each value
+    const matchedOptions: string[] = [];
+    const unmatchedValues: string[] = [];
+    
+    for (const value of values) {
+      const matchedOption = findMatchingOption(value, options, fieldKey);
+      if (matchedOption) {
+        matchedOptions.push(matchedOption);
+      } else {
+        unmatchedValues.push(value);
+      }
+    }
+    
+    // Log unmatched values
+    if (unmatchedValues.length > 0) {
+      logger.warn('Some multiSelect values did not match any option', {
+        fieldKey,
+        unmatchedValues,
+        matchedOptions,
+        availableOptions: options.map(o => o.key)
+      });
+    }
+    
+    // Return matched options as pipe-separated string
+    if (matchedOptions.length > 0) {
+      return matchedOptions.join(' | ');
+    }
+    
+    return NOT_PRESENT_VALUE;
+  } catch (error) {
+    logger.error('Error in validateMultiSelectValue', { fieldKey, extractedValue, error: error as Error });
+    // Return original value formatted as string on error
+    if (Array.isArray(extractedValue)) {
+      return extractedValue.join(' | ');
+    }
+    return String(extractedValue);
   }
-  
-  // Log unmatched values
-  if (unmatchedValues.length > 0) {
-    logger.warn('Some multiSelect values did not match any option', {
-      fieldKey,
-      unmatchedValues,
-      matchedOptions,
-      availableOptions: options.map(o => o.key)
-    });
-  }
-  
-  // Return matched options as pipe-separated string
-  if (matchedOptions.length > 0) {
-    return matchedOptions.join(' | ');
-  }
-  
-  return NOT_PRESENT_VALUE;
 }
 
