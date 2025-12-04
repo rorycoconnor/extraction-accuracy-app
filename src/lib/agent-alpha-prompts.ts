@@ -381,10 +381,20 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
   // Helper to check if a prompt is too generic/short
   const isGenericPrompt = (prompt: string): boolean => {
     const trimmed = prompt.trim();
-    // Too short
-    if (trimmed.length < 100) return true;
+    // Too short - system prompt requires minimum 150 characters
+    if (trimmed.length < 150) return true;
     // Generic "Extract the X" pattern without additional detail
     if (/^extract the .{1,50}(from this document)?\.?$/i.test(trimmed)) return true;
+    // Check if prompt lacks key elements (should have location, synonyms, format, etc.)
+    const hasLocation = /look in|search in|find in|check the|located in/i.test(trimmed);
+    const hasSynonyms = /look for|search for|phrases like|variations|synonyms/i.test(trimmed);
+    const hasFormat = /return|format|output|provide/i.test(trimmed);
+    const hasNotFound = /not present|not found|missing|if no|if not/i.test(trimmed);
+    
+    // If missing multiple key elements, it's too generic
+    const elementCount = [hasLocation, hasSynonyms, hasFormat, hasNotFound].filter(Boolean).length;
+    if (elementCount < 3) return true;
+    
     return false;
   };
   
@@ -398,14 +408,20 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
       // Check if the prompt is too generic/short
       if (isGenericPrompt(prompt)) {
         console.warn(`[Agent-Alpha] Generated prompt is too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`);
-        // Use fallback
+        console.warn(`[Agent-Alpha] Prompt validation failed: length=${prompt.length}, needs 150+ chars and key elements (location, synonyms, format, not-found handling)`);
+        
+        // Use fallback if available
         if (fieldName) {
           const fallbackPrompt = getExamplePromptForField(fieldName, 'string');
+          console.warn(`[Agent-Alpha] Using fallback prompt for field: ${fieldName}`);
           return {
             newPrompt: fallbackPrompt,
-            reasoning: `Used fallback prompt because generated prompt was too generic: "${prompt.substring(0, 50)}..."`,
+            reasoning: `Used fallback prompt because generated prompt was too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`,
           };
         }
+        
+        // If no fieldName for fallback, throw error to trigger retry
+        throw new Error(`Generated prompt is too generic (${prompt.length} chars, needs 150+) and lacks required elements. Prompt: "${prompt.substring(0, 100)}..."`);
       }
       
       return {
@@ -427,13 +443,18 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
     // Check if the prompt is too generic
     if (isGenericPrompt(prompt)) {
       console.warn(`[Agent-Alpha] Extracted prompt is too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`);
+      
       if (fieldName) {
         const fallbackPrompt = getExamplePromptForField(fieldName, 'string');
+        console.warn(`[Agent-Alpha] Using fallback prompt for field: ${fieldName}`);
         return {
           newPrompt: fallbackPrompt,
-          reasoning: `Used fallback prompt because extracted prompt was too generic: "${prompt.substring(0, 50)}..."`,
+          reasoning: `Used fallback prompt because extracted prompt was too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`,
         };
       }
+      
+      // If no fieldName for fallback, throw error to trigger retry
+      throw new Error(`Extracted prompt is too generic (${prompt.length} chars, needs 150+) and lacks required elements. Prompt: "${prompt.substring(0, 100)}..."`);
     }
     
     return {

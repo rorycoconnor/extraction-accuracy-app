@@ -362,7 +362,7 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                 
                 {/* Table */}
                 <table className="w-full text-sm">
-                  <thead className="bg-gray-50/50">
+                  <thead className="bg-gray-50 sticky top-0 z-10">
                     <tr>
                       <th className="text-left px-4 py-2.5 text-xs font-medium text-gray-500 w-[180px]">Field Name</th>
                       <th className="text-center px-2 py-2.5 text-xs font-medium text-gray-500 w-[80px]">Iteration</th>
@@ -424,7 +424,7 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                 {/* Table */}
                 <div className="max-h-[400px] overflow-y-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-gray-50/50 sticky top-0">
+                    <thead className="bg-gray-50 sticky top-0 z-10">
                       <tr>
                         <th className="text-left px-4 py-2.5 text-xs font-medium text-gray-500 w-[180px]">Field Name</th>
                         <th className="text-center px-2 py-2.5 text-xs font-medium text-gray-500 w-[80px]">Iteration</th>
