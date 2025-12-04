@@ -166,6 +166,27 @@ describe('Compare Engine - Duration Normalization', () => {
     expect(result.isMatch).toBe(true);
   });
 
+  test('should match "90 days" vs "ninety (90) calendar days"', () => {
+    const result = compareValuesPreview('90 days', 'ninety (90) calendar days', config);
+    
+    expect(result.isMatch).toBe(true);
+    expect(result.matchClassification).toBe('normalized');
+  });
+
+  test('should match "30 days" vs "30 business days"', () => {
+    const result = compareValuesPreview('30 days', '30 business days', config);
+    
+    expect(result.isMatch).toBe(true);
+    expect(result.matchClassification).toBe('normalized');
+  });
+
+  test('should match "60 working days" vs "60 days"', () => {
+    const result = compareValuesPreview('60 working days', '60 days', config);
+    
+    expect(result.isMatch).toBe(true);
+    expect(result.matchClassification).toBe('normalized');
+  });
+
   test('should NOT match different durations', () => {
     const result = compareValuesPreview('30 days', '60 days', config);
     

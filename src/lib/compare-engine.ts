@@ -393,6 +393,14 @@ function normalizeText(text: string): string {
   // Normalize durations to a common format (days)
   normalized = normalizeDuration(normalized);
 
+  // Remove common filler words that don't affect meaning
+  // e.g., "90 calendar days" → "90 days", "30 business days" → "30 days"
+  const fillerWords = ['calendar', 'business', 'working', 'consecutive'];
+  fillerWords.forEach(word => {
+    const regex = new RegExp('\\b' + word + '\\b', 'gi');
+    normalized = normalized.replace(regex, '');
+  });
+
   return normalized
     .replace(/[^\w\s]/g, '') // Remove punctuation
     .replace(/\s+/g, ' ')    // Normalize whitespace

@@ -5214,8 +5214,14 @@
     "lastModified": "2025-12-04T01:00:53.117Z"
   },
   "duration": {
-    "activePrompt": "Examine the document's main body text, contract clauses, and term-specific sections for the overall contract duration from commencement to natural expiration. Search for explicit duration statements like 'contract term is [X] years', 'agreement shall remain in effect for [X] months', 'this contract is for a period of [X]', 'term shall be [X] years from the effective date', or 'duration of this agreement is [X]'. Extract only the numerical value representing the complete contract lifespan in years (convert months to decimal years if needed, e.g., 18 months = 1.5). Do NOT extract renewal periods, notice requirements, payment cycles, project milestones, or partial durations that are not the primary contract term. Return 'Not Present' if no explicit primary contract duration is stated in the main agreement text.",
+    "activePrompt": "Extract the total contract duration in days, either from explicit statements (e.g., '90 days', '2 years') or by calculating the number of days between the start/commencement date and the end/expiration date. Convert all units to days, ignore renewal periods and notice requirements, and return 'Not Present' if no primary duration or specific dates are found.",
     "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the total contract duration in days, either from explicit statements (e.g., '90 days', '2 years') or by calculating the number of days between the start/commencement date and the end/expiration date. Convert all units to days, ignore renewal periods and notice requirements, and return 'Not Present' if no primary duration or specific dates are found.",
+        "savedAt": "2025-12-04T04:11:42.074Z",
+        "generationMethod": "standard"
+      },
       {
         "id": "agent-alpha-2025-12-04T01:00:53.103Z-3f1ce902-971f-4e9b-8047-262cfe113fb7",
         "prompt": "Examine the document's main body text, contract clauses, and term-specific sections for the overall contract duration from commencement to natural expiration. Search for explicit duration statements like 'contract term is [X] years', 'agreement shall remain in effect for [X] months', 'this contract is for a period of [X]', 'term shall be [X] years from the effective date', or 'duration of this agreement is [X]'. Extract only the numerical value representing the complete contract lifespan in years (convert months to decimal years if needed, e.g., 18 months = 1.5). Do NOT extract renewal periods, notice requirements, payment cycles, project milestones, or partial durations that are not the primary contract term. Return 'Not Present' if no explicit primary contract duration is stated in the main agreement text.",
@@ -5225,9 +5231,9 @@
         "note": "Agent-Alpha optimized. Initial: 36.0% → Final: 36.0% (5 iterations)"
       }
     ],
-    "lastUsedTemplate": "cuad",
-    "usageCount": 1,
-    "lastModified": "2025-12-04T01:00:53.120Z"
+    "lastUsedTemplate": "cuad_new",
+    "usageCount": 2,
+    "lastModified": "2025-12-04T04:11:42.090Z"
   },
   "noticePeriodToTerminateForConvenience": {
     "activePrompt": "Examine 'Termination', 'Term', 'Without Cause', 'Early Termination', and 'Convenience' sections for notice requirements that allow either party to end the agreement without breach or cause. Look for phrases: 'terminate for convenience with X notice', 'end this agreement upon X notice', 'either party may terminate with X notice', 'terminate without cause by giving X notice', 'convenience termination requires X notice'. Extract only notice periods tied to no-fault termination - ignore breach cure periods, renewal deadlines, or termination for cause requirements. Convert written numbers to digits and return in format 'X days' or 'X months' (e.g., 'thirty days' becomes '30 days'). If no convenience termination notice exists, return 'Not Present'.",
@@ -5356,5 +5362,86 @@
     "lastUsedTemplate": "cuad",
     "usageCount": 1,
     "lastModified": "2025-12-04T01:00:53.136Z"
+  },
+  "notice_period_to_terminate_for_breach": {
+    "activePrompt": "Extract the notice period required to terminate the agreement for a breach, such as \"30 days\" or \"two weeks.\" The duration must be explicitly stated in the text. If no specific period is mentioned, return \"Not specified.\"",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "Extract the notice period required to terminate the agreement for a breach, such as \"30 days\" or \"two weeks.\" The duration must be explicitly stated in the text. If no specific period is mentioned, return \"Not specified.\"",
+        "savedAt": "2025-12-04T04:20:24.413Z",
+        "generationMethod": "standard"
+      },
+      {
+        "id": "v2",
+        "prompt": "Extract the notice period required to terminate the agreement for a breach, stated in days, weeks, months, or years. If a specific duration is not mentioned, calculate the period between the notice start and end dates. ",
+        "savedAt": "2025-12-04T04:13:42.176Z"
+      },
+      {
+        "id": "v1",
+        "prompt": "Extract the notice period required to terminate the agreement for a breach, stated in days, weeks, months, or years. If a specific duration is not mentioned, calculate the period between the notice start and end dates. If no notice period is defined, state \"Not specified\".",
+        "savedAt": "2025-12-04T04:13:34.309Z",
+        "generationMethod": "standard"
+      }
+    ],
+    "lastUsedTemplate": "cuad_new",
+    "usageCount": 3,
+    "lastModified": "2025-12-04T04:20:24.434Z"
+  },
+  "governing_law_region": {
+    "activePrompt": "Extract the state, province, city, or country specified as the governing law.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the state, province, city, or country specified as the governing law.",
+        "savedAt": "2025-12-04T04:16:12.152Z",
+        "generationMethod": "standard"
+      }
+    ],
+    "lastUsedTemplate": "cuad_new",
+    "usageCount": 1,
+    "lastModified": "2025-12-04T04:16:12.167Z"
+  },
+  "effective_date": {
+    "activePrompt": "Extract the effective date of the agreement and format it as YYYY-MM-DD. This date is often found near the beginning of the document, sometimes labeled as \"Effective Date,\" \"Commencement Date,\" or the date the agreement is \"made as of.\" If no specific effective date is mentioned, return \"null\".",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the effective date of the agreement and format it as YYYY-MM-DD. This date is often found near the beginning of the document, sometimes labeled as \"Effective Date,\" \"Commencement Date,\" or the date the agreement is \"made as of.\" If no specific effective date is mentioned, return \"null\".",
+        "savedAt": "2025-12-04T04:16:54.381Z",
+        "generationMethod": "standard"
+      }
+    ],
+    "lastUsedTemplate": "cuad_new",
+    "usageCount": 1,
+    "lastModified": "2025-12-04T04:16:54.397Z"
+  },
+  "governing_law_country": {
+    "activePrompt": "Extract the country from the governing law clause. If a country is not explicitly stated, infer it from the specified state or jurisdiction (e.g., \"State of New York\" implies \"United States\"). If no governing law is mentioned, return \"null\".",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the country from the governing law clause. If a country is not explicitly stated, infer it from the specified state or jurisdiction (e.g., \"State of New York\" implies \"United States\"). If no governing law is mentioned, return \"null\".",
+        "savedAt": "2025-12-04T04:17:14.683Z",
+        "generationMethod": "standard"
+      }
+    ],
+    "lastUsedTemplate": "cuad_new",
+    "usageCount": 1,
+    "lastModified": "2025-12-04T04:17:14.700Z"
+  },
+  "expiration_date": {
+    "activePrompt": "Extract the agreement's expiration date, end date, or validity period, and format it as YYYY-MM-DD. If no specific date is mentioned, return \"null\".",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the agreement's expiration date, end date, or validity period, and format it as YYYY-MM-DD. If no specific date is mentioned, return \"null\".",
+        "savedAt": "2025-12-04T04:17:49.322Z",
+        "generationMethod": "standard"
+      }
+    ],
+    "lastUsedTemplate": "cuad_new",
+    "usageCount": 1,
+    "lastModified": "2025-12-04T04:17:49.338Z"
   }
 }
