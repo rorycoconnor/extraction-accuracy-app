@@ -3,6 +3,7 @@
 import { logger } from '@/lib/logger';
 import { runFieldIteration } from './agent-alpha-iteration';
 import { AGENT_ALPHA_CONFIG } from '@/lib/agent-alpha-config';
+import { getExamplePromptForField } from '@/lib/agent-alpha-prompts';
 import type { AccuracyField } from '@/lib/types';
 import type { FieldCompareConfig } from '@/lib/compare-types';
 import type { AgentAlphaFieldResult } from '@/lib/agent-alpha-types';
@@ -52,7 +53,28 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
   logger.info(`   Initial accuracy: ${(initialAccuracy * 100).toFixed(1)}%`);
   logger.debug(`   Input fieldPrompt: "${fieldPrompt ? String(fieldPrompt).substring(0, 80) : 'none'}..." (${fieldPrompt?.length || 0} chars)`);
 
-  let currentPrompt = fieldPrompt || `Extract the ${fieldName} from this document.`;
+  // Determine initial prompt - use provided prompt OR generate a quality fallback
+  // IMPORTANT: Never start with a generic "Extract the X" prompt - these always fail
+  let currentPrompt: string;
+  
+  // Check if provided prompt is too generic/short
+  const isGenericPrompt = (prompt: string): boolean => {
+    const trimmed = prompt.trim();
+    if (trimmed.length < 150) return true;
+    if (/^extract the .{1,50}(from this document)?\.?$/i.test(trimmed)) return true;
+    return false;
+  };
+  
+  if (fieldPrompt && !isGenericPrompt(fieldPrompt)) {
+    // User provided a good prompt - use it
+    currentPrompt = fieldPrompt;
+    logger.info(`   Using provided prompt (${currentPrompt.length} chars)`);
+  } else {
+    // Generate a quality prompt from our examples instead of using generic fallback
+    currentPrompt = getExamplePromptForField(fieldName, fieldType, fieldOptions);
+    logger.info(`   Using example prompt for "${fieldName}" (${currentPrompt.length} chars) - provided prompt was too generic`);
+  }
+  
   const initialPrompt = currentPrompt;
   const previousPrompts: string[] = [];
   let finalAccuracy = initialAccuracy;
@@ -125,11 +147,12 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         bestAccuracy = finalAccuracy;
         bestPrompt = currentPrompt; // Save the prompt that achieved this accuracy
         logger.info(`   📈 New best accuracy: ${(bestAccuracy * 100).toFixed(1)}%`);
-      } else if (finalAccuracy === bestAccuracy && iterationResult.newPrompt.length > bestPrompt.length) {
-        // Same accuracy but we have a more detailed prompt - prefer the detailed one
+      } else if (finalAccuracy === bestAccuracy && currentPrompt.length > bestPrompt.length) {
+        // Same accuracy but the prompt we just TESTED is more detailed - prefer it
         // This helps when the simple prompt gets lucky but a detailed prompt is more robust
-        bestPrompt = iterationResult.newPrompt;
-        logger.info(`   📝 Same accuracy but using more detailed prompt (${bestPrompt.length} chars)`);
+        // FIX: Use currentPrompt (what we tested), not iterationResult.newPrompt (what we'll test next)
+        bestPrompt = currentPrompt;
+        logger.info(`   📝 Same accuracy but using more detailed prompt (${bestPrompt.length} chars vs ${currentPrompt.length} chars)`);
       }
 
       // Update for next iteration - the NEW prompt will be tested next
