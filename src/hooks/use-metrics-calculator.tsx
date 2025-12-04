@@ -8,7 +8,7 @@ import { NOT_PRESENT_VALUE, findFieldValue } from '@/lib/utils';
 import { calculateFieldMetricsWithDebug, calculateFieldMetricsWithDebugAsync } from '@/lib/metrics';
 import { getGroundTruthData } from '@/lib/mock-data';
 import { getCompareConfigForField } from '@/lib/compare-type-storage';
-import type { AccuracyData, ApiExtractionResult } from '@/lib/types';
+import type { AccuracyData, AccuracyField, ApiExtractionResult } from '@/lib/types';
 import { validateEnumValue, validateMultiSelectValue } from '@/lib/enum-validator';
 import { extractConciseErrorDescription } from '@/lib/error-handler';
 import { logger } from '@/lib/logger';
@@ -91,7 +91,7 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
                 let formattedValue = String(extractedValue).trim();
                 
                 // Validate enum/multiSelect fields against options
-                const field = newData.fields.find(f => f.key === fieldKey);
+                const field = newData.fields.find((f: AccuracyField) => f.key === fieldKey);
                 if (field) {
                   try {
                     const fieldType = field.type;

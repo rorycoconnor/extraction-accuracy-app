@@ -172,7 +172,7 @@ export function validateEnumValue(
     return NOT_PRESENT_VALUE;
   } catch (error) {
     logger.error('Error in validateEnumValue', { fieldKey, extractedValue, error: error as Error });
-    return extractedValue; // Return original value on error
+    return extractedValue || NOT_PRESENT_VALUE; // Return original value on error, or NOT_PRESENT if undefined
   }
 }
 
@@ -250,7 +250,10 @@ export function validateMultiSelectValue(
     if (Array.isArray(extractedValue)) {
       return extractedValue.join(' | ');
     }
-    return String(extractedValue);
+    if (extractedValue) {
+      return String(extractedValue);
+    }
+    return NOT_PRESENT_VALUE;
   }
 }
 

@@ -97,7 +97,7 @@ export type PromptVersion = {
 export type AccuracyField = {
   name: string;
   key: string;
-  type: 'string' | 'date' | 'enum' | 'number' | 'multiSelect' | 'dropdown_multi' | 'taxonomy';
+  type: 'string' | 'date' | 'enum' | 'number' | 'multiSelect' | 'float' | 'dropdown_multi' | 'taxonomy';
   prompt: string; // This is the active prompt
   templatePrompt?: string;
   promptHistory: PromptVersion[];

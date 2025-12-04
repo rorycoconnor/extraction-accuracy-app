@@ -2,7 +2,7 @@ import {z} from 'zod';
 
 export const BoxAIFieldSchema = z.object({
   key: z.string(),
-  type: z.enum(['string', 'date', 'enum', 'multiSelect', 'number']),
+  type: z.enum(['string', 'date', 'enum', 'multiSelect', 'number', 'float']),
   displayName: z.string(),
   prompt: z.string().optional(), // Optional to support no-prompt runs
   options: z.array(z.object({ key: z.string() })).optional(), // Enum/multiSelect options
