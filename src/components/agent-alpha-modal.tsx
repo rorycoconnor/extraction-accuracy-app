@@ -332,6 +332,12 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
 
             {/* Processing Section */}
             <div className="px-6">
+              {(() => {
+                const processingCount = agentAlphaState.processingFields?.length || 0;
+                const processedCount = agentAlphaState.processedFields?.length || 0;
+                const pendingCount = Math.max(0, agentAlphaState.totalFields - processingCount - processedCount);
+                
+                return (
               <div className="border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
                 <div className="bg-gray-50 px-4 py-2.5 border-b border-gray-200">
                   <div className="flex items-center justify-between">
@@ -339,11 +345,18 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                       <div className="h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
                       <h4 className="text-sm font-semibold text-gray-900">Processing</h4>
                     </div>
-                    {agentAlphaState.processingFields && agentAlphaState.processingFields.length > 0 && (
-                      <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
-                        {agentAlphaState.processingFields.length} in parallel
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {processingCount > 0 && (
+                        <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200">
+                          {processingCount} active
+                        </Badge>
+                      )}
+                      {pendingCount > 0 && (
+                        <Badge variant="outline" className="text-xs bg-gray-50 text-gray-600 border-gray-200">
+                          {pendingCount} queued
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
                 
@@ -385,13 +398,17 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                         <td colSpan={6} className="px-4 py-3 text-center text-gray-400">
                           {agentAlphaState.fieldsProcessed === agentAlphaState.totalFields 
                             ? 'All fields completed' 
-                            : 'Preparing next batch...'}
+                            : pendingCount > 0 
+                              ? `${pendingCount} field${pendingCount > 1 ? 's' : ''} waiting to start...`
+                              : 'Processing...'}
                         </td>
                       </tr>
                     )}
                   </tbody>
                 </table>
               </div>
+                );
+              })()}
             </div>
 
             {/* Processed Section */}

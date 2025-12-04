@@ -108,32 +108,30 @@ export const useAgentAlphaRunner = () => {
         },
       });
 
-      logger.info(`Agent-Alpha: Processing ${workPlan.fields.length} fields with max concurrency ${AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY}...`);
+      const concurrencyLimit = AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY;
+      logger.info(`Agent-Alpha: Processing ${workPlan.fields.length} fields with concurrency limit of ${concurrencyLimit}...`);
       toast({
         title: 'Agent-Alpha Started',
-        description: `Processing ${workPlan.fields.length} field(s) in parallel. This may take several minutes.`,
+        description: `Processing ${workPlan.fields.length} field(s) (${concurrencyLimit} at a time). This may take several minutes.`,
       });
 
-      // Step 2: Process all fields in parallel with immediate dispatch on completion
+      // Step 2: Process fields with controlled concurrency
       const results: AgentAlphaFieldResult[] = [];
 
-      // Mark all fields as started immediately
-      const globalStartTime = Date.now();
-      for (const fieldPlan of workPlan.fields) {
+      // Process a single field - dispatches STARTED when it begins, COMPLETED when done
+      const processFieldWithDispatch = async (fieldPlan: typeof workPlan.fields[0], fieldIndex: number): Promise<AgentAlphaFieldResult | null> => {
+        const fieldStartTime = Date.now();
+
+        // Dispatch STARTED only when this field actually begins processing
         dispatch({
           type: 'AGENT_ALPHA_FIELD_STARTED',
           payload: {
             fieldKey: fieldPlan.fieldKey,
             fieldName: fieldPlan.field.name,
             initialAccuracy: fieldPlan.initialAccuracy,
-            startTime: globalStartTime,
+            startTime: fieldStartTime,
           },
         });
-      }
-
-      // Process a single field and dispatch completion immediately when done
-      const processFieldWithDispatch = async (fieldPlan: typeof workPlan.fields[0], fieldIndex: number): Promise<AgentAlphaFieldResult | null> => {
-        const fieldStartTime = Date.now();
 
         logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] Starting ${fieldPlan.field.name}...`);
 
@@ -205,9 +203,8 @@ export const useAgentAlphaRunner = () => {
         }
       };
 
-      // Process fields with controlled concurrency (FIELD_CONCURRENCY at a time)
-      // Each field dispatches its own completion as soon as it finishes
-      const concurrencyLimit = AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY;
+      // Process fields with controlled concurrency
+      // Each field dispatches STARTED when it begins and COMPLETED when it finishes
       const executing: Set<Promise<void>> = new Set();
       
       for (let i = 0; i < workPlan.fields.length; i++) {
