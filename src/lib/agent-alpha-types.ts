@@ -55,6 +55,7 @@ export type AgentAlphaFieldResult = {
   initialPrompt: string; // The original prompt
   converged: boolean; // True if reached 100% accuracy
   sampledDocIds: string[]; // Documents used for testing
+  improved: boolean; // True if finalAccuracy >= initialAccuracy (prompt should be applied)
 };
 
 export type AgentAlphaPendingResults = {

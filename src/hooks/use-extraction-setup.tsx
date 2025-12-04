@@ -100,6 +100,16 @@ export const useExtractionSetup = ({
         // 🆕 NEW: Get prompt data from cross-template storage
         const crossTemplatePromptData = getFieldPrompt(field.key);
         
+        // Log enum field options for debugging
+        if ((field.type === 'enum' || field.type === 'multiSelect') && field.options) {
+          logger.info('Setting up enum/multiSelect field with options', {
+            fieldKey: field.key,
+            fieldType: field.type,
+            optionCount: field.options.length,
+            options: field.options.map(o => o.key).join(', ')
+          });
+        }
+        
         if (crossTemplatePromptData && crossTemplatePromptData.promptHistory.length > 0) {
           // ✅ Use existing cross-template prompt data
           logger.debug('Loading prompt versions for field', { fieldKey: field.key, versionCount: crossTemplatePromptData.promptHistory.length });

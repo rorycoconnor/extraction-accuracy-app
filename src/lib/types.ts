@@ -44,6 +44,7 @@ export type FieldResult = {
 export type ComparisonMetadata = {
   isMatch: boolean;
   matchType: string;
+  matchClassification?: 'exact' | 'normalized' | 'partial' | 'different-format' | 'none';  // Granular classification for UI colors
   confidence: 'high' | 'medium' | 'low';  // Comparison confidence (kept for future DSPy support)
   details?: string;  // LLM reasoning or other details
   error?: string;
@@ -118,7 +119,7 @@ export type BoxTemplateField = {
   id: string;
   key: string;
   displayName: string;
-  type: 'string' | 'date' | 'enum' | 'number';
+  type: 'string' | 'date' | 'enum' | 'multiSelect' | 'float' | 'number';
   isActive?: boolean;
   options?: {
     id: string;

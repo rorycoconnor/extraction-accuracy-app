@@ -22,6 +22,7 @@ interface AgentAlphaModalProps {
   agentAlphaState: AgentAlphaState;
   results: AgentAlphaPendingResults | null;
   availableModels?: string[];
+  defaultModel?: string; // Model from last comparison run
   onApply: () => void;
   onCancel: () => void;
   onStartWithConfig?: (config: AgentAlphaRuntimeConfig) => void;
@@ -32,6 +33,7 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
   agentAlphaState,
   results,
   availableModels = AVAILABLE_MODELS,
+  defaultModel,
   onApply,
   onCancel,
   onStartWithConfig,
@@ -50,12 +52,17 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
   // Reset config when modal opens in configure mode
   useEffect(() => {
     if (isConfigure) {
-      setConfig(getDefaultRuntimeConfig());
+      const defaultConfig = getDefaultRuntimeConfig();
+      // Use the model from last comparison if available
+      if (defaultModel) {
+        defaultConfig.testModel = defaultModel;
+      }
+      setConfig(defaultConfig);
       setShowInstructionsEditor(false);
       setEditedInstructions(DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
       setHasModifiedInstructions(false);
     }
-  }, [isConfigure]);
+  }, [isConfigure, defaultModel]);
 
   // Update config when instructions are modified
   useEffect(() => {
@@ -153,13 +160,13 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                     value={[config.maxDocs]}
                     onValueChange={([value]) => setConfig(prev => ({ ...prev, maxDocs: value }))}
                     min={1}
-                    max={10}
+                    max={25}
                     step={1}
                     className="w-full"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>1 (faster)</span>
-                    <span>10 (more thorough)</span>
+                    <span>25 (most thorough)</span>
                   </div>
                 </div>
 
@@ -472,63 +479,74 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
         {/* Preview Mode */}
         {isPreview && results && (
           <div className="space-y-6">
-            {/* Summary Stats - 3 cards matching Library page style */}
-            <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Fields Optimized */}
+            {/* Summary Stats - 4 cards matching Library page style */}
+            {(() => {
+              const improvedCount = results.results.filter(r => r.improved !== false).length;
+              const skippedCount = results.results.filter(r => r.improved === false).length;
+              const improvedResults = results.results.filter(r => r.improved !== false);
+              
+              return (
+            <section className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              {/* Fields Processed */}
               <div className="rounded-xl border bg-gray-50 shadow-sm px-6 py-5 flex flex-col justify-center">
                 <span className="text-5xl font-bold text-gray-900">{results.results.length}</span>
-                <p className="text-xl text-gray-600 mt-2">Fields Optimized</p>
+                <p className="text-xl text-gray-600 mt-2">Fields Processed</p>
               </div>
               
-              {/* Avg Improvement */}
+              {/* Will Apply */}
               <div className="rounded-xl border border-green-200 bg-green-50 shadow-sm px-6 py-5 flex flex-col justify-center">
-                <span className="text-5xl font-bold text-green-600">+{calculateAvgImprovement(results.results)}%</span>
-                <p className="text-xl text-gray-600 mt-2">Average Improvement</p>
+                <span className="text-5xl font-bold text-green-600">{improvedCount}</span>
+                <p className="text-xl text-gray-600 mt-2">Will Apply</p>
               </div>
               
-              {/* Time card with all timing info */}
-              <div className="rounded-xl border bg-gray-50 shadow-sm px-6 py-5">
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xl text-gray-600">Actual Time</span>
-                    <span className="text-xl font-bold text-gray-900">
-                      {results.actualTimeMs > 0 ? formatDuration(results.actualTimeMs) : calculateTotalTimeFromResults(results.results)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xl text-gray-600">Estimated Time</span>
-                    <span className="text-xl font-semibold text-gray-700">{formatDuration(results.estimatedTimeMs)}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xl text-gray-600">Difference</span>
-                    <span className={cn(
-                      "text-xl font-bold",
-                      (results.actualTimeMs > 0 ? results.actualTimeMs : 0) <= results.estimatedTimeMs ? "text-green-600" : "text-amber-600"
-                    )}>
-                      {formatTimeDifference(results.actualTimeMs > 0 ? results.actualTimeMs : 0, results.estimatedTimeMs)}
-                    </span>
-                  </div>
+              {/* Will Skip */}
+              {skippedCount > 0 && (
+                <div className="rounded-xl border border-red-200 bg-red-50 shadow-sm px-6 py-5 flex flex-col justify-center">
+                  <span className="text-5xl font-bold text-red-600">{skippedCount}</span>
+                  <p className="text-xl text-gray-600 mt-2">Will Skip</p>
                 </div>
+              )}
+              
+              {/* Avg Improvement - only for improved results */}
+              <div className="rounded-xl border border-blue-200 bg-blue-50 shadow-sm px-6 py-5 flex flex-col justify-center">
+                <span className="text-5xl font-bold text-blue-600">+{calculateAvgImprovement(improvedResults)}%</span>
+                <p className="text-xl text-gray-600 mt-2">Avg Improvement</p>
               </div>
+              
             </section>
+              );
+            })()}
 
             {/* Field Results - matching Library page Card style */}
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Generated Prompts</h2>
               <div className="space-y-4">
-                {results.results.map((result) => (
-                  <div key={result.fieldKey} className="rounded-xl border bg-white shadow-sm p-5">
+                {results.results.map((result) => {
+                  // Check if prompt improved (use the flag if available, otherwise compare accuracies)
+                  const didImprove = result.improved ?? (result.finalAccuracy >= result.initialAccuracy);
+                  
+                  return (
+                  <div key={result.fieldKey} className={cn(
+                    "rounded-xl border shadow-sm p-5",
+                    didImprove ? "bg-white" : "bg-gray-50 border-gray-300"
+                  )}>
                     {/* Header */}
                     <div className="mb-4">
                       <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">{result.fieldName}</h3>
+                        <h3 className={cn(
+                          "text-lg font-semibold",
+                          didImprove ? "text-gray-900" : "text-gray-500"
+                        )}>{result.fieldName}</h3>
+                        {!didImprove && (
+                          <Badge className="bg-red-100 text-red-800 border-transparent">⚠️ No Improvement - Will Skip</Badge>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
-                        {result.converged ? (
+                        {didImprove && result.converged ? (
                           <Badge className="bg-green-100 text-green-800 border-transparent">✓ 100% Accuracy</Badge>
-                        ) : (
+                        ) : didImprove ? (
                           <Badge className="bg-yellow-100 text-yellow-800 border-transparent">Max Iterations</Badge>
-                        )}
+                        ) : null}
                         <Badge className="bg-gray-100 text-gray-800 border-transparent">
                           {result.iterationCount} iteration{result.iterationCount !== 1 ? 's' : ''}
                         </Badge>
@@ -545,15 +563,19 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                         <span className="text-gray-600">New Accuracy:</span>
                         <span className={cn(
                           "font-semibold",
-                          result.finalAccuracy >= result.initialAccuracy ? "text-green-600" : "text-red-600"
+                          result.finalAccuracy > result.initialAccuracy ? "text-green-600" : 
+                          result.finalAccuracy < result.initialAccuracy ? "text-red-600" : 
+                          "text-gray-900"
                         )}>
                           {(result.finalAccuracy * 100).toFixed(0)}%
                         </span>
                         <span className={cn(
                           "text-sm font-medium",
-                          result.finalAccuracy >= result.initialAccuracy ? "text-green-600" : "text-red-600"
+                          result.finalAccuracy > result.initialAccuracy ? "text-green-600" : 
+                          result.finalAccuracy < result.initialAccuracy ? "text-red-600" : 
+                          "text-gray-900"
                         )}>
-                          ({result.finalAccuracy >= result.initialAccuracy ? '+' : ''}{((result.finalAccuracy - result.initialAccuracy) * 100).toFixed(0)}%)
+                          ({result.finalAccuracy > result.initialAccuracy ? '+' : result.finalAccuracy < result.initialAccuracy ? '' : ''}{((result.finalAccuracy - result.initialAccuracy) * 100).toFixed(0)}%)
                         </span>
                       </div>
                     </div>
@@ -568,14 +590,28 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                           </p>
                         </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-600 mb-2">Optimized Prompt:</p>
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                          <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                            {result.finalPrompt}
-                          </p>
+                      {didImprove ? (
+                        <div>
+                          <p className="text-sm font-medium text-gray-600 mb-2">Optimized Prompt:</p>
+                          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                              {result.finalPrompt}
+                            </p>
+                          </div>
                         </div>
-                      </div>
+                      ) : (
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 mb-2">Generated Prompt (not recommended):</p>
+                          <div className="bg-gray-100 border border-gray-300 rounded-lg p-4 opacity-60">
+                            <p className="text-sm text-gray-500 whitespace-pre-wrap">
+                              {result.finalPrompt}
+                            </p>
+                            <p className="text-xs text-red-600 mt-2 italic">
+                              This prompt performed worse than the original and will not be applied.
+                            </p>
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Tested on */}
@@ -588,7 +624,8 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                       ))}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </section>
           </div>

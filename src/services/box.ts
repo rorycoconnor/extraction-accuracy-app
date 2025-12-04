@@ -457,6 +457,23 @@ export async function boxApiFetch(path: string, options: RequestInit = {}) {
 export async function getTemplates(): Promise<BoxTemplate[]> {
   try {
     const data: BoxTemplatesResponse = await boxApiFetch(`/metadata_templates/enterprise`, { method: 'GET' });
+    
+    // Log enum field options for debugging
+    data.entries.forEach(template => {
+      const enumFields = template.fields?.filter(f => f.type === 'enum' || f.type === 'multiSelect');
+      if (enumFields && enumFields.length > 0) {
+        enumFields.forEach(field => {
+          boxLogger.debug('Enum/MultiSelect field loaded from Box', {
+            template: template.displayName,
+            field: field.displayName,
+            type: field.type,
+            optionCount: field.options?.length || 0,
+            options: field.options?.map(o => o.key).join(', ') || 'none'
+          });
+        });
+      }
+    });
+    
     return data.entries
         .filter(t => t.displayName)
         .sort((a, b) => a.displayName.localeCompare(b.displayName));

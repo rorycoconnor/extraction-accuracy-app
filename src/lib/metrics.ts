@@ -235,32 +235,36 @@ function parseFlexibleDate(dateStr: string): Date | null {
  * Enhanced comparison function that provides detailed match information.
  */
 export function compareValues(predicted: string, actual: string): ComparisonResult {
-  if (!predicted || !actual) {
+  // Convert to string to handle numbers and null/undefined values
+  const predictedStr = predicted != null ? String(predicted) : '';
+  const actualStr = actual != null ? String(actual) : '';
+  
+  if (!predictedStr || !actualStr) {
     return { isMatch: false, matchType: 'none', confidence: 'high' };
   }
   
   // Skip pending/error states
-  if (predicted.startsWith('Pending') || predicted.startsWith('Error') || predicted.startsWith('Not Found')) {
+  if (predictedStr.startsWith('Pending') || predictedStr.startsWith('Error') || predictedStr.startsWith('Not Found')) {
     return { isMatch: false, matchType: 'none', confidence: 'high' };
   }
   
   // Handle "Not Present" values - they match if both are "Not Present"
-  if (predicted === NOT_PRESENT_VALUE && actual === NOT_PRESENT_VALUE) {
+  if (predictedStr === NOT_PRESENT_VALUE && actualStr === NOT_PRESENT_VALUE) {
     return { isMatch: true, matchType: 'exact', confidence: 'high' };
   }
   
   // If one is "Not Present" and the other isn't, they don't match
-  if (predicted === NOT_PRESENT_VALUE || actual === NOT_PRESENT_VALUE) {
+  if (predictedStr === NOT_PRESENT_VALUE || actualStr === NOT_PRESENT_VALUE) {
     return { isMatch: false, matchType: 'none', confidence: 'high' };
   }
   
   // Exact string match (case-sensitive)
-  if (predicted === actual) {
+  if (predictedStr === actualStr) {
     return { isMatch: true, matchType: 'exact', confidence: 'high' };
   }
   
-  const normalizedPredicted = normalizeText(predicted);
-  const normalizedActual = normalizeText(actual);
+  const normalizedPredicted = normalizeText(predictedStr);
+  const normalizedActual = normalizeText(actualStr);
   
   if (!normalizedPredicted || !normalizedActual) {
     return { isMatch: false, matchType: 'none', confidence: 'high' };
@@ -273,10 +277,10 @@ export function compareValues(predicted: string, actual: string): ComparisonResu
   
   // 🔧 NEW: Handle multi-select fields (e.g., "A, B" matches "B, A")
   // Check if values contain commas (likely multi-select from Box)
-  if (predicted.includes(',') || actual.includes(',')) {
+  if (predictedStr.includes(',') || actualStr.includes(',')) {
     // Split by comma, trim whitespace, normalize, and sort
-    const predictedItems = predicted.split(',').map(item => normalizeText(item.trim())).filter(item => item).sort();
-    const actualItems = actual.split(',').map(item => normalizeText(item.trim())).filter(item => item).sort();
+    const predictedItems = predictedStr.split(',').map(item => normalizeText(item.trim())).filter(item => item).sort();
+    const actualItems = actualStr.split(',').map(item => normalizeText(item.trim())).filter(item => item).sort();
     
     // Compare as sorted arrays (order-independent)
     if (predictedItems.length === actualItems.length && 
@@ -286,8 +290,8 @@ export function compareValues(predicted: string, actual: string): ComparisonResu
   }
   
   // Check for date format differences
-  if (isDateLike(predicted) && isDateLike(actual)) {
-    if (compareDates(predicted, actual)) {
+  if (isDateLike(predictedStr) && isDateLike(actualStr)) {
+    if (compareDates(predictedStr, actualStr)) {
       return { isMatch: true, matchType: 'date_format', confidence: 'high' };
     } else {
       return { isMatch: false, matchType: 'none', confidence: 'high' };
@@ -429,14 +433,16 @@ export async function calculateFieldMetricsWithDebugAsync(
     const actual = groundTruths[i];
 
     // Skip if prediction is in pending/error state
-    if (!predicted || predicted.startsWith('Pending') || predicted.startsWith('Error')) {
+    // Convert to string to handle numbers and ensure we can call string methods
+    const predictedStr = predicted != null ? String(predicted) : '';
+    if (!predictedStr || predictedStr.startsWith('Pending') || predictedStr.startsWith('Error')) {
       comparisonResults.push(null);
       continue;
     }
 
     // Handle empty/missing ground truth - treat as "Not Present"
     const normalizedActual = !actual || normalizeText(actual) === '' ? NOT_PRESENT_VALUE : actual;
-    const normalizedPredicted = !predicted || normalizeText(predicted) === '' ? NOT_PRESENT_VALUE : predicted;
+    const normalizedPredicted = !predictedStr || normalizeText(predictedStr) === '' ? NOT_PRESENT_VALUE : predictedStr;
 
     totalValidPairs++;
 
@@ -616,13 +622,15 @@ export function calculateFieldMetricsWithDebug(
     const actual = groundTruths[i];
     
     // Skip if prediction is in pending/error state
-    if (!predicted || predicted.startsWith('Pending') || predicted.startsWith('Error')) {
+    // Convert to string to handle numbers and ensure we can call string methods
+    const predictedStr = predicted != null ? String(predicted) : '';
+    if (!predictedStr || predictedStr.startsWith('Pending') || predictedStr.startsWith('Error')) {
       continue;
     }
     
     // Handle empty/missing ground truth - treat as "Not Present"
     const normalizedActual = !actual || normalizeText(actual) === '' ? NOT_PRESENT_VALUE : actual;
-    const normalizedPredicted = !predicted || normalizeText(predicted) === '' ? NOT_PRESENT_VALUE : predicted;
+    const normalizedPredicted = !predictedStr || normalizeText(predictedStr) === '' ? NOT_PRESENT_VALUE : predictedStr;
     
     totalValidPairs++;
     

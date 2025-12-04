@@ -129,12 +129,20 @@ export default function PromptStudioSheet({
         const comparison = compareValues(value, groundTruth);
         
         if (!comparison.isMatch) {
-          hasAnyMismatch = true;
+          // Check if it's a "different-format" non-match (e.g., same items, wrong order for list-ordered)
+          const classification = (comparison as any).matchClassification;
+          if (classification === 'different-format') {
+            hasAnyDifferentFormat = true;
+          } else {
+            hasAnyMismatch = true;
+          }
         } else {
           hasAnyMatch = true;
-          if (comparison.matchType === 'partial') {
+          // Use matchClassification if available, fall back to matchType
+          const classification = (comparison as any).matchClassification || comparison.matchType;
+          if (classification === 'partial') {
             hasAnyPartialMatch = true;
-          } else if (comparison.matchType === 'date_format') {
+          } else if (classification === 'different-format' || comparison.matchType === 'date_format') {
             hasAnyDifferentFormat = true;
           }
         }
@@ -883,18 +891,30 @@ export default function PromptStudioSheet({
                                     bgClass = 'bg-red-100/80 dark:bg-red-900/55';
                                   } else if (groundTruth && value) {
                                     if (comparison.isMatch) {
+                                      // Use matchClassification if available, fall back to matchType
+                                      const classification = (comparison as any).matchClassification as string | undefined;
                                       const matchType = comparison.matchType as string;
-                                      // Green for exact matches including date-exact
-                                      if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'date-exact'].includes(matchType)) {
+                                      const effectiveClassification = classification || matchType;
+                                      
+                                      // Green for exact/normalized matches
+                                      if (['exact', 'normalized'].includes(effectiveClassification)) {
                                         bgClass = 'bg-green-100/80 dark:bg-green-900/55';
-                                      } else if (matchType === 'partial') {
+                                      } else if (effectiveClassification === 'partial') {
                                         bgClass = 'bg-blue-100/80 dark:bg-blue-900/55';
-                                      } else if (matchType === 'date_format') {
-                                        // Yellow only for legacy date_format (different formats, same date)
+                                      } else if (effectiveClassification === 'different-format' || matchType === 'date_format') {
                                         bgClass = 'bg-yellow-100/80 dark:bg-yellow-900/55';
+                                      } else if (['exact-string', 'near-exact-string', 'exact-number', 'boolean', 'date-exact', 'llm-judge', 'list-unordered', 'list-ordered'].includes(matchType)) {
+                                        // Default to green for compare engine types
+                                        bgClass = 'bg-green-100/80 dark:bg-green-900/55';
                                       }
                                     } else {
-                                      bgClass = 'bg-red-100/80 dark:bg-red-900/55';
+                                      // Check for different-format non-matches
+                                      const classification = (comparison as any).matchClassification;
+                                      if (classification === 'different-format') {
+                                        bgClass = 'bg-yellow-100/80 dark:bg-yellow-900/55';
+                                      } else {
+                                        bgClass = 'bg-red-100/80 dark:bg-red-900/55';
+                                      }
                                     }
                                   }
                                   

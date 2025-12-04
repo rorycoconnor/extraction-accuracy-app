@@ -63,7 +63,7 @@ NO markdown, NO code blocks, NO extra text. Just the JSON object.`;
 // Static defaults (used as fallbacks)
 export const AGENT_ALPHA_CONFIG = {
   // Maximum number of documents to sample for testing
-  MAX_DOCS: 3,
+  MAX_DOCS: 5,
 
   // Maximum iterations per field before giving up
   MAX_ITERATIONS: 5,
@@ -86,8 +86,8 @@ export const AGENT_ALPHA_CONFIG = {
   EXTRACTION_CONCURRENCY: 5,
   
   // Number of fields to process in parallel
-  // Keep relatively low (2-3) to maintain meaningful progress updates
-  FIELD_CONCURRENCY: 2,
+  // Increased to 10 to match Run Comparison performance (was 5)
+  FIELD_CONCURRENCY: 10,
 } as const;
 
 // User-configurable runtime options

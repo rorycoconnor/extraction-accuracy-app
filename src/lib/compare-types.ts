@@ -53,12 +53,23 @@ export interface CompareTypeConfig {
 }
 
 /**
+ * Match classification for UI coloring - more granular than CompareType
+ * - 'exact': Character-for-character match
+ * - 'normalized': Match after normalization (case, punctuation, whitespace)
+ * - 'partial': One value contains the other, or one item in a multi-value matches
+ * - 'different-format': Semantically equivalent but different representation (e.g., "2 years" vs "24 months")
+ * - 'none': No match
+ */
+export type MatchClassification = 'exact' | 'normalized' | 'partial' | 'different-format' | 'none';
+
+/**
  * Result of a comparison operation
  */
 export interface ComparisonResult {
   isMatch: boolean;
   confidence: 'high' | 'medium' | 'low';
   matchType: CompareType;
+  matchClassification?: MatchClassification;  // Granular classification for UI colors
   details?: string;           // For debugging/logging (e.g., LLM reasoning)
   error?: string;             // If comparison failed
 }

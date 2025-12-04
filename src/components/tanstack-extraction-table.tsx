@@ -283,25 +283,39 @@ const getCellBackgroundColor = (cellData: CellData, templateKey?: string): strin
     if (!value || value.trim() === '' || value === '-') {
       return '';
     }
+    // Check if it's a "different-format" non-match (e.g., same items, wrong order for list-ordered)
+    const classification = (comparison as any).matchClassification;
+    if (classification === 'different-format') {
+      return 'bg-yellow-100/80 dark:bg-yellow-900/55';
+    }
     return 'bg-red-100/80 dark:bg-red-900/55';
   }
 
-  // Map compare engine match types to colors - supports both legacy and new types
+  // Use matchClassification if available (new compare engine), otherwise fall back to matchType
+  const classification = (comparison as any).matchClassification as string | undefined;
   const matchType = comparison.matchType as string;
 
-  // Green for exact matches (all types of exact/normalized matches)
-  if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered', 'date-exact'].includes(matchType)) {
+  // Determine the effective classification for coloring
+  const effectiveClassification = classification || matchType;
+
+  // Green for exact/normalized matches
+  if (['exact', 'normalized'].includes(effectiveClassification)) {
     return 'bg-green-100/80 dark:bg-green-900/55';
   }
 
   // Blue for partial matches
-  if (matchType === 'partial') {
+  if (effectiveClassification === 'partial') {
     return 'bg-blue-100/80 dark:bg-blue-900/55';
   }
 
-  // Yellow for date format differences (legacy - when dates match but formats differ)
-  if (matchType === 'date_format') {
+  // Yellow for different format (semantically equivalent but different representation)
+  if (effectiveClassification === 'different-format' || effectiveClassification === 'date_format') {
     return 'bg-yellow-100/80 dark:bg-yellow-900/55';
+  }
+
+  // For compare engine types without explicit classification, default to green if matched
+  if (['exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered', 'date-exact'].includes(matchType)) {
+    return 'bg-green-100/80 dark:bg-green-900/55';
   }
 
   return '';
@@ -373,25 +387,39 @@ const ModelValueCell = ({
       if (!value || value.trim() === '' || value === '-') {
         return '';
       }
+      // Check if it's a "different-format" non-match (e.g., same items, wrong order for list-ordered)
+      const classification = (comparison as any).matchClassification;
+      if (classification === 'different-format') {
+        return 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/55 dark:text-yellow-50';
+      }
       return 'bg-red-100/80 text-red-800 dark:bg-red-900/55 dark:text-red-50';
     }
 
-    // Handle match type styling - supports both legacy and new compare engine types
+    // Use matchClassification if available (new compare engine), otherwise fall back to matchType
+    const classification = (comparison as any).matchClassification as string | undefined;
     const matchType = comparison.matchType as string;
 
-    // Green for exact matches (all types of exact/normalized matches)
-    if (['exact', 'normalized', 'exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered', 'date-exact'].includes(matchType)) {
+    // Determine the effective classification for coloring
+    const effectiveClassification = classification || matchType;
+
+    // Green for exact/normalized matches
+    if (['exact', 'normalized'].includes(effectiveClassification)) {
       return 'bg-green-100/80 text-green-800 dark:bg-green-900/55 dark:text-green-50';
     }
 
     // Blue for partial matches
-    if (matchType === 'partial') {
+    if (effectiveClassification === 'partial') {
       return 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/55 dark:text-blue-50';
     }
 
-    // Yellow for date format differences (legacy - when dates match but formats differ)
-    if (matchType === 'date_format') {
+    // Yellow for different format (semantically equivalent but different representation)
+    if (effectiveClassification === 'different-format' || effectiveClassification === 'date_format') {
       return 'bg-yellow-100/80 text-yellow-800 dark:bg-yellow-900/55 dark:text-yellow-50';
+    }
+
+    // For compare engine types without explicit classification, default to green if matched
+    if (['exact-string', 'near-exact-string', 'exact-number', 'boolean', 'llm-judge', 'list-unordered', 'list-ordered', 'date-exact'].includes(matchType)) {
+      return 'bg-green-100/80 text-green-800 dark:bg-green-900/55 dark:text-green-50';
     }
 
     return '';

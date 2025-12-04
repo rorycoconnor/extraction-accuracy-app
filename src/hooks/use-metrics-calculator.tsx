@@ -9,6 +9,7 @@ import { calculateFieldMetricsWithDebug, calculateFieldMetricsWithDebugAsync } f
 import { getGroundTruthData } from '@/lib/mock-data';
 import { getCompareConfigForField } from '@/lib/compare-type-storage';
 import type { AccuracyData, ApiExtractionResult } from '@/lib/types';
+import { validateEnumValue, validateMultiSelectValue } from '@/lib/enum-validator';
 import { extractConciseErrorDescription } from '@/lib/error-handler';
 import { logger } from '@/lib/logger';
 
@@ -87,7 +88,24 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
               }
               
               if (extractedValue !== undefined && extractedValue !== null && extractedValue !== '') {
-                fieldData[modelName] = String(extractedValue).trim();
+                let formattedValue = String(extractedValue).trim();
+                
+                // Validate enum/multiSelect fields against options
+                const field = newData.fields.find(f => f.key === fieldKey);
+                if (field) {
+                  const fieldType = field.type;
+                  const fieldOptions = field.options;
+                  
+                  if (fieldType === 'enum' && fieldOptions && fieldOptions.length > 0) {
+                    // Validate single-select enum field
+                    formattedValue = validateEnumValue(formattedValue, fieldOptions, fieldKey);
+                  } else if (fieldType === 'multiSelect' && fieldOptions && fieldOptions.length > 0) {
+                    // Validate multi-select field
+                    formattedValue = validateMultiSelectValue(formattedValue, fieldOptions, fieldKey);
+                  }
+                }
+                
+                fieldData[modelName] = formattedValue;
               } else {
                 fieldData[modelName] = NOT_PRESENT_VALUE;
               }

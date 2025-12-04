@@ -50,7 +50,7 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
 
   logger.info(`\n📝 Agent-Alpha: [${fieldIndex}/${totalFields}] Processing field "${fieldName}"`);
   logger.info(`   Initial accuracy: ${(initialAccuracy * 100).toFixed(1)}%`);
-  logger.debug(`   Input fieldPrompt: "${fieldPrompt?.substring(0, 80)}..." (${fieldPrompt?.length || 0} chars)`);
+  logger.debug(`   Input fieldPrompt: "${fieldPrompt ? String(fieldPrompt).substring(0, 80) : 'none'}..." (${fieldPrompt?.length || 0} chars)`);
 
   let currentPrompt = fieldPrompt || `Extract the ${fieldName} from this document.`;
   const initialPrompt = currentPrompt;
@@ -170,6 +170,18 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     logger.info(`   📊 Final accuracy on test docs: ${(finalAccuracy * 100).toFixed(1)}%`);
   }
 
+  // Check if the new prompt actually improved accuracy
+  // If not, we should NOT recommend updating the prompt
+  const improved = finalAccuracy >= initialAccuracy;
+  
+  // If accuracy got worse, keep the original prompt
+  const finalPromptToUse = improved ? bestPrompt : initialPrompt;
+  
+  if (!improved) {
+    logger.warn(`   ⚠️ New prompt performed WORSE than original (${(finalAccuracy * 100).toFixed(1)}% < ${(initialAccuracy * 100).toFixed(1)}%)`);
+    logger.warn(`   ⚠️ Keeping original prompt - will NOT recommend update`);
+  }
+
   const result: AgentAlphaFieldResult = {
     fieldKey,
     fieldName,
@@ -177,15 +189,83 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     finalAccuracy,
     iterationCount,
     initialPrompt,
-    finalPrompt: bestPrompt, // Use best prompt, not currentPrompt
+    finalPrompt: finalPromptToUse,
     converged,
     sampledDocIds,
+    improved,
   };
 
   const improvement = ((finalAccuracy - initialAccuracy) * 100).toFixed(1);
-  logger.info(`   📊 Summary: ${(initialAccuracy * 100).toFixed(1)}% → ${(finalAccuracy * 100).toFixed(1)}% (+${improvement}%)`);
-  logger.debug(`   📋 Result: initialPrompt="${initialPrompt.substring(0, 50)}..." finalPrompt="${bestPrompt.substring(0, 50)}..."`);
+  const improvementSign = finalAccuracy >= initialAccuracy ? '+' : '';
+  logger.info(`   📊 Summary: ${(initialAccuracy * 100).toFixed(1)}% → ${(finalAccuracy * 100).toFixed(1)}% (${improvementSign}${improvement}%)`);
+  logger.debug(`   📋 Result: initialPrompt="${String(initialPrompt).substring(0, 50)}..." finalPrompt="${String(finalPromptToUse).substring(0, 50)}..."`);
 
   return result;
+}
+
+/**
+ * Process multiple fields in parallel on the server side.
+ * This is a single server action that handles parallelization internally,
+ * avoiding Next.js server action serialization.
+ */
+export async function processAgentAlphaFieldsBatch(
+  fieldParams: ProcessFieldParams[],
+  concurrencyLimit: number = AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY,
+  onFieldComplete?: (result: AgentAlphaFieldResult, index: number) => void
+): Promise<AgentAlphaFieldResult[]> {
+  logger.info(`Agent-Alpha Batch: Processing ${fieldParams.length} fields with concurrency ${concurrencyLimit}`);
+  
+  const results: AgentAlphaFieldResult[] = new Array(fieldParams.length);
+  const executing: Promise<void>[] = [];
+  
+  for (let i = 0; i < fieldParams.length; i++) {
+    const params = fieldParams[i];
+    const index = i;
+    
+    const p = processAgentAlphaField(params).then((result) => {
+      results[index] = result;
+      logger.info(`Agent-Alpha Batch: Field ${index + 1}/${fieldParams.length} completed (${params.fieldName})`);
+      if (onFieldComplete) {
+        try {
+          onFieldComplete(result, index);
+        } catch (e) {
+          // Ignore callback errors
+        }
+      }
+      // Remove from executing pool
+      const idx = executing.indexOf(e);
+      if (idx > -1) executing.splice(idx, 1);
+    }).catch((error) => {
+      logger.error(`Agent-Alpha Batch: Field ${index + 1} failed (${params.fieldName})`, error as Error);
+      // Return a failed result
+      results[index] = {
+        fieldKey: params.fieldKey,
+        fieldName: params.fieldName,
+        initialAccuracy: params.initialAccuracy,
+        finalAccuracy: params.initialAccuracy,
+        iterationCount: 0,
+        initialPrompt: params.fieldPrompt || '',
+        finalPrompt: params.fieldPrompt || '',
+        converged: false,
+        sampledDocIds: params.sampledDocIds,
+        improved: false,
+      };
+      const idx = executing.indexOf(e);
+      if (idx > -1) executing.splice(idx, 1);
+    });
+    
+    const e = p.then(() => {});
+    executing.push(e);
+    
+    if (executing.length >= concurrencyLimit) {
+      await Promise.race(executing);
+    }
+  }
+  
+  // Wait for all remaining fields
+  await Promise.all(executing);
+  
+  logger.info(`Agent-Alpha Batch: All ${fieldParams.length} fields completed`);
+  return results;
 }
 

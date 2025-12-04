@@ -320,7 +320,9 @@ export function detectCommonCompanyFromFailures(
   const predictedCounts: Record<string, number> = {};
   
   for (const failure of failureExamples) {
-    const predicted = failure.predicted?.trim();
+    // Convert to string to handle numbers and other types
+    const predictedStr = failure.predicted != null ? String(failure.predicted) : '';
+    const predicted = predictedStr.trim();
     if (predicted && predicted !== 'Not Present' && predicted.length > 2) {
       predictedCounts[predicted] = (predictedCounts[predicted] || 0) + 1;
     }
@@ -345,7 +347,9 @@ export function detectCommonCompanyFromFailures(
   // Alternative: if there's only 1 failure but the predicted value looks like a company name
   // (contains Inc., LLC, Corp., etc.), return it
   if (failureExamples.length >= 1) {
-    const predicted = failureExamples[0].predicted?.trim();
+    // Convert to string to handle numbers and other types
+    const predictedStr = failureExamples[0].predicted != null ? String(failureExamples[0].predicted) : '';
+    const predicted = predictedStr.trim();
     if (predicted && /\b(Inc\.?|LLC|Corp\.?|Co\.?|Ltd\.?|Limited|Corporation)\b/i.test(predicted)) {
       return predicted;
     }

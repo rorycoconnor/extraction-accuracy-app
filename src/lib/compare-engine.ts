@@ -3,7 +3,7 @@
  * Implements all comparison strategies defined in the PRD
  */
 
-import type { FieldCompareConfig, ComparisonResult, CompareType } from './compare-types';
+import type { FieldCompareConfig, ComparisonResult, CompareType, MatchClassification } from './compare-types';
 import { logger } from './logger';
 import { NOT_PRESENT_VALUE } from './utils';
 
@@ -239,22 +239,116 @@ function compareExactString(extracted: string, groundTruth: string): ComparisonR
     isMatch,
     matchType: 'exact-string',
     confidence: 'high',
+    matchClassification: isMatch ? 'exact' : 'none',
   };
 }
 
 /**
  * Near Exact Match - Normalized comparison ignoring whitespace and punctuation
+ * Enhanced with partial matching and multi-value handling
  */
 function compareNearExactString(extracted: string, groundTruth: string): ComparisonResult {
   const normalizedExtracted = normalizeText(extracted);
   const normalizedGroundTruth = normalizeText(groundTruth);
 
-  const isMatch = normalizedExtracted === normalizedGroundTruth;
+  // Exact normalized match
+  if (normalizedExtracted === normalizedGroundTruth) {
+    return {
+      isMatch: true,
+      matchType: 'near-exact-string',
+      confidence: 'high',
+      matchClassification: 'normalized',
+    };
+  }
+
+  // Multi-value check: if extracted has multiple values (comma or pipe separated), check if any match ground truth
+  const extractedSeparator = extracted.includes('|') ? '|' : ',';
+  const groundTruthSeparator = groundTruth.includes('|') ? '|' : ',';
+  
+  if (extracted.includes(extractedSeparator)) {
+    const extractedItems = extracted.split(extractedSeparator).map(s => normalizeText(s.trim())).filter(s => s);
+    if (extractedItems.some(item => item === normalizedGroundTruth)) {
+      return {
+        isMatch: true,
+        matchType: 'near-exact-string',
+        confidence: 'high',
+        matchClassification: 'partial',
+        details: 'Ground truth found in multi-value extracted field',
+      };
+    }
+    // Also check if ground truth contains any of the extracted items (or vice versa)
+    if (extractedItems.some(item => 
+      normalizedGroundTruth.includes(item) || 
+      item.includes(normalizedGroundTruth) ||
+      // Check core names (without suffixes like "plc", "inc")
+      (extractCoreNames(item) && extractCoreNames(item) === extractCoreNames(groundTruth))
+    )) {
+      return {
+        isMatch: true,
+        matchType: 'near-exact-string',
+        confidence: 'medium',
+        matchClassification: 'partial',
+        details: 'Partial match found in multi-value extracted field',
+      };
+    }
+  }
+
+  // Also check if ground truth has multiple values
+  if (groundTruth.includes(groundTruthSeparator)) {
+    const groundTruthItems = groundTruth.split(groundTruthSeparator).map(s => normalizeText(s.trim())).filter(s => s);
+    if (groundTruthItems.some(item => item === normalizedExtracted)) {
+      return {
+        isMatch: true,
+        matchType: 'near-exact-string',
+        confidence: 'high',
+        matchClassification: 'partial',
+        details: 'Extracted value found in multi-value ground truth',
+      };
+    }
+    // Check for partial matches in ground truth items
+    if (groundTruthItems.some(item => 
+      item.includes(normalizedExtracted) || 
+      normalizedExtracted.includes(item) ||
+      (extractCoreNames(item) && extractCoreNames(item) === extractCoreNames(extracted))
+    )) {
+      return {
+        isMatch: true,
+        matchType: 'near-exact-string',
+        confidence: 'medium',
+        matchClassification: 'partial',
+        details: 'Partial match found in multi-value ground truth',
+      };
+    }
+  }
+
+  // Partial match: one contains the other (useful for addresses, names, etc.)
+  const minLength = 3; // Avoid matching very short substrings
+  if (normalizedExtracted.length >= minLength && normalizedGroundTruth.length >= minLength) {
+    if (normalizedExtracted.includes(normalizedGroundTruth)) {
+      return {
+        isMatch: true,
+        matchType: 'near-exact-string',
+        confidence: 'medium',
+        matchClassification: 'partial',
+        details: 'Ground truth is contained in extracted value',
+      };
+    }
+    if (normalizedGroundTruth.includes(normalizedExtracted)) {
+      return {
+        isMatch: true,
+        matchType: 'near-exact-string',
+        confidence: 'medium',
+        matchClassification: 'partial',
+        details: 'Extracted value is contained in ground truth',
+      };
+    }
+  }
 
   return {
-    isMatch,
+    isMatch: false,
     matchType: 'near-exact-string',
     confidence: 'high',
+    matchClassification: 'none',
   };
 }
 
@@ -263,6 +357,7 @@ function compareNearExactString(extracted: string, groundTruth: string): Compari
  * - Convert to lowercase
  * - Remove redundant parenthetical numbers (e.g., "sixty (60)" → "sixty")
  * - Convert written numbers to digits (e.g., "sixty" → "60")
+ * - Normalize duration/period values to days (e.g., "2 years" → "730 days")
  * - Remove all punctuation except numbers
  * - Normalize whitespace (multiple spaces → single space, trim)
  */
@@ -295,10 +390,52 @@ function normalizeText(text: string): string {
     normalized = normalized.replace(regex, digit);
   });
 
+  // Normalize durations to a common format (days)
+  normalized = normalizeDuration(normalized);
+
   return normalized
     .replace(/[^\w\s]/g, '') // Remove punctuation
     .replace(/\s+/g, ' ')    // Normalize whitespace
     .trim();
+}
+
+/**
+ * Normalize duration expressions to months for comparison
+ * Using months as the common unit since it's the most common unit in contracts
+ * e.g., "2 years" → "24 months", "24 months" → "24 months", "365 days" → "12 months"
+ */
+function normalizeDuration(text: string): string {
+  // Duration patterns: number + unit → convert to months
+  const durationPatterns = [
+    // Years to months (12 months per year)
+    { pattern: /(\d+)\s*years?/gi, toMonths: (num: number) => num * 12 },
+    // Weeks to approximate months (4.33 weeks per month)
+    { pattern: /(\d+)\s*weeks?/gi, toMonths: (num: number) => Math.round(num / 4.33) },
+  ];
+
+  let result = text;
+
+  for (const { pattern, toMonths } of durationPatterns) {
+    result = result.replace(pattern, (match, num) => {
+      const months = toMonths(parseInt(num, 10));
+      return `${months} months`;
+    });
+  }
+
+  // Also normalize "days" to months if the number is large enough
+  result = result.replace(/(\d+)\s*days?/gi, (match, num) => {
+    const days = parseInt(num, 10);
+    // Only convert to months if 28+ days (approximately a month)
+    if (days >= 28) {
+      const months = Math.round(days / 30);
+      if (months > 0) {
+        return `${months} months`;
+      }
+    }
+    return `${days} days`;
+  });
+
+  return result;
 }
 
 /**
@@ -357,6 +494,7 @@ async function compareLLMJudge(
       isMatch: result.isMatch,
       matchType: 'llm-judge',
       confidence: 'medium', // LLM results have medium confidence due to non-determinism
+      matchClassification: result.isMatch ? 'normalized' : 'none',
       details: result.reason,
     };
   } catch (error) {
@@ -392,16 +530,21 @@ function compareExactNumber(extracted: string, groundTruth: string): ComparisonR
       isMatch: false,
       matchType: 'exact-number',
       confidence: 'high',
+      matchClassification: 'none',
       details: 'Failed to parse as number',
     };
   }
 
   const isMatch = extractedNum === groundTruthNum;
 
+  // Check if formats were different (e.g., "12000000" vs "12 million")
+  const formatsDifferent = isMatch && extracted.trim() !== groundTruth.trim();
+
   return {
     isMatch,
     matchType: 'exact-number',
     confidence: 'high',
+    matchClassification: isMatch ? (formatsDifferent ? 'different-format' : 'exact') : 'none',
   };
 }
 
@@ -433,6 +576,7 @@ function compareDateExact(extracted: string, groundTruth: string): ComparisonRes
       isMatch: false,
       matchType: 'date-exact',
       confidence: 'high',
+      matchClassification: 'none',
       details: 'Failed to parse as date',
     };
   }
@@ -442,11 +586,15 @@ function compareDateExact(extracted: string, groundTruth: string): ComparisonRes
   const iso2 = groundTruthDate.toISOString().split('T')[0];
 
   const isMatch = iso1 === iso2;
+  
+  // Check if the original formats were different
+  const formatsDifferent = isMatch && extracted.trim().toLowerCase() !== groundTruth.trim().toLowerCase();
 
   return {
     isMatch,
     matchType: 'date-exact',
     confidence: 'high',
+    matchClassification: isMatch ? (formatsDifferent ? 'different-format' : 'exact') : 'none',
   };
 }
 
@@ -562,16 +710,21 @@ function compareBoolean(extracted: string, groundTruth: string): ComparisonResul
       isMatch: false,
       matchType: 'boolean',
       confidence: 'high',
+      matchClassification: 'none',
       details: 'Failed to parse as boolean',
     };
   }
 
   const isMatch = extractedBool === groundTruthBool;
+  
+  // Check if formats were different (e.g., "Yes" vs "true")
+  const formatsDifferent = isMatch && extracted.trim().toLowerCase() !== groundTruth.trim().toLowerCase();
 
   return {
     isMatch,
     matchType: 'boolean',
     confidence: 'high',
+    matchClassification: isMatch ? (formatsDifferent ? 'different-format' : 'exact') : 'none',
   };
 }
 
@@ -598,13 +751,15 @@ function parseBoolean(text: string): boolean | null {
 
 /**
  * List Match (Order Insensitive) - Compare lists/arrays ignoring order
+ * Enhanced with auto-detect separator and partial matching
  */
 function compareListUnordered(
   extracted: string,
   groundTruth: string,
   compareConfig: FieldCompareConfig
 ): ComparisonResult {
-  const separator = compareConfig.parameters?.separator || ',';
+  // Auto-detect separator if not specified
+  const separator = compareConfig.parameters?.separator || detectSeparator(extracted, groundTruth);
 
   const extractedItems = parseList(extracted, separator);
   const groundTruthItems = parseList(groundTruth, separator);
@@ -613,14 +768,72 @@ function compareListUnordered(
   const sortedExtracted = [...extractedItems].sort();
   const sortedGroundTruth = [...groundTruthItems].sort();
 
-  const isMatch =
+  // Exact match (all items match, order independent)
+  const exactMatch =
     sortedExtracted.length === sortedGroundTruth.length &&
     sortedExtracted.every((item, index) => item === sortedGroundTruth[index]);
 
+  if (exactMatch) {
+    // Check if original order was different
+    const orderDifferent = extractedItems.some((item, index) => item !== groundTruthItems[index]);
+    return {
+      isMatch: true,
+      matchType: 'list-unordered',
+      confidence: 'high',
+      matchClassification: orderDifferent ? 'different-format' : 'normalized',
+      details: orderDifferent ? 'Same items in different order' : undefined,
+    };
+  }
+
+  // More flexible partial matching for lists
+  // Check how many items match (exact or contain each other)
+  let matchedGroundTruthItems = 0;
+  let matchedExtractedItems = 0;
+  
+  for (const gtItem of groundTruthItems) {
+    const hasMatch = sortedExtracted.some(extItem => 
+      extItem === gtItem || 
+      extItem.includes(gtItem) || 
+      gtItem.includes(extItem) ||
+      // Also check if core names match (ignoring titles/suffixes)
+      extractCoreNames(extItem) === extractCoreNames(gtItem)
+    );
+    if (hasMatch) matchedGroundTruthItems++;
+  }
+  
+  for (const extItem of extractedItems) {
+    const hasMatch = sortedGroundTruth.some(gtItem => 
+      gtItem === extItem || 
+      gtItem.includes(extItem) || 
+      extItem.includes(gtItem) ||
+      extractCoreNames(gtItem) === extractCoreNames(extItem)
+    );
+    if (hasMatch) matchedExtractedItems++;
+  }
+  
+  // If most ground truth items are found (≥50%), consider it a partial match
+  const gtMatchPercentage = groundTruthItems.length > 0 ? matchedGroundTruthItems / groundTruthItems.length : 0;
+  const extMatchPercentage = extractedItems.length > 0 ? matchedExtractedItems / extractedItems.length : 0;
+  
+  if (gtMatchPercentage >= 0.5 || extMatchPercentage >= 0.5) {
+    // If all match, it's normalized; otherwise partial
+    const allMatch = gtMatchPercentage === 1.0 && extMatchPercentage === 1.0;
+    return {
+      isMatch: true,
+      matchType: 'list-unordered',
+      confidence: allMatch ? 'high' : 'medium',
+      matchClassification: allMatch ? 'normalized' : 'partial',
+      details: allMatch 
+        ? 'All items match with possible variations' 
+        : `${matchedGroundTruthItems}/${groundTruthItems.length} ground truth items found`,
+    };
+  }
+
   return {
-    isMatch,
+    isMatch: false,
     matchType: 'list-unordered',
     confidence: 'high',
+    matchClassification: 'none',
   };
 }
 
@@ -632,20 +845,89 @@ function compareListOrdered(
   groundTruth: string,
   compareConfig: FieldCompareConfig
 ): ComparisonResult {
-  const separator = compareConfig.parameters?.separator || ',';
+  // Auto-detect separator if not specified
+  const separator = compareConfig.parameters?.separator || detectSeparator(extracted, groundTruth);
 
   const extractedItems = parseList(extracted, separator);
   const groundTruthItems = parseList(groundTruth, separator);
 
-  const isMatch =
+  const exactMatch =
     extractedItems.length === groundTruthItems.length &&
     extractedItems.every((item, index) => item === groundTruthItems[index]);
 
+  if (exactMatch) {
+    return {
+      isMatch: true,
+      matchType: 'list-ordered',
+      confidence: 'high',
+      matchClassification: 'normalized',
+    };
+  }
+
+  // Check for same items but different order
+  const sortedExtracted = [...extractedItems].sort();
+  const sortedGroundTruth = [...groundTruthItems].sort();
+  const sameItemsDifferentOrder =
+    sortedExtracted.length === sortedGroundTruth.length &&
+    sortedExtracted.every((item, index) => item === sortedGroundTruth[index]);
+
+  if (sameItemsDifferentOrder) {
+    return {
+      isMatch: false,  // Order matters for list-ordered
+      matchType: 'list-ordered',
+      confidence: 'high',
+      matchClassification: 'different-format',
+      details: 'Same items but in different order',
+    };
+  }
+
   return {
-    isMatch,
+    isMatch: false,
     matchType: 'list-ordered',
     confidence: 'high',
+    matchClassification: 'none',
   };
+}
+
+/**
+ * Extract core names from a string containing names with titles/roles
+ * e.g., "Jeffrey D. Fox (Managing Director)" → "jeffrey d fox"
+ * e.g., "Otkritie Investments Cyprus Limited | QIWI plc" → "otkritie investments cyprus limited qiwi plc"
+ */
+function extractCoreNames(text: string): string {
+  if (!text || typeof text !== 'string') return '';
+  
+  let cleaned = text.toLowerCase();
+  
+  // Remove common title suffixes
+  const suffixes = [
+    'inc', 'llc', 'ltd', 'limited', 'plc', 'corp', 'corporation', 
+    'gmbh', 'sa', 'bv', 'ag', 'na'
+  ];
+  
+  // Remove parenthetical content (titles, roles)
+  cleaned = cleaned.replace(/\([^)]*\)/g, '');
+  
+  // Remove common titles/prefixes
+  cleaned = cleaned.replace(/\b(mr|mrs|ms|dr|prof|sir|dame|lord|lady)\b\.?/gi, '');
+  
+  // Normalize
+  cleaned = normalizeText(cleaned);
+  
+  return cleaned;
+}
+
+/**
+ * Auto-detect the separator used in list values
+ * Prefers pipe | over comma , as it's more explicit
+ */
+function detectSeparator(extracted: string, groundTruth: string): string {
+  // Check for pipe separator (commonly used for entity lists)
+  if (extracted.includes('|') || groundTruth.includes('|')) {
+    return '|';
+  }
+  // Default to comma
+  return ',';
 }
 
 /**

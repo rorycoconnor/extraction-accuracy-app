@@ -4,7 +4,7 @@ import { useCallback, useState, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useAccuracyDataStore } from '@/store/AccuracyDataStore';
 import { prepareAgentAlphaWorkPlan } from '@/ai/flows/agent-alpha-prepare';
-import { processAgentAlphaField } from '@/ai/flows/agent-alpha-process-field';
+import { processAgentAlphaFieldsBatch, type ProcessFieldParams } from '@/ai/flows/agent-alpha-process-field';
 import { saveFieldPrompt } from '@/lib/prompt-storage';
 import { logger } from '@/lib/logger';
 import { getCompareConfigForField } from '@/lib/compare-type-storage';
@@ -108,22 +108,15 @@ export const useAgentAlphaRunner = () => {
         },
       });
 
-      logger.info(`Agent-Alpha: Processing ${workPlan.fields.length} fields with concurrency ${AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY}...`);
+      logger.info(`Agent-Alpha: Processing ${workPlan.fields.length} fields with TRUE parallel execution (concurrency ${AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY})...`);
       toast({
         title: 'Agent-Alpha Started',
-        description: `Processing ${workPlan.fields.length} field(s) in parallel. This may take several minutes.`,
+        description: `Processing ${workPlan.fields.length} field(s) in parallel on server. This may take several minutes.`,
       });
 
-      // Step 2: Process fields with controlled concurrency for speed
-      const results: AgentAlphaFieldResult[] = [];
-
-      // Process fields in parallel with concurrency limit
-      const processField = async (fieldPlan: typeof workPlan.fields[0], fieldIndex: number) => {
-        const fieldStartTime = Date.now();
-
-        logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] Processing ${fieldPlan.field.name}...`);
-
-        // Mark this field as started (for parallel processing UI)
+      // Step 2: Mark all fields as processing (they'll run in parallel on server)
+      const fieldStartTime = Date.now();
+      for (const fieldPlan of workPlan.fields) {
         dispatch({
           type: 'AGENT_ALPHA_FIELD_STARTED',
           payload: {
@@ -133,99 +126,59 @@ export const useAgentAlphaRunner = () => {
             startTime: fieldStartTime,
           },
         });
-
-        try {
-          // Get compare config for this field from compare type storage
-          const fieldCompareConfig = getCompareConfigForField(accuracyData.templateKey, fieldPlan.fieldKey) ?? undefined;
-          
-          const fieldResult = await processAgentAlphaField({
-            fieldKey: fieldPlan.fieldKey,
-            fieldName: fieldPlan.field.name,
-            fieldType: fieldPlan.field.type,
-            fieldPrompt: fieldPlan.field.prompt,
-            fieldOptions: fieldPlan.field.options,
-            compareConfig: fieldCompareConfig,
-            initialAccuracy: fieldPlan.initialAccuracy,
-            groundTruth: fieldPlan.groundTruth,
-            sampledDocIds: workPlan.sampledDocIds,
-            templateKey: workPlan.templateKey,
-            testModel: config.testModel,
-            fieldIndex,
-            totalFields: workPlan.fields.length,
-            maxIterations: config.maxIterations,
-            systemPromptOverride: config.customInstructions || config.systemPromptOverride,
-          });
-
-          // Mark field as completed (removes from processing, adds to processed)
-          const fieldEndTime = Date.now();
-          const fieldTimeMs = fieldEndTime - fieldStartTime;
-        
-          dispatch({
-            type: 'AGENT_ALPHA_FIELD_COMPLETED',
-            payload: {
-              fieldKey: fieldPlan.fieldKey,
-              processedFieldInfo: {
-                fieldKey: fieldPlan.fieldKey,
-                fieldName: fieldPlan.field.name,
-                iterationCount: fieldResult.iterationCount,
-                initialAccuracy: fieldPlan.initialAccuracy,
-                finalAccuracy: fieldResult.finalAccuracy,
-                finalPrompt: fieldResult.finalPrompt,
-                timeMs: fieldTimeMs,
-              },
-            },
-          });
-
-          return fieldResult;
-        } catch (error) {
-          logger.error(`Agent-Alpha: Failed to process field ${fieldPlan.field.name}`, error as Error);
-          // Remove from processing on error
-          dispatch({
-            type: 'AGENT_ALPHA_FIELD_COMPLETED',
-            payload: {
-              fieldKey: fieldPlan.fieldKey,
-              processedFieldInfo: {
-                fieldKey: fieldPlan.fieldKey,
-                fieldName: fieldPlan.field.name,
-                iterationCount: 0,
-                initialAccuracy: fieldPlan.initialAccuracy,
-                finalAccuracy: fieldPlan.initialAccuracy,
-                finalPrompt: fieldPlan.field.prompt || '',
-                timeMs: Date.now() - fieldStartTime,
-              },
-            },
-          });
-          return null;
-        }
-      };
-
-      // Use a simple concurrency pool pattern
-      const executing: Promise<void>[] = [];
-      
-      for (let i = 0; i < workPlan.fields.length; i++) {
-        const fieldPlan = workPlan.fields[i];
-        const fieldIndex = i + 1;
-        
-        const p = processField(fieldPlan, fieldIndex).then((result) => {
-          if (result) {
-            results.push(result);
-          }
-          // Remove from executing pool
-          const idx = executing.indexOf(e);
-          if (idx > -1) executing.splice(idx, 1);
-        });
-        
-        const e = p.then(() => {});
-        executing.push(e);
-        
-        // Wait if we've hit the concurrency limit
-        if (executing.length >= AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY) {
-          await Promise.race(executing);
-        }
       }
+
+      // Step 3: Prepare batch parameters for all fields
+      const batchParams: ProcessFieldParams[] = workPlan.fields.map((fieldPlan, index) => {
+        const fieldCompareConfig = getCompareConfigForField(accuracyData.templateKey, fieldPlan.fieldKey) ?? undefined;
+        return {
+          fieldKey: fieldPlan.fieldKey,
+          fieldName: fieldPlan.field.name,
+          fieldType: fieldPlan.field.type,
+          fieldPrompt: fieldPlan.field.prompt,
+          fieldOptions: fieldPlan.field.options,
+          compareConfig: fieldCompareConfig,
+          initialAccuracy: fieldPlan.initialAccuracy,
+          groundTruth: fieldPlan.groundTruth,
+          sampledDocIds: workPlan.sampledDocIds,
+          templateKey: workPlan.templateKey,
+          testModel: config.testModel,
+          fieldIndex: index + 1,
+          totalFields: workPlan.fields.length,
+          maxIterations: config.maxIterations,
+          systemPromptOverride: config.customInstructions || config.systemPromptOverride,
+        };
+      });
+
+      // Step 4: Process ALL fields in parallel on the server (single server action)
+      // This avoids Next.js server action serialization!
+      logger.info(`Agent-Alpha: Sending batch of ${batchParams.length} fields to server for parallel processing...`);
+      const results = await processAgentAlphaFieldsBatch(batchParams, AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY);
+
+      // Step 5: Mark all fields as completed with their results
+      const fieldEndTime = Date.now();
+      const avgTimeMs = (fieldEndTime - fieldStartTime) / results.length;
       
-      // Wait for all remaining fields to complete
-      await Promise.all(executing);
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+        const fieldPlan = workPlan.fields[i];
+        
+        dispatch({
+          type: 'AGENT_ALPHA_FIELD_COMPLETED',
+          payload: {
+            fieldKey: fieldPlan.fieldKey,
+            processedFieldInfo: {
+              fieldKey: fieldPlan.fieldKey,
+              fieldName: fieldPlan.field.name,
+              iterationCount: result.iterationCount,
+              initialAccuracy: fieldPlan.initialAccuracy,
+              finalAccuracy: result.finalAccuracy,
+              finalPrompt: result.finalPrompt,
+              timeMs: avgTimeMs, // Approximate per-field time
+            },
+          },
+        });
+      }
 
       // Step 3: Calculate timing and prepare results
       const endTime = Date.now();
@@ -290,15 +243,38 @@ export const useAgentAlphaRunner = () => {
       return;
     }
 
-    logger.info('Agent-Alpha: Applying results', { count: pendingResults.results.length });
+    // Filter to only include results that improved (or at least didn't get worse)
+    const improvedResults = pendingResults.results.filter((r) => r.improved !== false);
+    const skippedResults = pendingResults.results.filter((r) => r.improved === false);
+
+    logger.info('Agent-Alpha: Applying results', { 
+      total: pendingResults.results.length,
+      improved: improvedResults.length,
+      skipped: skippedResults.length
+    });
+
+    if (skippedResults.length > 0) {
+      logger.info('Agent-Alpha: Skipping non-improved fields:', skippedResults.map(r => r.fieldName));
+    }
+
+    if (improvedResults.length === 0) {
+      toast({
+        title: 'No Prompts Applied',
+        description: 'None of the generated prompts improved accuracy. Original prompts retained.',
+        variant: 'default',
+      });
+      dispatch({ type: 'AGENT_ALPHA_APPLY_RESULTS' });
+      return;
+    }
 
     try {
       const timestamp = new Date().toISOString();
       
       // Build updated fields with new prompts and prompt history
+      // Only update fields that actually improved
       const updatedFields = accuracyData.fields.map((field) => {
-        const result = pendingResults.results.find((r) => r.fieldKey === field.key);
-        if (!result) return field;
+        const result = improvedResults.find((r) => r.fieldKey === field.key);
+        if (!result) return field; // Keep original if not improved or not in results
 
         const newVersion = {
           id: `agent-alpha-${timestamp}-${uuidv4()}`,
@@ -322,8 +298,8 @@ export const useAgentAlphaRunner = () => {
         payload: { ...accuracyData, fields: updatedFields },
       });
 
-      // Then persist to localStorage
-      for (const result of pendingResults.results) {
+      // Then persist to localStorage - only for improved results
+      for (const result of improvedResults) {
         const updatedField = updatedFields.find((f) => f.key === result.fieldKey);
         if (!updatedField) continue;
 
@@ -340,9 +316,12 @@ export const useAgentAlphaRunner = () => {
 
       dispatch({ type: 'AGENT_ALPHA_APPLY_RESULTS' });
 
+      const skippedMsg = skippedResults.length > 0 
+        ? ` (${skippedResults.length} skipped - no improvement)` 
+        : '';
       toast({
         title: 'Prompts Applied',
-        description: `Successfully saved ${pendingResults.results.length} Agent-Alpha prompt(s).`,
+        description: `Successfully saved ${improvedResults.length} Agent-Alpha prompt(s)${skippedMsg}.`,
         variant: 'default',
       });
 

@@ -193,6 +193,7 @@ describe('Agent-Alpha Types Contract', () => {
         initialPrompt: 'Extract company name',
         converged: true,
         sampledDocIds: ['doc1', 'doc2', 'doc3'],
+        improved: true,
       };
       
       expect(result.fieldKey).toBe('company_name');
@@ -215,6 +216,7 @@ describe('Agent-Alpha Types Contract', () => {
         initialPrompt: 'Extract field',
         converged: false,
         sampledDocIds: ['doc1', 'doc2'],
+        improved: true,
       };
       
       expect(result.converged).toBe(false);
@@ -237,6 +239,7 @@ describe('Agent-Alpha Types Contract', () => {
             initialPrompt: 'initial1',
             converged: true,
             sampledDocIds: ['doc1'],
+            improved: true,
           },
         ],
         timestamp: '2025-01-01T00:00:00.000Z',

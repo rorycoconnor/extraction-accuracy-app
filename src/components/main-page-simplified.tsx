@@ -598,6 +598,19 @@ const MainPage: React.FC = () => {
     };
   }, [accuracyData]);
 
+  // Get the last used model from comparison (for agent default)
+  const lastUsedModel = useMemo(() => {
+    if (!shownColumns) return undefined;
+    
+    // Get the first visible model (excluding Ground Truth)
+    const visibleModels = Object.entries(shownColumns)
+      .filter(([modelName, isVisible]) => isVisible && modelName !== 'Ground Truth')
+      .map(([modelName]) => modelName);
+    
+    // Return the first visible model, or undefined if none
+    return visibleModels.length > 0 ? visibleModels[0] : undefined;
+  }, [shownColumns]);
+
  // ===== COMPONENT RENDER =====
  
  return (
@@ -699,15 +712,16 @@ const MainPage: React.FC = () => {
          onConfirmReset={handleCompleteReset}
        />
 
-       {/* Agent-Alpha Modal */}
-       <AgentAlphaModal
-         isOpen={agentAlphaRunner.isModalOpen}
-         agentAlphaState={agentAlphaRunner.agentAlphaState}
-         results={agentAlphaRunner.pendingResults}
-         onApply={agentAlphaRunner.applyResults}
-         onCancel={agentAlphaRunner.discardResults}
-         onStartWithConfig={agentAlphaRunner.runAgentAlphaWithConfig}
-       />
+      {/* Agent-Alpha Modal */}
+      <AgentAlphaModal
+        isOpen={agentAlphaRunner.isModalOpen}
+        agentAlphaState={agentAlphaRunner.agentAlphaState}
+        results={agentAlphaRunner.pendingResults}
+        defaultModel={lastUsedModel}
+        onApply={agentAlphaRunner.applyResults}
+        onCancel={agentAlphaRunner.discardResults}
+        onStartWithConfig={agentAlphaRunner.runAgentAlphaWithConfig}
+      />
      </div>
    );
  };

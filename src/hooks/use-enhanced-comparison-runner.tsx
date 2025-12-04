@@ -27,6 +27,7 @@ import type {
 } from '@/lib/types';
 import { useDataHandlers } from '@/hooks/use-data-handlers';
 import { logger } from '@/lib/logger';
+import { validateEnumValue, validateMultiSelectValue } from '@/lib/enum-validator';
 
 // Import centralized constants
 
@@ -352,8 +353,24 @@ export const useEnhancedComparisonRunner = (
           
           // Check if this is a multi-select field and format accordingly
           const field = updatedData.fields.find(f => f.key === fieldKey);
-          if (field && isMultiSelectField(field, fieldKey)) {
-            formattedValue = formatMultiSelectValue(formattedValue);
+          
+          // Validate enum/multiSelect fields against options
+          if (field) {
+            const fieldType = field.type;
+            const fieldOptions = field.options;
+            
+            if (fieldType === 'enum' && fieldOptions && fieldOptions.length > 0) {
+              // Validate single-select enum field
+              formattedValue = validateEnumValue(formattedValue, fieldOptions, fieldKey);
+              logger.debug('Validated enum field', { fieldKey, original: extractedValue, validated: formattedValue });
+            } else if ((fieldType === 'multiSelect' || isMultiSelectField(field, fieldKey)) && fieldOptions && fieldOptions.length > 0) {
+              // Validate multi-select field
+              formattedValue = validateMultiSelectValue(formattedValue, fieldOptions, fieldKey);
+              logger.debug('Validated multiSelect field', { fieldKey, original: extractedValue, validated: formattedValue });
+            } else if (isMultiSelectField(field, fieldKey)) {
+              // Format multi-select without validation (no options available)
+              formattedValue = formatMultiSelectValue(formattedValue);
+            }
           }
           
           fileResult.fields[fieldKey][job.modelName] = formattedValue;

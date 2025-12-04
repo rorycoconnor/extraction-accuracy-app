@@ -173,8 +173,8 @@ export async function runFieldIteration(params: {
   const accuracy = metricsResult.accuracy;
   
   logger.debug(`   Metrics debug: ${JSON.stringify({
-    predictions: predictions.map(p => p.substring(0, 50)),
-    groundTruths: groundTruths.map(g => g.substring(0, 50)),
+    predictions: predictions.map(p => String(p).substring(0, 50)),
+    groundTruths: groundTruths.map(g => String(g).substring(0, 50)),
     accuracy,
     compareConfig: compareConfig?.compareType || 'default'
   })}`);

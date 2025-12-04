@@ -293,6 +293,23 @@ const ControlBar: React.FC<ControlBarProps> = ({
         {comparisonButtonLabel}
       </Button>
       
+      {/* Run Agent Button - Opens Configuration Modal */}
+      {onOpenAgentConfig && (
+        <Button
+          onClick={onOpenAgentConfig}
+          disabled={!accuracyData || isExtracting || isAgentAlphaRunning || !hasComparisonResults}
+          variant={(!accuracyData || isExtracting || isAgentAlphaRunning || !hasComparisonResults) ? "outline" : "default"}
+          className={(!accuracyData || isExtracting || isAgentAlphaRunning || !hasComparisonResults) ? "" : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0"}
+        >
+          {isAgentAlphaRunning ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Sparkles className="mr-2 h-4 w-4" />
+          )}
+          {isAgentAlphaRunning ? 'Processing...' : 'Agent'}
+        </Button>
+      )}
+      
       <Button variant="outline" onClick={onClearResults}>
         <Trash2 className="mr-2 h-4 w-4" />
         Clear Results
@@ -342,23 +359,6 @@ const ControlBar: React.FC<ControlBarProps> = ({
           )}
           {optimizerButtonLabel}
         </Button>
-
-        {/* Run Agent Button - Opens Configuration Modal */}
-        {onOpenAgentConfig && (
-          <Button
-            onClick={onOpenAgentConfig}
-            disabled={!accuracyData || isExtracting || isAgentAlphaRunning || !hasComparisonResults}
-            variant={(!accuracyData || isExtracting || isAgentAlphaRunning || !hasComparisonResults) ? "outline" : "default"}
-            className={(!accuracyData || isExtracting || isAgentAlphaRunning || !hasComparisonResults) ? "" : "bg-blue-600 hover:bg-blue-700 text-white"}
-          >
-            {isAgentAlphaRunning ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : (
-              <Sparkles className="mr-2 h-4 w-4" />
-            )}
-            {isAgentAlphaRunning ? 'Processing...' : 'Agent'}
-          </Button>
-        )}
 
         <div className="hidden">
           <DropdownMenu>
