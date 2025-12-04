@@ -371,6 +371,14 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
                 </div>
               </ScrollArea>
               <DialogFooter className="p-6 bg-muted/50 border-t">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => window.open(`https://appworld.app.box.com/file/${file.id}`, '_blank')}
+                >
+                  Open in Box
+                </Button>
+                <div className="flex-1" />
                 <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
