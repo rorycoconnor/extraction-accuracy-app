@@ -86,8 +86,9 @@ export const AGENT_ALPHA_CONFIG = {
   EXTRACTION_CONCURRENCY: 5,
   
   // Number of fields to process in parallel
-  // Reduced to 5 for better progress visibility and to avoid overwhelming API rate limits
-  FIELD_CONCURRENCY: 5,
+  // Reduced to 2 to avoid Box API rate limits (429 errors)
+  // Each field makes multiple API calls (extractions + text gen per iteration)
+  FIELD_CONCURRENCY: 2,
 } as const;
 
 // User-configurable runtime options

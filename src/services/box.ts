@@ -308,9 +308,9 @@ export async function getBoxAccessToken(): Promise<string> {
 
 // Retry configuration for Box API calls
 const RETRY_CONFIG = {
-    maxRetries: 3,
-    initialDelayMs: 1000,
-    maxDelayMs: 10000,
+    maxRetries: 5,           // Increased from 3 for rate limit recovery
+    initialDelayMs: 2000,    // Increased from 1000 for better recovery
+    maxDelayMs: 30000,       // Increased from 10000 (30 sec max wait)
     backoffMultiplier: 2,
     // Status codes that should trigger a retry
     retryableStatusCodes: [

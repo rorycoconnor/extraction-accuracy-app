@@ -207,6 +207,9 @@ export const useAgentAlphaRunner = () => {
       // Each field dispatches STARTED when it begins and COMPLETED when it finishes
       const executing: Set<Promise<void>> = new Set();
       
+      // Small delay between starting fields to avoid API rate limit bursts
+      const STAGGER_DELAY_MS = 500; // 500ms between starting new fields
+      
       for (let i = 0; i < workPlan.fields.length; i++) {
         const fieldPlan = workPlan.fields[i];
         const fieldIndex = i + 1;
@@ -226,6 +229,8 @@ export const useAgentAlphaRunner = () => {
         // Wait for a slot to open if we've hit the limit
         if (executing.size >= concurrencyLimit) {
           await Promise.race(executing);
+          // Add small delay after a slot opens to avoid burst patterns
+          await new Promise(resolve => setTimeout(resolve, STAGGER_DELAY_MS));
         }
       }
       
