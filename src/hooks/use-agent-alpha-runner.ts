@@ -205,16 +205,35 @@ export const useAgentAlphaRunner = () => {
         }
       };
 
-      // Start all field processing in parallel (browser will naturally limit concurrent requests)
+      // Process fields with controlled concurrency (FIELD_CONCURRENCY at a time)
       // Each field dispatches its own completion as soon as it finishes
-      const fieldPromises = workPlan.fields.map((fieldPlan, index) => 
-        processFieldWithDispatch(fieldPlan, index + 1).then(result => {
+      const concurrencyLimit = AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY;
+      const executing: Set<Promise<void>> = new Set();
+      
+      for (let i = 0; i < workPlan.fields.length; i++) {
+        const fieldPlan = workPlan.fields[i];
+        const fieldIndex = i + 1;
+        
+        // Create a tracked promise that removes itself when done
+        const fieldPromise = (async () => {
+          const result = await processFieldWithDispatch(fieldPlan, fieldIndex);
           if (result) results.push(result);
-        })
-      );
-
-      // Wait for all fields to complete
-      await Promise.all(fieldPromises);
+        })();
+        
+        const trackedPromise = fieldPromise.finally(() => {
+          executing.delete(trackedPromise);
+        });
+        
+        executing.add(trackedPromise);
+        
+        // Wait for a slot to open if we've hit the limit
+        if (executing.size >= concurrencyLimit) {
+          await Promise.race(executing);
+        }
+      }
+      
+      // Wait for remaining fields to complete
+      await Promise.all(executing);
       
       logger.info(`Agent-Alpha: All ${workPlan.fields.length} fields processed.`);
 

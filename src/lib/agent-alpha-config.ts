@@ -86,8 +86,8 @@ export const AGENT_ALPHA_CONFIG = {
   EXTRACTION_CONCURRENCY: 5,
   
   // Number of fields to process in parallel
-  // Increased to 10 to match Run Comparison performance (was 5)
-  FIELD_CONCURRENCY: 10,
+  // Reduced to 5 for better progress visibility and to avoid overwhelming API rate limits
+  FIELD_CONCURRENCY: 5,
 } as const;
 
 // User-configurable runtime options

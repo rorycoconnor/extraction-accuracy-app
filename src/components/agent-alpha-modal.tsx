@@ -364,18 +364,18 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                       agentAlphaState.processingFields.map((field, idx) => (
                         <tr key={field.fieldKey} className="border-b border-gray-100">
                           <td className="px-4 py-3 font-medium text-gray-900">
-                            <span className="flex items-center gap-2">
-                              <Loader2 className="h-3 w-3 animate-spin text-blue-600" />
-                              {field.fieldName}
+                            <span className="flex items-start gap-2">
+                              <Loader2 className="h-4 w-4 animate-spin text-blue-600 shrink-0 mt-0.5" />
+                              <span className="break-words">{field.fieldName}</span>
                             </span>
                           </td>
-                          <td className="px-2 py-3 text-center text-gray-700">
+                          <td className="px-2 py-3 text-center text-gray-700 align-top">
                             <span className="text-gray-600">{agentAlphaState.runtimeConfig?.maxIterations || AGENT_ALPHA_CONFIG.MAX_ITERATIONS} max</span>
                           </td>
-                          <td className="px-2 py-3 text-center text-gray-700">{(field.initialAccuracy * 100).toFixed(0)}%</td>
-                          <td className="px-2 py-3 text-center text-gray-400">—</td>
-                          <td className="px-4 py-3 text-xs text-blue-600 font-medium">Optimizing...</td>
-                          <td className="px-4 py-3 text-right text-xs text-gray-500">
+                          <td className="px-2 py-3 text-center text-gray-700 align-top">{(field.initialAccuracy * 100).toFixed(0)}%</td>
+                          <td className="px-2 py-3 text-center text-gray-400 align-top">—</td>
+                          <td className="px-4 py-3 text-xs text-blue-600 font-medium align-top">Optimizing...</td>
+                          <td className="px-4 py-3 text-right text-xs text-gray-500 align-top">
                             <ElapsedTime startTime={field.startTime} />
                           </td>
                         </tr>
@@ -419,12 +419,23 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                     </thead>
                     <tbody className="bg-white">
                       {agentAlphaState.processedFields && agentAlphaState.processedFields.length > 0 ? (
-                        agentAlphaState.processedFields.map((field, idx) => (
+                        agentAlphaState.processedFields.map((field, idx) => {
+                          // Determine accuracy color: green if improved, black if same, red if worse
+                          const accuracyDiff = field.finalAccuracy - field.initialAccuracy;
+                          const accuracyColor = accuracyDiff > 0.001 
+                            ? 'text-green-600' 
+                            : accuracyDiff < -0.001 
+                              ? 'text-red-600' 
+                              : 'text-gray-900';
+                          
+                          return (
                           <tr key={idx} className="border-b border-gray-100 last:border-b-0 hover:bg-gray-50/50">
                             <td className="px-4 py-3 font-medium text-gray-900 align-top">{field.fieldName}</td>
                             <td className="px-2 py-3 text-center text-gray-700 align-top">{field.iterationCount}/{agentAlphaState.runtimeConfig?.maxIterations || AGENT_ALPHA_CONFIG.MAX_ITERATIONS}</td>
                             <td className="px-2 py-3 text-center text-gray-700 align-top">{(field.initialAccuracy * 100).toFixed(0)}%</td>
-                            <td className="px-2 py-3 text-center font-medium text-green-600 align-top">{(field.finalAccuracy * 100).toFixed(0)}%</td>
+                            <td className={cn("px-2 py-3 text-center font-medium align-top", accuracyColor)}>
+                              {(field.finalAccuracy * 100).toFixed(0)}%
+                            </td>
                             <td className="px-4 py-3 text-xs text-gray-600 align-top">
                               <div className="whitespace-pre-wrap break-words max-w-full">
                                 {field.finalPrompt}
@@ -434,7 +445,8 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                               {formatDuration(field.timeMs)}
                             </td>
                           </tr>
-                        ))
+                          );
+                        })
                       ) : (
                         <tr>
                           <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
