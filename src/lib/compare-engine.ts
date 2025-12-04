@@ -22,6 +22,7 @@ export function compareValuesPreview(
       isMatch: true,
       matchType: compareConfig.compareType,
       confidence: 'high',
+      matchClassification: 'exact',
     };
   }
 
@@ -31,6 +32,7 @@ export function compareValuesPreview(
       isMatch: true,
       matchType: compareConfig.compareType,
       confidence: 'high',
+      matchClassification: 'exact',
     };
   }
 
@@ -47,6 +49,7 @@ export function compareValuesPreview(
       isMatch: false,
       matchType: compareConfig.compareType,
       confidence: 'high',
+      matchClassification: 'none',
     };
   }
 
@@ -60,6 +63,7 @@ export function compareValuesPreview(
       isMatch: false,
       matchType: compareConfig.compareType,
       confidence: 'high',
+      matchClassification: 'none',
       details: 'Skipped pending/error state',
     };
   }
@@ -104,6 +108,7 @@ export function compareValuesPreview(
           isMatch: false,
           matchType: compareConfig.compareType as CompareType,
           confidence: 'low',
+          matchClassification: 'none',
           error: `Unknown compare type: ${compareConfig.compareType}`,
         };
     }
@@ -117,6 +122,7 @@ export function compareValuesPreview(
       isMatch: false,
       matchType: compareConfig.compareType,
       confidence: 'low',
+      matchClassification: 'none',
       error: error instanceof Error ? error.message : 'Unknown error',
     };
   }

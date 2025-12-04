@@ -93,15 +93,20 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
                 // Validate enum/multiSelect fields against options
                 const field = newData.fields.find(f => f.key === fieldKey);
                 if (field) {
-                  const fieldType = field.type;
-                  const fieldOptions = field.options;
-                  
-                  if (fieldType === 'enum' && fieldOptions && fieldOptions.length > 0) {
-                    // Validate single-select enum field
-                    formattedValue = validateEnumValue(formattedValue, fieldOptions, fieldKey);
-                  } else if (fieldType === 'multiSelect' && fieldOptions && fieldOptions.length > 0) {
-                    // Validate multi-select field
-                    formattedValue = validateMultiSelectValue(formattedValue, fieldOptions, fieldKey);
+                  try {
+                    const fieldType = field.type;
+                    const fieldOptions = field.options;
+                    
+                    if (fieldType === 'enum' && fieldOptions && fieldOptions.length > 0) {
+                      // Validate single-select enum field
+                      formattedValue = validateEnumValue(formattedValue, fieldOptions, fieldKey);
+                    } else if (fieldType === 'multiSelect' && fieldOptions && fieldOptions.length > 0) {
+                      // Validate multi-select field
+                      formattedValue = validateMultiSelectValue(formattedValue, fieldOptions, fieldKey);
+                    }
+                  } catch (error) {
+                    logger.error('Error validating field value in metrics', { fieldKey, error: error as Error });
+                    // Keep the original formatted value if validation fails
                   }
                 }
                 

@@ -356,20 +356,25 @@ export const useEnhancedComparisonRunner = (
           
           // Validate enum/multiSelect fields against options
           if (field) {
-            const fieldType = field.type;
-            const fieldOptions = field.options;
-            
-            if (fieldType === 'enum' && fieldOptions && fieldOptions.length > 0) {
-              // Validate single-select enum field
-              formattedValue = validateEnumValue(formattedValue, fieldOptions, fieldKey);
-              logger.debug('Validated enum field', { fieldKey, original: extractedValue, validated: formattedValue });
-            } else if ((fieldType === 'multiSelect' || isMultiSelectField(field, fieldKey)) && fieldOptions && fieldOptions.length > 0) {
-              // Validate multi-select field
-              formattedValue = validateMultiSelectValue(formattedValue, fieldOptions, fieldKey);
-              logger.debug('Validated multiSelect field', { fieldKey, original: extractedValue, validated: formattedValue });
-            } else if (isMultiSelectField(field, fieldKey)) {
-              // Format multi-select without validation (no options available)
-              formattedValue = formatMultiSelectValue(formattedValue);
+            try {
+              const fieldType = field.type;
+              const fieldOptions = field.options;
+              
+              if (fieldType === 'enum' && fieldOptions && fieldOptions.length > 0) {
+                // Validate single-select enum field
+                formattedValue = validateEnumValue(formattedValue, fieldOptions, fieldKey);
+                logger.debug('Validated enum field', { fieldKey, original: extractedValue, validated: formattedValue });
+              } else if ((fieldType === 'multiSelect' || isMultiSelectField(field, fieldKey)) && fieldOptions && fieldOptions.length > 0) {
+                // Validate multi-select field
+                formattedValue = validateMultiSelectValue(formattedValue, fieldOptions, fieldKey);
+                logger.debug('Validated multiSelect field', { fieldKey, original: extractedValue, validated: formattedValue });
+              } else if (isMultiSelectField(field, fieldKey)) {
+                // Format multi-select without validation (no options available)
+                formattedValue = formatMultiSelectValue(formattedValue);
+              }
+            } catch (error) {
+              logger.error('Error validating field value', { fieldKey, error: error as Error });
+              // Keep the original formatted value if validation fails
             }
           }
           
