@@ -367,78 +367,102 @@ export function createExtractionSummaryMessage(results: ApiExtractionResult[]): 
 export function extractConciseErrorDescription(errorMessage: string): string {
   if (!errorMessage) return 'Unknown error';
   
-  // Convert to lowercase for pattern matching
-  const lowerMessage = errorMessage.toLowerCase();
-  
   // Common Box.ai error patterns and their concise descriptions
-  const errorPatterns: Array<{ pattern: RegExp | string; description: string }> = [
-    // Authentication and permission errors
-    { pattern: /unauthorized|401|authentication/i, description: 'Auth failed' },
-    { pattern: /forbidden|403|permission/i, description: 'No permission' },
-    { pattern: /not found|404/i, description: 'File not found' },
+  // Order matters - more specific patterns should come first
+  const errorPatterns: Array<{ pattern: RegExp; description: string }> = [
+    // Authentication and token errors (most common issues)
+    { pattern: /token.*expir|expir.*token/i, description: 'Token expired' },
+    { pattern: /401\s*unauthorized|unauthorized/i, description: 'Token expired' },
+    { pattern: /invalid.*token|token.*invalid/i, description: 'Invalid token' },
+    { pattern: /authentication|auth.*fail/i, description: 'Auth failed' },
+    { pattern: /403\s*forbidden|forbidden/i, description: 'No permission' },
+    { pattern: /permission denied|access denied/i, description: 'Access denied' },
     
-    // Rate limiting and quota errors
-    { pattern: /rate limit|429|too many requests/i, description: 'Rate limited' },
-    { pattern: /quota|limit exceeded/i, description: 'Quota exceeded' },
+    // Rate limiting (second most common)
+    { pattern: /429|too many requests/i, description: 'Rate limited' },
+    { pattern: /rate.?limit/i, description: 'Rate limited' },
+    { pattern: /quota.*exceed|exceed.*quota/i, description: 'Quota exceeded' },
     
-    // Network and timeout errors
-    { pattern: /timeout|timed out/i, description: 'Timeout' },
-    { pattern: /network|connection/i, description: 'Network error' },
+    // Prompt/content size errors
+    { pattern: /prompt.*exceed.*length|exceed.*maximum.*length/i, description: 'Prompt too long' },
+    { pattern: /content.*too.*large|payload.*too.*large/i, description: 'Content too large' },
+    { pattern: /file.*too.*large|size.*exceed/i, description: 'File too large' },
     
-    // Box.ai specific errors
-    { pattern: /invalid template|template/i, description: 'Invalid template' },
-    { pattern: /processing error|failed to process/i, description: 'Processing failed' },
-    { pattern: /unsupported file|file type/i, description: 'Unsupported file' },
-    { pattern: /extraction failed|failed to extract/i, description: 'Extraction failed' },
-    { pattern: /model not available|model error/i, description: 'Model unavailable' },
-    { pattern: /should be equal to one of the allowed values|enum/i, description: 'Invalid model' },
-    { pattern: /bad_request.*model/i, description: 'Invalid model' },
+    // Timeout errors
+    { pattern: /504|gateway.*timeout/i, description: 'Gateway timeout' },
+    { pattern: /timeout|timed?\s*out/i, description: 'Timeout' },
+    { pattern: /request.*took.*too.*long/i, description: 'Request timeout' },
+    
+    // Network errors
+    { pattern: /network.*error|connection.*fail/i, description: 'Network error' },
+    { pattern: /econnrefused|econnreset/i, description: 'Connection failed' },
+    { pattern: /dns|host.*not.*found/i, description: 'DNS error' },
+    
+    // Not found errors
+    { pattern: /404|not\s*found/i, description: 'Not found' },
+    { pattern: /file.*not.*exist|does.*not.*exist/i, description: 'File not found' },
+    
+    // Box AI specific errors
+    { pattern: /model.*not.*available|model.*unavailable/i, description: 'Model unavailable' },
+    { pattern: /invalid.*model|model.*invalid/i, description: 'Invalid model' },
+    { pattern: /should be equal to one of the allowed values/i, description: 'Invalid model' },
+    { pattern: /bad.*request.*model/i, description: 'Invalid model' },
+    { pattern: /invalid.*template|template.*invalid/i, description: 'Invalid template' },
+    { pattern: /template.*not.*found/i, description: 'Template not found' },
+    { pattern: /extraction.*fail/i, description: 'Extraction failed' },
+    { pattern: /processing.*fail|fail.*process/i, description: 'Processing failed' },
+    { pattern: /unsupported.*file|file.*type.*not/i, description: 'Unsupported file' },
     
     // Server errors
-    { pattern: /500|internal server error|server error/i, description: 'Server error' },
-    { pattern: /502|bad gateway/i, description: 'Gateway error' },
-    { pattern: /503|service unavailable/i, description: 'Service unavailable' },
+    { pattern: /500|internal.*server/i, description: 'Server error' },
+    { pattern: /502|bad.*gateway/i, description: 'Bad gateway' },
+    { pattern: /503|service.*unavailable/i, description: 'Service down' },
     
-    // Content-related errors
-    { pattern: /content too large|file too large/i, description: 'File too large' },
-    { pattern: /no content|empty file/i, description: 'Empty file' },
-    { pattern: /corrupted|invalid format/i, description: 'Corrupted file' },
+    // Content errors
+    { pattern: /empty.*file|no.*content/i, description: 'Empty file' },
+    { pattern: /corrupt|invalid.*format/i, description: 'Corrupted file' },
+    { pattern: /cannot.*read|unreadable/i, description: 'Unreadable file' },
     
-    // AI/ML specific errors
-    { pattern: /confidence too low|low confidence/i, description: 'Low confidence' },
-    { pattern: /no fields found|no data/i, description: 'No data found' }
+    // AI/ML specific
+    { pattern: /confidence.*low|low.*confidence/i, description: 'Low confidence' },
+    { pattern: /no.*field|no.*data.*found/i, description: 'No data found' },
+    { pattern: /failed.*parse|parse.*error/i, description: 'Parse error' },
   ];
   
   // Check each pattern
   for (const { pattern, description } of errorPatterns) {
-    if (typeof pattern === 'string') {
-      if (lowerMessage.includes(pattern)) {
-        return description;
-      }
-    } else {
-      if (pattern.test(errorMessage)) {
-        return description;
-      }
+    if (pattern.test(errorMessage)) {
+      return description;
     }
   }
   
-  // If no pattern matches, try to extract key phrases
-  if (lowerMessage.includes('failed')) {
-    return 'Failed';
-  }
-  if (lowerMessage.includes('error')) {
-    return 'Error';
-  }
-  if (lowerMessage.includes('invalid')) {
-    return 'Invalid';
+  // Try to extract HTTP status code if present
+  const statusMatch = errorMessage.match(/(\d{3})\s+(\w+)/);
+  if (statusMatch) {
+    const [, code, status] = statusMatch;
+    return `${code} ${status}`;
   }
   
-  // As a last resort, truncate the message to a reasonable length
-  const truncated = errorMessage.trim().split('.')[0]; // Take first sentence
-  if (truncated.length <= 20) {
-    return truncated;
+  // Try to extract the key error phrase after "Details:" or "Error:"
+  const detailsMatch = errorMessage.match(/(?:Details|Error):\s*(.{1,30})/i);
+  if (detailsMatch) {
+    const details = detailsMatch[1].trim();
+    // Clean up and return
+    return details.replace(/[.!?]+$/, '').substring(0, 25);
   }
   
-  // Return first 15 characters + ellipsis
-  return errorMessage.trim().substring(0, 15) + '...';
+  // If no pattern matches, try to extract meaningful phrases
+  const lowerMessage = errorMessage.toLowerCase();
+  if (lowerMessage.includes('failed')) return 'Operation failed';
+  if (lowerMessage.includes('invalid')) return 'Invalid request';
+  if (lowerMessage.includes('error')) return 'Unknown error';
+  
+  // As a last resort, take first meaningful part of message
+  const firstPart = errorMessage.trim().split(/[.!?\n]/)[0];
+  if (firstPart && firstPart.length <= 30) {
+    return firstPart;
+  }
+  
+  // Return first 25 characters + ellipsis
+  return errorMessage.trim().substring(0, 25).trim() + '...';
 } 

@@ -5214,8 +5214,52 @@
     "lastModified": "2025-12-04T01:00:53.117Z"
   },
   "duration": {
-    "activePrompt": "Locate the primary contract duration by examining the main agreement terms, service period clauses, and contract validity sections. Search specifically for phrases containing 'term of', 'contract period', 'service duration', 'valid from...to', or 'effective period'. Extract the total duration value and convert to days using exact conversions (1 year = 365 days, 1 month = 30.42 days, round to nearest whole day). Do NOT extract renewal periods, notice periods, or partial durations from subsections. Return 'Not Present' if no primary contract duration is explicitly stated.",
+    "activePrompt": "Search term sections, contract headers, effective date clauses, and signature blocks for contract duration. Look for phrases like 'term of', 'duration of', 'period of', 'shall continue for', or 'X years/months/days'. Extract the numerical value and convert to days ",
     "promptHistory": [
+      {
+        "id": "v11",
+        "prompt": "Search term sections, contract headers, effective date clauses, and signature blocks for contract duration. Look for phrases like 'term of', 'duration of', 'period of', 'shall continue for', or 'X years/months/days'. Extract the numerical value and convert to days ",
+        "savedAt": "2025-12-05T02:23:17.617Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-7b385e63-768a-402f-8ccc-49b3d9cf26b8",
+        "prompt": "Search term sections, contract headers, effective date clauses, and signature blocks for contract duration. Look for phrases like 'term of', 'duration of', 'period of', 'shall continue for', or 'X years/months/days'. Extract the numerical value and convert to days using: 1 year = 365 days (not 360), 1 month = 30 days, 1 week = 7 days. Ignore renewal terms, notice periods, or grace periods. Return only the numerical value in days as a whole number. Return 'Not Present' if no primary contract duration is found.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 62.5% → Final: 80.0% (5 iterations)"
+      },
+      {
+        "id": "v9",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:45:08.290Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-a69bbb25-6a5d-4931-ac04-58e60dfa2111",
+        "prompt": "Search only in contract headers, terms sections, and legal clauses for explicit duration statements. Look for phrases like 'term of [number]', 'duration shall be [number]', 'valid for a period of [number]', 'contract period: [number]', or 'agreement term: [number]' where the number is followed by 'days', 'months', or 'years'. Extract only the numeric value and convert to days (30 days per month, 365 days per year). Ignore standalone numbers, dates, monetary amounts, and reference numbers that lack clear duration context words. Return 'Not Present' if no explicit duration clause exists.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 58.8% → Final: 80.0% (5 iterations)"
+      },
+      {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:08:10.688Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-3e222e6b-dd5e-4982-9874-2629043023bb",
+        "prompt": "Search the entire document for contract duration or term length, focusing on sections titled 'Term', 'Duration', 'Contract Period', or 'Effective Period'. Look for phrases like 'term of X days/months/years', 'duration of X days/months/years', 'contract period of X days/months/years', 'effective for X days/months/years', or 'valid for X days/months/years'. Extract only the numerical value representing the total number of days as a whole number (convert months to days using 30 days per month, years to days using 365 days per year). Do NOT extract conversion factors like '365.25' or '30.44' that appear in calculation explanations, page numbers, section numbers, or reference numbers. Return 'Not Present' if no actual contract duration is found.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 40.0% → Final: 60.0% (5 iterations)"
+      },
+      {
+        "id": "v5",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:12:22.099Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-e7149689-b0c1-447e-a984-72f9ca295c7b",
         "prompt": "Locate the primary contract duration by examining the main agreement terms, service period clauses, and contract validity sections. Search specifically for phrases containing 'term of', 'contract period', 'service duration', 'valid from...to', or 'effective period'. Extract the total duration value and convert to days using exact conversions (1 year = 365 days, 1 month = 30.42 days, round to nearest whole day). Do NOT extract renewal periods, notice periods, or partial durations from subsections. Return 'Not Present' if no primary contract duration is explicitly stated.",
@@ -5245,8 +5289,8 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 4,
-    "lastModified": "2025-12-04T04:43:05.453Z"
+    "usageCount": 11,
+    "lastModified": "2025-12-05T02:23:17.641Z"
   },
   "noticePeriodToTerminateForConvenience": {
     "activePrompt": "Examine 'Termination', 'Term', 'Without Cause', 'Early Termination', and 'Convenience' sections for notice requirements that allow either party to end the agreement without breach or cause. Look for phrases: 'terminate for convenience with X notice', 'end this agreement upon X notice', 'either party may terminate with X notice', 'terminate without cause by giving X notice', 'convenience termination requires X notice'. Extract only notice periods tied to no-fault termination - ignore breach cure periods, renewal deadlines, or termination for cause requirements. Convert written numbers to digits and return in format 'X days' or 'X months' (e.g., 'thirty days' becomes '30 days'). If no convenience termination notice exists, return 'Not Present'.",
@@ -5361,8 +5405,47 @@
     "lastModified": "2025-12-04T01:00:53.135Z"
   },
   "signatories": {
-    "activePrompt": "Locate all signature pages and execution sections containing actual signature elements (handwritten signatures, /s/ notations, electronic signature indicators, or signature lines). For each signature element found, extract the complete individual person name that appears within 3 lines directly above the signature element, ignoring any titles, company names, or descriptive text. Common signatory indicators include 'By:', 'Signature:', 'Signed:', '/s/', or names appearing directly above signature lines or dates. Format as 'Name1 | Name2 | Name3' using exact spelling and punctuation as shown. Do NOT extract witness names, notary names, company names, or names from document headers/party sections without corresponding signature elements. Return 'Not Present' if no individual signatory names with actual signature elements are found.",
+    "activePrompt": "Search signature blocks, signature pages, and 'executed by' sections for individual signatory names. Look for phrases like 'signed by', 'executed by', or names appearing above signature lines. Extract only individual person names who signed the document, not company names or entities. Format as 'Name1 | Name2' if multiple signatories. Do NOT include party names, company names, or entity names. Return 'Not Present' if no individual signatory names are found.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-b161d267-5512-49db-aed9-3881deeec22f",
+        "prompt": "Search signature blocks, signature pages, and 'executed by' sections for individual signatory names. Look for phrases like 'signed by', 'executed by', or names appearing above signature lines. Extract only individual person names who signed the document, not company names or entities. Format as 'Name1 | Name2' if multiple signatories. Do NOT include party names, company names, or entity names. Return 'Not Present' if no individual signatory names are found.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 93.8% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v8",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:45:57.463Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-58e8c863-30ba-433a-b3c6-490e5d09649c",
+        "prompt": "Search for individual person names who are signing or have signed the document. Look specifically in signature blocks, signature pages, execution sections, and areas with phrases like 'Signed by:', 'Signatories:', 'Executed by:', 'By:', or 'Signature:'. Extract only actual human names (first and last names), not company names or entity names. If multiple individual signatories are found, separate them with ' | '. Do NOT include corporate entities, company names, or business titles. Return 'Not Present' if no individual human signatories are found.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 94.1% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:09:08.367Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-d4b1a62a-b033-40a5-8183-d32e40a4ea88",
+        "prompt": "Search for individual human signatories in signature blocks, execution pages, and areas with signature lines or '/s/' indicators. Look for actual person names (not company names or titles) that appear directly adjacent to or immediately following signature lines, handwritten signatures, or electronic signature confirmations like 'Electronically signed by [Name]' or 'Digitally executed by [Name]'. Only extract names where there is clear evidence of an actual signature act - either a handwritten signature, a typed name on a signature line, or explicit electronic signature language. Do NOT extract names from contract headers, party identification sections, witness lines, or general contract text without corresponding signature evidence. If multiple individual signatories exist, separate with ' | '. Return 'Not Present' if no names have actual signature evidence.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 80.0% → Final: 80.0% (5 iterations)"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:13:03.279Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-c8ad5ac3-a705-466e-a1d0-4804e48fd79f",
         "prompt": "Locate all signature pages and execution sections containing actual signature elements (handwritten signatures, /s/ notations, electronic signature indicators, or signature lines). For each signature element found, extract the complete individual person name that appears within 3 lines directly above the signature element, ignoring any titles, company names, or descriptive text. Common signatory indicators include 'By:', 'Signature:', 'Signed:', '/s/', or names appearing directly above signature lines or dates. Format as 'Name1 | Name2 | Name3' using exact spelling and punctuation as shown. Do NOT extract witness names, notary names, company names, or names from document headers/party sections without corresponding signature elements. Return 'Not Present' if no individual signatory names with actual signature elements are found.",
@@ -5386,12 +5469,51 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 3,
-    "lastModified": "2025-12-04T04:43:05.465Z"
+    "usageCount": 9,
+    "lastModified": "2025-12-05T02:20:00.400Z"
   },
   "notice_period_to_terminate_for_breach": {
-    "activePrompt": "Search for termination clauses that specify a notice period required BEFORE terminating for breach, default, or violation. Look in 'Termination', 'Default', 'Breach', or 'Events of Default' sections for phrases like: 'X days prior written notice of termination', 'terminate upon X days notice', 'X days advance notice before termination', 'notice period of X days prior to termination', 'X days written notice before this agreement terminates'. Extract ONLY the advance notice period required before termination becomes effective. Return as 'X days' format (e.g., '30 days', '10 days'). If termination is effective immediately upon notice with no waiting period, return 'Not Present'. Do NOT extract cure periods, remedy periods, or grace periods.",
+    "activePrompt": "Search for notice periods specifically required for termination due to breach or default. Look in \"Termination\", \"Default\", \"Breach\", or \"Events of Default\" sections for phrases like: \"X days written notice of breach\", \"notice of default\", \"opportunity to cure\", \"notice period for breach\", \"written notice of violation\". Return the notice period as stated (e.g., \"30 Days\", \"60 Days\"). If only cure periods are mentioned without separate notice requirements, or if no breach-specific notice period exists, return \"Not Present\". Do NOT return general termination notice periods or cure periods alone.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-22b61ec1-1616-447a-84b5-d91834075e4b",
+        "prompt": "Search for notice periods specifically required for termination due to breach or default. Look in \"Termination\", \"Default\", \"Breach\", or \"Events of Default\" sections for phrases like: \"X days written notice of breach\", \"notice of default\", \"opportunity to cure\", \"notice period for breach\", \"written notice of violation\". Return the notice period as stated (e.g., \"30 Days\", \"60 Days\"). If only cure periods are mentioned without separate notice requirements, or if no breach-specific notice period exists, return \"Not Present\". Do NOT return general termination notice periods or cure periods alone.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 68.8% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v10",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:45:24.548Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-fba1abb1-f74f-414c-a5cf-538a29156467",
+        "prompt": "Search for notice periods specifically required BEFORE terminating a contract due to breach or default. Look in 'Termination for Cause', 'Default', 'Breach', 'Events of Default', or 'Remedies' sections for phrases like: 'X days written notice before termination for breach', 'notice required prior to termination for default', 'written notice before declaring breach and terminating', 'days advance notice of termination for cause', 'notice period before contract termination due to breach'. Return only the notice period as stated (e.g., '30 Days', '60 Days', '90 Days'). If no notice period is required BEFORE termination for breach/default, return 'Not Present'. Do NOT include cure periods, general termination notices, or notice periods that are only for giving opportunity to cure without termination.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 64.7% → Final: 100.0% (3 iterations)"
+      },
+      {
+        "id": "v8",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:08:28.371Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-453c9553-7cbf-4fe0-93fd-48c2f65b8c33",
+        "prompt": "Search for the notice period required for termination or non-renewal. Look in \"Termination\", \"Term\", or \"Renewal\" sections for phrases like: \"X days written notice\", \"notice period of\", \"prior written notice\", \"advance notice\". Return the notice period as stated (e.g., \"30 Days\", \"60 Days\", \"90 Days\"). If no notice period is specified, return \"Not Present\". Do NOT confuse with cure periods for breach.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 80.0% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:12:34.830Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-c3082c41-66e4-4c85-83c0-25e801417ed4",
         "prompt": "Search for termination clauses that specify a notice period required BEFORE terminating for breach, default, or violation. Look in 'Termination', 'Default', 'Breach', or 'Events of Default' sections for phrases like: 'X days prior written notice of termination', 'terminate upon X days notice', 'X days advance notice before termination', 'notice period of X days prior to termination', 'X days written notice before this agreement terminates'. Extract ONLY the advance notice period required before termination becomes effective. Return as 'X days' format (e.g., '30 days', '10 days'). If termination is effective immediately upon notice with no waiting period, return 'Not Present'. Do NOT extract cure periods, remedy periods, or grace periods.",
@@ -5424,12 +5546,51 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 5,
-    "lastModified": "2025-12-04T04:43:05.457Z"
+    "usageCount": 11,
+    "lastModified": "2025-12-05T02:20:00.393Z"
   },
   "governing_law_region": {
-    "activePrompt": "Locate governing law clauses by searching for exact phrases: 'governed by the laws of', 'subject to the laws of', 'construed in accordance with the laws of', 'interpreted under the laws of', or 'shall be governed by'. Extract ONLY the most specific geographic location mentioned immediately after these phrases - prioritize cities over states/provinces over countries. Return the location in lowercase format (e.g., 'tokyo', 'cologne', 'new york'). Ignore any governing law clause that only references general legal concepts without naming a specific jurisdiction. Return 'Not Present' if no geographic jurisdiction is explicitly stated after the governing law phrases.",
+    "activePrompt": "Search for governing law clauses in legal sections near the end of the contract, typically labeled 'Governing Law', 'Applicable Law', 'Choice of Law', or within 'General Provisions'. Look for phrases: 'governed by the laws of', 'construed in accordance with the laws of', 'subject to the laws of', 'shall be governed by', or 'under the laws of'. Return ONLY the jurisdiction name in its common short form (e.g., 'Germany', 'New York', 'Ontario'). Do NOT include formal country names like 'Federal Republic of' or specific cities unless that's the actual governing jurisdiction. Return 'Not Present' if no governing law is specified.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-5d2f25bf-8f6c-4855-9d43-b3c2d11d0ff9",
+        "prompt": "Search for governing law clauses in legal sections near the end of the contract, typically labeled 'Governing Law', 'Applicable Law', 'Choice of Law', or within 'General Provisions'. Look for phrases: 'governed by the laws of', 'construed in accordance with the laws of', 'subject to the laws of', 'shall be governed by', or 'under the laws of'. Return ONLY the jurisdiction name in its common short form (e.g., 'Germany', 'New York', 'Ontario'). Do NOT include formal country names like 'Federal Republic of' or specific cities unless that's the actual governing jurisdiction. Return 'Not Present' if no governing law is specified.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 68.8% → Final: 80.0% (5 iterations)"
+      },
+      {
+        "id": "v8",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:44:34.308Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-eb278651-c78f-45e0-8af2-79d471bcb8a7",
+        "prompt": "Scan the entire document for governing law provisions, focusing on legal/miscellaneous sections and contract clauses. Look for phrases: 'governed by the laws of', 'subject to the laws of', 'construed under the laws of', 'interpreted according to the laws of', 'shall be governed by the laws of'. When you find a match, extract the MOST SPECIFIC geographic location mentioned - if both a city and country/state are listed (like 'laws of Cologne, Germany'), return ONLY the city in lowercase (e.g., 'cologne'). If only a country/state is mentioned, return it in proper case (e.g., 'Germany'). Do NOT include prefixes like 'State of' or 'Province of'. Return 'Not Present' if no governing law clause exists.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 70.6% → Final: 100.0% (5 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:07:36.213Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-5165fcf1-9beb-49db-a6c9-dcb8083418d2",
+        "prompt": "Search for the governing law clause, typically in a section called \"Governing Law\", \"Applicable Law\", or \"Choice of Law\". Look for: \"governed by the laws of\", \"construed in accordance with the laws of\", \"subject to the laws of\". Return ONLY the state or country name (e.g., \"Delaware\", \"New York\", \"England\"). Do NOT include \"State of\" prefix or venue/arbitration location. Return \"Not Present\" if no governing law is specified.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 70.0% → Final: 60.0% (5 iterations)"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:11:55.024Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-7a656703-265e-4efa-9b97-49616723b43d",
         "prompt": "Locate governing law clauses by searching for exact phrases: 'governed by the laws of', 'subject to the laws of', 'construed in accordance with the laws of', 'interpreted under the laws of', or 'shall be governed by'. Extract ONLY the most specific geographic location mentioned immediately after these phrases - prioritize cities over states/provinces over countries. Return the location in lowercase format (e.g., 'tokyo', 'cologne', 'new york'). Ignore any governing law clause that only references general legal concepts without naming a specific jurisdiction. Return 'Not Present' if no geographic jurisdiction is explicitly stated after the governing law phrases.",
@@ -5451,12 +5612,51 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 3,
-    "lastModified": "2025-12-04T04:43:05.440Z"
+    "usageCount": 9,
+    "lastModified": "2025-12-05T02:20:00.382Z"
   },
   "effective_date": {
-    "activePrompt": "Search for the date when this agreement becomes legally effective. Look in the document header, opening paragraph, and definitions section for phrases like: \"effective date\", \"effective as of\", \"commences on\", \"becomes effective\", \"agreement dated\". Return the date in MM/DD/YY format exactly as written in the document. Do NOT use signature dates, execution dates, or dates from other sections unless explicitly labeled as the effective date. If no effective date is found or if the date contains placeholders like 'XX', return \"Not Present\".",
+    "activePrompt": "Search for when this agreement becomes effective. Look for: \"effective as of\", \"effective date\", \"dated as of\", \"commences on\", \"entered into as of\". Check the document header, first paragraph, and signature blocks. Return the date in YYYY-MM-DD format. If multiple dates exist, use the explicitly labeled \"Effective Date\". Do NOT use signature dates unless they are the only dates present. Return \"Not Present\" if no date is found.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-c7e8465a-3df3-4f0a-acde-f0a24107511d",
+        "prompt": "Search for when this agreement becomes effective. Look for: \"effective as of\", \"effective date\", \"dated as of\", \"commences on\", \"entered into as of\". Check the document header, first paragraph, and signature blocks. Return the date in YYYY-MM-DD format. If multiple dates exist, use the explicitly labeled \"Effective Date\". Do NOT use signature dates unless they are the only dates present. Return \"Not Present\" if no date is found.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 75.0% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v8",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:44:45.535Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-48c68c51-b248-4f47-b8e1-bd33d29da944",
+        "prompt": "Search for when this agreement becomes effective. Look for: \"effective as of\", \"effective date\", \"dated as of\", \"commences on\", \"entered into as of\". Check the document header, first paragraph, and signature blocks. Return the date in YYYY-MM-DD format. If multiple dates exist, use the explicitly labeled \"Effective Date\". Do NOT use signature dates unless they are the only dates present. Return \"Not Present\" if no date is found.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 76.5% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:07:52.284Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-f16a44bd-5d42-4126-af50-36847d7cbc05",
+        "prompt": "Locate the specific date when this agreement legally takes effect. Search for exact phrases: 'effective date', 'effective as of', 'dated as of', 'commences', 'becomes effective on'. Check the document header, first paragraph after parties, definitions section, and any date fields near signature blocks. Return the date in its ORIGINAL format exactly as written (preserve spacing, punctuation, and abbreviations). Do NOT use execution dates, signature dates, or dates that only reference when the document was signed. If no effective date is explicitly stated, return 'Not Present'.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 80.0% → Final: 80.0% (5 iterations)"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:12:03.628Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-241bc589-33be-4b45-a4b0-72c86b0d52c2",
         "prompt": "Search for the date when this agreement becomes legally effective. Look in the document header, opening paragraph, and definitions section for phrases like: \"effective date\", \"effective as of\", \"commences on\", \"becomes effective\", \"agreement dated\". Return the date in MM/DD/YY format exactly as written in the document. Do NOT use signature dates, execution dates, or dates from other sections unless explicitly labeled as the effective date. If no effective date is found or if the date contains placeholders like 'XX', return \"Not Present\".",
@@ -5478,12 +5678,25 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 3,
-    "lastModified": "2025-12-04T04:43:05.447Z"
+    "usageCount": 9,
+    "lastModified": "2025-12-05T02:20:00.386Z"
   },
   "governing_law_country": {
     "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:07:41.154Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-05d811e1-2772-458e-924b-26ac798c1ef7",
+        "prompt": "Search for the governing law clause, typically in a section called \"Governing Law\", \"Applicable Law\", or \"Choice of Law\". Look for: \"governed by the laws of\", \"construed in accordance with the laws of\", \"subject to the laws of\". Return ONLY the state or country name (e.g., \"Delaware\", \"New York\", \"England\"). Do NOT include \"State of\" prefix or venue/arbitration location. Return \"Not Present\" if no governing law is specified.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 90.0% → Final: 80.0% (5 iterations)"
+      },
       {
         "id": "v2",
         "prompt": "",
@@ -5497,12 +5710,51 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 2,
-    "lastModified": "2025-12-04T04:32:53.633Z"
+    "usageCount": 4,
+    "lastModified": "2025-12-05T01:07:41.165Z"
   },
   "expiration_date": {
-    "activePrompt": "Extract the Expiration Date from this document.",
+    "activePrompt": "Search the contract header, signature blocks, term sections, and end-of-document clauses for expiration language. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\", \"shall expire\". If no explicit end date, CALCULATE from Start Date + Duration. If contract states \"perpetual\", \"evergreen\", \"indefinite\", or \"no fixed term\" WITHOUT a calculable end date, return \"Not Present\". Return dates in original contract format (e.g., \"3/5/99\" not \"1999-03-05\"). Do NOT confuse with notice periods or automatic renewal dates.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-f98ac5ca-55c9-44b3-b096-c34221c1d19b",
+        "prompt": "Search the contract header, signature blocks, term sections, and end-of-document clauses for expiration language. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\", \"shall expire\". If no explicit end date, CALCULATE from Start Date + Duration. If contract states \"perpetual\", \"evergreen\", \"indefinite\", or \"no fixed term\" WITHOUT a calculable end date, return \"Not Present\". Return dates in original contract format (e.g., \"3/5/99\" not \"1999-03-05\"). Do NOT confuse with notice periods or automatic renewal dates.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v8",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:45:00.783Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-0413524c-e603-4f5e-a74d-d7435284b5e3",
+        "prompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 88.2% → Final: 40.0% (5 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:08:04.359Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-279708f8-f676-4ec4-83d0-78bc5a2d8452",
+        "prompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 80.0% → Final: 60.0% (5 iterations)"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:12:14.634Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-8ad6d0ad-a8a7-48db-8656-43d3b3900201",
         "prompt": "Extract the Expiration Date from this document.",
@@ -5524,12 +5776,51 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 3,
-    "lastModified": "2025-12-04T04:43:05.451Z"
+    "usageCount": 9,
+    "lastModified": "2025-12-05T02:20:00.389Z"
   },
   "agreement_date": {
-    "activePrompt": "Extract the Agreement Date by first scanning the document's opening paragraph and first page for phrases like 'this Agreement dated', 'Agreement made on', 'entered into this [day] day of [month]', 'made and entered into on', or 'as of [date]'. If not found there, check the signature page header area for 'Agreement dated' or similar. Prioritize dates that appear immediately after the word 'Agreement' or within the first two sentences of the contract body text. Do NOT extract signature dates, notarization dates, or dates from amendments/exhibits. Return in M/D/YY format without leading zeros. If multiple potential dates exist, choose the one closest to the beginning of the document. Return 'Not Present' if no agreement date is found.",
+    "activePrompt": "Locate the Agreement Date by examining signature blocks, document headers, and opening paragraphs. Search for exact phrases: 'dated', 'executed on', 'entered into on', 'made this', or 'as of'. Extract the complete date exactly as written, including all formatting (slashes, dashes, spaces). Do NOT extract partial dates, blanks, or placeholder text like '___'. If multiple dates exist, prioritize signature area dates. Return 'Not Present' if no complete date is found.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-e62073ff-a1a9-4ebf-b847-304e832ea4bf",
+        "prompt": "Locate the Agreement Date by examining signature blocks, document headers, and opening paragraphs. Search for exact phrases: 'dated', 'executed on', 'entered into on', 'made this', or 'as of'. Extract the complete date exactly as written, including all formatting (slashes, dashes, spaces). Do NOT extract partial dates, blanks, or placeholder text like '___'. If multiple dates exist, prioritize signature area dates. Return 'Not Present' if no complete date is found.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 81.3% → Final: 100.0% (4 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:44:54.446Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-ff4f6441-7ae7-40db-b3cc-135dbce2982e",
+        "prompt": "Search the document for the Agreement Date. Look in headers, signature blocks, and relevant sections. Return the date in YYYY-MM-DD format. If only month and year are given, use the first day of the month. Return \"Not Present\" if no date is found.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 82.4% → Final: 80.0% (5 iterations)"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:07:58.981Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-0ed79540-0a64-4d7e-8cd0-09fff175ebf7",
+        "prompt": "Search the document for the Agreement Date. Look in headers, signature blocks, and relevant sections. Return the date in YYYY-MM-DD format. If only month and year are given, use the first day of the month. Return \"Not Present\" if no date is found.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 70.0% → Final: 60.0% (5 iterations)"
+      },
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:12:09.549Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-e9b98a31-45c7-44ab-a913-deb5f8bdea63",
         "prompt": "Extract the Agreement Date by first scanning the document's opening paragraph and first page for phrases like 'this Agreement dated', 'Agreement made on', 'entered into this [day] day of [month]', 'made and entered into on', or 'as of [date]'. If not found there, check the signature page header area for 'Agreement dated' or similar. Prioritize dates that appear immediately after the word 'Agreement' or within the first two sentences of the contract body text. Do NOT extract signature dates, notarization dates, or dates from amendments/exhibits. Return in M/D/YY format without leading zeros. If multiple potential dates exist, choose the one closest to the beginning of the document. Return 'Not Present' if no agreement date is found.",
@@ -5540,12 +5831,51 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 1,
-    "lastModified": "2025-12-04T04:43:05.449Z"
+    "usageCount": 7,
+    "lastModified": "2025-12-05T02:20:00.387Z"
   },
   "notice_period_to_terminate_for_convenience": {
-    "activePrompt": "Locate termination clauses that explicitly allow ending the contract without cause, breach, or default. Search 'Termination', 'Term', 'Convenience', or 'Without Cause' sections for exact phrases: 'terminate for convenience', 'terminate without cause', 'terminate at will', 'terminate for any reason', or 'terminate upon notice' (but only if no cause/breach is mentioned in same clause). Extract ONLY the notice timeframe in format 'X days' or 'X months' using numerals (convert written numbers like 'six' to '6'). Return 'Not Present' if termination requires cause/breach or if convenience termination exists but specifies no notice period. Do NOT extract cure periods, breach notice requirements, or renewal/non-renewal notice periods.",
+    "activePrompt": "Look in termination sections for convenience termination notice requirements. Search for: \"terminate for convenience\", \"terminate without cause\", \"terminate at will\", \"terminate upon notice\". Extract only the notice period number and convert to standard format: \"X days\" (e.g., \"30 days\", \"60 days\"). Ignore cure periods, breach notices, and renewal notices. If convenience termination exists but no notice period specified, return \"Immediate\". If no convenience termination clause exists, return \"Not Present\".",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-8e6da1d8-4a08-44f7-861a-61b39ad96789",
+        "prompt": "Look in termination sections for convenience termination notice requirements. Search for: \"terminate for convenience\", \"terminate without cause\", \"terminate at will\", \"terminate upon notice\". Extract only the notice period number and convert to standard format: \"X days\" (e.g., \"30 days\", \"60 days\"). Ignore cure periods, breach notices, and renewal notices. If convenience termination exists but no notice period specified, return \"Immediate\". If no convenience termination clause exists, return \"Not Present\".",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 75.0% → Final: 80.0% (5 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:45:15.760Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-2d57aa96-dce3-48c1-ad00-6c3a4b6c63c2",
+        "prompt": "Search for the notice period required for termination for convenience (not breach). Look in 'Termination', 'Term', 'Renewal', or 'Notice' sections for phrases like: 'X days written notice', 'X days prior notice', 'X days advance notice', 'notice period of X days', 'X days notice required'. Return only the number and 'days' (e.g., '30 days', '60 days', '90 days') - remove words like 'calendar', 'written', 'prior', 'advance'. If the notice period is written out in words (e.g., 'thirty days'), return 'Not Present'. If no notice period is specified, return 'Not Present'.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 76.5% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:08:19.403Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-0f827358-9cf8-49c0-bdda-95123f357044",
+        "prompt": "Look for clauses that explicitly allow termination without cause, fault, or breach. Search 'Termination', 'Term', 'Convenience', or 'Without Cause' sections for exact phrases: 'terminate for convenience', 'terminate without cause', 'terminate at will', 'terminate for any reason', or 'terminate without fault'. Extract ONLY the notice period from these specific convenience clauses (e.g., '30 Days', '60 Days'). If termination requires showing cause, breach, or default, return 'Not Present'. If only general termination notice exists without convenience language, return 'Not Present'.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 80.0% → Final: 100.0% (4 iterations)"
+      },
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:12:28.759Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-5a1b7c3a-56eb-4b59-9dd6-36871022c773",
         "prompt": "Locate termination clauses that explicitly allow ending the contract without cause, breach, or default. Search 'Termination', 'Term', 'Convenience', or 'Without Cause' sections for exact phrases: 'terminate for convenience', 'terminate without cause', 'terminate at will', 'terminate for any reason', or 'terminate upon notice' (but only if no cause/breach is mentioned in same clause). Extract ONLY the notice timeframe in format 'X days' or 'X months' using numerals (convert written numbers like 'six' to '6'). Return 'Not Present' if termination requires cause/breach or if convenience termination exists but specifies no notice period. Do NOT extract cure periods, breach notice requirements, or renewal/non-renewal notice periods.",
@@ -5556,12 +5886,56 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 1,
-    "lastModified": "2025-12-04T04:43:05.455Z"
+    "usageCount": 7,
+    "lastModified": "2025-12-05T02:20:00.391Z"
   },
   "renewal_period": {
-    "activePrompt": "Search the \"Term\", \"Renewal\", \"Duration\", or \"Extension\" sections for the specific length of time for each renewal period. Look for phrases like \"renewable for periods of\", \"each renewal term shall be\", \"successive renewal periods of\", \"renewed for additional periods of\", or \"extension periods of\". Return the duration in standardized format: convert written numbers to digits (\"one year\" becomes \"1 year\", \"twelve months\" becomes \"12 months\"). Remove parenthetical clarifications like \"(1)\" or \"(one)\". Return \"Not Present\" if no specific renewal period duration is stated or if only initial contract term is mentioned. Do NOT extract the original contract duration, termination notice periods, or general renewal language without specific time periods.",
+    "activePrompt": "Search \"Term\", \"Renewal\", or \"Duration\" sections for renewal clauses. Look for: \"automatically renew\", \"auto-renewal\", \"shall renew\", \"may be renewed\", \"evergreen\", \"no renewal\". Extract the exact renewal language as written in the contract (2-3 sentences max). Do NOT categorize or interpret - just extract the text. Return \"Not Present\" if no renewal clause exists.",
     "promptHistory": [
+      {
+        "id": "v8",
+        "prompt": "Search \"Term\", \"Renewal\", or \"Duration\" sections for renewal clauses. Look for: \"automatically renew\", \"auto-renewal\", \"shall renew\", \"may be renewed\", \"evergreen\", \"no renewal\". Extract the exact renewal language as written in the contract (2-3 sentences max). Do NOT categorize or interpret - just extract the text. Return \"Not Present\" if no renewal clause exists.",
+        "savedAt": "2025-12-05T02:23:37.409Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-72221a36-c066-4bc4-a897-1d06a977845a",
+        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal, No Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 80.0% (5 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:45:30.633Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-b590a5dc-84d1-4166-8dd3-c57c067f1559",
+        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal, No Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 88.2% → Final: 80.0% (5 iterations)"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:08:36.408Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-040c249d-f9ae-41ec-af66-f6dc03362e84",
+        "prompt": "Search the \"Term\", \"Renewal\", \"Duration\", or \"Extension\" sections for the specific time period or duration of each renewal cycle. Extract the exact renewal period length (e.g., \"1 year\", \"12 months\", \"2 years\", \"monthly\", \"quarterly\"). Look for phrases like \"renew for\", \"additional term of\", \"successive periods of\", \"renewal term shall be\", \"extended for a period of\". Return the exact time period found, maintaining original format and units. If no specific renewal period duration is mentioned, return \"Not Present\". Do NOT return renewal types (like \"Manual\" or \"Automatic\") - only extract the actual time duration of renewal periods.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 90.0% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:12:42.662Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-c307bcae-66a7-4e5d-b8d2-6c80f73348ea",
         "prompt": "Search the \"Term\", \"Renewal\", \"Duration\", or \"Extension\" sections for the specific length of time for each renewal period. Look for phrases like \"renewable for periods of\", \"each renewal term shall be\", \"successive renewal periods of\", \"renewed for additional periods of\", or \"extension periods of\". Return the duration in standardized format: convert written numbers to digits (\"one year\" becomes \"1 year\", \"twelve months\" becomes \"12 months\"). Remove parenthetical clarifications like \"(1)\" or \"(one)\". Return \"Not Present\" if no specific renewal period duration is stated or if only initial contract term is mentioned. Do NOT extract the original contract duration, termination notice periods, or general renewal language without specific time periods.",
@@ -5572,12 +5946,51 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 1,
-    "lastModified": "2025-12-04T04:43:05.459Z"
+    "usageCount": 8,
+    "lastModified": "2025-12-05T02:23:37.432Z"
   },
   "total_contract_value": {
-    "activePrompt": "Search the entire document for the Total Contract Value, examining contract headers, executive summaries, pricing sections, payment schedules, signature blocks, summary tables, and any financial appendices. Look for phrases like 'Total Contract Value', 'Contract Amount', 'Total Value', 'Agreement Amount', 'Total Price', 'Contract Sum', 'Total Cost', or 'Grand Total'. Extract only the complete numeric value without currency symbols, commas, or spaces - convert '$4,125,000.00' to '4125000' and ensure you capture the full amount including all digits. Do NOT extract partial payments, milestone amounts, individual line items, or subtotals. If multiple total values appear, prioritize the one in the signature block or executive summary. Return 'Not Present' if no total contract value is found.",
+    "activePrompt": "Search the entire document for the Total Contract Value. Look in relevant sections, headers, and signature blocks. Extract the exact value as it appears. If multiple values exist, return the most authoritative one. Return \"Not Present\" if not found.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-6bae2b99-c775-49db-8a81-652634123d8a",
+        "prompt": "Search the entire document for the Total Contract Value. Look in relevant sections, headers, and signature blocks. Extract the exact value as it appears. If multiple values exist, return the most authoritative one. Return \"Not Present\" if not found.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 81.3% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:45:42.140Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-5a9e7a56-2fc6-4b8a-a964-ae914f497aac",
+        "prompt": "Search the entire document for the Total Contract Value. Look in relevant sections, headers, and signature blocks. Extract the exact value as it appears. If multiple values exist, return the most authoritative one. Return \"Not Present\" if not found.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 82.4% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:08:54.510Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-df6ecf9a-1a91-48cd-8bbe-ff614e05debf",
+        "prompt": "Search the entire document for the Total Contract Value. Look in relevant sections, headers, and signature blocks. Extract the exact value as it appears. If multiple values exist, return the most authoritative one. Return \"Not Present\" if not found.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 70.0% → Final: 100.0% (1 iterations)"
+      },
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:12:50.877Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-d8453f2a-0134-49e0-81cb-b1da238fa85d",
         "prompt": "Search the entire document for the Total Contract Value, examining contract headers, executive summaries, pricing sections, payment schedules, signature blocks, summary tables, and any financial appendices. Look for phrases like 'Total Contract Value', 'Contract Amount', 'Total Value', 'Agreement Amount', 'Total Price', 'Contract Sum', 'Total Cost', or 'Grand Total'. Extract only the complete numeric value without currency symbols, commas, or spaces - convert '$4,125,000.00' to '4125000' and ensure you capture the full amount including all digits. Do NOT extract partial payments, milestone amounts, individual line items, or subtotals. If multiple total values appear, prioritize the one in the signature block or executive summary. Return 'Not Present' if no total contract value is found.",
@@ -5588,12 +6001,51 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
-    "usageCount": 1,
-    "lastModified": "2025-12-04T04:43:05.462Z"
+    "usageCount": 7,
+    "lastModified": "2025-12-05T02:20:00.396Z"
   },
   "total_contract_value_currency": {
-    "activePrompt": "Locate the document's primary contract value statement, typically found in executive summary, contract overview, or total consideration sections. Search ONLY for currency codes that appear immediately adjacent to phrases like 'total contract value', 'aggregate contract amount', 'total consideration', 'contract sum', or 'total price' - the currency must be within the same sentence or clause as these exact terms. Return EXACTLY one of the provided ISO currency codes. Do NOT extract currencies from payment schedules, individual deliverables, expense categories, or general financial discussions unless they explicitly state the overall contract total. If no currency is directly tied to the total contract value statement, return 'Not Present'.",
+    "activePrompt": "Search payment terms, financial exhibits, schedules, and signature blocks for the Total Contract Value Currency. Look for phrases like 'total contract value', 'aggregate amount', 'total consideration', or 'contract sum' followed by currency codes (USD, EUR, GBP, etc.) or currency symbols ($, €, £). Return EXACTLY one currency code from the provided list. Do NOT infer currency from company locations, addresses, or governing law. Only return a currency if explicitly stated with the total contract value. If no total contract value currency is specified, return 'Not Present'.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-05T02:20:00.382Z-23198b8b-cdbe-4cb6-a018-cfcbf5b1b604",
+        "prompt": "Search payment terms, financial exhibits, schedules, and signature blocks for the Total Contract Value Currency. Look for phrases like 'total contract value', 'aggregate amount', 'total consideration', or 'contract sum' followed by currency codes (USD, EUR, GBP, etc.) or currency symbols ($, €, £). Return EXACTLY one currency code from the provided list. Do NOT infer currency from company locations, addresses, or governing law. Only return a currency if explicitly stated with the total contract value. If no total contract value currency is specified, return 'Not Present'.",
+        "savedAt": "2025-12-05T02:20:00.382Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 81.3% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v6",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:45:51.613Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T01:23:28.877Z-9fb9cbd5-1051-4863-bb76-c0dc799500bb",
+        "prompt": "Search ONLY in sections explicitly labeled 'Total Contract Value', 'Contract Value', 'Financial Terms', or 'Payment Details' for the currency of the total contract value. Look for these exact phrases: 'Total Contract Value Currency', 'Contract Currency', 'Payment Currency', 'Value Currency', or 'Currency of Contract'. The currency must be directly associated with the total contract value amount, not just any currency mentioned in the document. Return EXACTLY one of the valid ISO currency codes (USD, EUR, GBP, etc.). Do NOT infer currency from company locations, addresses, or unrelated financial information. Return 'Not Present' if no currency is explicitly specified for the total contract value.",
+        "savedAt": "2025-12-05T01:23:28.877Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 82.4% → Final: 100.0% (2 iterations)"
+      },
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:09:02.845Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-e217867b-bd18-420e-8ca0-4e66958b8f32",
+        "prompt": "Search the document for the Total Contract Value Currency specifically in sections containing contract value amounts, payment schedules, pricing tables, or financial summaries. Look for currency codes that appear immediately before or after numerical amounts representing the total contract value, such as 'USD 1,000,000', '$1M USD', 'EUR 500,000', or 'total value: 2,000,000 GBP'. The currency must be explicitly stated in direct connection to the total contract value or aggregate payment amount. Do NOT extract currencies mentioned in relation to company addresses, governing law, individual milestone payments, or expense reimbursements. Do NOT assume any default currency. Return EXACTLY one of the provided currency codes only if it is explicitly tied to the total contract value. Return 'Not Present' if no currency is directly associated with the total contract value.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 70.0% → Final: 100.0% (3 iterations)"
+      },
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-04T19:12:57.460Z"
+      },
       {
         "id": "agent-alpha-2025-12-04T04:43:05.438Z-68f5d4d2-a765-4014-9e36-99971727531a",
         "prompt": "Locate the document's primary contract value statement, typically found in executive summary, contract overview, or total consideration sections. Search ONLY for currency codes that appear immediately adjacent to phrases like 'total contract value', 'aggregate contract amount', 'total consideration', 'contract sum', or 'total price' - the currency must be within the same sentence or clause as these exact terms. Return EXACTLY one of the provided ISO currency codes. Do NOT extract currencies from payment schedules, individual deliverables, expense categories, or general financial discussions unless they explicitly state the overall contract total. If no currency is directly tied to the total contract value statement, return 'Not Present'.",
@@ -5604,7 +6056,98 @@
       }
     ],
     "lastUsedTemplate": "cuad_new",
+    "usageCount": 7,
+    "lastModified": "2025-12-05T02:20:00.398Z"
+  },
+  "contract_title": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:07:30.523Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-51736917-f4dc-443a-9cd6-3d489f16720f",
+        "prompt": "Search the document's title page, header section, and first paragraph for the primary contract title. Look for standalone titles that describe the contract's main purpose, such as 'Service Agreement', 'Purchase Contract', 'Employment Agreement', or similar descriptive names. Extract the exact title as it appears, maintaining original capitalization. Do NOT extract generic legal document types like 'CONFIDENTIALITY AGREEMENT', 'NON-DISCLOSURE AGREEMENT', or 'AMENDMENT' unless they are part of a longer, more specific title (e.g., 'Software License and Non-Disclosure Agreement'). If no specific contract title exists beyond generic legal categories, return 'Not Present'.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 90.0% → Final: 100.0% (3 iterations)"
+      }
+    ],
+    "lastUsedTemplate": "cuad_new",
+    "usageCount": 2,
+    "lastModified": "2025-12-05T01:07:30.534Z"
+  },
+  "party_names": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:08:41.954Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-71bad2e3-10d7-4dd3-aeab-986b73f9bcc3",
+        "prompt": "Search the entire document for the Party Names. Look in relevant sections, headers, and signature blocks. Extract the exact value as it appears. If multiple values exist, return the most authoritative one. Return \"Not Present\" if not found.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 90.0% → Final: 80.0% (5 iterations)"
+      }
+    ],
+    "lastUsedTemplate": "cuad_new",
+    "usageCount": 2,
+    "lastModified": "2025-12-05T01:08:41.959Z"
+  },
+  "party_addresses": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-05T01:08:48.033Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-04T20:38:01.365Z-203f04ad-c9b7-4ce7-9d89-44446e92a36c",
+        "prompt": "Search the entire document for the Party Addresses. Look in relevant sections, headers, and signature blocks. Extract the exact value as it appears. If multiple values exist, return the most authoritative one. Return \"Not Present\" if not found.",
+        "savedAt": "2025-12-04T20:38:01.365Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 90.0% → Final: 80.0% (5 iterations)"
+      }
+    ],
+    "lastUsedTemplate": "cuad_new",
+    "usageCount": 2,
+    "lastModified": "2025-12-05T01:08:48.044Z"
+  },
+  "base_rent_amount_psf_m": {
+    "activePrompt": "Extract the base rent amount per square foot per month (PSF/M). If this value is not explicitly stated, calculate it using the total rent, lease term, and square footage provided in the document. Format the result as a currency value.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the base rent amount per square foot per month (PSF/M). If this value is not explicitly stated, calculate it using the total rent, lease term, and square footage provided in the document. Format the result as a currency value.",
+        "savedAt": "2025-12-05T05:53:24.177Z",
+        "generationMethod": "standard"
+      }
+    ],
+    "lastUsedTemplate": "t_lease",
     "usageCount": 1,
-    "lastModified": "2025-12-04T04:43:05.463Z"
+    "lastModified": "2025-12-05T05:53:24.192Z"
+  },
+  "area": {
+    "activePrompt": "Extract the numerical value for the area or square footage of the premises, omitting any text or units.",
+    "promptHistory": [
+      {
+        "id": "v1",
+        "prompt": "Extract the numerical value for the area or square footage of the premises, omitting any text or units.",
+        "savedAt": "2025-12-05T06:37:09.542Z",
+        "generationMethod": "standard"
+      }
+    ],
+    "lastUsedTemplate": "t_lease",
+    "usageCount": 1,
+    "lastModified": "2025-12-05T06:37:09.555Z"
   }
 }

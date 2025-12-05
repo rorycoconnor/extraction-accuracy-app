@@ -455,28 +455,82 @@ const ModelValueCell = ({
     }
   };
 
+  // Extract concise error type for display, keep full message for tooltip
+  const errorType = isError ? value.replace(/^Error:\s*/i, '') : '';
+  const fullErrorForTooltip = isError 
+    ? `Error: ${errorType}\n\nClick to retry extraction or check:\n• Token/authentication status\n• API rate limits\n• File accessibility`
+    : value;
+
+  // Get extraction confidence score (0-1) and convert to percentage
+  const extractionConfidence = cellData.comparisonResult?.extractionConfidence;
+  const hasConfidence = extractionConfidence !== undefined && extractionConfidence !== null && modelName !== 'Ground Truth' && !isPending && !isError;
+  const confidencePercent = hasConfidence ? Math.round(extractionConfidence * 100) : null;
+  // Low confidence threshold: below 70%
+  const isLowConfidence = confidencePercent !== null && confidencePercent < 70;
+
   return (
     <div
       className={wrapperClasses}
       onClick={handleCellClick}
     >
-      <div
-        className={cn(
-          "text-sm text-center leading-snug whitespace-pre-wrap break-words max-w-full",
-          (hasComparisonResult || modelName === 'Ground Truth') && "cursor-pointer"
-        )}
-        title={value} // Show full text on hover
-        style={{
-          display: '-webkit-box',
-          WebkitLineClamp: 7,
-          WebkitBoxOrient: 'vertical',
-          overflow: 'hidden',
-          lineHeight: 1.4,
-          wordBreak: 'break-word'
-        }}
-      >
-        {value || '-'}
-      </div>
+      {isError ? (
+        // Enhanced error display with icon and clear message
+        <div 
+          className="flex flex-col items-center gap-1 text-red-600 dark:text-red-400"
+          title={fullErrorForTooltip}
+        >
+          <svg 
+            className="w-4 h-4 shrink-0" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" 
+            />
+          </svg>
+          <span className="text-xs font-medium text-center">
+            {errorType || 'Error'}
+          </span>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center gap-0.5">
+          <div
+            className={cn(
+              "text-sm text-center leading-snug whitespace-pre-wrap break-words max-w-full",
+              (hasComparisonResult || modelName === 'Ground Truth') && "cursor-pointer"
+            )}
+            title={value} // Show full text on hover
+            style={{
+              display: '-webkit-box',
+              WebkitLineClamp: 6,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              lineHeight: 1.4,
+              wordBreak: 'break-word'
+            }}
+          >
+            {value || '-'}
+          </div>
+          {/* Confidence score display */}
+          {hasConfidence && confidencePercent !== null && (
+            <span 
+              className={cn(
+                "text-xs italic",
+                isLowConfidence 
+                  ? "text-red-600 dark:text-red-400 font-medium" 
+                  : "text-muted-foreground"
+              )}
+              title={`Box AI extraction confidence: ${confidencePercent}%`}
+            >
+              {confidencePercent}%
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 };
