@@ -691,169 +691,289 @@ export type BoxAIExtractionResult = {
     confidenceScores?: Record<string, number>;
 }
 
+// Configuration for Box AI extraction with retry and timeout
+const BOX_AI_EXTRACTION_CONFIG = {
+  maxRetries: 3,
+  initialDelayMs: 3000, // Start with 3 seconds
+  maxDelayMs: 60000, // Max 60 seconds between retries
+  backoffMultiplier: 2,
+  timeoutMs: 900000, // 15 minutes timeout for large extractions
+  retryableStatusCodes: [500, 502, 503, 504], // Server errors that should be retried
+};
+
 export async function extractStructuredMetadataWithBoxAI(
   { fileId, fields, model, templateKey }: BoxAIExtractParams
 ): Promise<BoxAIExtractionResult> {
   
-  try {
-    const requestBody: BoxAIExtractRequestBody = {
-      items: [{ id: fileId, type: 'file' as const }],
-      include_confidence_score: true,
-    };
-    
-    // CRITICAL FIX: Use Box metadata template when available
-    if (templateKey) {
-      boxLogger.debug('Using Box metadata template', { templateKey });
-      requestBody.metadata_template = {
-        template_key: templateKey,
-        scope: 'enterprise'
+  let lastError: Error | null = null;
+  
+  // Retry loop for Box AI extraction
+  for (let attempt = 0; attempt <= BOX_AI_EXTRACTION_CONFIG.maxRetries; attempt++) {
+    try {
+      const requestBody: BoxAIExtractRequestBody = {
+        items: [{ id: fileId, type: 'file' as const }],
+        include_confidence_score: true,
       };
-    } else if (fields) {
-      boxLogger.debug('Using inline field definitions (fallback)');
-      requestBody.fields = fields;
-    } else {
-      throw new Error('Either templateKey or fields must be provided');
-    }
-    
-    // Use correct AI agent format for model specification
-    if (model === 'enhanced_extract_agent') {
-      // Use predefined enhanced extract agent
-      requestBody.ai_agent = {
-        id: 'enhanced_extract_agent',
-        type: 'ai_agent_id' as const
-      };
-      boxLogger.debug(`Using Enhanced Extract Agent`, { fileId });
-    } else {
-      // Use AI agent configuration with specific model override
-      requestBody.ai_agent = {
-        type: 'ai_agent_extract_structured',
-        basic_text: {
-          model: model
-        },
-        basic_image: {
-          model: model
-        },
-        long_text: {
-          model: model
-        }
-      };
-      boxLogger.debug(`Using custom AI agent with model`, { model, fileId });
-    }
+      
+      // CRITICAL FIX: Use Box metadata template when available
+      if (templateKey) {
+        boxLogger.debug('Using Box metadata template', { templateKey });
+        requestBody.metadata_template = {
+          template_key: templateKey,
+          scope: 'enterprise'
+        };
+      } else if (fields) {
+        boxLogger.debug('Using inline field definitions (fallback)');
+        requestBody.fields = fields;
+      } else {
+        throw new Error('Either templateKey or fields must be provided');
+      }
+      
+      // Use correct AI agent format for model specification
+      if (model === 'enhanced_extract_agent') {
+        // Use predefined enhanced extract agent
+        requestBody.ai_agent = {
+          id: 'enhanced_extract_agent',
+          type: 'ai_agent_id' as const
+        };
+        boxLogger.debug(`Using Enhanced Extract Agent`, { fileId });
+      } else {
+        // Use AI agent configuration with specific model override
+        requestBody.ai_agent = {
+          type: 'ai_agent_extract_structured',
+          basic_text: {
+            model: model
+          },
+          basic_image: {
+            model: model
+          },
+          long_text: {
+            model: model
+          }
+        };
+        boxLogger.debug(`Using custom AI agent with model`, { model, fileId });
+      }
 
-    boxLogger.debug('Box AI extraction request prepared', { model, fileId, hasTemplate: !!templateKey });
+      // Calculate and log request size for diagnostics
+      const requestBodyStr = JSON.stringify(requestBody);
+      const requestSizeKB = Math.round(new Blob([requestBodyStr]).size / 1024);
+      const fieldCount = fields?.length || 0;
+      const totalPromptChars = fields?.reduce((sum, f) => sum + (f.prompt?.length || 0), 0) || 0;
 
-    // Call Box AI API and capture RAW response
-    const accessToken = await getAccessToken();
-    const response = await fetch(`${BOX_API_BASE_URL}/ai/extract_structured`, {
-        method: 'POST',
-        body: JSON.stringify(requestBody),
-        headers: {
+      boxLogger.info('Box AI extraction request prepared', { 
+        model, 
+        fileId, 
+        hasTemplate: !!templateKey,
+        fieldCount,
+        requestSizeKB,
+        totalPromptChars,
+        attempt: attempt + 1,
+        maxRetries: BOX_AI_EXTRACTION_CONFIG.maxRetries + 1
+      });
+
+      // Call Box AI API with timeout handling
+      const accessToken = await getAccessToken();
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), BOX_AI_EXTRACTION_CONFIG.timeoutMs);
+      
+      const startTime = Date.now();
+      
+      try {
+        const response = await fetch(`${BOX_API_BASE_URL}/ai/extract_structured`, {
+          method: 'POST',
+          body: requestBodyStr,
+          headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
-        },
-        cache: 'no-store',
-    });
-    
-    const rawResponseText = await response.text();
-    
-    boxLogger.debug('Box AI response received', { model, fileId, status: response.status, responseLength: rawResponseText.length });
-    
-    // Check for HTTP errors
-    if (!response.ok) {
-        boxLogger.error(`Box AI HTTP error ${response.status} for model "${model}"`, new Error(rawResponseText.substring(0, 500)));
-        throw new Error(`Box AI API returned ${response.status}: ${response.statusText}. Response: ${rawResponseText}`);
-    }
-    
-    // Parse the response
-    let result;
-    try {
-        result = JSON.parse(rawResponseText);
-    } catch (parseError) {
-        boxLogger.error(`Box AI JSON parse error for model "${model}"`, parseError as Error);
-        throw new Error(`Failed to parse Box AI response: ${parseError}`);
-    }
-    
-    boxLogger.debug('Box AI response parsed successfully', { model, fileId, hasAnswer: !!result?.answer, hasEntries: !!result?.entries, hasConfidenceScore: !!result?.confidence_score });
-
-    // Handle Box AI response formats - simplified based on actual API behavior
-    let extractedData: Record<string, any> = {};
-    let confidenceScores: Record<string, number> | undefined = result?.confidence_score;
-    
-    // Log confidence scores if present
-    if (confidenceScores) {
-        boxLogger.debug('Confidence scores received', { fileId, model, scores: confidenceScores });
-    }
-    
-    // Check for the most common response format first (what we see in logs)
-    if (result?.answer && typeof result.answer === 'object') {
-        extractedData = result.answer;
-        boxLogger.info(`Successfully extracted data using model "${model}"`, { 
-          fileId, 
-          fieldCount: Object.keys(extractedData).length,
-          extractionPath: 'answer field',
-          hasConfidenceScores: !!confidenceScores
+          },
+          cache: 'no-store',
+          signal: controller.signal,
         });
-        return { extractedData, confidenceScores };
-    }
-    
-    // Handle array response format
-    if (Array.isArray(result)) {
-        const firstResult = result[0];
-        if (firstResult?.success) {
+        
+        clearTimeout(timeoutId);
+        const duration = Date.now() - startTime;
+        
+        const rawResponseText = await response.text();
+        
+        boxLogger.debug('Box AI response received', { 
+          model, 
+          fileId, 
+          status: response.status, 
+          responseLength: rawResponseText.length,
+          durationMs: duration,
+          attempt: attempt + 1
+        });
+        
+        // Check for HTTP errors
+        if (!response.ok) {
+          const isRetryable = BOX_AI_EXTRACTION_CONFIG.retryableStatusCodes.includes(response.status);
+          
+          boxLogger.error(`Box AI HTTP error ${response.status} for model "${model}"`, new Error(rawResponseText.substring(0, 500)));
+          
+          // If this is a retryable error and we have retries left, continue to retry logic
+          if (isRetryable && attempt < BOX_AI_EXTRACTION_CONFIG.maxRetries) {
+            const delayMs = Math.min(
+              BOX_AI_EXTRACTION_CONFIG.initialDelayMs * Math.pow(BOX_AI_EXTRACTION_CONFIG.backoffMultiplier, attempt),
+              BOX_AI_EXTRACTION_CONFIG.maxDelayMs
+            );
+            
+            boxLogger.warn(`Box AI extraction failed with ${response.status}, retrying in ${delayMs}ms`, {
+              fileId,
+              model,
+              attempt: attempt + 1,
+              maxRetries: BOX_AI_EXTRACTION_CONFIG.maxRetries + 1,
+              nextRetryIn: `${delayMs}ms`
+            });
+            
+            await sleep(delayMs);
+            lastError = new Error(`Box AI API returned ${response.status}: ${response.statusText}. Response: ${rawResponseText}`);
+            continue; // Retry
+          }
+          
+          // Non-retryable or max retries exceeded
+          throw new Error(`Box AI API returned ${response.status}: ${response.statusText}. Response: ${rawResponseText}`);
+        }
+        
+        // Success - log if we had to retry
+        if (attempt > 0) {
+          boxLogger.info(`Box AI extraction succeeded after ${attempt + 1} attempts`, { 
+            fileId, 
+            model,
+            totalDuration: duration 
+          });
+        }
+        
+        // Parse the response
+        let result;
+        try {
+          result = JSON.parse(rawResponseText);
+        } catch (parseError) {
+          boxLogger.error(`Box AI JSON parse error for model "${model}"`, parseError as Error);
+          throw new Error(`Failed to parse Box AI response: ${parseError}`);
+        }
+        
+        boxLogger.debug('Box AI response parsed successfully', { 
+          model, 
+          fileId, 
+          hasAnswer: !!result?.answer, 
+          hasEntries: !!result?.entries, 
+          hasConfidenceScore: !!result?.confidence_score 
+        });
+
+        // Handle Box AI response formats - simplified based on actual API behavior
+        let extractedData: Record<string, any> = {};
+        let confidenceScores: Record<string, number> | undefined = result?.confidence_score;
+        
+        // Log confidence scores if present
+        if (confidenceScores) {
+          boxLogger.debug('Confidence scores received', { fileId, model, scores: confidenceScores });
+        }
+        
+        // Check for the most common response format first (what we see in logs)
+        if (result?.answer && typeof result.answer === 'object') {
+          extractedData = result.answer;
+          boxLogger.info(`Successfully extracted data using model "${model}"`, { 
+            fileId, 
+            fieldCount: Object.keys(extractedData).length,
+            extractionPath: 'answer field',
+            hasConfidenceScores: !!confidenceScores,
+            attemptNumber: attempt + 1
+          });
+          return { extractedData, confidenceScores };
+        }
+        
+        // Handle array response format
+        if (Array.isArray(result)) {
+          const firstResult = result[0];
+          if (firstResult?.success) {
             extractedData = firstResult.extractedMetadata || firstResult.answer || {};
             confidenceScores = firstResult.confidence_score || confidenceScores;
-        } else {
+          } else {
             throw new Error(`Box AI extraction failed: ${firstResult?.error || 'Unknown error'}`);
+          }
+          boxLogger.info(`Successfully extracted data using model "${model}"`, { 
+            fileId, 
+            fieldCount: Object.keys(extractedData).length,
+            extractionPath: 'array format',
+            hasConfidenceScores: !!confidenceScores,
+            attemptNumber: attempt + 1
+          });
+          return { extractedData, confidenceScores };
         }
-        boxLogger.info(`Successfully extracted data using model "${model}"`, { 
-          fileId, 
-          fieldCount: Object.keys(extractedData).length,
-          extractionPath: 'array format',
-          hasConfidenceScores: !!confidenceScores
-        });
-        return { extractedData, confidenceScores };
-    }
-    
-    // Handle entries array format (legacy)
-    if (result?.entries?.[0]) {
-        const firstResult = result.entries[0];
-        if (firstResult?.status === 'error') {
+        
+        // Handle entries array format (legacy)
+        if (result?.entries?.[0]) {
+          const firstResult = result.entries[0];
+          if (firstResult?.status === 'error') {
             const errorMessage = `Box AI failed to extract metadata: ${firstResult.message || 'An unknown error occurred.'}`;
             boxLogger.error(errorMessage, new Error(JSON.stringify({ requestBody, result })));
             throw new Error(errorMessage);
+          }
+          extractedData = firstResult?.answer || {};
+          confidenceScores = firstResult.confidence_score || confidenceScores;
+          boxLogger.info(`Successfully extracted data using model "${model}"`, { 
+            fileId, 
+            fieldCount: Object.keys(extractedData).length,
+            extractionPath: 'entries format',
+            hasConfidenceScores: !!confidenceScores,
+            attemptNumber: attempt + 1
+          });
+          return { extractedData, confidenceScores };
         }
-        extractedData = firstResult?.answer || {};
-        confidenceScores = firstResult.confidence_score || confidenceScores;
+        
+        // Fallback: try other possible response formats
+        extractedData = result?.extractedMetadata || result?.data || {};
+        
+        if (Object.keys(extractedData).length === 0) {
+          boxLogger.warn('No extractable data found in Box AI response', { model, fileId, result });
+          throw new Error('Box AI returned an unexpected response format. No extractable data found.');
+        }
+
         boxLogger.info(`Successfully extracted data using model "${model}"`, { 
           fileId, 
           fieldCount: Object.keys(extractedData).length,
-          extractionPath: 'entries format',
-          hasConfidenceScores: !!confidenceScores
+          extractionPath: 'fallback format',
+          hasConfidenceScores: !!confidenceScores,
+          attemptNumber: attempt + 1
         });
+        
         return { extractedData, confidenceScores };
+        
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        
+        // Handle timeout errors
+        if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+          const timeoutMinutes = Math.round(BOX_AI_EXTRACTION_CONFIG.timeoutMs / 60000);
+          boxLogger.error(`Box AI extraction timeout after ${timeoutMinutes} minutes`, fetchError);
+          throw new Error(`Box AI extraction timed out after ${timeoutMinutes} minutes. The document may be too complex or Box AI is experiencing issues.`);
+        }
+        
+        // Re-throw other fetch errors
+        throw fetchError;
+      }
+      
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // If this is the last attempt, throw the error
+      if (attempt >= BOX_AI_EXTRACTION_CONFIG.maxRetries) {
+        boxLogger.error(`Box AI extraction failed after ${attempt + 1} attempts for model "${model}"`, lastError);
+        throw lastError;
+      }
+      
+      // Otherwise, log and continue to next retry
+      boxLogger.warn(`Box AI extraction attempt ${attempt + 1} failed, will retry`, {
+        fileId,
+        model,
+        error: lastError.message,
+        attemptsRemaining: BOX_AI_EXTRACTION_CONFIG.maxRetries - attempt
+      });
     }
-    
-    // Fallback: try other possible response formats
-    extractedData = result?.extractedMetadata || result?.data || {};
-    
-    if (Object.keys(extractedData).length === 0) {
-        boxLogger.warn('No extractable data found in Box AI response', { model, fileId, result });
-        throw new Error('Box AI returned an unexpected response format. No extractable data found.');
-    }
-
-    boxLogger.info(`Successfully extracted data using model "${model}"`, { 
-      fileId, 
-      fieldCount: Object.keys(extractedData).length,
-      extractionPath: 'fallback format',
-      hasConfidenceScores: !!confidenceScores
-    });
-    
-    return { extractedData, confidenceScores };
-
-  } catch (error) {
-    boxLogger.error(`Error using model "${model}" for file ${fileId}`, error instanceof Error ? error : { error });
-    throw error;
   }
+  
+  // Should not reach here, but throw last error if we do
+  throw lastError || new Error('Box AI extraction failed for unknown reason');
 }
 
 export async function getBoxFileEmbedLink(fileId: string): Promise<string> {

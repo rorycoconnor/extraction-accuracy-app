@@ -106,10 +106,10 @@ export function ComparisonResultModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {getMatchIcon()}
-            Comparison Result
+            {fieldName}
           </DialogTitle>
           <DialogDescription>
-            Detailed comparison for <strong>{fieldName}</strong> using <strong>{modelName}</strong>
+            Detailed comparison using <strong>{modelName}</strong>
           </DialogDescription>
         </DialogHeader>
 

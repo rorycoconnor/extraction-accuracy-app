@@ -677,8 +677,16 @@
     "lastModified": "2025-11-18T01:31:15.544Z"
   },
   "counterPartyName": {
-    "activePrompt": "",
+    "activePrompt": "Extract the counter party name from this contract. Look in these specific locations: (1) Opening paragraphs containing phrases like 'by and between', 'Agreement between', 'entered into by', or 'parties to this agreement' - identify BOTH parties mentioned, then return the one that is NOT 'Increo, Inc.', (2) Party definition sections with terms like 'Party A/B', 'Client', 'Vendor', 'Contractor', or 'Company', (3) Signature blocks showing company names above signature lines. CRITICAL: Do NOT return 'Increo, Inc.' or any variation - this is the extracting company. Return ONLY the OTHER party's complete legal entity name exactly as written, including suffixes like 'LLC', 'Inc.', 'Corporation'. If multiple counter parties exist, return the primary one. If no clear counter party is found, return 'Not Present'.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-08T19:36:28.032Z-e64a8cec-d0bc-42d3-8d91-68c7a0c880eb",
+        "prompt": "Extract the counter party name from this contract. Look in these specific locations: (1) Opening paragraphs containing phrases like 'by and between', 'Agreement between', 'entered into by', or 'parties to this agreement' - identify BOTH parties mentioned, then return the one that is NOT 'Increo, Inc.', (2) Party definition sections with terms like 'Party A/B', 'Client', 'Vendor', 'Contractor', or 'Company', (3) Signature blocks showing company names above signature lines. CRITICAL: Do NOT return 'Increo, Inc.' or any variation - this is the extracting company. Return ONLY the OTHER party's complete legal entity name exactly as written, including suffixes like 'LLC', 'Inc.', 'Corporation'. If multiple counter parties exist, return the primary one. If no clear counter party is found, return 'Not Present'.",
+        "savedAt": "2025-12-08T19:36:28.032Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 33.3% → Final: 100.0% (2 iterations)"
+      },
       {
         "id": "v27",
         "prompt": "",
@@ -849,12 +857,20 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 42,
-    "lastModified": "2025-12-03T23:04:43.906Z"
+    "usageCount": 45,
+    "lastModified": "2025-12-09T01:32:17.019Z"
   },
   "counterPartyAddress": {
-    "activePrompt": "",
+    "activePrompt": "Extract the counter party's complete business address (the OTHER party in the agreement, NOT the company at 1234 Main Street, Phoenix, Arizona 85032). Search in: (1) opening recitals/preamble near the counter party's legal name, (2) 'Notices', 'Communications', or 'Address for Service' sections, (3) signature blocks with titles like 'Address:', 'Principal Place of Business:', or 'Mailing Address:'. EXCLUDE any address containing '1234 Main Street, Phoenix, Arizona' - find the OTHER company's address. Return the complete street address, city, state, and ZIP code on a single line with proper spacing. If multiple addresses exist for the counter party, prioritize the one in the Notices section. Return 'Not Present' if no counter party address is found.",
     "promptHistory": [
+      {
+        "id": "agent-alpha-2025-12-08T19:36:28.032Z-74ed0587-53e4-4e26-bba4-cb6b8e821d6a",
+        "prompt": "Extract the counter party's complete business address (the OTHER party in the agreement, NOT the company at 1234 Main Street, Phoenix, Arizona 85032). Search in: (1) opening recitals/preamble near the counter party's legal name, (2) 'Notices', 'Communications', or 'Address for Service' sections, (3) signature blocks with titles like 'Address:', 'Principal Place of Business:', or 'Mailing Address:'. EXCLUDE any address containing '1234 Main Street, Phoenix, Arizona' - find the OTHER company's address. Return the complete street address, city, state, and ZIP code on a single line with proper spacing. If multiple addresses exist for the counter party, prioritize the one in the Notices section. Return 'Not Present' if no counter party address is found.",
+        "savedAt": "2025-12-08T19:36:28.032Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 66.7% → Final: 100.0% (2 iterations)"
+      },
       {
         "id": "v27",
         "prompt": "",
@@ -1025,12 +1041,22 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 36,
-    "lastModified": "2025-12-03T17:42:24.974Z"
+    "usageCount": 37,
+    "lastModified": "2025-12-08T19:36:28.047Z"
   },
   "contractType": {
     "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v9",
+        "prompt": "",
+        "savedAt": "2025-12-09T01:32:06.649Z"
+      },
+      {
+        "id": "v8",
+        "prompt": "test",
+        "savedAt": "2025-12-09T01:30:47.727Z"
+      },
       {
         "id": "v7",
         "prompt": "",
@@ -1072,8 +1098,8 @@
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 20,
-    "lastModified": "2025-11-24T21:55:27.940Z"
+    "usageCount": 22,
+    "lastModified": "2025-12-09T01:32:06.653Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
@@ -4947,8 +4973,21 @@
     "lastModified": "2025-11-24T17:36:11.542Z"
   },
   "security_data_privacy_data_location_and_transfers_-_clause_risk": {
-    "activePrompt": "Search the document for clauses related to data location, cross-border data transfers, data residency requirements, or international data processing restrictions. Look specifically in sections titled 'Data Privacy', 'Security', 'Data Protection', 'Compliance', or 'Data Processing'. Assess the risk level based on: restrictive data localization requirements, complex cross-border transfer restrictions, or strict residency mandates (High); moderate transfer limitations or some geographic restrictions (Medium); minimal or flexible data location requirements (Low). Return EXACTLY one value: Low, Medium, High. Do NOT return partial phrases or explanations. If no data location or transfer provisions are found, return 'Not Present'.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:57:21.412Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-77e11deb-662a-46fc-bcdf-a6354716cda7",
+        "prompt": "Search for the specific clause risk rating for Security, Data Privacy, Data Location and Transfers provisions. Look in sections titled 'Risk Assessment', 'Clause Risk Analysis', 'Security Risk', 'Data Privacy Risk', or similar risk evaluation sections. Find phrases like 'data privacy clause risk: [rating]', 'security risk level', 'data location risk rating', or 'privacy transfer risk assessment'. Return EXACTLY one value: Low, Medium, High. Do NOT return general security descriptions or data handling requirements - only the specific risk rating assigned to this clause type. If no explicit risk rating is found for data privacy/location clauses, return 'Not Present'.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 0.0% → Final: 100.0% (2 iterations)"
+      },
       {
         "id": "agent-alpha-2025-12-03T21:05:01.542Z-4a71c967-5fd1-464e-8959-bec2e7854b3b",
         "prompt": "Search the document for clauses related to data location, cross-border data transfers, data residency requirements, or international data processing restrictions. Look specifically in sections titled 'Data Privacy', 'Security', 'Data Protection', 'Compliance', or 'Data Processing'. Assess the risk level based on: restrictive data localization requirements, complex cross-border transfer restrictions, or strict residency mandates (High); moderate transfer limitations or some geographic restrictions (Medium); minimal or flexible data location requirements (Low). Return EXACTLY one value: Low, Medium, High. Do NOT return partial phrases or explanations. If no data location or transfer provisions are found, return 'Not Present'.",
@@ -4983,12 +5022,25 @@
       }
     ],
     "lastUsedTemplate": "msa",
-    "usageCount": 5,
-    "lastModified": "2025-12-03T21:05:01.544Z"
+    "usageCount": 7,
+    "lastModified": "2025-12-05T18:57:21.429Z"
   },
   "warranty_and_disclaimer_clause_risk": {
-    "activePrompt": "Examine warranty and disclaimer language throughout the entire document, paying special attention to sections like 'Terms and Conditions', 'Service Level Agreements', 'Deliverables', and 'Performance Standards'. Look for protective warranty language such as 'warrants that services will be performed', 'guarantees compliance with specifications', 'represents and warrants', 'will meet industry standards', or 'defect-free performance'. Classify as 'Low' if the document contains strong warranty commitments or guarantees from the service provider, 'Medium' if warranties are present but limited in scope or duration, 'High' if warranties are extensively disclaimed or services are provided 'as is'. Do NOT focus solely on disclaimer sections - prioritize actual warranty commitments made by the service provider. Return 'Not Present' only if no warranty-related language exists anywhere in the document.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:57:38.888Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-b0e9dad0-db90-463c-a81c-fa1e77a9bbf3",
+        "prompt": "Search for warranty and disclaimer risk ratings in sections titled 'Risk Assessment', 'Clause Risk Analysis', 'Warranty Risk', 'Disclaimer Risk', or 'Contract Risk Summary'. Look for phrases like 'warranty clause risk: [rating]', 'disclaimer risk level', 'warranty risk assessment', or 'warranty/disclaimer rated as'. Return EXACTLY one value: Low, Medium, or High. Do NOT interpret general warranty language or disclaimer text - only extract explicit risk ratings assigned to warranty/disclaimer clauses. Return empty string if no specific warranty clause risk rating is found.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 0.0% → Final: 100.0% (2 iterations)"
+      },
       {
         "id": "agent-alpha-2025-12-03T21:05:01.542Z-3b26a6db-7772-4c7f-a3c0-32a88b186a06",
         "prompt": "Examine warranty and disclaimer language throughout the entire document, paying special attention to sections like 'Terms and Conditions', 'Service Level Agreements', 'Deliverables', and 'Performance Standards'. Look for protective warranty language such as 'warrants that services will be performed', 'guarantees compliance with specifications', 'represents and warrants', 'will meet industry standards', or 'defect-free performance'. Classify as 'Low' if the document contains strong warranty commitments or guarantees from the service provider, 'Medium' if warranties are present but limited in scope or duration, 'High' if warranties are extensively disclaimed or services are provided 'as is'. Do NOT focus solely on disclaimer sections - prioritize actual warranty commitments made by the service provider. Return 'Not Present' only if no warranty-related language exists anywhere in the document.",
@@ -5023,12 +5075,25 @@
       }
     ],
     "lastUsedTemplate": "msa",
-    "usageCount": 5,
-    "lastModified": "2025-12-03T21:05:01.550Z"
+    "usageCount": 7,
+    "lastModified": "2025-12-05T18:57:38.909Z"
   },
   "term_renewal_termination_post-term_data_handling_-_clause_risk": {
-    "activePrompt": "Search the \"Term\", \"Renewal\", \"Termination\", or \"Duration\" sections for contract renewal and termination provisions. Return EXACTLY one of: Low, Medium, High. Assess risk based on: \"Low\" = clear termination rights for both parties with reasonable notice (30-90 days), standard data return provisions; \"Medium\" = some termination restrictions or unclear data handling; \"High\" = difficult termination (requires cause only), auto-renewal without easy opt-out, or poor post-term data protections. Look for phrases like \"terminate for convenience\", \"30 days notice\", \"automatically renew\", \"data deletion\", \"return of data\". Do NOT guess - if termination rights are mutual and reasonable with clear data handling, default to Low.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:57:46.899Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-c405a772-5a75-4d13-b7e7-8f1a6911a8d0",
+        "prompt": "Search sections titled 'Term', 'Termination', 'Renewal', 'Duration', 'Data Retention', or 'Post-Termination' for specific risk language about contract terms and data handling. Look for exact phrases like 'clause risk: high', 'risk rating: medium', 'termination risk', 'data handling risk', or 'renewal risk assessment'. Return EXACTLY one of: Low, Medium, High. Do NOT return general termination provisions, renewal mechanisms, or data handling procedures - only return a value if you find explicit risk ratings or risk assessments for these clauses. If no specific risk rating language exists for term/renewal/termination/data handling clauses, return empty string.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 8.3% → Final: 66.7% (5 iterations)"
+      },
       {
         "id": "agent-alpha-2025-12-03T21:05:01.542Z-04e557fd-830a-4d7a-ad36-461fa9e62451",
         "prompt": "Search the \"Term\", \"Renewal\", \"Termination\", or \"Duration\" sections for contract renewal and termination provisions. Return EXACTLY one of: Low, Medium, High. Assess risk based on: \"Low\" = clear termination rights for both parties with reasonable notice (30-90 days), standard data return provisions; \"Medium\" = some termination restrictions or unclear data handling; \"High\" = difficult termination (requires cause only), auto-renewal without easy opt-out, or poor post-term data protections. Look for phrases like \"terminate for convenience\", \"30 days notice\", \"automatically renew\", \"data deletion\", \"return of data\". Do NOT guess - if termination rights are mutual and reasonable with clear data handling, default to Low.",
@@ -5063,12 +5128,25 @@
       }
     ],
     "lastUsedTemplate": "msa",
-    "usageCount": 5,
-    "lastModified": "2025-12-03T21:05:01.552Z"
+    "usageCount": 7,
+    "lastModified": "2025-12-05T18:57:46.911Z"
   },
   "indemnification_ip_privacy_data_-_clause_risk": {
     "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v4",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:57:55.627Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-98fb373f-d05a-4dc0-937d-dc2eb368fd54",
+        "prompt": "Search for indemnification clause risk ratings specifically related to intellectual property and privacy/data protection. Look in sections titled 'Risk Matrix', 'Clause Risk Assessment', 'Legal Risk Analysis', 'Indemnification Risk', or tables with risk evaluations. Find phrases like 'IP indemnity risk:', 'data privacy indemnification rated:', 'intellectual property indemnity - risk level:', or similar risk classifications. Return EXACTLY one value: Low, Medium, or High. Do NOT return general indemnification language, clause summaries, or financial liability amounts. If no specific risk rating for IP/privacy indemnification clauses is documented, return 'Not Present'.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 8.3% → Final: 100.0% (3 iterations)"
+      },
       {
         "id": "v2",
         "prompt": "",
@@ -5082,12 +5160,25 @@
       }
     ],
     "lastUsedTemplate": "msa",
-    "usageCount": 2,
-    "lastModified": "2025-12-03T18:04:12.420Z"
+    "usageCount": 4,
+    "lastModified": "2025-12-05T18:57:55.638Z"
   },
   "limitation_of_liability_clause_risk": {
-    "activePrompt": "Search the document for limitation of liability clauses, typically found in sections titled 'Limitation of Liability', 'Indemnification', 'Liability', or 'Damages'. Look for phrases like 'liability shall be limited to', 'aggregate liability', 'cap on damages', 'maximum liability', or 'liability exclusions'. Assess the risk level: return 'Low' if liability is capped at contract value or less, 'Medium' if capped above contract value but below significant amounts, 'High' if no meaningful caps exist or liability is unlimited. Do NOT confuse indemnification obligations with liability limitations. Return EXACTLY one of: Low, Medium, High.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:58:03.289Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-d8e99ffb-eca4-4416-94f4-a5c542f8481c",
+        "prompt": "Search for the Limitation of Liability Clause Risk rating in sections titled 'Limitation of Liability', 'Liability', 'Damages', 'Risk Assessment', or 'Clause Risk'. Look for exact phrases like 'limitation of liability risk: [rating]', 'liability clause risk rating', 'risk level: [rating]', or 'clause risk assessment'. Return EXACTLY one of: Low, Medium, High. Do NOT return general liability terms, damage caps, or indemnification language - only return the specific risk rating assigned to the limitation of liability clause itself. If no explicit risk rating is found, return an empty string.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 0.0% → Final: 100.0% (2 iterations)"
+      },
       {
         "id": "agent-alpha-2025-12-03T21:05:01.542Z-1e51f851-d3f2-4d74-a7e1-608ee800fad9",
         "prompt": "Search the document for limitation of liability clauses, typically found in sections titled 'Limitation of Liability', 'Indemnification', 'Liability', or 'Damages'. Look for phrases like 'liability shall be limited to', 'aggregate liability', 'cap on damages', 'maximum liability', or 'liability exclusions'. Assess the risk level: return 'Low' if liability is capped at contract value or less, 'Medium' if capped above contract value but below significant amounts, 'High' if no meaningful caps exist or liability is unlimited. Do NOT confuse indemnification obligations with liability limitations. Return EXACTLY one of: Low, Medium, High.",
@@ -5122,12 +5213,25 @@
       }
     ],
     "lastUsedTemplate": "msa",
-    "usageCount": 5,
-    "lastModified": "2025-12-03T21:05:01.554Z"
+    "usageCount": 7,
+    "lastModified": "2025-12-05T18:58:03.305Z"
   },
   "risk_rollup": {
-    "activePrompt": "Examine the entire document to determine the overall risk level by analyzing the cumulative impact of all contractual terms including liability caps, indemnification scope, insurance requirements, termination clauses, and penalty provisions. Look for explicit risk assessments using terms like 'low risk arrangement', 'moderate exposure', 'high liability contract', 'minimal contractual risk', or 'significant risk profile'. If no explicit assessment exists, infer the risk level: classify as Low if liability is capped below $1M with mutual indemnification, Medium if caps are $1M-$10M or indemnification is one-sided, High if unlimited liability or broad indemnification exists. Do NOT extract individual insurance amounts or specific clause risks. Return EXACTLY one value: Low, Medium, High.",
+    "activePrompt": "",
     "promptHistory": [
+      {
+        "id": "v7",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:58:19.681Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-415bffbc-4d52-44bf-a62a-159a15641b86",
+        "prompt": "Search for the overall Risk Rollup assessment in sections titled 'Risk Summary', 'Overall Risk', 'Contract Risk Assessment', 'Risk Analysis', or 'Executive Summary'. Look for phrases like 'overall risk level', 'contract risk rating', 'cumulative risk assessment', 'total risk exposure', or 'aggregate risk profile'. Return EXACTLY one of these values: Low, Medium, High. Do NOT extract individual clause risks, insurance amounts, or liability caps. If no explicit overall risk assessment is found, return 'Not Present'.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 0.0% → Final: 100.0% (2 iterations)"
+      },
       {
         "id": "agent-alpha-2025-12-03T21:05:01.542Z-d095807f-13f1-4be8-af11-2a56576d4002",
         "prompt": "Examine the entire document to determine the overall risk level by analyzing the cumulative impact of all contractual terms including liability caps, indemnification scope, insurance requirements, termination clauses, and penalty provisions. Look for explicit risk assessments using terms like 'low risk arrangement', 'moderate exposure', 'high liability contract', 'minimal contractual risk', or 'significant risk profile'. If no explicit assessment exists, infer the risk level: classify as Low if liability is capped below $1M with mutual indemnification, Medium if caps are $1M-$10M or indemnification is one-sided, High if unlimited liability or broad indemnification exists. Do NOT extract individual insurance amounts or specific clause risks. Return EXACTLY one value: Low, Medium, High.",
@@ -5162,8 +5266,8 @@
       }
     ],
     "lastUsedTemplate": "msa",
-    "usageCount": 5,
-    "lastModified": "2025-12-03T21:05:01.555Z"
+    "usageCount": 7,
+    "lastModified": "2025-12-05T18:58:19.699Z"
   },
   "governingLawRegion": {
     "activePrompt": "Search for the governing law clause, typically found in sections titled 'Governing Law', 'Applicable Law', 'Choice of Law', or 'Legal Jurisdiction'. Look for phrases like: 'governed by the laws of', 'construed in accordance with the laws of', 'subject to the laws of', 'shall be governed by', or 'interpreted under the laws of'. Return ONLY the jurisdiction name in its simplest form (e.g., 'New York', 'California', 'England'). Do NOT include prefixes like 'State of' or 'laws of', and if multiple jurisdictions are mentioned, return only the first one listed. Return 'Not Present' if no governing law is specified.",
@@ -6123,8 +6227,16 @@
     "lastModified": "2025-12-05T01:08:48.044Z"
   },
   "base_rent_amount_psf_m": {
-    "activePrompt": "Extract the base rent amount per square foot per month (PSF/M). If this value is not explicitly stated, calculate it using the total rent, lease term, and square footage provided in the document. Format the result as a currency value.",
+    "activePrompt": "Extract or calculate the Base Rent rate per unit of area. Target the monthly amount per square foot or per square meter used for rent billing. Look in: (1) rent sections that state \"per square foot\" (PSF) or \"per square meter\" (PSM/SQM), (2) rent schedules that list PSF/PSM rates. If a monthly PSF or PSM rate is not explicitly stated, calculate it as Monthly Base Rent divided by the rentable area in the same unit. Return only a numeric value with up to two decimal places (for example 35.50). If the lease only states annual PSF rates and monthly cannot be derived, you may return the annual PSF rate but note that it is annual in your internal reasoning; the output should still be numeric only. If you cannot determine a PSF/PSM rate, return exactly 'Not Present'.",
     "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.547Z-field-1765000995965-1pn7j8sgj",
+        "prompt": "Extract or calculate the Base Rent rate per unit of area. Target the monthly amount per square foot or per square meter used for rent billing. Look in: (1) rent sections that state \"per square foot\" (PSF) or \"per square meter\" (PSM/SQM), (2) rent schedules that list PSF/PSM rates. If a monthly PSF or PSM rate is not explicitly stated, calculate it as Monthly Base Rent divided by the rentable area in the same unit. Return only a numeric value with up to two decimal places (for example 35.50). If the lease only states annual PSF rates and monthly cannot be derived, you may return the annual PSF rate but note that it is annual in your internal reasoning; the output should still be numeric only. If you cannot determine a PSF/PSM rate, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.547Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Base Rent Amount PSF/M"
+      },
       {
         "id": "v1",
         "prompt": "Extract the base rent amount per square foot per month (PSF/M). If this value is not explicitly stated, calculate it using the total rent, lease term, and square footage provided in the document. Format the result as a currency value.",
@@ -6132,13 +6244,26 @@
         "generationMethod": "standard"
       }
     ],
-    "lastUsedTemplate": "t_lease",
-    "usageCount": 1,
-    "lastModified": "2025-12-05T05:53:24.192Z"
+    "lastUsedTemplate": "tishman",
+    "usageCount": 2,
+    "lastModified": "2025-12-06T06:39:23.548Z"
   },
   "area": {
-    "activePrompt": "Extract the numerical value for the area or square footage of the premises, omitting any text or units.",
+    "activePrompt": "Extract the total rentable area of the leased premises. Look in: (1) \"Premises\" section, (2) any \"Rentable Area\" or \"RSF\" definition, (3) Exhibit A or plan notes that specify final RSF/area used for rent. Synonyms: \"rentable square feet\", \"RSF\", \"rentable area\", \"leased area\". Prioritize rentable area over usable area. Return a numeric value only with no commas and no units (for example 5000, not \"5,000 SF\"). Do NOT return usable square feet, parking areas, or common area totals. ",
     "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "Extract the total rentable area of the leased premises. Look in: (1) \"Premises\" section, (2) any \"Rentable Area\" or \"RSF\" definition, (3) Exhibit A or plan notes that specify final RSF/area used for rent. Synonyms: \"rentable square feet\", \"RSF\", \"rentable area\", \"leased area\". Prioritize rentable area over usable area. Return a numeric value only with no commas and no units (for example 5000, not \"5,000 SF\"). Do NOT return usable square feet, parking areas, or common area totals. ",
+        "savedAt": "2025-12-06T18:56:44.667Z"
+      },
+      {
+        "id": "library-2025-12-06T06:39:23.510Z-field-1765000995965-990wqpeef",
+        "prompt": "Extract the total rentable area of the leased premises. Look in: (1) \"Premises\" section, (2) any \"Rentable Area\" or \"RSF\" definition, (3) Exhibit A or plan notes that specify final RSF/area used for rent. Synonyms: \"rentable square feet\", \"RSF\", \"rentable area\", \"leased area\". Prioritize rentable area over usable area. Return a numeric value only with no commas and no units (for example 5000, not \"5,000 SF\"). Do NOT return usable square feet, parking areas, or common area totals. If only a range or estimate is given, use the stated final or \"deemed\" rentable area. If no rentable area is stated, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.510Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Area"
+      },
       {
         "id": "v1",
         "prompt": "Extract the numerical value for the area or square footage of the premises, omitting any text or units.",
@@ -6146,8 +6271,1523 @@
         "generationMethod": "standard"
       }
     ],
-    "lastUsedTemplate": "t_lease",
+    "lastUsedTemplate": "tishman",
+    "usageCount": 3,
+    "lastModified": "2025-12-06T18:56:44.689Z"
+  },
+  "access_and_use_order_limits_-_clause_risk_rating": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:56:50.698Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-95ab1379-60d5-4596-9a49-6d9ae0ae7063",
+        "prompt": "Search for the specific risk rating assigned to 'Access and Use; Order Limits' clauses in sections titled 'Risk Assessment', 'Clause Risk Analysis', 'Contract Risk Matrix', or similar risk evaluation sections. Look for phrases like 'access limits risk rating', 'usage restrictions risk level', 'order limit clause risk', or 'access control risk assessment'. Return EXACTLY one value: Low, Medium, or High. Do NOT return general descriptions of access policies or usage terms - only extract explicit risk ratings. If no specific risk rating is documented for this clause type, return 'Not Present'.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 8.3% → Final: 100.0% (2 iterations)"
+      }
+    ],
+    "lastUsedTemplate": "msa",
+    "usageCount": 2,
+    "lastModified": "2025-12-05T18:56:50.713Z"
+  },
+  "overages_clause_risk": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:57:02.734Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-768dca5e-b22a-476a-98ad-3a954fa67e22",
+        "prompt": "Search for the Overages Clause Risk rating in sections titled 'Risk Assessment', 'Clause Risk Analysis', 'Usage Limits', 'Billing Terms', or 'Service Limitations'. Look for phrases like 'overages risk level', 'usage overage risk rating', 'excess usage risk', 'billing overage risk assessment', or 'usage limit breach risk'. Return EXACTLY one value: Low, Medium, or High. Do NOT return a default value if no specific overages risk rating is documented - return 'Not Present' only when no overages risk information exists in the document.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 8.3% → Final: 100.0% (2 iterations)"
+      }
+    ],
+    "lastUsedTemplate": "msa",
+    "usageCount": 2,
+    "lastModified": "2025-12-05T18:57:02.747Z"
+  },
+  "acceptable_use_suspension_-_clause_risk_rating": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:57:10.118Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-449690ec-e874-44bf-930a-eacb78dce0bd",
+        "prompt": "Search for the Acceptable Use, Suspension clause risk rating in sections titled 'Risk Assessment', 'Clause Risk Analysis', 'Acceptable Use Policy', 'Suspension Terms', or 'Service Restrictions'. Look for phrases like 'acceptable use risk rating', 'suspension clause risk', 'use policy risk level', 'restriction risk assessment', or 'policy violation risk'. Return EXACTLY one value: Low, Medium, or High. Do NOT return general policy descriptions, suspension procedures, or unrelated risk mentions. If no specific risk rating for acceptable use/suspension clauses is found, return an empty string.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 8.3% → Final: 100.0% (2 iterations)"
+      }
+    ],
+    "lastUsedTemplate": "msa",
+    "usageCount": 2,
+    "lastModified": "2025-12-05T18:57:10.133Z"
+  },
+  "support_and_service_level_commitments_clause_risk": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:57:29.716Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-f917dd7b-faa1-4d98-b003-10d4d0534f62",
+        "prompt": "Search for the Support and Service Level Commitments Clause Risk rating in sections titled 'Risk Assessment', 'Service Levels', 'SLA', 'Support', 'Performance Standards', or 'Commitments'. Look for phrases like 'support risk rating', 'SLA risk level', 'service commitment risk', 'support clause risk', or 'service level risk assessment'. Return EXACTLY one value: Low, Medium, or High. Do NOT return general service level descriptions, uptime percentages, or response time commitments. If no specific risk rating for support/SLA clauses is found, return 'Not Present'.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 8.3% → Final: 100.0% (2 iterations)"
+      }
+    ],
+    "lastUsedTemplate": "msa",
+    "usageCount": 2,
+    "lastModified": "2025-12-05T18:57:29.739Z"
+  },
+  "force_majeure_clause_risk": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:58:10.687Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-086a72e4-dd94-46c4-aa19-827652b5fd67",
+        "prompt": "Search for Force Majeure Clause Risk rating in sections titled 'Force Majeure', 'Risk Assessment', 'Clause Risk', 'Limitations', or 'General Terms'. Look for exact phrases like 'force majeure risk', 'force majeure clause risk rating', 'FM risk level', or 'force majeure assessment'. Return EXACTLY one value: Low, Medium, or High. Do NOT infer risk levels from general force majeure clause text or standard boilerplate language. Return empty string \"\" if no specific risk rating is found.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 8.3% → Final: 100.0% (2 iterations)"
+      }
+    ],
+    "lastUsedTemplate": "msa",
+    "usageCount": 2,
+    "lastModified": "2025-12-05T18:58:10.698Z"
+  },
+  "fees_and_payment_clause_risk": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2025-12-05T18:58:26.612Z"
+      },
+      {
+        "id": "agent-alpha-2025-12-05T18:50:18.786Z-aa2e639e-31d0-4a42-a866-30f2fcecedfd",
+        "prompt": "Search for the specific risk rating assigned to fees and payment clauses in sections titled 'Risk Matrix', 'Contract Risk Assessment', 'Commercial Terms Risk', or 'Payment Risk Analysis'. Look for exact phrases like 'fees payment clause risk: [rating]', 'payment terms risk level', 'billing clause risk rating', or 'commercial risk assessment'. Return EXACTLY one value: Low, Medium, or High. Do NOT return general payment amounts, billing cycles, or contract pricing. If no explicit risk rating for the fees and payment clause is documented, return an empty string.",
+        "savedAt": "2025-12-05T18:50:18.786Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 8.3% → Final: 100.0% (3 iterations)"
+      }
+    ],
+    "lastUsedTemplate": "msa",
+    "usageCount": 2,
+    "lastModified": "2025-12-05T18:58:26.631Z"
+  },
+  "tenant_name": {
+    "activePrompt": "Extract the Tenant's full legal entity name (the lessee/occupant). Look only in: (1) Preamble text after \"by and between\" or after any \"Tenant:\" label, (2) Parties section, (3) Signature blocks where the tenant signs. Synonyms: \"Lessee,\" \"Tenant,\" \"Occupant.\" Return the complete legal name including suffixes such as LLC, Inc., Corp., LP, LLP. Do NOT return the landlord name, any guarantor, trade name, or DBA. ",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the Tenant's full legal entity name (the lessee/occupant). Look only in: (1) Preamble text after \"by and between\" or after any \"Tenant:\" label, (2) Parties section, (3) Signature blocks where the tenant signs. Synonyms: \"Lessee,\" \"Tenant,\" \"Occupant.\" Return the complete legal name including suffixes such as LLC, Inc., Corp., LP, LLP. Do NOT return the landlord name, any guarantor, trade name, or DBA. ",
+        "savedAt": "2025-12-06T18:55:09.362Z"
+      },
+      {
+        "id": "library-2025-12-06T06:39:23.480Z-field-1765000995965-b37nx454e",
+        "prompt": "Extract the Tenant's full legal entity name (the lessee/occupant). Look only in: (1) Preamble text after \"by and between\" or after any \"Tenant:\" label, (2) Parties section, (3) Signature blocks where the tenant signs. Synonyms: \"Lessee,\" \"Tenant,\" \"Occupant.\" Return the complete legal name including suffixes such as LLC, Inc., Corp., LP, LLP. Do NOT return the landlord name, any guarantor, trade name, or DBA. If no tenant legal name is clearly identified, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.480Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Tenant Name"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 2,
+    "lastModified": "2025-12-06T18:55:09.380Z"
+  },
+  "region": {
+    "activePrompt": "Identify the geographic region or market for the property. Look in: (1) Property address in the preamble or summary table, (2) Premises description, (3) Legal description or exhibits. If a formal region label is stated (for example \"Northeast Region\" or \"West Coast Portfolio\"), return that text. If no region label is given, infer a standard region name (for example \"Northeast,\" \"West Coast,\" \"Midwest,\" \"EMEA\") from the city and state or country. ",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Identify the geographic region or market for the property. Look in: (1) Property address in the preamble or summary table, (2) Premises description, (3) Legal description or exhibits. If a formal region label is stated (for example \"Northeast Region\" or \"West Coast Portfolio\"), return that text. If no region label is given, infer a standard region name (for example \"Northeast,\" \"West Coast,\" \"Midwest,\" \"EMEA\") from the city and state or country. ",
+        "savedAt": "2025-12-06T18:54:52.228Z"
+      },
+      {
+        "id": "library-2025-12-06T06:39:23.491Z-field-1765000995965-ddoawo2vb",
+        "prompt": "Identify the geographic region or market for the property. Look in: (1) Property address in the preamble or summary table, (2) Premises description, (3) Legal description or exhibits. If a formal region label is stated (for example \"Northeast Region\" or \"West Coast Portfolio\"), return that text. If no region label is given, infer a standard region name (for example \"Northeast,\" \"West Coast,\" \"Midwest,\" \"EMEA\") from the city and state or country. If you cannot reasonably infer a standard region, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.491Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Region"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 2,
+    "lastModified": "2025-12-06T18:54:52.248Z"
+  },
+  "property": {
+    "activePrompt": "Extract the official property or building name. Look in: (1) Preamble where the premises are described, (2) Sections labeled \"Building,\" \"Project,\" \"Property,\" or \"Premises,\" (3) Any caption near the address. Synonyms: \"Building,\" \"Property,\" \"Project,\" \"Development.\" Return only the named project or building label (for example \"Pier 4 Residential\" or \"Sunset Tower\") and do not include street address, city, or suite.",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the official property or building name. Look in: (1) Preamble where the premises are described, (2) Sections labeled \"Building,\" \"Project,\" \"Property,\" or \"Premises,\" (3) Any caption near the address. Synonyms: \"Building,\" \"Property,\" \"Project,\" \"Development.\" Return only the named project or building label (for example \"Pier 4 Residential\" or \"Sunset Tower\") and do not include street address, city, or suite.",
+        "savedAt": "2025-12-06T18:55:22.419Z"
+      },
+      {
+        "id": "library-2025-12-06T06:39:23.495Z-field-1765000995965-5dsgmdb8b",
+        "prompt": "Extract the official property or building name. Look in: (1) Preamble where the premises are described, (2) Sections labeled \"Building,\" \"Project,\" \"Property,\" or \"Premises,\" (3) Any caption near the address. Synonyms: \"Building,\" \"Property,\" \"Project,\" \"Development.\" Return only the named project or building label (for example \"Pier 4 Residential\" or \"Sunset Tower\") and do not include street address, city, or suite. If the lease only provides an address with no separate property name, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.495Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Property"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 2,
+    "lastModified": "2025-12-06T18:55:22.443Z"
+  },
+  "doing_business_as": {
+    "activePrompt": "Extract the Tenant's trade name or DBA, if different from the legal entity name. Look in: (1) Preamble for parentheticals like \"(d/b/a X)\", \"(doing business as X)\", or \"(trading as X)\", (2) Use or \"Permitted Use\" section, (3) Signage or branding sections. Synonyms: \"d/b/a,\" \"doing business as,\" \"trading as,\" \"operating as.\" Return only the trade name text (for example \"Star Market\") and omit any \"d/b/a\" or similar prefix. ",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the Tenant's trade name or DBA, if different from the legal entity name. Look in: (1) Preamble for parentheticals like \"(d/b/a X)\", \"(doing business as X)\", or \"(trading as X)\", (2) Use or \"Permitted Use\" section, (3) Signage or branding sections. Synonyms: \"d/b/a,\" \"doing business as,\" \"trading as,\" \"operating as.\" Return only the trade name text (for example \"Star Market\") and omit any \"d/b/a\" or similar prefix. ",
+        "savedAt": "2025-12-06T18:55:46.703Z"
+      },
+      {
+        "id": "library-2025-12-06T06:39:23.498Z-field-1765000995965-10ukb9xwd",
+        "prompt": "Extract the Tenant's trade name or DBA, if different from the legal entity name. Look in: (1) Preamble for parentheticals like \"(d/b/a X)\", \"(doing business as X)\", or \"(trading as X)\", (2) Use or \"Permitted Use\" section, (3) Signage or branding sections. Synonyms: \"d/b/a,\" \"doing business as,\" \"trading as,\" \"operating as.\" Return only the trade name text (for example \"Star Market\") and omit any \"d/b/a\" or similar prefix. If no DBA, trade, or operating name is identified, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.498Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Doing Business As"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 2,
+    "lastModified": "2025-12-06T18:55:46.726Z"
+  },
+  "lease_type_office_retail_storage_etc": {
+    "activePrompt": "Identify the lease use type or types. Look in: (1) \"Use\" or \"Permitted Use\" sections, (2) Premises description, (3) Preamble description of the business. Match the explicit use language to one or more of these values: Office, Retail, Storage. If text clearly indicates another equivalent (for example \"office space\" or \"retail shop\"), map to the appropriate value. Do NOT infer from the tenant's industry or name alone without supporting language in the lease. ",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Identify the lease use type or types. Look in: (1) \"Use\" or \"Permitted Use\" sections, (2) Premises description, (3) Preamble description of the business. Match the explicit use language to one or more of these values: Office, Retail, Storage. If text clearly indicates another equivalent (for example \"office space\" or \"retail shop\"), map to the appropriate value. Do NOT infer from the tenant's industry or name alone without supporting language in the lease. ",
+        "savedAt": "2025-12-06T18:56:03.049Z"
+      },
+      {
+        "id": "library-2025-12-06T06:39:23.501Z-field-1765000995965-dm4olrwyx",
+        "prompt": "Identify the lease use type or types. Look in: (1) \"Use\" or \"Permitted Use\" sections, (2) Premises description, (3) Preamble description of the business. Match the explicit use language to one or more of these values: Office, Retail, Storage. If text clearly indicates another equivalent (for example \"office space\" or \"retail shop\"), map to the appropriate value. Do NOT infer from the tenant's industry or name alone without supporting language in the lease. If the use type cannot be matched to Office, Retail, or Storage, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.501Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Lease Type (Office, Retail, Storage, etc.)"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 2,
+    "lastModified": "2025-12-06T18:56:03.070Z"
+  },
+  "lease_purpose": {
+    "activePrompt": "Determine the transaction purpose of this document. Look in: (1) Recitals or \"Whereas\" clauses, (2) Any Amendment or Addendum headings, (3) Premises description noting added or reduced space. Map to these values: Renewal (extending an existing lease term), Expansion (adding space or premises), Contraction (reducing space or premises), Not Applicable (original or stand-alone lease). If more than one clearly applies, return a comma-separated list, for example \"Renewal, Expansion\". ",
+    "promptHistory": [
+      {
+        "id": "v3",
+        "prompt": "Determine the transaction purpose of this document. Look in: (1) Recitals or \"Whereas\" clauses, (2) Any Amendment or Addendum headings, (3) Premises description noting added or reduced space. Map to these values: Renewal (extending an existing lease term), Expansion (adding space or premises), Contraction (reducing space or premises), Not Applicable (original or stand-alone lease). If more than one clearly applies, return a comma-separated list, for example \"Renewal, Expansion\". ",
+        "savedAt": "2025-12-06T18:56:18.581Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Determine the transaction purpose of this document. Look in: (1) Recitals or \"Whereas\" clauses, (2) Any Amendment or Addendum headings, (3) Premises description noting added or reduced space. Map to these values: Renewal (extending an existing lease term), Expansion (adding space or premises), Contraction (reducing space or premises), Not Applicable (original or stand-alone lease). If more than one clearly applies, return a comma-separated list, for example \"Renewal, Expansion\". If document appears to be a first generation lease with no modification, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:44:42.341Z"
+      },
+      {
+        "id": "library-2025-12-06T06:39:23.504Z-field-1765000995965-t8qfkhwq7",
+        "prompt": "Determine the transaction purpose of this document. Look in: (1) Recitals or \"Whereas\" clauses, (2) Any Amendment or Addendum headings, (3) Premises description noting added or reduced space. Map to these values: Renewal (extending an existing lease term), Expansion (adding space or premises), Contraction (reducing space or premises), Not Applicable (original or stand-alone lease). If more than one clearly applies, return a comma-separated list, for example \"Renewal, Expansion\". If document appears to be a first generation lease with no modification, return exactly 'Not Applicable'.",
+        "savedAt": "2025-12-06T06:39:23.504Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Lease Purpose"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 3,
+    "lastModified": "2025-12-06T18:56:18.603Z"
+  },
+  "area_type": {
+    "activePrompt": "Identify the unit of measure used for leased area. Look in: (1) \"Premises\" section where size is stated, (2) Rent calculation or \"Area\" definitions. If the lease uses \"square feet\", \"SF\", \"RSF\", \"USF\", or similar, return exactly \"Sqft\". If it uses \"square meters\", \"SM\", \"SQM\", or similar, return exactly \"Sqm\". ",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Identify the unit of measure used for leased area. Look in: (1) \"Premises\" section where size is stated, (2) Rent calculation or \"Area\" definitions. If the lease uses \"square feet\", \"SF\", \"RSF\", \"USF\", or similar, return exactly \"Sqft\". If it uses \"square meters\", \"SM\", \"SQM\", or similar, return exactly \"Sqm\". ",
+        "savedAt": "2025-12-06T18:56:31.480Z"
+      },
+      {
+        "id": "library-2025-12-06T06:39:23.507Z-field-1765000995965-35zr2lvo0",
+        "prompt": "Identify the unit of measure used for leased area. Look in: (1) \"Premises\" section where size is stated, (2) Rent calculation or \"Area\" definitions. If the lease uses \"square feet\", \"SF\", \"RSF\", \"USF\", or similar, return exactly \"Sqft\". If it uses \"square meters\", \"SM\", \"SQM\", or similar, return exactly \"Sqm\". If the area is never stated or the unit cannot be determined, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.507Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Area Type"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 2,
+    "lastModified": "2025-12-06T18:56:31.502Z"
+  },
+  "uploaded_to_box": {
+    "activePrompt": "Extract the date the document was uploaded into Box. Use document system metadata only if available; this date is typically not present in the lease text. Return the upload date in strict YYYY-MM-DD format. Do NOT infer or approximate from execution or email dates inside the lease. ",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Extract the date the document was uploaded into Box. Use document system metadata only if available; this date is typically not present in the lease text. Return the upload date in strict YYYY-MM-DD format. Do NOT infer or approximate from execution or email dates inside the lease. ",
+        "savedAt": "2025-12-06T18:57:02.353Z"
+      },
+      {
+        "id": "library-2025-12-06T06:39:23.513Z-field-1765000995965-vh8s67iay",
+        "prompt": "Extract the date the document was uploaded into Box. Use document system metadata only if available; this date is typically not present in the lease text. Return the upload date in strict YYYY-MM-DD format. Do NOT infer or approximate from execution or email dates inside the lease. If the Box upload date metadata is missing or inaccessible, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.513Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Uploaded to Box"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 2,
+    "lastModified": "2025-12-06T18:57:02.375Z"
+  },
+  "received_by_lease_admin": {
+    "activePrompt": "Extract the date on which Lease Administration received the document. Look for: (1) date stamps on the first page, (2) cover letters or transmittal pages, (3) internal routing stamps or headers that explicitly indicate receipt by lease admin. Return the receipt date in strict YYYY-MM-DD format. If multiple receipt dates appear, return the latest. If no explicit receipt date for Lease Administration is documented, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.515Z-field-1765000995965-godfe5yqv",
+        "prompt": "Extract the date on which Lease Administration received the document. Look for: (1) date stamps on the first page, (2) cover letters or transmittal pages, (3) internal routing stamps or headers that explicitly indicate receipt by lease admin. Return the receipt date in strict YYYY-MM-DD format. If multiple receipt dates appear, return the latest. If no explicit receipt date for Lease Administration is documented, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.515Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Received by Lease Admin"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
     "usageCount": 1,
-    "lastModified": "2025-12-05T06:37:09.555Z"
+    "lastModified": "2025-12-06T06:39:23.516Z"
+  },
+  "assigned_for_setup_and_abstraction": {
+    "activePrompt": "Extract the date when the lease was assigned for setup and abstraction. Look for: (1) workflow or routing stamps, (2) assignment notes on a cover sheet, checklist, or internal form, (3) system metadata fields labeled \"Assigned\" or similar. Return the assignment date in strict YYYY-MM-DD format. If there is no clear assignment date, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.518Z-field-1765000995965-p577z93mb",
+        "prompt": "Extract the date when the lease was assigned for setup and abstraction. Look for: (1) workflow or routing stamps, (2) assignment notes on a cover sheet, checklist, or internal form, (3) system metadata fields labeled \"Assigned\" or similar. Return the assignment date in strict YYYY-MM-DD format. If there is no clear assignment date, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.518Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Assigned for Setup and Abstraction"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.519Z"
+  },
+  "ax_setup_completed": {
+    "activePrompt": "Extract the date AX system setup was completed for this lease. Use only system or workflow metadata fields that explicitly reference AX setup or \"AX entry completed\". This information usually does not appear in the lease body. Return the date in strict YYYY-MM-DD format. If there is no such AX completion date in the available metadata, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.521Z-field-1765000995965-o0o0ludqt",
+        "prompt": "Extract the date AX system setup was completed for this lease. Use only system or workflow metadata fields that explicitly reference AX setup or \"AX entry completed\". This information usually does not appear in the lease body. Return the date in strict YYYY-MM-DD format. If there is no such AX completion date in the available metadata, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.521Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / AX setup completed"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.522Z"
+  },
+  "abstract_completed": {
+    "activePrompt": "Extract the date on which the lease abstract was completed. Use abstraction forms, checklists, or system metadata fields labeled \"Abstract Complete\", \"Abstraction Date\", or similar. This date will usually not appear in the lease itself. Return the date in strict YYYY-MM-DD format. If no abstraction completion date is recorded, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.523Z-field-1765000995965-j2i2ztviw",
+        "prompt": "Extract the date on which the lease abstract was completed. Use abstraction forms, checklists, or system metadata fields labeled \"Abstract Complete\", \"Abstraction Date\", or similar. This date will usually not appear in the lease itself. Return the date in strict YYYY-MM-DD format. If no abstraction completion date is recorded, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.523Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Abstract Completed"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.524Z"
+  },
+  "lease_execution_date": {
+    "activePrompt": "Extract the Lease Execution Date, meaning the date when all required parties completed signing. Look in order of priority: (1) a preamble line that says \"Dated as of\" or \"This Lease is made as of\", (2) signature blocks and any \"Executed on\" dates for landlord and tenant, (3) notarization dates if explicitly called out as execution dates. Synonyms: \"Execution Date\", \"Date of this Lease\", \"Effective Date\" when the text clearly ties \"Effective\" to signing rather than to commencement. If different parties sign on different days, return the latest signature date. Return the date in strict YYYY-MM-DD format. Do NOT return commencement date, rent commencement date, or substantial completion dates. If you cannot identify a clear execution date, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.526Z-field-1765000995965-vzu3aa13l",
+        "prompt": "Extract the Lease Execution Date, meaning the date when all required parties completed signing. Look in order of priority: (1) a preamble line that says \"Dated as of\" or \"This Lease is made as of\", (2) signature blocks and any \"Executed on\" dates for landlord and tenant, (3) notarization dates if explicitly called out as execution dates. Synonyms: \"Execution Date\", \"Date of this Lease\", \"Effective Date\" when the text clearly ties \"Effective\" to signing rather than to commencement. If different parties sign on different days, return the latest signature date. Return the date in strict YYYY-MM-DD format. Do NOT return commencement date, rent commencement date, or substantial completion dates. If you cannot identify a clear execution date, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.526Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Lease Execution Date"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.527Z"
+  },
+  "commencement_date": {
+    "activePrompt": "Extract the Lease Commencement Date, defined as the date the lease term begins and tenant is entitled to possession. Look in: (1) the \"Term\" article, including any defined term \"Commencement Date\", (2) any section titled \"Lease Commencement\", \"Term Commencement\", or \"Possession\", (3) summary of basic lease information or data sheet. Synonyms: \"Lease Start Date\", \"Term begins\", \"Possession Date\", \"Occupancy Date\" when explicitly linked to commencement. Do NOT return the execution date, rent commencement date, or a construction/substantial completion date unless the lease explicitly states that such date is the Commencement Date. Return the date in strict YYYY-MM-DD format. If the Commencement Date is defined only by a future condition such as \"upon substantial completion\" without a concrete calendar date, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.528Z-field-1765000995965-regn2mkw6",
+        "prompt": "Extract the Lease Commencement Date, defined as the date the lease term begins and tenant is entitled to possession. Look in: (1) the \"Term\" article, including any defined term \"Commencement Date\", (2) any section titled \"Lease Commencement\", \"Term Commencement\", or \"Possession\", (3) summary of basic lease information or data sheet. Synonyms: \"Lease Start Date\", \"Term begins\", \"Possession Date\", \"Occupancy Date\" when explicitly linked to commencement. Do NOT return the execution date, rent commencement date, or a construction/substantial completion date unless the lease explicitly states that such date is the Commencement Date. Return the date in strict YYYY-MM-DD format. If the Commencement Date is defined only by a future condition such as \"upon substantial completion\" without a concrete calendar date, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.528Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Commencement Date"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.529Z"
+  },
+  "rent_commencement_date": {
+    "activePrompt": "Extract the Rent Commencement Date, defined as the date on which the tenant is first obligated to start paying base rent. Look in: (1) the \"Rent\" or \"Base Rent\" section for phrases like \"Rent shall commence on\", \"Tenant's obligation to pay rent shall begin\", (2) any \"Rent Commencement Date\" definition, (3) free rent or abatement sections that specify when free rent ends and regular rent starts. Synonyms: \"Rent Start Date\", \"Payment Commencement\", \"First rent payment due\". Do NOT return the lease Commencement Date unless the lease explicitly states that rent begins on that same date. If the lease clearly states an abatement period but no explicit rent commencement date, you may calculate: Commencement Date plus the abatement period length and return that date in YYYY-MM-DD format. If you still cannot determine the rent commencement as a specific date, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.530Z-field-1765000995965-k24zqq1jk",
+        "prompt": "Extract the Rent Commencement Date, defined as the date on which the tenant is first obligated to start paying base rent. Look in: (1) the \"Rent\" or \"Base Rent\" section for phrases like \"Rent shall commence on\", \"Tenant's obligation to pay rent shall begin\", (2) any \"Rent Commencement Date\" definition, (3) free rent or abatement sections that specify when free rent ends and regular rent starts. Synonyms: \"Rent Start Date\", \"Payment Commencement\", \"First rent payment due\". Do NOT return the lease Commencement Date unless the lease explicitly states that rent begins on that same date. If the lease clearly states an abatement period but no explicit rent commencement date, you may calculate: Commencement Date plus the abatement period length and return that date in YYYY-MM-DD format. If you still cannot determine the rent commencement as a specific date, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.530Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Rent Commencement Date"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.532Z"
+  },
+  "expiration_end_date": {
+    "activePrompt": "Extract the Lease Expiration Date, meaning the scheduled end date of the original lease term before any renewal options. Look in: (1) the \"Term\" article for explicit phrases like \"shall expire on\", \"Expiration Date\", or \"Lease Termination Date\", (2) any defined term \"Expiration Date\" or \"Term Expiration\", (3) the basic lease information summary. Synonyms: \"Lease terminates on\", \"End of Term\". If no explicit calendar date is given but the term is defined by length (for example \"for five years from the Commencement Date\"), calculate the expiration date as Commencement Date plus the stated term and return that date in YYYY-MM-DD format. Do NOT use any renewal or extension period, and do NOT return early termination dates unless they are defined as the normal expiration. If you cannot determine a specific expiration date, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.533Z-field-1765000995965-lwcsvxq05",
+        "prompt": "Extract the Lease Expiration Date, meaning the scheduled end date of the original lease term before any renewal options. Look in: (1) the \"Term\" article for explicit phrases like \"shall expire on\", \"Expiration Date\", or \"Lease Termination Date\", (2) any defined term \"Expiration Date\" or \"Term Expiration\", (3) the basic lease information summary. Synonyms: \"Lease terminates on\", \"End of Term\". If no explicit calendar date is given but the term is defined by length (for example \"for five years from the Commencement Date\"), calculate the expiration date as Commencement Date plus the stated term and return that date in YYYY-MM-DD format. Do NOT use any renewal or extension period, and do NOT return early termination dates unless they are defined as the normal expiration. If you cannot determine a specific expiration date, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.533Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Expiration/End Date"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.534Z"
+  },
+  "floor": {
+    "activePrompt": "Extract the floor designation of the leased premises. Look in: (1) the \"Premises\" section and any description of the space, (2) address lines that include a floor or level (for example \"3rd Floor\"), (3) floor plans or Exhibit A captions. Return the floor description exactly as stated, such as \"3\", \"3rd\", \"3-5\", \"Ground\", \"Mezzanine\", or \"Penthouse\". Do NOT return building name, unit or suite number, or total building floors. If the floor is never specified, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.535Z-field-1765000995965-wr9tbah4w",
+        "prompt": "Extract the floor designation of the leased premises. Look in: (1) the \"Premises\" section and any description of the space, (2) address lines that include a floor or level (for example \"3rd Floor\"), (3) floor plans or Exhibit A captions. Return the floor description exactly as stated, such as \"3\", \"3rd\", \"3-5\", \"Ground\", \"Mezzanine\", or \"Penthouse\". Do NOT return building name, unit or suite number, or total building floors. If the floor is never specified, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.535Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Floor #"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.536Z"
+  },
+  "unit": {
+    "activePrompt": "Extract the unit, suite, or space identifier for the premises. Look in: (1) \"Premises\" section, (2) address block listing \"Suite\", \"Unit\", \"Space\", or \"Room\", (3) floor plans or labels on Exhibit A. Synonyms: \"Suite\", \"Unit\", \"Space\", \"Room\". Return the designation exactly as stated, for example \"Suite 300\", \"Unit A\", or \"Space 101\". Do NOT return the building name, street address, or floor number. If no specific unit or suite designation is provided, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.538Z-field-1765000995965-520f6gfcn",
+        "prompt": "Extract the unit, suite, or space identifier for the premises. Look in: (1) \"Premises\" section, (2) address block listing \"Suite\", \"Unit\", \"Space\", or \"Room\", (3) floor plans or labels on Exhibit A. Synonyms: \"Suite\", \"Unit\", \"Space\", \"Room\". Return the designation exactly as stated, for example \"Suite 300\", \"Unit A\", or \"Space 101\". Do NOT return the building name, street address, or floor number. If no specific unit or suite designation is provided, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.538Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Unit"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.539Z"
+  },
+  "industry_segment": {
+    "activePrompt": "Extract the tenant's industry segment or business category. Look in: (1) \"Use\" or \"Permitted Use\" sections that describe the type of business conducted, (2) any description of the tenant in the preamble or recitals, (3) special provisions that describe the tenant's operations. Return a concise industry label such as \"Technology\", \"Healthcare\", \"Retail\", \"Restaurant\", \"Financial Services\". You may infer from a clear description of permitted use (for example \"operating a dental clinic\" maps to \"Healthcare\"). If industry type remains unclear or generic (for example \"any lawful use\"), return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.540Z-field-1765000995965-rhk25g5nt",
+        "prompt": "Extract the tenant's industry segment or business category. Look in: (1) \"Use\" or \"Permitted Use\" sections that describe the type of business conducted, (2) any description of the tenant in the preamble or recitals, (3) special provisions that describe the tenant's operations. Return a concise industry label such as \"Technology\", \"Healthcare\", \"Retail\", \"Restaurant\", \"Financial Services\". You may infer from a clear description of permitted use (for example \"operating a dental clinic\" maps to \"Healthcare\"). If industry type remains unclear or generic (for example \"any lawful use\"), return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.540Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Industry Segment"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.541Z"
+  },
+  "currency": {
+    "activePrompt": "Identify the currency used for monetary amounts in the lease. Look in: (1) Rent and payment sections for currency symbols or ISO codes, (2) definitions for \"Dollars\" or similar, (3) any statement such as \"lawful money of the United States\". Map symbols to 3-letter ISO codes: \"$\" or \"U.S. Dollars\" to \"USD\", \"Û\" to \"EUR\", \"£\" to \"GBP\", etc. If the lease refers to a specific countryÕs currency, map to the standard 3-letter ISO code. Return only the 3-letter code. If the currency cannot be determined from the text, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.542Z-field-1765000995965-zgms8csu6",
+        "prompt": "Identify the currency used for monetary amounts in the lease. Look in: (1) Rent and payment sections for currency symbols or ISO codes, (2) definitions for \"Dollars\" or similar, (3) any statement such as \"lawful money of the United States\". Map symbols to 3-letter ISO codes: \"$\" or \"U.S. Dollars\" to \"USD\", \"Û\" to \"EUR\", \"£\" to \"GBP\", etc. If the lease refers to a specific countryÕs currency, map to the standard 3-letter ISO code. Return only the 3-letter code. If the currency cannot be determined from the text, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.542Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Currency"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.543Z"
+  },
+  "base_rent_monthly": {
+    "activePrompt": "Extract the monthly Base Rent amount, defined as the fixed minimum rent before any operating expenses, CAM, taxes, or percentage rent. Look in: (1) articles titled \"Rent\", \"Base Rent\", or \"Basic Rent\", (2) rent schedules or exhibits, (3) basic lease information tables. Synonyms: \"base rental\", \"minimum monthly rent\", \"fixed rent\". If the lease provides only an annual base rent, calculate Monthly Base Rent as Annual Base Rent divided by 12. Return a numeric value only, with no currency symbol and no commas (for example 25000). Do NOT include CAM, additional rent, utilities, or percentage rent in this amount. If no base rent amount can be found or derived, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.545Z-field-1765000995965-t62r4ls13",
+        "prompt": "Extract the monthly Base Rent amount, defined as the fixed minimum rent before any operating expenses, CAM, taxes, or percentage rent. Look in: (1) articles titled \"Rent\", \"Base Rent\", or \"Basic Rent\", (2) rent schedules or exhibits, (3) basic lease information tables. Synonyms: \"base rental\", \"minimum monthly rent\", \"fixed rent\". If the lease provides only an annual base rent, calculate Monthly Base Rent as Annual Base Rent divided by 12. Return a numeric value only, with no currency symbol and no commas (for example 25000). Do NOT include CAM, additional rent, utilities, or percentage rent in this amount. If no base rent amount can be found or derived, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.545Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Base Rent (monthly)"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.546Z"
+  },
+  "base_rent_full_schedule": {
+    "activePrompt": "Extract the full Base Rent schedule for the original lease term, including all step increases and adjustment mechanisms. Look in: (1) any \"Rent Schedule\" or \"Exhibit\" that lists rent by period, (2) \"Rent Adjustments\", \"Escalations\", or \"Fixed Increases\" sections, (3) basic lease information tables that list rent by year. Capture each distinct rent period with its amount and timing. You may either summarize in a structured text format such as \"Year 1: X, Year 2: Y, Year 3: Z\" or reproduce the schedule language if it is already structured. Include references to CPI or other formulas if they are part of the base rent schedule. If no multi-period schedule or escalation description is provided, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.549Z-field-1765000995965-flvpl85b4",
+        "prompt": "Extract the full Base Rent schedule for the original lease term, including all step increases and adjustment mechanisms. Look in: (1) any \"Rent Schedule\" or \"Exhibit\" that lists rent by period, (2) \"Rent Adjustments\", \"Escalations\", or \"Fixed Increases\" sections, (3) basic lease information tables that list rent by year. Capture each distinct rent period with its amount and timing. You may either summarize in a structured text format such as \"Year 1: X, Year 2: Y, Year 3: Z\" or reproduce the schedule language if it is already structured. Include references to CPI or other formulas if they are part of the base rent schedule. If no multi-period schedule or escalation description is provided, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.549Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Base Rent (Full Schedule)"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.550Z"
+  },
+  "frequency": {
+    "activePrompt": "Extract how often base rent is required to be paid. Look in: (1) \"Rent\" and \"Payment\" sections for phrases such as \"in monthly installments\", \"payable quarterly\", \"payable annually\", (2) any payment schedule or basic lease information table. Map the frequency to one of these values only: \"Monthly\", \"Quarterly\", \"Semi-Annually\", \"Annually\". If the lease clearly states \"in advance on the first day of each month\" or similar, return \"Monthly\". Do NOT assume a frequency from custom arrangements unless they clearly match one of these four. If no clear frequency can be determined, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.552Z-field-1765000995965-21kb7l4sq",
+        "prompt": "Extract how often base rent is required to be paid. Look in: (1) \"Rent\" and \"Payment\" sections for phrases such as \"in monthly installments\", \"payable quarterly\", \"payable annually\", (2) any payment schedule or basic lease information table. Map the frequency to one of these values only: \"Monthly\", \"Quarterly\", \"Semi-Annually\", \"Annually\". If the lease clearly states \"in advance on the first day of each month\" or similar, return \"Monthly\". Do NOT assume a frequency from custom arrangements unless they clearly match one of these four. If no clear frequency can be determined, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.552Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Frequency"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.553Z"
+  },
+  "annualized_amount": {
+    "activePrompt": "Extract or calculate the annualized Base Rent for the initial year of the lease. Look in: (1) rent sections that explicitly state \"per year\" or \"annual\" base rent, (2) basic lease information tables. If only a monthly base rent is provided, calculate Annual Base Rent as Monthly Base Rent times 12. Return a numeric value only, with no currency symbol and no commas (for example 300000). Do NOT include CAM, additional rent, or percentage rent in this calculation. If annual base rent cannot be determined or calculated, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.554Z-field-1765000995965-gcs51m3xb",
+        "prompt": "Extract or calculate the annualized Base Rent for the initial year of the lease. Look in: (1) rent sections that explicitly state \"per year\" or \"annual\" base rent, (2) basic lease information tables. If only a monthly base rent is provided, calculate Annual Base Rent as Monthly Base Rent times 12. Return a numeric value only, with no currency symbol and no commas (for example 300000). Do NOT include CAM, additional rent, or percentage rent in this calculation. If annual base rent cannot be determined or calculated, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.554Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Annualized Amount"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.555Z"
+  },
+  "expense_recoveries": {
+    "activePrompt": "Extract the expense recovery structure and the tenant's obligations to pay operating expenses. Look in: (1) \"Operating Expenses\", \"Common Area Maintenance\", \"Additional Rent\", and \"CAM\" sections, (2) any definitions of \"Net\", \"Triple Net\", \"Full Service\", or \"Base Year\". Identify whether the lease is effectively NNN (tenant pays most or all expenses), Modified Gross, Full Service, or Base Year Stop, and list key categories the tenant pays (for example CAM, taxes, insurance, utilities). Return a concise but complete description of the expense structure, including any base year or expense stop concept. If the lease does not address operating expense allocation at all, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.556Z-field-1765000995965-1acbklsos",
+        "prompt": "Extract the expense recovery structure and the tenant's obligations to pay operating expenses. Look in: (1) \"Operating Expenses\", \"Common Area Maintenance\", \"Additional Rent\", and \"CAM\" sections, (2) any definitions of \"Net\", \"Triple Net\", \"Full Service\", or \"Base Year\". Identify whether the lease is effectively NNN (tenant pays most or all expenses), Modified Gross, Full Service, or Base Year Stop, and list key categories the tenant pays (for example CAM, taxes, insurance, utilities). Return a concise but complete description of the expense structure, including any base year or expense stop concept. If the lease does not address operating expense allocation at all, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.556Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Expense Recoveries"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.557Z"
+  },
+  "base_year": {
+    "activePrompt": "Extract the Base Year used for operating expense comparisons or stops. Look in: (1) \"Operating Expenses\" or \"Base Year\" sections, (2) expense stop or escalation clauses that reference a specific year as the baseline. If a calendar year is specified (for example \"Base Year shall be the calendar year 2024\"), return that four-digit year. If the lease defines Base Year as a lease year (for example \"Lease Year 1\"), convert it to the actual calendar year using the Commencement Date if possible and return that year. If the lease is clearly NNN with no base year concept, or no base year can be identified, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.558Z-field-1765000995965-hxquduzm6",
+        "prompt": "Extract the Base Year used for operating expense comparisons or stops. Look in: (1) \"Operating Expenses\" or \"Base Year\" sections, (2) expense stop or escalation clauses that reference a specific year as the baseline. If a calendar year is specified (for example \"Base Year shall be the calendar year 2024\"), return that four-digit year. If the lease defines Base Year as a lease year (for example \"Lease Year 1\"), convert it to the actual calendar year using the Commencement Date if possible and return that year. If the lease is clearly NNN with no base year concept, or no base year can be identified, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.558Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Base Year"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.559Z"
+  },
+  "pro_rata": {
+    "activePrompt": "Extract the tenant's percentage share of building or project operating expenses. Look in: (1) any definition of \"Proportionate Share\", \"Pro Rata Share\", or \"Tenant's Percentage\", (2) CAM or operating expense sections, (3) basic lease information tables. Synonyms: \"proportionate share\", \"pro rata share\", \"tenant's share\". Return a numeric percentage value only, without a \"%\" sign (for example 8.5 for 8.5 percent). If not expressly stated but both tenant rentable area and total building area are clearly given, you may calculate Tenant Area divided by Building Area times 100 and return that number. If the concept does not apply or cannot be determined, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.562Z-field-1765000995965-f3av9n0qi",
+        "prompt": "Extract the tenant's percentage share of building or project operating expenses. Look in: (1) any definition of \"Proportionate Share\", \"Pro Rata Share\", or \"Tenant's Percentage\", (2) CAM or operating expense sections, (3) basic lease information tables. Synonyms: \"proportionate share\", \"pro rata share\", \"tenant's share\". Return a numeric percentage value only, without a \"%\" sign (for example 8.5 for 8.5 percent). If not expressly stated but both tenant rentable area and total building area are clearly given, you may calculate Tenant Area divided by Building Area times 100 and return that number. If the concept does not apply or cannot be determined, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.562Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Pro Rata %"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.563Z"
+  },
+  "has_expansion_contraction_option": {
+    "activePrompt": "Determine whether the tenant has any contractual right to expand or reduce its leased premises. Look in: (1) \"Options\", \"Expansion\", \"Contraction\", \"Give-Back\" or \"Giveback\" sections, (2) special provisions describing additional space or space give-backs. If the tenant has a clearly defined right to add space, reduce space, or give back space under stated conditions, return exactly \"Yes\". If the lease expressly prohibits expansion or contraction rights or contains no such tenant right, return exactly \"No\". If it is unclear whether such a right exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.566Z-field-1765000995965-ob7f9dtr3",
+        "prompt": "Determine whether the tenant has any contractual right to expand or reduce its leased premises. Look in: (1) \"Options\", \"Expansion\", \"Contraction\", \"Give-Back\" or \"Giveback\" sections, (2) special provisions describing additional space or space give-backs. If the tenant has a clearly defined right to add space, reduce space, or give back space under stated conditions, return exactly \"Yes\". If the lease expressly prohibits expansion or contraction rights or contains no such tenant right, return exactly \"No\". If it is unclear whether such a right exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.566Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Expansion/Contraction Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.567Z"
+  },
+  "expansion_contraction_option": {
+    "activePrompt": "Extract the detailed terms of any tenant expansion and contraction options. Look in: (1) \"Expansion Option\", \"Right to Additional Space\", \"Contraction\", or \"Give-Back\" sections, (2) special provisions describing changes in premises size. Capture: what space is covered, when the option can be exercised, notice deadlines, how rent is determined for added or reduced space, and key conditions or limitations. Return a concise but complete summary or the exact clause text for these options. If the tenant has no expansion or contraction option, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.570Z-field-1765000995965-6cyb2po47",
+        "prompt": "Extract the detailed terms of any tenant expansion and contraction options. Look in: (1) \"Expansion Option\", \"Right to Additional Space\", \"Contraction\", or \"Give-Back\" sections, (2) special provisions describing changes in premises size. Capture: what space is covered, when the option can be exercised, notice deadlines, how rent is determined for added or reduced space, and key conditions or limitations. Return a concise but complete summary or the exact clause text for these options. If the tenant has no expansion or contraction option, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.570Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Expansion/Contraction Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.571Z"
+  },
+  "has_purchase_option": {
+    "activePrompt": "Determine whether the tenant has any contractual right to purchase the property. Look in: (1) sections titled \"Option to Purchase\", \"Purchase Option\", or \"Right to Purchase\", (2) special provisions addressing sale to tenant. If the tenant has a defined right to buy the property or a portion of it under specified terms, return exactly \"Yes\". If the lease expressly states that no purchase option exists or contains no tenant purchase right, return exactly \"No\". If it is unclear whether any purchase right is granted, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.573Z-field-1765000995965-bebj4xhkh",
+        "prompt": "Determine whether the tenant has any contractual right to purchase the property. Look in: (1) sections titled \"Option to Purchase\", \"Purchase Option\", or \"Right to Purchase\", (2) special provisions addressing sale to tenant. If the tenant has a defined right to buy the property or a portion of it under specified terms, return exactly \"Yes\". If the lease expressly states that no purchase option exists or contains no tenant purchase right, return exactly \"No\". If it is unclear whether any purchase right is granted, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.573Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Purchase Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.574Z"
+  },
+  "purchase_option": {
+    "activePrompt": "Extract the detailed terms of any tenant purchase option. Look in: (1) sections titled \"Option to Purchase\", \"Purchase Option\", or similar, (2) special provisions granting a right to buy. Capture: when and how the option can be exercised, required notice period, purchase price formula or valuation method, conditions precedent (for example no default), and any limitations or expiration rules. Return a concise but complete summary or the exact operative language. If the tenant has no purchase option, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.576Z-field-1765000995965-wcp9ofr3r",
+        "prompt": "Extract the detailed terms of any tenant purchase option. Look in: (1) sections titled \"Option to Purchase\", \"Purchase Option\", or similar, (2) special provisions granting a right to buy. Capture: when and how the option can be exercised, required notice period, purchase price formula or valuation method, conditions precedent (for example no default), and any limitations or expiration rules. Return a concise but complete summary or the exact operative language. If the tenant has no purchase option, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.576Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Purchase Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.577Z"
+  },
+  "has_relocation_option": {
+    "activePrompt": "Determine whether the landlord has the contractual right to relocate the tenant to other premises. Look in: (1) sections titled \"Relocation\", \"Landlord's Right to Relocate\", (2) landlord rights provisions, (3) special provisions describing moving the tenant to a different space. If the landlord can unilaterally or conditionally relocate the tenant under specified terms, return exactly \"Yes\". If the lease states that relocation is not permitted or contains no relocation right for landlord, return exactly \"No\". If the existence of a relocation right is unclear, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.580Z-field-1765000995965-ii6lpsjd7",
+        "prompt": "Determine whether the landlord has the contractual right to relocate the tenant to other premises. Look in: (1) sections titled \"Relocation\", \"Landlord's Right to Relocate\", (2) landlord rights provisions, (3) special provisions describing moving the tenant to a different space. If the landlord can unilaterally or conditionally relocate the tenant under specified terms, return exactly \"Yes\". If the lease states that relocation is not permitted or contains no relocation right for landlord, return exactly \"No\". If the existence of a relocation right is unclear, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.580Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Relocation Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.581Z"
+  },
+  "relocation_option": {
+    "activePrompt": "Extract the detailed terms of any landlord relocation right affecting the tenant. Look in: (1) \"Relocation\" clauses, (2) landlord rights articles, (3) special provisions that allow moving the tenant. Capture: required notice period, criteria for \"comparable\" replacement space, which party pays moving and build-out costs, any limits on frequency or timing of relocation, and tenant consent or termination rights. Return a concise but complete summary or the exact operative clause. If no relocation option exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.583Z-field-1765000995965-r3f1wukoz",
+        "prompt": "Extract the detailed terms of any landlord relocation right affecting the tenant. Look in: (1) \"Relocation\" clauses, (2) landlord rights articles, (3) special provisions that allow moving the tenant. Capture: required notice period, criteria for \"comparable\" replacement space, which party pays moving and build-out costs, any limits on frequency or timing of relocation, and tenant consent or termination rights. Return a concise but complete summary or the exact operative clause. If no relocation option exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.583Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Relocation Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.584Z"
+  },
+  "has_renewal_option": {
+    "activePrompt": "Determine whether the tenant has any option to renew or extend the lease term beyond the original expiration. Look in: (1) sections titled \"Renewal Option\", \"Option to Extend\", \"Extension Option\", (2) general \"Options\" or \"Special Provisions\" sections. Synonyms: \"option to renew\", \"option to extend\", \"additional term\". If the tenant is granted a renewal or extension right subject only to stated conditions (for example notice and no default), return exactly \"Yes\". If there is no renewal option or any extension requires landlord's discretionary consent beyond routine conditions, return exactly \"No\". If the existence of a renewal right is unclear, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.586Z-field-1765000995965-dnmcg4cwf",
+        "prompt": "Determine whether the tenant has any option to renew or extend the lease term beyond the original expiration. Look in: (1) sections titled \"Renewal Option\", \"Option to Extend\", \"Extension Option\", (2) general \"Options\" or \"Special Provisions\" sections. Synonyms: \"option to renew\", \"option to extend\", \"additional term\". If the tenant is granted a renewal or extension right subject only to stated conditions (for example notice and no default), return exactly \"Yes\". If there is no renewal option or any extension requires landlord's discretionary consent beyond routine conditions, return exactly \"No\". If the existence of a renewal right is unclear, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.586Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Renewal Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.587Z"
+  },
+  "renewal_option": {
+    "activePrompt": "Extract the detailed terms of any tenant renewal or extension options. Look in: (1) \"Renewal Option\", \"Option to Extend\", \"Extension of Term\" sections, (2) special provisions describing additional terms. Capture: number of renewal periods, length of each, how and when the tenant must give notice, how rent is determined for each renewal (for example FMV, fixed increases, percentage of last rent), and key conditions such as no default, continuous occupancy, or personal use. Return a concise but complete summary or the operative clause text. If the tenant has no renewal or extension option, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.589Z-field-1765000995965-dg1415eyf",
+        "prompt": "Extract the detailed terms of any tenant renewal or extension options. Look in: (1) \"Renewal Option\", \"Option to Extend\", \"Extension of Term\" sections, (2) special provisions describing additional terms. Capture: number of renewal periods, length of each, how and when the tenant must give notice, how rent is determined for each renewal (for example FMV, fixed increases, percentage of last rent), and key conditions such as no default, continuous occupancy, or personal use. Return a concise but complete summary or the operative clause text. If the tenant has no renewal or extension option, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.589Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Renewal Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.590Z"
+  },
+  "has_right_of_first_offer_refusal_option": {
+    "activePrompt": "Determine whether the tenant has a Right of First Offer (ROFO) or Right of First Refusal (ROFR) for additional space or property interests. Look in: (1) sections titled \"Right of First Refusal\", \"Right of First Offer\", \"ROFR\", \"ROFO\", (2) expansion and special rights sections. If the tenant has any clearly defined ROFO or ROFR, return exactly \"Yes\". If the lease contains no such right or expressly denies it, return exactly \"No\". If it is unclear whether any ROFO or ROFR exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.592Z-field-1765000995965-h5qrqpxyz",
+        "prompt": "Determine whether the tenant has a Right of First Offer (ROFO) or Right of First Refusal (ROFR) for additional space or property interests. Look in: (1) sections titled \"Right of First Refusal\", \"Right of First Offer\", \"ROFR\", \"ROFO\", (2) expansion and special rights sections. If the tenant has any clearly defined ROFO or ROFR, return exactly \"Yes\". If the lease contains no such right or expressly denies it, return exactly \"No\". If it is unclear whether any ROFO or ROFR exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.592Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Right of First Offer/Refusal Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.593Z"
+  },
+  "right_of_first_offer_refusal": {
+    "activePrompt": "Extract the detailed terms of any tenant Right of First Offer (ROFO) or Right of First Refusal (ROFR). Look in: (1) \"Right of First Refusal\", \"Right of First Offer\", \"ROFR\", or \"ROFO\" sections, (2) expansion and special rights provisions. Capture: whether the right is ROFO or ROFR, what space or property interest it covers, the process and notice periods, how the offer or third party deal is presented, how the tenant can exercise the right, and key conditions or limitations. Return a concise but complete summary or the operative clause text. If no ROFO or ROFR exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.595Z-field-1765000995965-7qn6uh8pz",
+        "prompt": "Extract the detailed terms of any tenant Right of First Offer (ROFO) or Right of First Refusal (ROFR). Look in: (1) \"Right of First Refusal\", \"Right of First Offer\", \"ROFR\", or \"ROFO\" sections, (2) expansion and special rights provisions. Capture: whether the right is ROFO or ROFR, what space or property interest it covers, the process and notice periods, how the offer or third party deal is presented, how the tenant can exercise the right, and key conditions or limitations. Return a concise but complete summary or the operative clause text. If no ROFO or ROFR exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.595Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Right of First Offer/Refusal"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.596Z"
+  },
+  "has_termination_option": {
+    "activePrompt": "Determine whether the tenant has a contractual right to terminate the lease early for convenience or specified business reasons. Look in: (1) \"Early Termination\", \"Termination Option\", \"Cancellation\", or \"Break Option\" sections, (2) special provisions. Ignore termination rights that arise only from default, casualty, or condemnation for this field. If the tenant has a defined early termination option, return exactly \"Yes\". If no such option exists beyond default or casualty/condemnation rights, return exactly \"No\". If it is unclear whether an early termination right exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.599Z-field-1765000995965-gp165nynx",
+        "prompt": "Determine whether the tenant has a contractual right to terminate the lease early for convenience or specified business reasons. Look in: (1) \"Early Termination\", \"Termination Option\", \"Cancellation\", or \"Break Option\" sections, (2) special provisions. Ignore termination rights that arise only from default, casualty, or condemnation for this field. If the tenant has a defined early termination option, return exactly \"Yes\". If no such option exists beyond default or casualty/condemnation rights, return exactly \"No\". If it is unclear whether an early termination right exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.599Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Termination Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.600Z"
+  },
+  "termination_option": {
+    "activePrompt": "Extract the detailed terms of any tenant early termination or break option. Look in: (1) \"Early Termination\", \"Termination Option\", or \"Break Option\" sections, (2) special provisions granting a right to end the lease early. Capture: the earliest and latest dates when termination can be exercised, required notice period, any termination fee or unamortized cost reimbursement, conditions precedent (for example no default, payment of fee), and effect on guaranties or options. Return a concise but complete summary or the operative clause text. If the tenant has no early termination option, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.602Z-field-1765000995965-p6a6p9njp",
+        "prompt": "Extract the detailed terms of any tenant early termination or break option. Look in: (1) \"Early Termination\", \"Termination Option\", or \"Break Option\" sections, (2) special provisions granting a right to end the lease early. Capture: the earliest and latest dates when termination can be exercised, required notice period, any termination fee or unamortized cost reimbursement, conditions precedent (for example no default, payment of fee), and effect on guaranties or options. Return a concise but complete summary or the operative clause text. If the tenant has no early termination option, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.602Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Termination Option"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.603Z"
+  },
+  "has_antennae_rooftop_access": {
+    "activePrompt": "Determine whether the tenant has contractual rights to use rooftop or exterior areas for antennae, satellite dishes, or similar equipment. Look in: (1) \"Rooftop Access\", \"Antenna Rights\", \"Telecommunications\" sections, (2) special provisions. If the lease clearly grants the tenant such rights subject to conditions, return exactly \"Yes\". If rooftop or antenna installations are expressly prohibited or not granted to tenant, return exactly \"No\". If rooftop or antenna rights are not addressed, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.606Z-field-1765000995965-wu9er5nl3",
+        "prompt": "Determine whether the tenant has contractual rights to use rooftop or exterior areas for antennae, satellite dishes, or similar equipment. Look in: (1) \"Rooftop Access\", \"Antenna Rights\", \"Telecommunications\" sections, (2) special provisions. If the lease clearly grants the tenant such rights subject to conditions, return exactly \"Yes\". If rooftop or antenna installations are expressly prohibited or not granted to tenant, return exactly \"No\". If rooftop or antenna rights are not addressed, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.606Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Antennae/Rooftop Access"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.607Z"
+  },
+  "antennae_rooftop_access": {
+    "activePrompt": "Extract the detailed terms governing any tenant rooftop or antenna rights. Look in: (1) \"Rooftop Access\", \"Telecommunications\", or \"Antenna\" sections, (2) special provisions on exterior equipment. Capture: what types of equipment are allowed, where they may be installed, whether additional rent or fees apply, installation and structural requirements, insurance or indemnity obligations, and landlord approval processes. Return a concise but complete summary or the operative clause text. If the tenant has no such rights, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.609Z-field-1765000995965-9uishwrz9",
+        "prompt": "Extract the detailed terms governing any tenant rooftop or antenna rights. Look in: (1) \"Rooftop Access\", \"Telecommunications\", or \"Antenna\" sections, (2) special provisions on exterior equipment. Capture: what types of equipment are allowed, where they may be installed, whether additional rent or fees apply, installation and structural requirements, insurance or indemnity obligations, and landlord approval processes. Return a concise but complete summary or the operative clause text. If the tenant has no such rights, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.609Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Antennae/Rooftop Access"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.610Z"
+  },
+  "building_operating_hours": {
+    "activePrompt": "Extract the standard operating hours for building services and access. Look in: (1) \"Building Services\", \"Operating Hours\", or \"Access\" sections, (2) rules and regulations attachments. Capture: normal weekday hours, weekend or holiday variations, and whether after-hours use requires extra charges or prior arrangements. Note explicitly if the lease provides 24/7 access versus limited building services. Return a clear textual description of these hours and conditions. If building operating hours are not described, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.612Z-field-1765000995965-w81tpqsmf",
+        "prompt": "Extract the standard operating hours for building services and access. Look in: (1) \"Building Services\", \"Operating Hours\", or \"Access\" sections, (2) rules and regulations attachments. Capture: normal weekday hours, weekend or holiday variations, and whether after-hours use requires extra charges or prior arrangements. Note explicitly if the lease provides 24/7 access versus limited building services. Return a clear textual description of these hours and conditions. If building operating hours are not described, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.612Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Building Operating Hours"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.613Z"
+  },
+  "cpi_porter_s_wage": {
+    "activePrompt": "Extract any rent escalation mechanisms that are tied to CPI (Consumer Price Index) or Porter's Wage. Look in: (1) \"Rent Adjustments\", \"Escalation\", or \"Indexing\" sections, (2) operating expense escalation provisions referencing CPI or wage indices. Capture: which index is used (name and geography), how frequently adjustments occur, the calculation formula, any caps or floors, and the base period used for comparison. Return a concise but complete description or the operative clause text. If no CPI or Porter's Wage based escalation exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.616Z-field-1765000995965-cuezd2kwk",
+        "prompt": "Extract any rent escalation mechanisms that are tied to CPI (Consumer Price Index) or Porter's Wage. Look in: (1) \"Rent Adjustments\", \"Escalation\", or \"Indexing\" sections, (2) operating expense escalation provisions referencing CPI or wage indices. Capture: which index is used (name and geography), how frequently adjustments occur, the calculation formula, any caps or floors, and the base period used for comparison. Return a concise but complete description or the operative clause text. If no CPI or Porter's Wage based escalation exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.616Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / CPI/Porter's Wage"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.617Z"
+  },
+  "default_provisions": {
+    "activePrompt": "Extract the key default and remedy provisions. Look in: (1) sections titled \"Default\", \"Events of Default\", \"Remedies\", (2) any special provisions that modify default rights. Capture: events that constitute tenant default (for example nonpayment, unauthorized assignment, bankruptcy), applicable cure periods and notice requirements, landlord remedies (for example late charges, interest, termination, lockout, acceleration), and any material tenant protections. Return a structured summary of the main default triggers, cure rights, and remedies. If the lease does not address default provisions, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.619Z-field-1765000995965-ap5m9kzeo",
+        "prompt": "Extract the key default and remedy provisions. Look in: (1) sections titled \"Default\", \"Events of Default\", \"Remedies\", (2) any special provisions that modify default rights. Capture: events that constitute tenant default (for example nonpayment, unauthorized assignment, bankruptcy), applicable cure periods and notice requirements, landlord remedies (for example late charges, interest, termination, lockout, acceleration), and any material tenant protections. Return a structured summary of the main default triggers, cure rights, and remedies. If the lease does not address default provisions, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.619Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Default Provisions"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.620Z"
+  },
+  "has_security_deposit": {
+    "activePrompt": "Determine whether the tenant is required to provide a security deposit. Look in: (1) \"Security Deposit\" or \"Security\" sections, (2) basic lease information table, (3) payment provisions that describe a deposit held by landlord. If a security deposit is clearly required, return exactly \"Yes\". If the lease states that no deposit is required or there is no obligation to deliver a deposit, return exactly \"No\". If it is unclear or not addressed, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.622Z-field-1765000995965-yz9l5a29z",
+        "prompt": "Determine whether the tenant is required to provide a security deposit. Look in: (1) \"Security Deposit\" or \"Security\" sections, (2) basic lease information table, (3) payment provisions that describe a deposit held by landlord. If a security deposit is clearly required, return exactly \"Yes\". If the lease states that no deposit is required or there is no obligation to deliver a deposit, return exactly \"No\". If it is unclear or not addressed, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.622Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Security Deposit"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.623Z"
+  },
+  "security_deposit_amount": {
+    "activePrompt": "Extract the amount of the security deposit, if one is required. Look in: (1) \"Security Deposit\" section, (2) basic lease information table, (3) payment schedule describing the deposit. If a dollar amount is stated, return a numeric value only with no symbol and no commas (for example 50000). If the deposit is defined as a multiple of monthly rent (for example \"equal to two months' Base Rent\") and the relevant monthly rent is clearly stated, calculate the deposit amount and return that numeric value. If no deposit is required or the amount cannot be determined, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.625Z-field-1765000995965-a9k8933qd",
+        "prompt": "Extract the amount of the security deposit, if one is required. Look in: (1) \"Security Deposit\" section, (2) basic lease information table, (3) payment schedule describing the deposit. If a dollar amount is stated, return a numeric value only with no symbol and no commas (for example 50000). If the deposit is defined as a multiple of monthly rent (for example \"equal to two months' Base Rent\") and the relevant monthly rent is clearly stated, calculate the deposit amount and return that numeric value. If no deposit is required or the amount cannot be determined, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.625Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Security Deposit Amount"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.626Z"
+  },
+  "security_deposit": {
+    "activePrompt": "Extract the detailed terms governing the security deposit. Look in: (1) \"Security Deposit\" or \"Security\" sections, (2) any related provisions on application or return. Capture: deposit amount or formula, when it must be paid, whether interest is paid to tenant, how landlord may apply the deposit (for example to unpaid rent or damages), conditions and timing for returning the deposit, and any scheduled reductions or conversions (for example to a letter of credit). Return a concise but complete summary or the operative clause text. If no security deposit is required, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.628Z-field-1765000995965-3u8gz5igq",
+        "prompt": "Extract the detailed terms governing the security deposit. Look in: (1) \"Security Deposit\" or \"Security\" sections, (2) any related provisions on application or return. Capture: deposit amount or formula, when it must be paid, whether interest is paid to tenant, how landlord may apply the deposit (for example to unpaid rent or damages), conditions and timing for returning the deposit, and any scheduled reductions or conversions (for example to a letter of credit). Return a concise but complete summary or the operative clause text. If no security deposit is required, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.628Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Security Deposit"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.629Z"
+  },
+  "has_letter_of_credit": {
+    "activePrompt": "Determine whether the tenant is required to provide a letter of credit as security. Look in: (1) \"Letter of Credit\" sections, (2) \"Security\" provisions, (3) credit support or financial covenants. If a letter of credit is required or provided in lieu of some or all of the security deposit, return exactly \"Yes\". If the lease confirms that no letter of credit is required or only a cash deposit is used, return exactly \"No\". If the existence of a letter of credit requirement is unclear, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.632Z-field-1765000995965-zg6j105m9",
+        "prompt": "Determine whether the tenant is required to provide a letter of credit as security. Look in: (1) \"Letter of Credit\" sections, (2) \"Security\" provisions, (3) credit support or financial covenants. If a letter of credit is required or provided in lieu of some or all of the security deposit, return exactly \"Yes\". If the lease confirms that no letter of credit is required or only a cash deposit is used, return exactly \"No\". If the existence of a letter of credit requirement is unclear, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.632Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Letter of Credit"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.635Z"
+  },
+  "letter_of_credit_amount": {
+    "activePrompt": "Extract the face amount of the required letter of credit. Look in: (1) \"Letter of Credit\" section, (2) basic lease information tables. Return the required LC amount as a numeric value only, with no currency symbol and no commas (for example 600000). If the LC amount is scheduled to decrease over time and a starting amount is identified, return the initial required amount and be sure the reduction terms are captured under the separate Letter of Credit terms field. If no letter of credit is required or the amount cannot be determined, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.636Z-field-1765000995965-isw1jj7m6",
+        "prompt": "Extract the face amount of the required letter of credit. Look in: (1) \"Letter of Credit\" section, (2) basic lease information tables. Return the required LC amount as a numeric value only, with no currency symbol and no commas (for example 600000). If the LC amount is scheduled to decrease over time and a starting amount is identified, return the initial required amount and be sure the reduction terms are captured under the separate Letter of Credit terms field. If no letter of credit is required or the amount cannot be determined, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.636Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Letter of Credit Amount"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.637Z"
+  },
+  "letter_of_credit": {
+    "activePrompt": "Extract the detailed terms governing any letter of credit posted as security. Look in: (1) \"Letter of Credit\" sections, (2) security provisions that reference LC. Capture: required amount, acceptable issuing banks, form and duration of the LC, evergreen or renewal requirements, landlord's draw rights and conditions, events that permit landlord to draw, any reductions over time, and any rights to convert between LC and cash deposit. Return a concise but complete summary or the operative clause text. If no letter of credit is required, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.640Z-field-1765000995965-7vxmlz1gi",
+        "prompt": "Extract the detailed terms governing any letter of credit posted as security. Look in: (1) \"Letter of Credit\" sections, (2) security provisions that reference LC. Capture: required amount, acceptable issuing banks, form and duration of the LC, evergreen or renewal requirements, landlord's draw rights and conditions, events that permit landlord to draw, any reductions over time, and any rights to convert between LC and cash deposit. Return a concise but complete summary or the operative clause text. If no letter of credit is required, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.640Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Letter of Credit"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.641Z"
+  },
+  "has_estoppel_clause": {
+    "activePrompt": "Determine whether the tenant is required to deliver estoppel certificates. Look in: (1) \"Estoppel Certificate\" or \"Estoppels\" sections, (2) \"Tenant Certificates\" or financing provisions. If the tenant must provide estoppel certificates on request from landlord, lender, or purchaser, return exactly \"Yes\". If the lease states that no estoppels are required or omits any such obligation, return exactly \"No\". If it is unclear whether there is an estoppel obligation, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.643Z-field-1765000995965-wfytg1rog",
+        "prompt": "Determine whether the tenant is required to deliver estoppel certificates. Look in: (1) \"Estoppel Certificate\" or \"Estoppels\" sections, (2) \"Tenant Certificates\" or financing provisions. If the tenant must provide estoppel certificates on request from landlord, lender, or purchaser, return exactly \"Yes\". If the lease states that no estoppels are required or omits any such obligation, return exactly \"No\". If it is unclear whether there is an estoppel obligation, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.643Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Estoppel Clause"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.644Z"
+  },
+  "estoppels": {
+    "activePrompt": "Extract the detailed estoppel certificate requirements. Look in: (1) \"Estoppel Certificate\" or \"Estoppels\" sections, (2) financing or sale provisions that reference tenant certificates. Capture: events that trigger an estoppel request (for example sale, financing, landlord request), time allowed to respond, required content or form, consequences of failure to respond (including deemed estoppel language), and any limitations on frequency. Return a concise but complete summary or the operative clause text. If no estoppel obligation exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.647Z-field-1765000995965-s72pq7fy1",
+        "prompt": "Extract the detailed estoppel certificate requirements. Look in: (1) \"Estoppel Certificate\" or \"Estoppels\" sections, (2) financing or sale provisions that reference tenant certificates. Capture: events that trigger an estoppel request (for example sale, financing, landlord request), time allowed to respond, required content or form, consequences of failure to respond (including deemed estoppel language), and any limitations on frequency. Return a concise but complete summary or the operative clause text. If no estoppel obligation exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.647Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Estoppels"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.648Z"
+  },
+  "has_guarantor_clause": {
+    "activePrompt": "Determine whether any guarantor is required under the lease. Look in: (1) signature blocks for a \"Guarantor\", \"Guarantor(s)\", or similar labels, (2) sections titled \"Guaranty\" or \"Guarantee\", (3) credit support provisions. If a separate person or entity guarantees the tenant's obligations, return exactly \"Yes\". If no guaranty is required, return exactly \"No\". If it is unclear whether a guarantor is obligated, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.650Z-field-1765000995965-t24t6tgif",
+        "prompt": "Determine whether any guarantor is required under the lease. Look in: (1) signature blocks for a \"Guarantor\", \"Guarantor(s)\", or similar labels, (2) sections titled \"Guaranty\" or \"Guarantee\", (3) credit support provisions. If a separate person or entity guarantees the tenant's obligations, return exactly \"Yes\". If no guaranty is required, return exactly \"No\". If it is unclear whether a guarantor is obligated, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.650Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Guarantor Clause"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.651Z"
+  },
+  "guarantors": {
+    "activePrompt": "Extract the details of any guarantor and guaranty obligations. Look in: (1) \"Guaranty\" or \"Guarantee\" sections, (2) signature blocks that identify guarantors, (3) separate guaranty documents attached to the lease. Capture: each guarantor's full legal name, the type of guaranty (for example full payment and performance vs limited), any monetary caps or time limits, conditions for release or reduction, and relationships to the tenant (for example parent company). Return a concise but complete summary or the operative terms. If there is no guarantor, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.653Z-field-1765000995965-a66ohtz8g",
+        "prompt": "Extract the details of any guarantor and guaranty obligations. Look in: (1) \"Guaranty\" or \"Guarantee\" sections, (2) signature blocks that identify guarantors, (3) separate guaranty documents attached to the lease. Capture: each guarantor's full legal name, the type of guaranty (for example full payment and performance vs limited), any monetary caps or time limits, conditions for release or reduction, and relationships to the tenant (for example parent company). Return a concise but complete summary or the operative terms. If there is no guarantor, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.653Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Guarantors"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.654Z"
+  },
+  "has_haz_mat_clause": {
+    "activePrompt": "Determine whether the lease contains any hazardous materials or environmental provisions. Look in: (1) sections titled \"Hazardous Materials\", \"Environmental\", \"Hazardous Substances\", (2) use restrictions that address hazardous materials. If any such provisions exist, return exactly \"Yes\". If the lease has no hazardous materials or environmental provisions at all, return exactly \"No\". If it is unclear whether such provisions exist, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.655Z-field-1765000995965-siyvohdze",
+        "prompt": "Determine whether the lease contains any hazardous materials or environmental provisions. Look in: (1) sections titled \"Hazardous Materials\", \"Environmental\", \"Hazardous Substances\", (2) use restrictions that address hazardous materials. If any such provisions exist, return exactly \"Yes\". If the lease has no hazardous materials or environmental provisions at all, return exactly \"No\". If it is unclear whether such provisions exist, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.655Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Haz Mat Clause"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.656Z"
+  },
+  "hazardous_materials": {
+    "activePrompt": "Extract the detailed hazardous materials and environmental provisions. Look in: (1) \"Hazardous Materials\", \"Hazardous Substances\", or \"Environmental\" sections, (2) use restrictions that limit or regulate hazardous materials. Capture: definitions of hazardous materials, what materials or uses are prohibited or permitted, tenant's compliance and reporting obligations, inspection rights, indemnity and remediation responsibilities, and allocation of liability between landlord and tenant. Return a concise but complete summary or the operative clause text. If there are no hazardous materials provisions, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.658Z-field-1765000995965-33erl5foh",
+        "prompt": "Extract the detailed hazardous materials and environmental provisions. Look in: (1) \"Hazardous Materials\", \"Hazardous Substances\", or \"Environmental\" sections, (2) use restrictions that limit or regulate hazardous materials. Capture: definitions of hazardous materials, what materials or uses are prohibited or permitted, tenant's compliance and reporting obligations, inspection rights, indemnity and remediation responsibilities, and allocation of liability between landlord and tenant. Return a concise but complete summary or the operative clause text. If there are no hazardous materials provisions, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.658Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Hazardous Materials"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.659Z"
+  },
+  "insurance": {
+    "activePrompt": "Extract the tenant's insurance obligations. Look in: (1) \"Insurance\" sections, (2) tenant covenant articles that describe required policies. Capture: types of coverage required (for example commercial general liability, property, business interruption, workers compensation), minimum limits, required endorsements such as additional insured, primary and noncontributory status, and waiver of subrogation. Note any requirements regarding certificate delivery and evidence of renewal. Return a concise but complete summary or the operative clause text. If tenant insurance requirements are not specified, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.660Z-field-1765000995965-gpkka49fk",
+        "prompt": "Extract the tenant's insurance obligations. Look in: (1) \"Insurance\" sections, (2) tenant covenant articles that describe required policies. Capture: types of coverage required (for example commercial general liability, property, business interruption, workers compensation), minimum limits, required endorsements such as additional insured, primary and noncontributory status, and waiver of subrogation. Note any requirements regarding certificate delivery and evidence of renewal. Return a concise but complete summary or the operative clause text. If tenant insurance requirements are not specified, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.660Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Insurance"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.661Z"
+  },
+  "landlord_supervision": {
+    "activePrompt": "Extract landlord's supervision and control rights relating to tenant improvements and alterations. Look in: (1) \"Alterations\", \"Tenant Improvements\", or \"Work Letter\" sections, (2) construction provisions that give landlord oversight. Capture: requirements for landlord approval of plans and contractors, any supervision or construction management fees, landlord's inspection rights, and conditions under which landlord may perform work or correct defects. Return a concise but complete summary or the operative clause text. If landlord supervision rights are not addressed, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.663Z-field-1765000995965-0rmvanom3",
+        "prompt": "Extract landlord's supervision and control rights relating to tenant improvements and alterations. Look in: (1) \"Alterations\", \"Tenant Improvements\", or \"Work Letter\" sections, (2) construction provisions that give landlord oversight. Capture: requirements for landlord approval of plans and contractors, any supervision or construction management fees, landlord's inspection rights, and conditions under which landlord may perform work or correct defects. Return a concise but complete summary or the operative clause text. If landlord supervision rights are not addressed, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.663Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Landlord Supervision"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.664Z"
+  },
+  "late_fees": {
+    "activePrompt": "Extract the late charge provisions that apply to delinquent rent or other payments. Look in: (1) \"Late Charges\" or \"Late Fees\" sections, (2) rent payment and default provisions. Capture: any grace period before a late charge is applied, the amount or formula for the late fee (for example a fixed dollar amount or a percentage of the overdue sum), and how often such fees may be charged. Return a concise but complete summary or the operative clause text. If no late charge provision exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.666Z-field-1765000995965-r4ptdk339",
+        "prompt": "Extract the late charge provisions that apply to delinquent rent or other payments. Look in: (1) \"Late Charges\" or \"Late Fees\" sections, (2) rent payment and default provisions. Capture: any grace period before a late charge is applied, the amount or formula for the late fee (for example a fixed dollar amount or a percentage of the overdue sum), and how often such fees may be charged. Return a concise but complete summary or the operative clause text. If no late charge provision exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.666Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Late Fees"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.667Z"
+  },
+  "interest": {
+    "activePrompt": "Extract the interest provisions that apply to late or unpaid amounts. Look in: (1) \"Interest\" clause, (2) rent payment and default sections that specify interest on overdue sums. Capture: the applicable interest rate or formula (for example a fixed rate, prime plus a margin, or the maximum lawful rate), when interest begins to accrue (for example after a grace period), and how it is calculated (simple versus compound if stated). Return a concise but complete summary or the operative clause text. If no interest on late payments is specified, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.669Z-field-1765000995965-qky7gwe4u",
+        "prompt": "Extract the interest provisions that apply to late or unpaid amounts. Look in: (1) \"Interest\" clause, (2) rent payment and default sections that specify interest on overdue sums. Capture: the applicable interest rate or formula (for example a fixed rate, prime plus a margin, or the maximum lawful rate), when interest begins to accrue (for example after a grace period), and how it is calculated (simple versus compound if stated). Return a concise but complete summary or the operative clause text. If no interest on late payments is specified, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.669Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Interest"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.670Z"
+  },
+  "leasing_commission": {
+    "activePrompt": "Extract provisions relating to leasing commissions and brokers. Look in: (1) \"Broker\" or \"Brokers\" sections, (2) commission or fee provisions, (3) special provisions regarding brokerage. Capture: names of brokers involved, which party is responsible for paying commissions, how commissions are determined and when they are due, and any mutual indemnities regarding other broker claims. Return a concise but complete summary or the operative clause text. If there are no broker or commission provisions, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.671Z-field-1765000995965-p98kwr729",
+        "prompt": "Extract provisions relating to leasing commissions and brokers. Look in: (1) \"Broker\" or \"Brokers\" sections, (2) commission or fee provisions, (3) special provisions regarding brokerage. Capture: names of brokers involved, which party is responsible for paying commissions, how commissions are determined and when they are due, and any mutual indemnities regarding other broker claims. Return a concise but complete summary or the operative clause text. If there are no broker or commission provisions, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.671Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Leasing Commission"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.672Z"
+  },
+  "parking": {
+    "activePrompt": "Extract the tenant's parking rights and obligations. Look in: (1) \"Parking\" sections, (2) building services or amenities provisions, (3) additional rent sections that charge for parking. Capture: number of spaces allocated, whether spaces are reserved or unreserved, location (for example garage, surface lot), whether parking charges are included in rent or billed separately (and the rates if stated), and any validation or visitor parking rights. Return a concise but complete summary or the operative clause text. If parking is not addressed, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.673Z-field-1765000995965-5tio44aj2",
+        "prompt": "Extract the tenant's parking rights and obligations. Look in: (1) \"Parking\" sections, (2) building services or amenities provisions, (3) additional rent sections that charge for parking. Capture: number of spaces allocated, whether spaces are reserved or unreserved, location (for example garage, surface lot), whether parking charges are included in rent or billed separately (and the rates if stated), and any validation or visitor parking rights. Return a concise but complete summary or the operative clause text. If parking is not addressed, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.673Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Parking"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.675Z"
+  },
+  "signage": {
+    "activePrompt": "Extract the tenant's signage rights and restrictions. Look in: (1) \"Signage\" sections, (2) use or building rules provisions that discuss signs. Capture: where tenant may place signs (for example suite entry, monument, building faade), what types and sizes are permitted, any design or branding standards, landlord approval requirements, installation and removal obligations, and who pays for fabrication and maintenance. Return a concise but complete summary or the operative clause text. If signage is not addressed, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.676Z-field-1765000995965-cx2e5ona6",
+        "prompt": "Extract the tenant's signage rights and restrictions. Look in: (1) \"Signage\" sections, (2) use or building rules provisions that discuss signs. Capture: where tenant may place signs (for example suite entry, monument, building faade), what types and sizes are permitted, any design or branding standards, landlord approval requirements, installation and removal obligations, and who pays for fabrication and maintenance. Return a concise but complete summary or the operative clause text. If signage is not addressed, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.676Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Signage"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.677Z"
+  },
+  "specialty_alterations": {
+    "activePrompt": "Extract provisions dealing with specialty or non-standard tenant alterations and improvements. Look in: (1) \"Alterations\", \"Tenant Improvements\", and \"Specialty Improvements\" sections, (2) work letters. Capture: what types of work are considered specialty alterations (for example labs, kitchens, vaults), landlord approval and permitting requirements, who owns such improvements, and restoration or removal obligations at the end of the term. Return a concise but complete summary or the operative clause text. If specialty alterations are not specifically addressed beyond general alterations language, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.678Z-field-1765000995965-81bpbw830",
+        "prompt": "Extract provisions dealing with specialty or non-standard tenant alterations and improvements. Look in: (1) \"Alterations\", \"Tenant Improvements\", and \"Specialty Improvements\" sections, (2) work letters. Capture: what types of work are considered specialty alterations (for example labs, kitchens, vaults), landlord approval and permitting requirements, who owns such improvements, and restoration or removal obligations at the end of the term. Return a concise but complete summary or the operative clause text. If specialty alterations are not specifically addressed beyond general alterations language, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.678Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Specialty Alterations"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.679Z"
+  },
+  "has_sublease": {
+    "activePrompt": "Determine whether the tenant is permitted to sublease all or part of the premises. Look in: (1) \"Assignment and Subletting\" or \"Transfers\" sections, (2) related transfer provisions. If the lease allows subleases subject to conditions or landlord consent, return exactly \"Yes\". If it expressly prohibits subletting or transfers, return exactly \"No\". If subleasing is not mentioned or its status is unclear, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.681Z-field-1765000995965-9hzokcq3k",
+        "prompt": "Determine whether the tenant is permitted to sublease all or part of the premises. Look in: (1) \"Assignment and Subletting\" or \"Transfers\" sections, (2) related transfer provisions. If the lease allows subleases subject to conditions or landlord consent, return exactly \"Yes\". If it expressly prohibits subletting or transfers, return exactly \"No\". If subleasing is not mentioned or its status is unclear, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.681Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Sublease"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.682Z"
+  },
+  "sublease": {
+    "activePrompt": "Extract the detailed sublease and transfer provisions. Look in: (1) \"Assignment and Subletting\", \"Transfers\", or \"Subletting\" sections. Capture: whether landlord consent is required and standards for consent, any recapture or termination rights on proposed transfers, profit sharing or transfer premium provisions, restrictions on subletting to certain parties, and conditions that must be met before a sublease is effective. Return a concise but complete summary or the operative clause text. If subleasing is not addressed, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.683Z-field-1765000995965-p8lic5e0u",
+        "prompt": "Extract the detailed sublease and transfer provisions. Look in: (1) \"Assignment and Subletting\", \"Transfers\", or \"Subletting\" sections. Capture: whether landlord consent is required and standards for consent, any recapture or termination rights on proposed transfers, profit sharing or transfer premium provisions, restrictions on subletting to certain parties, and conditions that must be met before a sublease is effective. Return a concise but complete summary or the operative clause text. If subleasing is not addressed, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.683Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Sublease"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.684Z"
+  },
+  "has_assignment": {
+    "activePrompt": "Determine whether the tenant may assign its interest in the lease. Look in: (1) \"Assignment and Subletting\", \"Transfers\", or similar sections. If the lease allows assignments (for example with landlord consent or for specific permitted transfers such as to affiliates), return exactly \"Yes\". If assignment of the lease is expressly prohibited, return exactly \"No\". If the lease is silent or unclear on assignment rights, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.685Z-field-1765000995965-z7kjp82yw",
+        "prompt": "Determine whether the tenant may assign its interest in the lease. Look in: (1) \"Assignment and Subletting\", \"Transfers\", or similar sections. If the lease allows assignments (for example with landlord consent or for specific permitted transfers such as to affiliates), return exactly \"Yes\". If assignment of the lease is expressly prohibited, return exactly \"No\". If the lease is silent or unclear on assignment rights, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.685Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Has Assignment"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.686Z"
+  },
+  "assignment": {
+    "activePrompt": "Extract the detailed assignment provisions. Look in: (1) \"Assignment and Subletting\", \"Transfers\", or sections specifically titled \"Assignment\". Capture: when landlord consent is required, what constitutes a permitted assignment (for example to affiliates, in mergers, asset sales), any recapture or termination rights upon proposed transfer, whether landlord shares in profits from assignments, and whether the original tenant remains liable after assignment. Return a concise but complete summary or the operative clause text. If assignment provisions are not addressed, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.688Z-field-1765000995965-ly4bz4ze1",
+        "prompt": "Extract the detailed assignment provisions. Look in: (1) \"Assignment and Subletting\", \"Transfers\", or sections specifically titled \"Assignment\". Capture: when landlord consent is required, what constitutes a permitted assignment (for example to affiliates, in mergers, asset sales), any recapture or termination rights upon proposed transfer, whether landlord shares in profits from assignments, and whether the original tenant remains liable after assignment. Return a concise but complete summary or the operative clause text. If assignment provisions are not addressed, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.688Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Assignment"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.689Z"
+  },
+  "subordination_non-disturbance": {
+    "activePrompt": "Extract the subordination, non-disturbance, and attornment provisions (SNDA). Look in: (1) sections titled \"Subordination\", \"Non-Disturbance\", \"Attornment\", or \"SNDA\", (2) financing or lender-related provisions. Capture: whether the lease is automatically subordinate to current and future mortgages, whether tenant receives non-disturbance protection if the lender forecloses, and tenant's obligation to attorn to a successor owner. Note any conditions for non-disturbance and requirements for executing separate SNDA documents. Return a concise but complete summary or the operative clause text. If these topics are not addressed, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.690Z-field-1765000995965-yrnvk2npl",
+        "prompt": "Extract the subordination, non-disturbance, and attornment provisions (SNDA). Look in: (1) sections titled \"Subordination\", \"Non-Disturbance\", \"Attornment\", or \"SNDA\", (2) financing or lender-related provisions. Capture: whether the lease is automatically subordinate to current and future mortgages, whether tenant receives non-disturbance protection if the lender forecloses, and tenant's obligation to attorn to a successor owner. Note any conditions for non-disturbance and requirements for executing separate SNDA documents. Return a concise but complete summary or the operative clause text. If these topics are not addressed, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.690Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Subordination/Non-Disturbance"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.691Z"
+  },
+  "tenant_allowance_amount": {
+    "activePrompt": "Extract the total tenant improvement allowance amount. Look in: (1) \"Tenant Improvement Allowance\", \"TI Allowance\", or \"Build-Out Allowance\" sections, (2) work letters and improvement provisions. Synonyms: \"TI allowance\", \"construction allowance\". If a dollar amount is stated, return it as a numeric value only with no symbol and no commas (for example 250000). If the allowance is defined only as a per-square-foot amount and the area is known, you may calculate the total allowance and return that numeric value. If no tenant allowance exists or the amount cannot be determined, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.693Z-field-1765000995965-5nrrzp802",
+        "prompt": "Extract the total tenant improvement allowance amount. Look in: (1) \"Tenant Improvement Allowance\", \"TI Allowance\", or \"Build-Out Allowance\" sections, (2) work letters and improvement provisions. Synonyms: \"TI allowance\", \"construction allowance\". If a dollar amount is stated, return it as a numeric value only with no symbol and no commas (for example 250000). If the allowance is defined only as a per-square-foot amount and the area is known, you may calculate the total allowance and return that numeric value. If no tenant allowance exists or the amount cannot be determined, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.693Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Tenant Allowance Amount"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.694Z"
+  },
+  "tenant_allowance": {
+    "activePrompt": "Extract the detailed terms of the tenant improvement allowance. Look in: (1) \"Tenant Improvement Allowance\", \"TI Allowance\", or \"Build-Out Allowance\" sections, (2) attached work letters. Capture: total allowance amount or formula, permitted uses (for example hard and soft costs), how and when funds are disbursed (for example reimbursement vs direct payment), deadlines to use the allowance, treatment of unused allowance (for example forfeited or applied as rent credit), and any approval and documentation requirements. Return a concise but complete summary or the operative clause text. If there is no tenant allowance, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.695Z-field-1765000995965-ey3ci73wb",
+        "prompt": "Extract the detailed terms of the tenant improvement allowance. Look in: (1) \"Tenant Improvement Allowance\", \"TI Allowance\", or \"Build-Out Allowance\" sections, (2) attached work letters. Capture: total allowance amount or formula, permitted uses (for example hard and soft costs), how and when funds are disbursed (for example reimbursement vs direct payment), deadlines to use the allowance, treatment of unused allowance (for example forfeited or applied as rent credit), and any approval and documentation requirements. Return a concise but complete summary or the operative clause text. If there is no tenant allowance, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.695Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Tenant Allowance"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.701Z"
+  },
+  "tenant_services": {
+    "activePrompt": "Extract the building services that landlord is obligated to provide to tenant. Look in: (1) \"Building Services\", \"Landlord Services\", or similar sections, (2) operating expense descriptions that list services. Capture: HVAC service and hours, janitorial and cleaning obligations, elevator and common area maintenance, security services, and any utilities included as part of base rent. Return a concise but complete summary of these services and any material limitations. If building services are not described, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.702Z-field-1765000995965-1mvdh6gjw",
+        "prompt": "Extract the building services that landlord is obligated to provide to tenant. Look in: (1) \"Building Services\", \"Landlord Services\", or similar sections, (2) operating expense descriptions that list services. Capture: HVAC service and hours, janitorial and cleaning obligations, elevator and common area maintenance, security services, and any utilities included as part of base rent. Return a concise but complete summary of these services and any material limitations. If building services are not described, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.702Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Tenant Services"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.704Z"
+  },
+  "use_restrictions_exclusivity": {
+    "activePrompt": "Extract the tenant's permitted uses, use restrictions, and any exclusivity rights. Look in: (1) \"Use\" or \"Permitted Use\" sections, (2) \"Exclusive Use\", \"Use Restriction\", or similar clauses, (3) co-tenancy or prohibited use provisions. Capture: what business activities are allowed, any specific prohibitions, whether tenant has exclusive rights to conduct certain uses within the project, and any co-tenancy or operating requirements linked to those rights. Return a concise but complete summary or the operative clause text. If neither use restrictions nor exclusivity rights are described, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.705Z-field-1765000995965-q5li148s7",
+        "prompt": "Extract the tenant's permitted uses, use restrictions, and any exclusivity rights. Look in: (1) \"Use\" or \"Permitted Use\" sections, (2) \"Exclusive Use\", \"Use Restriction\", or similar clauses, (3) co-tenancy or prohibited use provisions. Capture: what business activities are allowed, any specific prohibitions, whether tenant has exclusive rights to conduct certain uses within the project, and any co-tenancy or operating requirements linked to those rights. Return a concise but complete summary or the operative clause text. If neither use restrictions nor exclusivity rights are described, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.705Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Use Restrictions & Exclusivity"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.706Z"
+  },
+  "utilities": {
+    "activePrompt": "Extract how utilities are provided and who pays for them. Look in: (1) \"Utilities\" sections, (2) operating expense and additional rent provisions. Capture: which utilities are separately metered and paid directly by tenant, which are provided by landlord and recharged as additional rent, and any included utilities in base rent. Specify for each category where possible: electric, gas, water, sewer, trash, and telecommunications. Note any after-hours charges or special metering arrangements. Return a concise but complete summary or the operative clause text. If utility responsibilities are not described, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.708Z-field-1765000995965-0wx00isl7",
+        "prompt": "Extract how utilities are provided and who pays for them. Look in: (1) \"Utilities\" sections, (2) operating expense and additional rent provisions. Capture: which utilities are separately metered and paid directly by tenant, which are provided by landlord and recharged as additional rent, and any included utilities in base rent. Specify for each category where possible: electric, gas, water, sewer, trash, and telecommunications. Note any after-hours charges or special metering arrangements. Return a concise but complete summary or the operative clause text. If utility responsibilities are not described, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.708Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Utilities"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.709Z"
+  },
+  "other_charges": {
+    "activePrompt": "Extract any recurring or material one-time charges that are not captured in base rent, operating expenses, utilities, or percentage rent fields. Look throughout the lease for: special assessments, amenity or facility fees, technology or service fees, capital improvement pass-throughs, administrative or management fees that are separately charged to tenant. List each distinct charge type and briefly describe when and how it is billed. If there are no such additional charges beyond what is already captured in other fields, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.710Z-field-1765000995965-cv8sjbakd",
+        "prompt": "Extract any recurring or material one-time charges that are not captured in base rent, operating expenses, utilities, or percentage rent fields. Look throughout the lease for: special assessments, amenity or facility fees, technology or service fees, capital improvement pass-throughs, administrative or management fees that are separately charged to tenant. List each distinct charge type and briefly describe when and how it is billed. If there are no such additional charges beyond what is already captured in other fields, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.710Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Other Charges"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.712Z"
+  },
+  "marketing_charge": {
+    "activePrompt": "Extract any marketing or promotional fund charges payable by tenant. Look in: (1) sections titled \"Marketing Fund\", \"Promotional Fund\", or similar, (2) additional rent and operating expense provisions for retail centers. Capture: required contribution amount or percentage (for example a percentage of base rent or gross sales), frequency of payment, what the fund covers, and how it is administered. If a fixed periodic amount is stated, return that amount as numeric only under the separate amount field and summarize the terms here. If no marketing or promotional fund charge exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.713Z-field-1765000995965-8iyjakx1v",
+        "prompt": "Extract any marketing or promotional fund charges payable by tenant. Look in: (1) sections titled \"Marketing Fund\", \"Promotional Fund\", or similar, (2) additional rent and operating expense provisions for retail centers. Capture: required contribution amount or percentage (for example a percentage of base rent or gross sales), frequency of payment, what the fund covers, and how it is administered. If a fixed periodic amount is stated, return that amount as numeric only under the separate amount field and summarize the terms here. If no marketing or promotional fund charge exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.713Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Marketing Charge"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.714Z"
+  },
+  "abatement_dates": {
+    "activePrompt": "Extract the start and end dates of any rent abatement or free rent periods. Look in: (1) \"Rent Abatement\", \"Free Rent\", or \"Concessions\" sections, (2) rent and commencement provisions that discuss periods when rent is not payable. For each abatement period, identify the start date and end date. Return each period in the format \"YYYY-MM-DD to YYYY-MM-DD\". If multiple non-contiguous abatement periods exist, list them all separated by semicolons. If no rent abatement is granted, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.716Z-field-1765000995965-yueyid5gn",
+        "prompt": "Extract the start and end dates of any rent abatement or free rent periods. Look in: (1) \"Rent Abatement\", \"Free Rent\", or \"Concessions\" sections, (2) rent and commencement provisions that discuss periods when rent is not payable. For each abatement period, identify the start date and end date. Return each period in the format \"YYYY-MM-DD to YYYY-MM-DD\". If multiple non-contiguous abatement periods exist, list them all separated by semicolons. If no rent abatement is granted, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.716Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Abatement Dates"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.721Z"
+  },
+  "abatement_amount": {
+    "activePrompt": "Extract or calculate the total economic value of rent abatements or free rent granted to tenant. Look in: (1) \"Rent Abatement\", \"Free Rent\", or \"Concessions\" sections, (2) rent schedules that show zero or reduced rent. If the lease specifies the total value of the abatement, return that amount as a numeric value only with no symbol and no commas. If the lease describes abatement as a number of free or discounted months, calculate the total abatement value using the applicable base rent (for example Monthly Base Rent times the number of free months, adjusted for any partial months or partial discounts). If no rent abatement exists or the total value cannot be reasonably calculated, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.723Z-field-1765000995965-zsuje255e",
+        "prompt": "Extract or calculate the total economic value of rent abatements or free rent granted to tenant. Look in: (1) \"Rent Abatement\", \"Free Rent\", or \"Concessions\" sections, (2) rent schedules that show zero or reduced rent. If the lease specifies the total value of the abatement, return that amount as a numeric value only with no symbol and no commas. If the lease describes abatement as a number of free or discounted months, calculate the total abatement value using the applicable base rent (for example Monthly Base Rent times the number of free months, adjusted for any partial months or partial discounts). If no rent abatement exists or the total value cannot be reasonably calculated, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.723Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Abatement Amount"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.724Z"
+  },
+  "percentage_rent": {
+    "activePrompt": "Determine whether the lease includes percentage rent based on tenant's sales. Look in: (1) \"Percentage Rent\" sections, (2) retail lease provisions that describe rent as a percentage of gross sales or similar. If the tenant is required to pay rent or additional rent as a percentage of sales in any form, return exactly \"Yes\". If the lease states that rent is fixed and does not include any percentage of sales, return exactly \"No\". If it is unclear whether percentage rent exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.725Z-field-1765000995965-rfuwa5k4r",
+        "prompt": "Determine whether the lease includes percentage rent based on tenant's sales. Look in: (1) \"Percentage Rent\" sections, (2) retail lease provisions that describe rent as a percentage of gross sales or similar. If the tenant is required to pay rent or additional rent as a percentage of sales in any form, return exactly \"Yes\". If the lease states that rent is fixed and does not include any percentage of sales, return exactly \"No\". If it is unclear whether percentage rent exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.725Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Percentage Rent"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.726Z"
+  },
+  "percentage_rent_amount": {
+    "activePrompt": "Extract the detailed percentage rent terms when applicable. Look in: (1) \"Percentage Rent\" sections, (2) retail rent provisions. Capture: the percentage rate or tiered rates, the natural or artificial breakpoint and how it is calculated, the definition of \"gross sales\" including inclusions and exclusions, reporting and statement requirements, and landlord's audit rights and remedies. Return a concise but complete summary or the operative clause text. If there is no percentage rent in the lease, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.728Z-field-1765000995965-kpib9tpqf",
+        "prompt": "Extract the detailed percentage rent terms when applicable. Look in: (1) \"Percentage Rent\" sections, (2) retail rent provisions. Capture: the percentage rate or tiered rates, the natural or artificial breakpoint and how it is calculated, the definition of \"gross sales\" including inclusions and exclusions, reporting and statement requirements, and landlord's audit rights and remedies. Return a concise but complete summary or the operative clause text. If there is no percentage rent in the lease, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.728Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Percentage Rent Amount"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.729Z"
+  },
+  "radius": {
+    "activePrompt": "Extract any radius restriction or non-compete covenant that limits tenant from operating competing locations nearby. Look in: (1) \"Radius Restriction\", \"Radius Clause\", or \"Exclusive Use\" sections, (2) use restrictions that address off-site locations. Capture: the radius distance (for example in miles or kilometers), the types of competing operations that are restricted, the geographic or center boundaries used, and how long the restriction applies (during the term and for any post-term period). Return a concise but complete summary or the operative clause text. If no radius restriction exists, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.730Z-field-1765000995965-c5z4rh2tx",
+        "prompt": "Extract any radius restriction or non-compete covenant that limits tenant from operating competing locations nearby. Look in: (1) \"Radius Restriction\", \"Radius Clause\", or \"Exclusive Use\" sections, (2) use restrictions that address off-site locations. Capture: the radius distance (for example in miles or kilometers), the types of competing operations that are restricted, the geographic or center boundaries used, and how long the restriction applies (during the term and for any post-term period). Return a concise but complete summary or the operative clause text. If no radius restriction exists, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.730Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Radius"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.731Z"
+  },
+  "general_notes": {
+    "activePrompt": "Identify and summarize any material special provisions or unique terms that are not covered by other specific fields. Review the entire lease, including riders, exhibits, handwritten modifications, and side letters, for unusual obligations, bespoke rights, or key business terms that would be important for lease administration or risk review. Provide a concise summary of these items in plain language. If there are no noteworthy additional terms beyond what is already covered by other fields, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.733Z-field-1765000995965-7ewgex24x",
+        "prompt": "Identify and summarize any material special provisions or unique terms that are not covered by other specific fields. Review the entire lease, including riders, exhibits, handwritten modifications, and side letters, for unusual obligations, bespoke rights, or key business terms that would be important for lease administration or risk review. Provide a concise summary of these items in plain language. If there are no noteworthy additional terms beyond what is already covered by other fields, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.733Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / General Notes"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.734Z"
+  },
+  "quick_summary_of_the_deal": {
+    "activePrompt": "Provide a concise 2 to 3 sentence business summary of the lease using the extracted fields. Include at minimum: tenant legal name, property or building name, total rentable area, lease term length and start and end dates, and initial monthly base rent and approximate PSF rate if available. Then highlight one or two key features such as renewal options, termination rights, TI allowance, major abatement, percentage rent, or exclusivity. Use clear narrative format, for example: \"5-year lease for [Tenant] at [Property] for [X RSF] from [YYYY-MM-DD] to [YYYY-MM-DD]. Initial base rent is [amount] per month (approximately [amount] per RSF). Key terms include [brief list of notable rights or risks].\"",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.735Z-field-1765000995965-kvoz49trn",
+        "prompt": "Provide a concise 2 to 3 sentence business summary of the lease using the extracted fields. Include at minimum: tenant legal name, property or building name, total rentable area, lease term length and start and end dates, and initial monthly base rent and approximate PSF rate if available. Then highlight one or two key features such as renewal options, termination rights, TI allowance, major abatement, percentage rent, or exclusivity. Use clear narrative format, for example: \"5-year lease for [Tenant] at [Property] for [X RSF] from [YYYY-MM-DD] to [YYYY-MM-DD]. Initial base rent is [amount] per month (approximately [amount] per RSF). Key terms include [brief list of notable rights or risks].\"",
+        "savedAt": "2025-12-06T06:39:23.735Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Quick summary of the deal"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.737Z"
+  },
+  "document_link": {
+    "activePrompt": "Extract the Box document URL associated with this lease file. Use Box system metadata or file properties only; do not try to infer or construct a URL from text inside the lease. Return the full Box URL as a single string. If no Box link is available in the metadata you can access, return exactly 'Not Present'.",
+    "promptHistory": [
+      {
+        "id": "library-2025-12-06T06:39:23.738Z-field-1765000995965-qse8bdoua",
+        "prompt": "Extract the Box document URL associated with this lease file. Use Box system metadata or file properties only; do not try to infer or construct a URL from text inside the lease. Return the full Box URL as a single string. If no Box link is available in the metadata you can access, return exactly 'Not Present'.",
+        "savedAt": "2025-12-06T06:39:23.738Z",
+        "source": "imported",
+        "generationMethod": "standard",
+        "note": "Pushed from Library: Tishman / Document Link"
+      }
+    ],
+    "lastUsedTemplate": "tishman",
+    "usageCount": 1,
+    "lastModified": "2025-12-06T06:39:23.739Z"
   }
 }

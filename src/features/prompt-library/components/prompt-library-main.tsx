@@ -2,7 +2,7 @@
 import { logger } from '@/lib/logger';
 
 import React, { useState, useMemo } from 'react';
-import { AlertCircle, BookOpen, Plus, ChevronDown, MoreHorizontal, Download, Upload, Box, Trash2, Edit } from 'lucide-react';
+import { AlertCircle, BookOpen, Plus, ChevronDown, MoreHorizontal, Download, Upload, Box, Trash2, Edit, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -50,6 +50,7 @@ import type { Template, Field, Prompt, FieldType } from '../types';
 import { useToast } from '@/hooks/use-toast';
 import { transformToBoxTemplate, validateBoxTemplate } from '../utils/box-transformer';
 import { createMetadataTemplate, checkTemplateExists } from '@/services/box';
+import { analyzeAndPushPrompts, type PushPromptsResult, type FieldMatch } from '../utils/apply-prompts';
 
 export function PromptLibraryMain() {
   const { filteredFields, isLoading, error, database, searchFilters, setSelectedTemplate, addCategory, addTemplate, deleteTemplate, renameTemplate, addField, addPrompt, deletePrompt, reorderFields, batchImport } = usePromptLibrary();
@@ -104,6 +105,11 @@ export function PromptLibraryMain() {
   // Import/Export dialog state
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
+
+  // Push to Prompt Studio state
+  const [pushPromptsDialogOpen, setPushPromptsDialogOpen] = useState(false);
+  const [pushPromptsPreview, setPushPromptsPreview] = useState<PushPromptsResult | null>(null);
+  const [isPushingPrompts, setIsPushingPrompts] = useState(false);
 
   if (error) {
     return (
@@ -216,6 +222,68 @@ export function PromptLibraryMain() {
     }
   };
 
+  // Handle opening push prompts dialog with preview
+  const handleOpenPushPromptsDialog = () => {
+    const selectedTemplate = getSelectedTemplate();
+    if (!selectedTemplate) {
+      toast({
+        variant: 'destructive',
+        title: 'No Template Selected',
+        description: 'Please select a template first.',
+      });
+      return;
+    }
+
+    // Get preview (dry run)
+    const preview = analyzeAndPushPrompts(selectedTemplate, true);
+    setPushPromptsPreview(preview);
+    setPushPromptsDialogOpen(true);
+  };
+
+  // Handle actually pushing the prompts
+  const handlePushPrompts = async () => {
+    const selectedTemplate = getSelectedTemplate();
+    if (!selectedTemplate || !pushPromptsPreview?.matchedTemplate) {
+      return;
+    }
+
+    setIsPushingPrompts(true);
+
+    try {
+      // Execute the push (not dry run)
+      const result = analyzeAndPushPrompts(selectedTemplate, false);
+
+      if (result.success && result.pushedCount > 0) {
+        toast({
+          title: 'Prompts Pushed Successfully',
+          description: `${result.pushedCount} prompt(s) have been pushed to Prompt Studio for template "${result.matchedTemplate?.displayName}".`,
+          duration: 4000,
+        });
+        logger.info('Prompts pushed to Prompt Studio', { 
+          template: selectedTemplate.name,
+          pushedCount: result.pushedCount 
+        });
+      } else if (result.errorMessage) {
+        toast({
+          variant: 'destructive',
+          title: 'Push Failed',
+          description: result.errorMessage,
+        });
+      }
+    } catch (error) {
+      logger.error('Failed to push prompts', error instanceof Error ? error : { error });
+      toast({
+        variant: 'destructive',
+        title: 'Push Failed',
+        description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      });
+    } finally {
+      setIsPushingPrompts(false);
+      setPushPromptsDialogOpen(false);
+      setPushPromptsPreview(null);
+    }
+  };
+
   // Get available templates based on current category filter
   const availableTemplatesForField = React.useMemo(() => {
     if (searchFilters.category && searchFilters.category !== ALL_CATEGORIES) {
@@ -303,6 +371,12 @@ export function PromptLibraryMain() {
                     >
                       <Box className="mr-2 h-4 w-4" />
                       Create Template in Box
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={handleOpenPushPromptsDialog}
+                    >
+                      <Send className="mr-2 h-4 w-4" />
+                      Push Prompts to Prompt Studio
                     </DropdownMenuItem>
                   </>
                 )}
@@ -470,6 +544,116 @@ export function PromptLibraryMain() {
         importDialogOpen={importDialogOpen}
         setImportDialogOpen={setImportDialogOpen}
       />
+
+      {/* Push Prompts to Prompt Studio Dialog */}
+      <Dialog open={pushPromptsDialogOpen} onOpenChange={(open) => {
+        if (!open) {
+          setPushPromptsDialogOpen(false);
+          setPushPromptsPreview(null);
+        }
+      }}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Send className="h-5 w-5" />
+              Push Prompts to Prompt Studio
+            </DialogTitle>
+            <DialogDescription>
+              {pushPromptsPreview?.matchedTemplate 
+                ? `Push prompts from "${getSelectedTemplate()?.name}" to "${pushPromptsPreview.matchedTemplate.displayName}" in Prompt Studio.`
+                : `Looking for a matching template in Prompt Studio...`
+              }
+            </DialogDescription>
+          </DialogHeader>
+
+          {pushPromptsPreview && (
+            <div className="space-y-4 py-4">
+              {/* Error state */}
+              {pushPromptsPreview.errorMessage && !pushPromptsPreview.matchedTemplate && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{pushPromptsPreview.errorMessage}</AlertDescription>
+                </Alert>
+              )}
+
+              {/* Success preview */}
+              {pushPromptsPreview.matchedTemplate && (
+                <>
+                  {/* Summary */}
+                  <div className="flex gap-4 text-sm">
+                    <div className="flex-1 p-3 bg-green-50 dark:bg-green-950 rounded-lg border border-green-200 dark:border-green-800">
+                      <div className="font-semibold text-green-700 dark:text-green-300">{pushPromptsPreview.fieldMatches.length}</div>
+                      <div className="text-green-600 dark:text-green-400">Fields to Update</div>
+                    </div>
+                    {pushPromptsPreview.unmatchedFields.length > 0 && (
+                      <div className="flex-1 p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                        <div className="font-semibold text-yellow-700 dark:text-yellow-300">{pushPromptsPreview.unmatchedFields.length}</div>
+                        <div className="text-yellow-600 dark:text-yellow-400">Fields Skipped</div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Fields to update */}
+                  {pushPromptsPreview.fieldMatches.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium">Fields to Update:</Label>
+                      <div className="border rounded-lg divide-y max-h-48 overflow-y-auto">
+                        {pushPromptsPreview.fieldMatches.map((match, idx) => (
+                          <div key={idx} className="p-3 hover:bg-gray-50 dark:hover:bg-gray-800">
+                            <div className="flex items-center justify-between">
+                              <div className="font-medium text-sm">{match.libraryField.name}</div>
+                              <div className="text-xs text-gray-500">→ {match.boxField.displayName}</div>
+                            </div>
+                            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                              "{match.selectedPrompt.text.substring(0, 100)}{match.selectedPrompt.text.length > 100 ? '...' : ''}"
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Unmatched fields */}
+                  {pushPromptsPreview.unmatchedFields.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-sm font-medium text-yellow-700 dark:text-yellow-300">Skipped Fields:</Label>
+                      <div className="border border-yellow-200 dark:border-yellow-800 rounded-lg divide-y max-h-32 overflow-y-auto bg-yellow-50/50 dark:bg-yellow-950/50">
+                        {pushPromptsPreview.unmatchedFields.map((item, idx) => (
+                          <div key={idx} className="p-2 text-sm">
+                            <span className="font-medium">{item.field.name}</span>
+                            <span className="text-xs text-yellow-600 dark:text-yellow-400 ml-2">
+                              ({item.reason === 'no-match-in-box' ? 'No matching field in Prompt Studio' : 'No prompts available'})
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setPushPromptsDialogOpen(false);
+                setPushPromptsPreview(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handlePushPrompts}
+              disabled={isPushingPrompts || !pushPromptsPreview?.matchedTemplate || pushPromptsPreview.fieldMatches.length === 0}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {isPushingPrompts ? 'Pushing...' : `Push ${pushPromptsPreview?.fieldMatches.length || 0} Prompt(s)`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 } 

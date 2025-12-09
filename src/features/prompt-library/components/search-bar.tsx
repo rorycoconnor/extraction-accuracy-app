@@ -25,6 +25,17 @@ export function SearchBar() {
     return database.templates.filter(t => t.category === searchFilters.category);
   }, [database.templates, searchFilters.category]);
 
+  // Alphabetically sort categories and templates for the dropdowns
+  const sortedCategories = React.useMemo(
+    () => [...database.categories].sort((a, b) => a.localeCompare(b)),
+    [database.categories]
+  );
+
+  const sortedTemplates = React.useMemo(
+    () => [...availableTemplates].sort((a, b) => a.name.localeCompare(b.name)),
+    [availableTemplates]
+  );
+
   // Check if any filters are active
   const hasActiveFilters = React.useMemo(() => {
     return !!(
@@ -91,7 +102,7 @@ export function SearchBar() {
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-gray-800">
               <SelectItem value={ALL_CATEGORIES}>All</SelectItem>
-              {database.categories.map((category) => (
+              {sortedCategories.map((category) => (
                 <SelectItem key={category} value={category}>
                   {category}
                 </SelectItem>
@@ -111,7 +122,7 @@ export function SearchBar() {
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-gray-800">
               <SelectItem value={ALL_TEMPLATES}>All</SelectItem>
-              {availableTemplates.map((template) => (
+              {sortedTemplates.map((template) => (
                 <SelectItem key={template.id} value={template.id}>
                   {template.name}
                 </SelectItem>

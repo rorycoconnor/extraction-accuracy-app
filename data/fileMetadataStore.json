@@ -4564,5 +4564,12 @@
       "total_contract_value": "4000000",
       "total_contract_value_currency": "USD"
     }
+  },
+  "2065827655120": {
+    "templateKey": "tishman",
+    "groundTruth": {
+      "lease_purpose": "Not Present",
+      "doing_business_as": "Not Present"
+    }
   }
 }

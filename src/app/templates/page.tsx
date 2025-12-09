@@ -72,6 +72,7 @@ import {
   Upload,
   RotateCcw,
   Info,
+  BookOpen,
 } from 'lucide-react';
 import NewTemplateDialog from '@/components/new-template-dialog';
 import PromptStudioSheet from '@/components/prompt-studio-sheet';
@@ -84,6 +85,11 @@ import {
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logger';
+import { 
+  getLibraryCategories, 
+  saveBoxTemplateToLibrary, 
+  getImportSummary 
+} from '@/features/prompt-library/utils/import-from-box';
 
 export default function TemplatesPage() {
   const { toast } = useToast();
@@ -111,6 +117,14 @@ export default function TemplatesPage() {
   // Import/Export state
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [importFile, setImportFile] = useState<File | null>(null);
+
+  // Push to Library state
+  const [isPushToLibraryDialogOpen, setIsPushToLibraryDialogOpen] = useState(false);
+  const [templateToPush, setTemplateToPush] = useState<BoxTemplate | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [newCategoryName, setNewCategoryName] = useState<string>('');
+  const [libraryCategories, setLibraryCategories] = useState<string[]>([]);
+  const [isPushing, setIsPushing] = useState(false);
 
   // Load configured templates
   useEffect(() => {
@@ -192,6 +206,98 @@ export default function TemplatesPage() {
 
   const handleSelectTemplate = (template: BoxTemplate) => {
     setSelectedTemplate(template);
+  };
+
+  // Push to Library handlers
+  const handleOpenPushToLibraryDialog = (template: BoxTemplate) => {
+    setTemplateToPush(template);
+    setSelectedCategory('');
+    setNewCategoryName('');
+    // Load current categories from Library
+    const categories = getLibraryCategories();
+    setLibraryCategories(categories);
+    setIsPushToLibraryDialogOpen(true);
+  };
+
+  const handlePushToLibrary = () => {
+    if (!templateToPush) return;
+    
+    // Determine category to use
+    const categoryToUse = selectedCategory === '__new__' 
+      ? newCategoryName.trim() 
+      : selectedCategory;
+    
+    if (!categoryToUse) {
+      toast({
+        variant: 'destructive',
+        title: 'Category Required',
+        description: 'Please select or create a category.',
+      });
+      return;
+    }
+    
+    setIsPushing(true);
+    
+    try {
+      const result = saveBoxTemplateToLibrary(templateToPush, categoryToUse, true);
+      
+      if (result.success) {
+        if (result.merged) {
+          // Template already existed - prompts were merged
+          if (result.promptsAdded && result.promptsAdded > 0) {
+            toast({
+              title: 'Prompts Added to Existing Template',
+              description: `Added ${result.promptsAdded} new prompt(s) to "${templateToPush.displayName}" in the Library.`,
+              duration: 4000,
+            });
+          } else {
+            toast({
+              title: 'No New Prompts to Add',
+              description: `"${templateToPush.displayName}" already exists in the Library and all prompts are already present.`,
+              duration: 4000,
+            });
+          }
+          logger.info('Merged prompts into existing Library template', {
+            templateName: templateToPush.displayName,
+            promptsAdded: result.promptsAdded,
+          });
+        } else {
+          // New template created
+          const summary = getImportSummary(templateToPush);
+          const promptsMsg = result.promptsAdded && result.promptsAdded > 0 
+            ? ` with ${result.promptsAdded} prompt(s)` 
+            : '';
+          toast({
+            title: 'Template Pushed to Library',
+            description: `"${templateToPush.displayName}" with ${summary.fieldCount} field(s)${promptsMsg} has been added to the Library.`,
+            duration: 4000,
+          });
+          logger.info('Pushed template to Library', {
+            templateName: templateToPush.displayName,
+            category: categoryToUse,
+            fieldCount: summary.fieldCount,
+            promptsAdded: result.promptsAdded,
+          });
+        }
+        setIsPushToLibraryDialogOpen(false);
+        setTemplateToPush(null);
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Push Failed',
+          description: result.errorMessage || 'Failed to push template to Library.',
+        });
+      }
+    } catch (error) {
+      logger.error('Failed to push template to Library', error as Error);
+      toast({
+        variant: 'destructive',
+        title: 'Push Failed',
+        description: error instanceof Error ? error.message : 'An unexpected error occurred.',
+      });
+    } finally {
+      setIsPushing(false);
+    }
   };
 
   // Handle compare type change
@@ -452,6 +558,15 @@ export default function TemplatesPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenPushToLibraryDialog(template);
+                      }}
+                    >
+                      <BookOpen className="mr-2 h-4 w-4" />
+                      Push to Library
+                    </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-destructive focus:text-destructive"
                       onClick={(e) => {
@@ -785,6 +900,123 @@ export default function TemplatesPage() {
             <Button onClick={handleImport}>
               <Upload className="mr-2 h-4 w-4" />
               Import
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Push to Library Dialog */}
+      <Dialog open={isPushToLibraryDialogOpen} onOpenChange={(open) => {
+        if (!open) {
+          setIsPushToLibraryDialogOpen(false);
+          setTemplateToPush(null);
+          setSelectedCategory('');
+          setNewCategoryName('');
+        }
+      }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <BookOpen className="h-5 w-5" />
+              Push Template to Library
+            </DialogTitle>
+            <DialogDescription>
+              {templateToPush && (
+                <>
+                  Add "{templateToPush.displayName}" to your Library.
+                  This will create a new template with {templateToPush.fields.length} field(s).
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {templateToPush && (
+            <div className="space-y-4 py-2">
+              {/* Template Summary */}
+              <div className="rounded-lg border p-3 bg-muted/50">
+                <div className="text-sm font-medium mb-2">Template Summary</div>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-muted-foreground">Fields:</div>
+                  <div>{templateToPush.fields.length}</div>
+                  <div className="text-muted-foreground">With Options:</div>
+                  <div>{templateToPush.fields.filter(f => f.options && f.options.length > 0).length}</div>
+                  <div className="text-muted-foreground">With Active Prompts:</div>
+                  <div>{getImportSummary(templateToPush).fieldsWithPrompts}</div>
+                </div>
+                {getImportSummary(templateToPush).fieldsWithPrompts > 0 && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Active prompts from Prompt Studio will be included.
+                  </p>
+                )}
+              </div>
+
+              {/* Category Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="category-select">Category</Label>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                  <SelectTrigger id="category-select">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {libraryCategories.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {cat}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="__new__">+ Create New Category</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* New Category Name Input */}
+              {selectedCategory === '__new__' && (
+                <div className="space-y-2">
+                  <Label htmlFor="new-category-name">New Category Name</Label>
+                  <Input
+                    id="new-category-name"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                    placeholder="Enter category name"
+                  />
+                </div>
+              )}
+
+              {/* Fields Preview */}
+              <div className="space-y-2">
+                <Label>Fields to Import</Label>
+                <div className="rounded-lg border max-h-40 overflow-y-auto">
+                  {templateToPush.fields.map((field, idx) => (
+                    <div key={field.id} className={cn(
+                      "px-3 py-2 text-sm flex items-center justify-between",
+                      idx !== templateToPush.fields.length - 1 && "border-b"
+                    )}>
+                      <span className="font-medium">{field.displayName}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {field.type}
+                        {field.options && field.options.length > 0 && ` (${field.options.length} options)`}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setIsPushToLibraryDialogOpen(false);
+                setTemplateToPush(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handlePushToLibrary}
+              disabled={isPushing || (!selectedCategory || (selectedCategory === '__new__' && !newCategoryName.trim()))}
+            >
+              {isPushing ? 'Pushing...' : 'Push to Library'}
             </Button>
           </DialogFooter>
         </DialogContent>
