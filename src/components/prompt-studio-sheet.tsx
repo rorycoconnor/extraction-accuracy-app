@@ -29,13 +29,16 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logger';
 import type { AccuracyField, PromptVersion, AccuracyData, FileResult } from '@/lib/types';
-import { Save, History, Star, Play, Copy, Sparkles, Loader2, TrendingUp, TrendingDown, BarChart3, Wand2, Trash2, X, FlaskConical, CheckCircle2 } from 'lucide-react';
+import { Save, History, Star, Play, Copy, Sparkles, Loader2, TrendingUp, TrendingDown, BarChart3, Wand2, Trash2, X, FlaskConical, CheckCircle2, Settings2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { generateInitialPrompt, improvePrompt } from '@/ai/flows/generate-initial-prompt';
 import { PromptPickerDialog } from '@/features/prompt-library/components/prompt-picker-dialog';
 import { extractMetadataBatch, type BatchExtractionJob } from '@/ai/flows/batch-metadata-extraction';
 import { compareValues } from '@/lib/metrics';
 import { cn, findFieldValue, formatModelName } from '@/lib/utils';
+import { SystemPromptPanel } from '@/components/system-prompt-panel';
+import { getActiveSystemPrompt, type SystemPromptVersion } from '@/lib/system-prompt-storage';
 
 type PromptStudioSheetProps = {
   isOpen: boolean;
@@ -80,7 +83,21 @@ export default function PromptStudioSheet({
   const [showFileSelection, setShowFileSelection] = React.useState(false);
   const [testProgress, setTestProgress] = React.useState({ current: 0, total: 0 });
   const [selectedTestFiles, setSelectedTestFiles] = React.useState<Set<string>>(new Set());
+  const [showSystemPromptPanel, setShowSystemPromptPanel] = React.useState(false);
+  const [activeSystemPrompt, setActiveSystemPrompt] = React.useState<SystemPromptVersion | null>(null);
   const { toast } = useToast();
+
+  // Load active system prompt on mount and whenever it might have changed
+  // This ensures the system prompt persists across field and template changes
+  React.useEffect(() => {
+    const activePrompt = getActiveSystemPrompt();
+    setActiveSystemPrompt(activePrompt);
+  }, []);
+
+  // Handle system prompt change from the panel
+  const handleSystemPromptChange = React.useCallback((version: SystemPromptVersion) => {
+    setActiveSystemPrompt(version);
+  }, []);
 
   React.useEffect(() => {
     if (field) {
@@ -93,6 +110,8 @@ export default function PromptStudioSheet({
       setShowFileSelection(false);
       setTestResults(null);
       setSelectedTestFiles(new Set());
+      // Close system prompt panel when switching fields
+      setShowSystemPromptPanel(false);
     }
   }, [field]);
 
@@ -198,9 +217,21 @@ export default function PromptStudioSheet({
     try {
         let result;
         
+        // Get custom system prompts if not using default
+        const customGeneratePrompt = activeSystemPrompt && !activeSystemPrompt.isDefault 
+          ? activeSystemPrompt.generatePrompt 
+          : undefined;
+        const customImprovePrompt = activeSystemPrompt && !activeSystemPrompt.isDefault 
+          ? activeSystemPrompt.improvePrompt 
+          : undefined;
+        
         if (isImprovementMode) {
           // Improve existing prompt
-          logger.info('Improving prompt with feedback', { improvementInstructions });
+          logger.info('Improving prompt with feedback', { 
+            improvementInstructions,
+            usingCustomSystemPrompt: !!customImprovePrompt,
+            systemPromptName: activeSystemPrompt?.name
+          });
           result = await improvePrompt({
             originalPrompt: activePromptText,
             userFeedback: improvementInstructions,
@@ -210,7 +241,8 @@ export default function PromptStudioSheet({
               key: field.key,
               type: field.type
             },
-            fileIds: selectedFileIds
+            fileIds: selectedFileIds,
+            customSystemPrompt: customImprovePrompt
           });
           
           toast({
@@ -222,7 +254,11 @@ export default function PromptStudioSheet({
           setImprovementInstructions('');
         } else {
           // Generate new prompt
-          logger.info('Generating new prompt for field', { fieldName: field.name });
+          logger.info('Generating new prompt for field', { 
+            fieldName: field.name,
+            usingCustomSystemPrompt: !!customGeneratePrompt,
+            systemPromptName: activeSystemPrompt?.name
+          });
           result = await generateInitialPrompt({
             templateName: templateName || 'document',
             field: {
@@ -230,7 +266,8 @@ export default function PromptStudioSheet({
               key: field.key,
               type: field.type
             },
-            fileIds: selectedFileIds
+            fileIds: selectedFileIds,
+            customSystemPrompt: customGeneratePrompt
           });
           
           toast({
@@ -551,7 +588,7 @@ export default function PromptStudioSheet({
       <SheetContent 
         className={cn(
           "!p-0 gap-0 flex flex-col transition-all duration-500 ease-in-out",
-          (showTestResults || showFileSelection) ? "!w-screen !max-w-none" : "!w-[50vw] !max-w-[50vw]"
+          (showTestResults || showFileSelection || showSystemPromptPanel) ? "!w-screen !max-w-none" : "!w-[50vw] !max-w-[50vw]"
         )}
         style={{ 
           scrollbarGutter: 'stable'
@@ -576,7 +613,18 @@ export default function PromptStudioSheet({
         </div>
         
         {/* Flexible Content Area */}
-        <div className="flex-1 flex gap-6 px-6 py-4 overflow-hidden transition-all duration-500 ease-in-out" style={{ minHeight: 0 }}>
+        <div className="flex-1 flex gap-8 px-6 py-4 overflow-hidden transition-all duration-500 ease-in-out" style={{ minHeight: 0, overflow: 'hidden' }}>
+          {/* System Prompt Panel (shown when System Prompt button is clicked) */}
+          {showSystemPromptPanel && (
+            <div className="flex flex-col transition-all duration-500 ease-in-out border-r pr-8" style={{ flex: '0 0 50%', minWidth: 0, minHeight: 0 }}>
+              <SystemPromptPanel
+                isOpen={showSystemPromptPanel}
+                onClose={() => setShowSystemPromptPanel(false)}
+                onSystemPromptChange={handleSystemPromptChange}
+              />
+            </div>
+          )}
+
           {/* File Selection Panel (shown when Test button is clicked) */}
           {showFileSelection && (
             <div className="flex flex-col transition-all duration-500 ease-in-out" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
@@ -941,11 +989,33 @@ export default function PromptStudioSheet({
           
           {/* Prompt Studio Panel */}
           <div className="flex flex-col transition-all duration-500 ease-in-out" style={{ flex: 1, minWidth: 0, minHeight: 0 }}>
-            <div className="shrink-0 flex items-center gap-2 mb-4 h-8">
-                    <History className="h-5 w-5" />
-              <h3 className="font-semibold">Prompt Versions</h3>
-                </div>
-            <div className="overflow-y-auto pr-2" style={{ flex: 1, minHeight: 0, scrollbarGutter: 'stable' }}>
+            <div className="shrink-0 flex items-center justify-between mb-4 h-8 pr-2">
+              <div className="flex items-center gap-2">
+                <History className="h-5 w-5" />
+                <h3 className="font-semibold">Prompt Versions</h3>
+              </div>
+              {/* System Prompt Button */}
+              <Button
+                variant={showSystemPromptPanel ? "secondary" : "outline"}
+                size="sm"
+                onClick={() => setShowSystemPromptPanel(!showSystemPromptPanel)}
+                className="flex items-center gap-2"
+                style={{ marginRight: '10px' }}
+              >
+                <Settings2 className="h-4 w-4" />
+                <span className="hidden sm:inline">System Prompt:</span>
+                <Badge 
+                  variant={activeSystemPrompt?.isDefault ? "secondary" : "outline"} 
+                  className={cn(
+                    "text-xs",
+                    !activeSystemPrompt?.isDefault && "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-700"
+                  )}
+                >
+                  {activeSystemPrompt?.name || 'Default'}
+                </Badge>
+              </Button>
+            </div>
+            <div className="overflow-y-auto" style={{ flex: 1, minHeight: 0, scrollbarGutter: 'stable' }}>
                         <div className="space-y-4 pb-4">
                             {/* Active Prompt Card */}
                             <Card className="border-2 border-primary bg-primary/5">

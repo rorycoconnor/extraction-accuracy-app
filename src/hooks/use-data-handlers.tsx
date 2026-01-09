@@ -373,6 +373,61 @@ export const useDataHandlers = ({
   };
 
   /**
+   * Clear all prompts - sets every field's prompt to an empty string
+   * This saves time from manually clearing each field's prompt individually
+   */
+  const handleClearAllPrompts = () => {
+    if (!accuracyData) {
+      toast({
+        variant: 'destructive',
+        title: 'No accuracy data',
+        description: 'Load a template before clearing prompts.',
+      });
+      return;
+    }
+
+    const newAccuracyData = JSON.parse(JSON.stringify(accuracyData));
+    let clearedCount = 0;
+
+    newAccuracyData.fields = newAccuracyData.fields.map((field: AccuracyField) => {
+      // Only count fields that had a non-empty prompt
+      if (field.prompt && field.prompt.trim() !== '') {
+        clearedCount++;
+      }
+      
+      return {
+        ...field,
+        prompt: '', // Set to empty/blank
+        promptHistory: [], // Clear history as well
+      } satisfies AccuracyField;
+    });
+
+    setAccuracyData(newAccuracyData);
+    saveAccuracyData(newAccuracyData);
+    
+    // Update prompt storage for each field
+    newAccuracyData.fields.forEach((field: AccuracyField) => {
+      saveFieldPrompt(
+        field.key,
+        '', // Empty prompt
+        [], // Empty history
+        accuracyData.templateKey
+      );
+    });
+
+    logger.info('Cleared all prompts', {
+      templateKey: accuracyData.templateKey,
+      fieldsCleared: clearedCount,
+      totalFields: newAccuracyData.fields.length
+    });
+
+    toast({
+      title: 'All Prompts Cleared',
+      description: `Successfully cleared prompts for ${clearedCount} fields.`,
+    });
+  };
+
+  /**
    * Update prompt version metrics after a run comparison is completed
    * This ensures metrics are only added after actually testing the prompt
    * 
@@ -447,6 +502,7 @@ export const useDataHandlers = ({
     handleUsePromptVersion,
     handleDeletePromptVersion,
     handleResetAllPrompts,
+    handleClearAllPrompts,
     updatePromptVersionMetrics,
   };
 };

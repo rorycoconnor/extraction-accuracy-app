@@ -335,7 +335,7 @@ const MainPage: React.FC = () => {
   });
 
   // ===== DATA HANDLERS HOOK =====
-  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, handleResetAllPrompts, updatePromptVersionMetrics } = useDataHandlers({
+  const { handleOpenInlineEditor, handleSaveInlineGroundTruth, handleUpdatePrompt, handleUsePromptVersion, handleDeletePromptVersion, handleResetAllPrompts, handleClearAllPrompts, updatePromptVersionMetrics } = useDataHandlers({
     accuracyData,
     setAccuracyData,
     selectedCellForEdit,
@@ -639,6 +639,7 @@ const MainPage: React.FC = () => {
          onClearResults={clearResults}
          onResetData={() => setShowResetDialog(true)}
          onResetPrompts={handleResetAllPrompts}
+         onClearAllPrompts={handleClearAllPrompts}
          onColumnToggle={toggleColumn}
          onDownloadResults={handleDownloadResults}
          isAgentAlphaRunning={agentAlphaRunner.isRunning}

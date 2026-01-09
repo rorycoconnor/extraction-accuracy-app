@@ -375,7 +375,12 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       setApiRequestDebugData(null);
     }
 
-    const CONCURRENCY_LIMIT = 10; // Increased from 5 to 10 for better performance
+    const CONCURRENCY_LIMIT = 10; // Allow up to 10 parallel extractions
+    
+    // Chunk size for UI progress updates
+    // With timeouts now in place (3 min per file, 5 min global), we can use larger chunks
+    // for better parallelism while still being protected from hanging
+    const PROGRESS_CHUNK_SIZE = 10; // Full parallelism - timeouts protect against hangs
 
     // Prepare all batch extraction jobs
     const batchJobs: BatchExtractionJob[] = extractionJobs.map((job, index) => {
@@ -415,17 +420,17 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
     });
 
     // Split into smaller chunks for progress updates (can't pass callbacks across server boundary)
-    // Process in chunks of 10 to show incremental progress
-    const CHUNK_SIZE = 10;
+    // Smaller chunks = more frequent UI updates (but more server calls)
     const chunks: BatchExtractionJob[][] = [];
-    for (let i = 0; i < batchJobs.length; i += CHUNK_SIZE) {
-      chunks.push(batchJobs.slice(i, i + CHUNK_SIZE));
+    for (let i = 0; i < batchJobs.length; i += PROGRESS_CHUNK_SIZE) {
+      chunks.push(batchJobs.slice(i, i + PROGRESS_CHUNK_SIZE));
     }
 
     extractionLogger.info('Processing in chunks for progress updates', { 
       totalJobs: batchJobs.length,
       chunkCount: chunks.length,
-      chunkSize: CHUNK_SIZE
+      chunkSize: PROGRESS_CHUNK_SIZE,
+      note: 'Smaller chunks = faster UI updates'
     });
 
     const allResults: BatchExtractionResult[] = [];
@@ -444,7 +449,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       allResults.push(...chunkResults);
 
       // Convert results and trigger progress updates after each chunk
-      const startIndex = chunkIndex * CHUNK_SIZE;
+      const startIndex = chunkIndex * PROGRESS_CHUNK_SIZE;
       chunkResults.forEach((batchResult, indexInChunk) => {
         const globalIndex = startIndex + indexInChunk;
         const job = extractionJobs[globalIndex];

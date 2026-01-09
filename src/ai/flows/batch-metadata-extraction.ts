@@ -11,6 +11,13 @@ import type { ExtractMetadataInput, ExtractMetadataOutput } from '@/lib/schemas'
  * in a single server action call, acquiring the access token only once.
  */
 
+// Global timeout for entire batch extraction (5 minutes)
+// This ensures the UI doesn't hang forever waiting for problematic files
+const BATCH_GLOBAL_TIMEOUT_MS = 300000; // 5 minutes
+
+// Per-job timeout (3 minutes) - shorter than global to allow for cleanup
+const JOB_TIMEOUT_MS = 180000; // 3 minutes
+
 export interface BatchExtractionJob extends ExtractMetadataInput {
   jobId: string; // Unique identifier for tracking this specific job
 }
@@ -22,6 +29,7 @@ export interface BatchExtractionResult {
   confidenceScores?: Record<string, number>;
   error?: string;
   duration?: number;
+  timedOut?: boolean; // NEW: indicates if this job was killed by timeout
 }
 
 export interface BatchProgressCallback {
@@ -40,6 +48,27 @@ export interface BatchProgressCallback {
  * @param onProgress - Optional callback fired as each extraction completes
  * @returns Array of results in the same order as input jobs
  */
+/**
+ * Wraps a promise with a timeout
+ */
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, jobId: string): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error(`Job ${jobId} timed out after ${timeoutMs / 1000}s`));
+    }, timeoutMs);
+
+    promise
+      .then((result) => {
+        clearTimeout(timeoutId);
+        resolve(result);
+      })
+      .catch((error) => {
+        clearTimeout(timeoutId);
+        reject(error);
+      });
+  });
+}
+
 export async function extractMetadataBatch(
   jobs: BatchExtractionJob[],
   concurrencyLimit: number = 10,
@@ -50,19 +79,48 @@ export async function extractMetadataBatch(
   logger.info('Starting batch extraction', {
     jobCount: jobs.length,
     concurrencyLimit,
-    fileIds: jobs.map(j => j.fileId).slice(0, 5) // Log first 5 file IDs
+    fileIds: jobs.map(j => j.fileId).slice(0, 5), // Log first 5 file IDs
+    globalTimeoutMs: BATCH_GLOBAL_TIMEOUT_MS,
+    jobTimeoutMs: JOB_TIMEOUT_MS
   });
 
   // Track completion for progress callbacks
   let completedCount = 0;
   const totalCount = jobs.length;
+  
+  // Track if we've hit global timeout
+  let globalTimeoutReached = false;
+  const globalTimeoutId = setTimeout(() => {
+    globalTimeoutReached = true;
+    logger.warn('Global batch timeout reached', {
+      timeoutMs: BATCH_GLOBAL_TIMEOUT_MS,
+      completedCount,
+      totalCount
+    });
+  }, BATCH_GLOBAL_TIMEOUT_MS);
 
-  // Process all jobs with concurrency control
+  // Process all jobs with concurrency control and per-job timeout
   const results = await processWithConcurrency(
     jobs,
     concurrencyLimit,
     async (job) => {
       const jobStartTime = Date.now();
+      
+      // If global timeout already reached, fail fast
+      if (globalTimeoutReached) {
+        const result: BatchExtractionResult = {
+          jobId: job.jobId,
+          success: false,
+          error: 'Global batch timeout exceeded - job cancelled',
+          duration: Date.now() - jobStartTime,
+          timedOut: true
+        };
+        completedCount++;
+        if (onProgress) {
+          onProgress(result, completedCount, totalCount);
+        }
+        return result;
+      }
       
       try {
         logger.debug('Processing extraction job', {
@@ -73,13 +131,19 @@ export async function extractMetadataBatch(
           fieldCount: job.fields?.length || 0
         });
 
-        // Call Box AI directly - token acquisition happens inside but is cached
-        const { extractedData, confidenceScores } = await extractStructuredMetadataWithBoxAI({
+        // Call Box AI with per-job timeout
+        const extractionPromise = extractStructuredMetadataWithBoxAI({
           fileId: job.fileId,
           fields: job.fields,
           model: job.model,
           templateKey: job.templateKey
         });
+        
+        const { extractedData, confidenceScores } = await withTimeout(
+          extractionPromise, 
+          JOB_TIMEOUT_MS, 
+          job.jobId
+        );
 
         const duration = Date.now() - jobStartTime;
 
@@ -111,20 +175,23 @@ export async function extractMetadataBatch(
       } catch (error) {
         const duration = Date.now() - jobStartTime;
         const errorMessage = error instanceof Error ? error.message : String(error);
+        const isTimeout = errorMessage.includes('timed out');
 
         logger.error('Extraction job failed', {
           jobId: job.jobId,
           fileId: job.fileId,
           model: job.model,
           error: errorMessage,
-          duration
+          duration,
+          timedOut: isTimeout
         });
 
         const result: BatchExtractionResult = {
           jobId: job.jobId,
           success: false,
-          error: errorMessage,
-          duration
+          error: isTimeout ? `Extraction timed out after ${JOB_TIMEOUT_MS / 1000}s` : errorMessage,
+          duration,
+          timedOut: isTimeout
         };
 
         // Fire progress callback even for failures
@@ -137,6 +204,9 @@ export async function extractMetadataBatch(
       }
     }
   );
+  
+  // Clean up global timeout
+  clearTimeout(globalTimeoutId);
 
   const totalDuration = Date.now() - startTime;
   const successCount = results.filter(r => r.success).length;

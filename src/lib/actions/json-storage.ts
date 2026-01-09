@@ -114,4 +114,13 @@ export async function savePromptDataAction(promptData: any) {
 
 export async function getPromptDataAction(): Promise<any> {
   return await loadData('promptsStore', {});
+}
+
+// System prompt storage actions
+export async function saveSystemPromptsAction(systemPromptsData: any) {
+  await saveData('systemPromptsStore', systemPromptsData);
+}
+
+export async function getSystemPromptsAction(): Promise<any> {
+  return await loadData('systemPromptsStore', null);
 } 

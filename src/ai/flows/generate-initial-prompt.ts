@@ -5,13 +5,30 @@
  * @fileOverview Prompt generation using Box AI API
  * 
  * Generates and improves prompts using Box AI text generation.
+ * Supports custom system prompts for both generation and improvement.
  */
 
 import { boxApiFetch } from '@/services/box';
 import { SYSTEM_MESSAGES, FIELD_TYPE_HEURISTICS, FIELD_KEY_HEURISTICS } from '@/ai/prompts/prompt-engineering';
 
+export interface GeneratePromptParams {
+  templateName: string;
+  field: { name: string; key: string; type: string };
+  fileIds?: string[];
+  customSystemPrompt?: string;  // Optional custom system prompt override
+}
+
+export interface ImprovePromptParams {
+  originalPrompt: string;
+  userFeedback: string;
+  templateName: string;
+  field: { name: string; key: string; type: string };
+  fileIds?: string[];
+  customSystemPrompt?: string;  // Optional custom system prompt override
+}
+
 export async function generateInitialPrompt(
-  { templateName, field, fileIds }: { templateName: string; field: { name: string; key: string; type: string; }; fileIds?: string[] }
+  { templateName, field, fileIds, customSystemPrompt }: GeneratePromptParams
 ): Promise<{ prompt: string; generationMethod: 'standard' | 'dspy' | 'agent' }> {
 
   const guidelines = [
@@ -28,6 +45,9 @@ export async function generateInitialPrompt(
     : [])
     .map(id => ({ id, type: 'file' as const }));
 
+  // Use custom system prompt if provided, otherwise fall back to default
+  const systemPrompt = customSystemPrompt ?? SYSTEM_MESSAGES.GENERATE;
+
   const response = await boxApiFetch(
     '/ai/text_gen',
     {
@@ -35,7 +55,7 @@ export async function generateInitialPrompt(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: `
-          SYSTEM: ${SYSTEM_MESSAGES.GENERATE}
+          SYSTEM: ${systemPrompt}
 
           USER: Generate an extraction prompt based on the following context:
           - Template Name: "${templateName}"
@@ -58,7 +78,7 @@ export async function generateInitialPrompt(
 }
 
 export async function improvePrompt(
-  { originalPrompt, userFeedback, templateName, field, fileIds }: { originalPrompt: string; userFeedback: string; templateName: string; field: { name: string; key: string; type: string; }; fileIds?: string[] }
+  { originalPrompt, userFeedback, templateName, field, fileIds, customSystemPrompt }: ImprovePromptParams
 ): Promise<{ prompt: string; generationMethod: 'standard' | 'dspy' | 'agent' }> {
   
   // Use selected files for context, fallback to empty items if none provided
@@ -68,6 +88,9 @@ export async function improvePrompt(
     : [])
     .map(id => ({ id, type: 'file' as const }));
 
+  // Use custom system prompt if provided, otherwise fall back to default
+  const systemPrompt = customSystemPrompt ?? SYSTEM_MESSAGES.IMPROVE;
+
   const response = await boxApiFetch(
     '/ai/text_gen',
     {
@@ -75,7 +98,7 @@ export async function improvePrompt(
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         prompt: `
-          SYSTEM: ${SYSTEM_MESSAGES.IMPROVE}
+          SYSTEM: ${systemPrompt}
 
           USER: Refine the following extraction prompt.
           - Original Prompt: "${originalPrompt}"

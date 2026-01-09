@@ -37,7 +37,8 @@ import {
   FileImage,
   Wand2,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Eraser
 } from 'lucide-react';
 import { formatModelName } from '@/lib/utils';
 import type { AccuracyData } from '@/lib/types';
@@ -63,6 +64,7 @@ interface ControlBarProps {
   onClearResults: () => void;
   onResetData: () => void;
   onResetPrompts: () => void;
+  onClearAllPrompts: () => void;
   onColumnToggle: (modelName: string, checked: boolean) => void;
   onDownloadResults: () => void;
   // Agent-Alpha props
@@ -88,6 +90,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
   onClearResults,
   onResetData,
   onResetPrompts,
+  onClearAllPrompts,
   onColumnToggle,
   onDownloadResults,
   // Agent-Alpha props
@@ -117,6 +120,9 @@ const ControlBar: React.FC<ControlBarProps> = ({
   
   // DSPy Alpha confirmation dialog state
   const [showDSpyConfirmDialog, setShowDSpyConfirmDialog] = useState(false);
+  
+  // Clear All Prompts confirmation dialog state
+  const [showClearPromptsDialog, setShowClearPromptsDialog] = useState(false);
 
   // Filter available models based on pill selections
   const filteredModels = useMemo(() => {
@@ -340,6 +346,14 @@ const ControlBar: React.FC<ControlBarProps> = ({
             <Download className="mr-2 h-4 w-4" />
             Download CSV
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem 
+            onClick={() => setShowClearPromptsDialog(true)}
+            disabled={!accuracyData || !accuracyData.fields || accuracyData.fields.length === 0}
+          >
+            <Eraser className="mr-2 h-4 w-4" />
+            Clear All Prompts
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -404,6 +418,33 @@ const ControlBar: React.FC<ControlBarProps> = ({
               className="bg-amber-600 hover:bg-amber-700"
             >
               Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Clear All Prompts Confirmation Dialog */}
+      <AlertDialog open={showClearPromptsDialog} onOpenChange={setShowClearPromptsDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Eraser className="h-5 w-5 text-destructive" />
+              Clear All Prompts
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
+              Are you sure you want to permanently clear all prompts? This will set every field&apos;s prompt to blank across all {accuracyData?.fields?.length || 0} fields in this template.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowClearPromptsDialog(false);
+                onClearAllPrompts();
+              }}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+            >
+              Clear All Prompts
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

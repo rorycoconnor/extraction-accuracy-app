@@ -56,6 +56,7 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
   // Determine initial prompt - use provided prompt OR generate a quality fallback
   // IMPORTANT: Never start with a generic "Extract the X" prompt - these always fail
   let currentPrompt: string;
+  let userOriginalPrompt: string | null = null; // Track what the user actually had
   
   // Check if provided prompt is too generic/short
   const isGenericPrompt = (prompt: string): boolean => {
@@ -68,10 +69,12 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
   if (fieldPrompt && !isGenericPrompt(fieldPrompt)) {
     // User provided a good prompt - use it
     currentPrompt = fieldPrompt;
+    userOriginalPrompt = fieldPrompt; // User had a real prompt
     logger.info(`   Using provided prompt (${currentPrompt.length} chars)`);
   } else {
     // Generate a quality prompt from our examples instead of using generic fallback
     currentPrompt = getExamplePromptForField(fieldName, fieldType, fieldOptions);
+    // userOriginalPrompt stays null - user had no prompt or a generic one
     logger.info(`   Using example prompt for "${fieldName}" (${currentPrompt.length} chars) - provided prompt was too generic`);
   }
   
@@ -212,6 +215,7 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     finalAccuracy,
     iterationCount,
     initialPrompt,
+    userOriginalPrompt, // null if user had no prompt or generic prompt
     finalPrompt: finalPromptToUse,
     converged,
     sampledDocIds,
@@ -268,6 +272,7 @@ export async function processAgentAlphaFieldsBatch(
         finalAccuracy: params.initialAccuracy,
         iterationCount: 0,
         initialPrompt: params.fieldPrompt || '',
+        userOriginalPrompt: params.fieldPrompt || null, // User's original or null if none
         finalPrompt: params.fieldPrompt || '',
         converged: false,
         sampledDocIds: params.sampledDocIds,

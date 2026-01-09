@@ -52,7 +52,8 @@ export type AgentAlphaFieldResult = {
   finalAccuracy: number; // Accuracy after Agent-Alpha
   iterationCount: number; // Number of iterations used
   finalPrompt: string; // The optimized prompt
-  initialPrompt: string; // The original prompt
+  initialPrompt: string; // The prompt used to start optimization (may be example if user had none)
+  userOriginalPrompt: string | null; // The actual user prompt before agent ran (null if none/generic)
   converged: boolean; // True if reached 100% accuracy
   sampledDocIds: string[]; // Documents used for testing
   improved: boolean; // True if finalAccuracy >= initialAccuracy (prompt should be applied)

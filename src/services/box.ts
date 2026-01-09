@@ -692,13 +692,14 @@ export type BoxAIExtractionResult = {
 }
 
 // Configuration for Box AI extraction with retry and timeout
+// OPTIMIZED: Reduced timeouts and retries to fail faster and not block UI
 const BOX_AI_EXTRACTION_CONFIG = {
-  maxRetries: 3,
-  initialDelayMs: 3000, // Start with 3 seconds
-  maxDelayMs: 60000, // Max 60 seconds between retries
+  maxRetries: 2, // Reduced from 3 - fail faster if Box is struggling with a file
+  initialDelayMs: 2000, // Reduced from 3000 - faster retry cycles
+  maxDelayMs: 10000, // Reduced from 60000 - don't wait too long between retries
   backoffMultiplier: 2,
-  timeoutMs: 900000, // 15 minutes timeout for large extractions
-  retryableStatusCodes: [500, 502, 503, 504], // Server errors that should be retried
+  timeoutMs: 180000, // Reduced from 900000 (15 min) to 180000 (3 min) - faster timeout per file
+  retryableStatusCodes: [502, 503, 504], // Removed 500 - Box 500 errors on specific files won't recover with retries
 };
 
 export async function extractStructuredMetadataWithBoxAI(

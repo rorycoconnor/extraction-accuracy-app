@@ -191,6 +191,7 @@ describe('Agent-Alpha Types Contract', () => {
         iterationCount: 3,
         finalPrompt: 'Look for company name in header...',
         initialPrompt: 'Extract company name',
+        userOriginalPrompt: 'Extract company name', // User had a prompt
         converged: true,
         sampledDocIds: ['doc1', 'doc2', 'doc3'],
         improved: true,
@@ -203,6 +204,7 @@ describe('Agent-Alpha Types Contract', () => {
       expect(result.iterationCount).toBe(3);
       expect(result.converged).toBe(true);
       expect(result.sampledDocIds.length).toBe(3);
+      expect(result.userOriginalPrompt).toBe('Extract company name');
     });
 
     test('should support non-converged results', () => {
@@ -214,6 +216,7 @@ describe('Agent-Alpha Types Contract', () => {
         iterationCount: 5,
         finalPrompt: 'Best attempt prompt...',
         initialPrompt: 'Extract field',
+        userOriginalPrompt: null, // User had no prompt defined
         converged: false,
         sampledDocIds: ['doc1', 'doc2'],
         improved: true,
@@ -221,6 +224,7 @@ describe('Agent-Alpha Types Contract', () => {
       
       expect(result.converged).toBe(false);
       expect(result.finalAccuracy).toBeLessThan(1.0);
+      expect(result.userOriginalPrompt).toBeNull();
     });
   });
 
@@ -237,6 +241,7 @@ describe('Agent-Alpha Types Contract', () => {
             iterationCount: 2,
             finalPrompt: 'prompt1',
             initialPrompt: 'initial1',
+            userOriginalPrompt: 'initial1',
             converged: true,
             sampledDocIds: ['doc1'],
             improved: true,

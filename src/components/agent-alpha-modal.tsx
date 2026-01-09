@@ -7,15 +7,39 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, CheckCircle2, Sparkles, Settings2, Info, ChevronDown, ChevronUp, FileCode, RotateCcw, PanelRightOpen, PanelRightClose } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Loader2, CheckCircle2, Sparkles, Settings2, Info, ChevronDown, ChevronUp, FileCode, RotateCcw, PanelRightOpen, PanelRightClose, Save, Trash2, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { formatModelName } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 import type { AgentAlphaState, AgentAlphaPendingResults } from '@/lib/agent-alpha-types';
 import type { AgentAlphaRuntimeConfig } from '@/lib/agent-alpha-config';
 import { AGENT_ALPHA_CONFIG, DEFAULT_AGENT_SYSTEM_PROMPT, DEFAULT_PROMPT_GENERATION_INSTRUCTIONS, getDefaultRuntimeConfig } from '@/lib/agent-alpha-config';
 import { AVAILABLE_MODELS } from '@/lib/main-page-constants';
+import type { SystemPromptVersion } from '@/lib/system-prompt-storage';
+import {
+  getActiveAgentSystemPrompt,
+  setActiveAgentSystemPrompt,
+  createAgentSystemPromptVersion,
+  updateAgentSystemPromptVersion,
+  deleteAgentSystemPromptVersion,
+  getAllAgentSystemPromptVersions,
+  resetToDefaultAgentSystemPrompt,
+} from '@/lib/system-prompt-storage';
+
+const CREATE_NEW_ID = '__create_new__';
 
 interface AgentAlphaModalProps {
   isOpen: boolean;
@@ -38,6 +62,7 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
   onCancel,
   onStartWithConfig,
 }) => {
+  const { toast } = useToast();
   const isConfigure = agentAlphaState.status === 'configure';
   const isRunning = agentAlphaState.status === 'running';
   const isPreview = agentAlphaState.status === 'preview';
@@ -49,38 +74,190 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
   const [editedInstructions, setEditedInstructions] = useState(DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
   const [hasModifiedInstructions, setHasModifiedInstructions] = useState(false);
   
+  // Version management state
+  const [versions, setVersions] = useState<SystemPromptVersion[]>([]);
+  const [selectedVersionId, setSelectedVersionId] = useState<string>('');
+  const [activeVersionId, setActiveVersionId] = useState<string>('');
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [newVersionName, setNewVersionName] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; versionId: string; versionName: string }>({
+    isOpen: false,
+    versionId: '',
+    versionName: '',
+  });
+
+  // Load versions on mount
+  useEffect(() => {
+    const loadVersions = () => {
+      const allVersions = getAllAgentSystemPromptVersions();
+      setVersions(allVersions);
+      
+      const active = getActiveAgentSystemPrompt();
+      setActiveVersionId(active.id);
+      setSelectedVersionId(active.id);
+      setEditedInstructions(active.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+    };
+    loadVersions();
+  }, []);
+  
   // Reset config when modal opens in configure mode
   useEffect(() => {
     if (isConfigure) {
+      // Load active version FIRST to get the instructions
+      const active = getActiveAgentSystemPrompt();
+      const allVersions = getAllAgentSystemPromptVersions();
+      
       const defaultConfig = getDefaultRuntimeConfig();
       // Use the model from last comparison if available
       if (defaultModel) {
         defaultConfig.testModel = defaultModel;
       }
+      // Set customInstructions directly based on active version
+      // This ensures the config is correct even if Effect 3 doesn't re-run
+      if (!active.isDefault && active.agentInstructions) {
+        defaultConfig.customInstructions = active.agentInstructions;
+      }
       setConfig(defaultConfig);
       setShowInstructionsEditor(false);
-      setEditedInstructions(DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+      setIsCreatingNew(false);
+      setNewVersionName('');
+      
+      // Set active version state
+      setActiveVersionId(active.id);
+      setSelectedVersionId(active.id);
+      setEditedInstructions(active.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
       setHasModifiedInstructions(false);
+      
+      // Refresh versions list
+      setVersions(allVersions);
     }
   }, [isConfigure, defaultModel]);
 
-  // Update config when instructions are modified
+  // Update config when active version changes
+  // The agent always uses the ACTIVE version's instructions, not the selected one
   useEffect(() => {
-    if (hasModifiedInstructions) {
-      setConfig(prev => ({ ...prev, customInstructions: editedInstructions }));
+    const activeVersion = versions.find(v => v.id === activeVersionId);
+    const isActiveDefault = activeVersion?.isDefault ?? true;
+    
+    // If active version is not default, use its instructions
+    // Otherwise, use undefined to fall back to DEFAULT_PROMPT_GENERATION_INSTRUCTIONS
+    if (!isActiveDefault && activeVersion?.agentInstructions) {
+      setConfig(prev => ({ ...prev, customInstructions: activeVersion.agentInstructions }));
     } else {
       setConfig(prev => ({ ...prev, customInstructions: undefined }));
     }
-  }, [editedInstructions, hasModifiedInstructions]);
+  }, [activeVersionId, versions]);
+
+  // Get the currently selected version
+  const selectedVersion = useMemo(() => {
+    return versions.find(v => v.id === selectedVersionId);
+  }, [versions, selectedVersionId]);
+
+  // Check if selected version is default
+  const isDefault = selectedVersion?.isDefault ?? false;
+  const isActive = selectedVersionId === activeVersionId;
+
+  const handleVersionSelect = (versionId: string) => {
+    if (versionId === CREATE_NEW_ID) {
+      setIsCreatingNew(true);
+      setNewVersionName('');
+      setEditedInstructions(selectedVersion?.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+      setHasModifiedInstructions(false);
+    } else {
+      setIsCreatingNew(false);
+      setSelectedVersionId(versionId);
+      const version = versions.find(v => v.id === versionId);
+      if (version) {
+        setEditedInstructions(version.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+        setHasModifiedInstructions(false);
+      }
+    }
+  };
 
   const handleInstructionsChange = (value: string) => {
     setEditedInstructions(value);
-    setHasModifiedInstructions(value !== DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+    const currentVersion = isCreatingNew ? null : selectedVersion;
+    const originalInstructions = currentVersion?.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS;
+    setHasModifiedInstructions(value !== originalInstructions);
   };
 
   const handleResetInstructions = () => {
-    setEditedInstructions(DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+    resetToDefaultAgentSystemPrompt();
+    const defaultVersion = versions.find(v => v.isDefault);
+    if (defaultVersion) {
+      setSelectedVersionId(defaultVersion.id);
+      setActiveVersionId(defaultVersion.id);
+      setEditedInstructions(defaultVersion.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+    } else {
+      setEditedInstructions(DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+    }
     setHasModifiedInstructions(false);
+    setIsCreatingNew(false);
+    toast({ title: 'Reset to Default', description: 'Agent system prompt reset to default version.' });
+  };
+
+  const handleSaveAsNew = () => {
+    if (!newVersionName.trim()) {
+      toast({ title: 'Error', description: 'Please enter a version name.', variant: 'destructive' });
+      return;
+    }
+    
+    const newVersion = createAgentSystemPromptVersion(newVersionName.trim(), editedInstructions);
+    setVersions(getAllAgentSystemPromptVersions());
+    setSelectedVersionId(newVersion.id);
+    setIsCreatingNew(false);
+    setNewVersionName('');
+    setHasModifiedInstructions(false);
+    
+    // Auto-set as active
+    setActiveAgentSystemPrompt(newVersion.id);
+    setActiveVersionId(newVersion.id);
+    
+    toast({ title: 'Version Created', description: `"${newVersion.name}" saved and set as active.` });
+  };
+
+  const handleUpdateCurrent = () => {
+    if (isDefault || isCreatingNew) return;
+    
+    const updated = updateAgentSystemPromptVersion(selectedVersionId, {
+      agentInstructions: editedInstructions,
+    });
+    
+    if (updated) {
+      setVersions(getAllAgentSystemPromptVersions());
+      setHasModifiedInstructions(false);
+      toast({ title: 'Version Updated', description: `"${updated.name}" has been updated.` });
+    }
+  };
+
+  const handleSetAsActive = () => {
+    if (isCreatingNew) return;
+    
+    setActiveAgentSystemPrompt(selectedVersionId);
+    setActiveVersionId(selectedVersionId);
+    toast({ title: 'Active Version Changed', description: `"${selectedVersion?.name}" is now active.` });
+  };
+
+  const handleDeleteVersion = () => {
+    if (!deleteConfirm.versionId) return;
+    
+    const success = deleteAgentSystemPromptVersion(deleteConfirm.versionId);
+    if (success) {
+      const updatedVersions = getAllAgentSystemPromptVersions();
+      setVersions(updatedVersions);
+      
+      // If deleted the selected version, switch to active
+      if (selectedVersionId === deleteConfirm.versionId) {
+        const active = getActiveAgentSystemPrompt();
+        setSelectedVersionId(active.id);
+        setActiveVersionId(active.id);
+        setEditedInstructions(active.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+      }
+      
+      toast({ title: 'Version Deleted', description: `"${deleteConfirm.versionName}" has been deleted.` });
+    }
+    
+    setDeleteConfirm({ isOpen: false, versionId: '', versionName: '' });
   };
 
   const progressPercentage = agentAlphaState.totalFields > 0
@@ -201,12 +378,22 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                     onClick={() => setShowInstructionsEditor(!showInstructionsEditor)}
                     className={cn(
                       "w-full justify-between bg-white",
-                      hasModifiedInstructions && "border-amber-300 bg-amber-50"
+                      hasModifiedInstructions && "border-amber-300 bg-amber-50",
+                      !versions.find(v => v.id === activeVersionId)?.isDefault && "border-amber-300 bg-amber-50"
                     )}
                   >
                     <span className="flex items-center gap-2">
                       <FileCode className="h-4 w-4" />
-                      {showInstructionsEditor ? 'Hide Instructions' : 'Edit Instructions'}
+                      <span>System Prompt:</span>
+                      <Badge
+                        variant={versions.find(v => v.id === activeVersionId)?.isDefault ? "secondary" : "outline"}
+                        className={cn(
+                          "text-xs",
+                          !versions.find(v => v.id === activeVersionId)?.isDefault && "bg-amber-100 text-amber-800 border-amber-300"
+                        )}
+                      >
+                        {versions.find(v => v.id === activeVersionId)?.name || 'Default'}
+                      </Badge>
                       {hasModifiedInstructions && (
                         <Badge variant="outline" className="text-xs bg-amber-100 text-amber-800 border-amber-300">
                           Modified
@@ -220,7 +407,7 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                     )}
                   </Button>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Customize the prompt generation template for this run
+                    Customize the prompt generation template - active version persists across runs
                   </p>
                 </div>
               </div>
@@ -254,39 +441,138 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
               <div className="flex-1 min-w-0 space-y-3 animate-in slide-in-from-right-4 duration-300 flex flex-col max-h-[calc(90vh-12rem)]">
                 <div className="flex items-center justify-between flex-shrink-0">
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900">Prompt Generation Instructions</h3>
+                    <h3 className="text-sm font-semibold text-gray-900">Agent System Prompt</h3>
                     <p className="text-xs text-muted-foreground">
                       Customize how the agent generates improved prompts
                     </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleResetInstructions}
-                    disabled={!hasModifiedInstructions}
-                    className="text-xs"
-                  >
-                    <RotateCcw className="h-3 w-3 mr-1" />
-                    Reset to Default
-                  </Button>
                 </div>
                 
-                <div className="relative flex-1 min-h-0">
-                  <Textarea
-                    value={editedInstructions}
-                    onChange={(e) => handleInstructionsChange(e.target.value)}
-                    className={cn(
-                      "h-full font-mono text-sm resize-none bg-white",
-                      hasModifiedInstructions && "border-amber-300 focus:ring-amber-300"
+                {/* Version Selector */}
+                <div className="space-y-2 flex-shrink-0">
+                  <Label className="text-xs font-medium text-gray-700">Select System Prompt Version</Label>
+                  <Select
+                    value={isCreatingNew ? CREATE_NEW_ID : selectedVersionId}
+                    onValueChange={handleVersionSelect}
+                  >
+                    <SelectTrigger className="w-full bg-white">
+                      <SelectValue placeholder="Select version" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      {versions.map((version) => (
+                        <SelectItem key={version.id} value={version.id}>
+                          <div className="flex items-center gap-2">
+                            <span>{version.name}</span>
+                            {version.id === activeVersionId && (
+                              <Badge variant="secondary" className="text-xs">Active</Badge>
+                            )}
+                            {version.isDefault && (
+                              <Badge variant="outline" className="text-xs">Default</Badge>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
+                      <SelectItem value={CREATE_NEW_ID}>
+                        <div className="flex items-center gap-2 text-blue-600">
+                          <Plus className="h-3 w-3" />
+                          <span>Create New Version</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Version Management Buttons */}
+                <div className="flex gap-2 justify-end flex-shrink-0 pb-2 border-b">
+                  {!isCreatingNew && !isDefault && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setDeleteConfirm({ isOpen: true, versionId: selectedVersionId, versionName: selectedVersion?.name || '' })}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="mr-1 h-3 w-3" />
+                      Delete
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResetInstructions}
+                    disabled={activeVersionId === versions.find(v => v.isDefault)?.id && !isCreatingNew && !hasModifiedInstructions}
+                  >
+                    <RotateCcw className="mr-1 h-3 w-3" />
+                    Reset to Default
+                  </Button>
+                  {!isCreatingNew && (
+                    <Button
+                      variant={isActive ? 'secondary' : 'default'}
+                      size="sm"
+                      onClick={handleSetAsActive}
+                      disabled={isActive}
+                    >
+                      {isActive ? 'Currently Active' : 'Set as Active'}
+                    </Button>
+                  )}
+                </div>
+
+                {/* New Version Name Input (shown when creating new) */}
+                {isCreatingNew && (
+                  <div className="space-y-2 flex-shrink-0">
+                    <Label className="text-xs font-medium text-gray-700">New Version Name</Label>
+                    <Input
+                      value={newVersionName}
+                      onChange={(e) => setNewVersionName(e.target.value)}
+                      placeholder="Enter version name..."
+                      className="bg-white"
+                    />
+                  </div>
+                )}
+                
+                {/* Instructions Textarea */}
+                <div className="space-y-2 flex-1 min-h-0 flex flex-col">
+                  <Label className="text-xs font-medium text-gray-700">Instructions</Label>
+                  <div className="relative flex-1 min-h-0">
+                    <Textarea
+                      value={editedInstructions}
+                      onChange={(e) => handleInstructionsChange(e.target.value)}
+                      className={cn(
+                        "h-full font-mono text-sm resize-none bg-white",
+                        hasModifiedInstructions && "border-amber-300 focus:ring-amber-300"
+                      )}
+                      placeholder="Enter custom instructions..."
+                    />
+                    {hasModifiedInstructions && (
+                      <div className="absolute top-2 right-2">
+                        <Badge variant="outline" className="text-xs bg-amber-100 text-amber-800 border-amber-300">
+                          Modified
+                        </Badge>
+                      </div>
                     )}
-                    placeholder="Enter custom instructions..."
-                  />
-                  {hasModifiedInstructions && (
-                    <div className="absolute top-2 right-2">
-                      <Badge variant="outline" className="text-xs bg-amber-100 text-amber-800 border-amber-300">
-                        Custom
-                      </Badge>
-                    </div>
+                  </div>
+                </div>
+
+                {/* Save Actions */}
+                <div className="flex-shrink-0 pt-2 border-t space-y-2">
+                  {isCreatingNew ? (
+                    <Button
+                      onClick={handleSaveAsNew}
+                      disabled={!newVersionName.trim()}
+                      className="w-full"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Create Version
+                    </Button>
+                  ) : (
+                    <Button
+                      variant={hasModifiedInstructions ? 'default' : 'outline'}
+                      onClick={handleUpdateCurrent}
+                      disabled={!hasModifiedInstructions || isDefault}
+                      className="w-full"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      Update Version
+                    </Button>
                   )}
                 </div>
                 
@@ -294,7 +580,7 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                   <p className="text-xs text-gray-600">
                     <strong>Tip:</strong> The instructions control how the agent analyzes failures and generates improved prompts. 
                     Include guidance about format, specificity, and what makes a good extraction prompt.
-                    Changes only apply to this run.
+                    The active version will be used for all agent runs until changed.
                   </p>
                 </div>
               </div>
@@ -613,11 +899,19 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
                     <div className="space-y-4">
                       <div>
                         <p className="text-sm font-medium text-gray-600 mb-2">Original Prompt:</p>
-                        <div className="bg-white border border-gray-200 rounded-lg p-4">
-                          <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                            {result.initialPrompt || `Extract the ${result.fieldName} from this document.`}
-                          </p>
-                        </div>
+                        {result.userOriginalPrompt ? (
+                          <div className="bg-white border border-gray-200 rounded-lg p-4">
+                            <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                              {result.userOriginalPrompt}
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <p className="text-sm text-gray-500 italic">
+                              No prompt was defined for this field. The agent created a new prompt from scratch.
+                            </p>
+                          </div>
+                        )}
                       </div>
                       {didImprove ? (
                         <div>
@@ -684,6 +978,24 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
           </DialogFooter>
         )}
       </DialogContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirm.isOpen} onOpenChange={(open) => !open && setDeleteConfirm({ isOpen: false, versionId: '', versionName: '' })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Version</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete &quot;{deleteConfirm.versionName}&quot;? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteVersion} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };

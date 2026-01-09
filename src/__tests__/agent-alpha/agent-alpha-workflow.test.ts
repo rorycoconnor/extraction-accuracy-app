@@ -261,6 +261,7 @@ describe('Agent-Alpha Workflow', () => {
         iterationCount: 3,
         finalPrompt: 'Improved prompt...',
         initialPrompt: 'Original prompt',
+        userOriginalPrompt: 'Original prompt', // User had a prompt defined
         converged: true,
         sampledDocIds: ['doc1', 'doc2'],
       };
@@ -274,6 +275,8 @@ describe('Agent-Alpha Workflow', () => {
       expect(typeof mockFieldResult.initialPrompt).toBe('string');
       expect(typeof mockFieldResult.converged).toBe('boolean');
       expect(Array.isArray(mockFieldResult.sampledDocIds)).toBe(true);
+      // userOriginalPrompt can be string or null
+      expect(mockFieldResult.userOriginalPrompt === null || typeof mockFieldResult.userOriginalPrompt === 'string').toBe(true);
     });
   });
 
@@ -461,4 +464,6 @@ describe('Agent-Alpha Time Estimation', () => {
     expect(estimateConcurrency4).toBeLessThan(estimateConcurrency2);
   });
 });
+
+
 
