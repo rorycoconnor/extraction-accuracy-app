@@ -6,6 +6,7 @@
 import type { FieldCompareConfig, ComparisonResult, CompareType, MatchClassification } from './compare-types';
 import { logger } from './logger';
 import { NOT_PRESENT_VALUE } from './utils';
+import { parseFlexibleDate } from './date-utils';
 
 /**
  * Lightweight comparison used only for UI previews (non-async compare types)
@@ -396,16 +397,21 @@ function normalizeText(text: string): string {
     normalized = normalized.replace(regex, digit);
   });
 
-  // Normalize durations to a common format (days)
-  normalized = normalizeDuration(normalized);
-
-  // Remove common filler words that don't affect meaning
+  // Remove common filler words that don't affect meaning BEFORE duration normalization
   // e.g., "90 calendar days" → "90 days", "30 business days" → "30 days"
+  // This must happen before normalizeDuration so "30 business days" becomes "30 days"
+  // and can then be properly processed by the duration regex
   const fillerWords = ['calendar', 'business', 'working', 'consecutive'];
   fillerWords.forEach(word => {
     const regex = new RegExp('\\b' + word + '\\b', 'gi');
     normalized = normalized.replace(regex, '');
   });
+
+  // Normalize whitespace after filler removal (so "30  days" becomes "30 days")
+  normalized = normalized.replace(/\s+/g, ' ').trim();
+
+  // Normalize durations to a common format (months)
+  normalized = normalizeDuration(normalized);
 
   return normalized
     .replace(/[^\w\s]/g, '') // Remove punctuation
@@ -494,13 +500,12 @@ async function compareLLMJudge(
       };
     }
 
-    // Console log the LLM judge decision for debugging
-    console.log('🤖 LLM Judge Decision:', {
+    // Log the LLM judge decision for debugging
+    logger.debug('LLM Judge decision', {
       extracted,
       groundTruth,
       isMatch: result.isMatch,
       reasoning: result.reason,
-      prompt: comparisonPrompt,
       fieldKey: compareConfig.fieldKey
     });
 
@@ -512,13 +517,10 @@ async function compareLLMJudge(
       details: result.reason,
     };
   } catch (error) {
-    logger.error('Failed to call LLM comparison', { error: error as Error });
-    console.error('🤖 LLM Judge - Exception:', {
-      extracted,
-      groundTruth,
+    logger.error('LLM Judge exception, using near-exact fallback', { 
       error: error instanceof Error ? error.message : 'Unknown error',
-      prompt: comparisonPrompt,
-      fallback: 'Using near-exact match'
+      extracted,
+      groundTruth
     });
 
     // Fallback to near-exact match on error
@@ -533,7 +535,8 @@ async function compareLLMJudge(
 }
 
 /**
- * Exact Numeric Match - Exact numeric equality after parsing
+ * Exact Numeric Match - Numeric equality after parsing
+ * Handles format differences like "55" vs "55.00" and floating point precision
  */
 function compareExactNumber(extracted: string, groundTruth: string): ComparisonResult {
   const extractedNum = parseNumber(extracted);
@@ -549,9 +552,13 @@ function compareExactNumber(extracted: string, groundTruth: string): ComparisonR
     };
   }
 
-  const isMatch = extractedNum === groundTruthNum;
+  // Use epsilon comparison to handle floating point precision issues
+  // and format differences like "55" vs "55.00" or "9.21" vs "9.210"
+  // Epsilon of 0.001 handles 3 decimal places which is sufficient for currency
+  const epsilon = 0.001;
+  const isMatch = Math.abs(extractedNum - groundTruthNum) < epsilon;
 
-  // Check if formats were different (e.g., "12000000" vs "12 million")
+  // Check if formats were different (e.g., "55" vs "55.00", "12000000" vs "12 million")
   const formatsDifferent = isMatch && extracted.trim() !== groundTruth.trim();
 
   return {
@@ -559,6 +566,7 @@ function compareExactNumber(extracted: string, groundTruth: string): ComparisonR
     matchType: 'exact-number',
     confidence: 'high',
     matchClassification: isMatch ? (formatsDifferent ? 'different-format' : 'exact') : 'none',
+    details: formatsDifferent ? `Numeric match: ${extractedNum} ≈ ${groundTruthNum}` : undefined,
   };
 }
 
@@ -610,106 +618,6 @@ function compareDateExact(extracted: string, groundTruth: string): ComparisonRes
     confidence: 'high',
     matchClassification: isMatch ? (formatsDifferent ? 'different-format' : 'exact') : 'none',
   };
-}
-
-/**
- * Enhanced date parser that handles multiple formats
- * Reuses the logic from metrics.ts
- */
-function parseFlexibleDate(dateStr: string): Date | null {
-  if (!dateStr || typeof dateStr !== 'string') return null;
-
-  const trimmed = dateStr.trim();
-
-  // Month abbreviations mapping (case insensitive)
-  const monthMap: Record<string, number> = {
-    'jan': 0, 'january': 0,
-    'feb': 1, 'february': 1,
-    'mar': 2, 'march': 2,
-    'apr': 3, 'april': 3,
-    'may': 4,
-    'jun': 5, 'june': 5,
-    'jul': 6, 'july': 6,
-    'aug': 7, 'august': 7,
-    'sep': 8, 'september': 8,
-    'oct': 9, 'october': 9,
-    'nov': 10, 'november': 10,
-    'dec': 11, 'december': 11
-  };
-
-  // Try various date patterns
-  const patterns = [
-    // YYYY-MM-DD, YYYY/MM/DD
-    {
-      regex: /^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})$/,
-      parse: (match: RegExpMatchArray) => new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]))
-    },
-    // MM/DD/YY, MM-DD-YY (2-digit year)
-    {
-      regex: /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{2})$/,
-      parse: (match: RegExpMatchArray) => {
-        const year = parseInt(match[3]);
-        const fullYear = year < 50 ? 2000 + year : 1900 + year;
-        return new Date(fullYear, parseInt(match[1]) - 1, parseInt(match[2]));
-      }
-    },
-    // MM/DD/YYYY, MM-DD-YYYY (4-digit year)
-    {
-      regex: /^(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})$/,
-      parse: (match: RegExpMatchArray) => new Date(parseInt(match[3]), parseInt(match[1]) - 1, parseInt(match[2]))
-    },
-    // MON-DD-YY format (e.g., MAR-22-08)
-    {
-      regex: /^([a-z]{3})[-\/](\d{1,2})[-\/](\d{2})$/i,
-      parse: (match: RegExpMatchArray) => {
-        const monthNum = monthMap[match[1].toLowerCase()];
-        if (monthNum === undefined) return null;
-        const year = parseInt(match[3]);
-        const fullYear = year < 50 ? 2000 + year : 1900 + year;
-        return new Date(fullYear, monthNum, parseInt(match[2]));
-      }
-    },
-    // MON-DD-YYYY format (e.g., MAR-22-2008)
-    {
-      regex: /^([a-z]{3})[-\/](\d{1,2})[-\/](\d{4})$/i,
-      parse: (match: RegExpMatchArray) => {
-        const monthNum = monthMap[match[1].toLowerCase()];
-        if (monthNum === undefined) return null;
-        return new Date(parseInt(match[3]), monthNum, parseInt(match[2]));
-      }
-    },
-    // Month Name DD, YYYY (e.g., March 22, 2008)
-    {
-      regex: /^([a-z]+)\s+(\d{1,2}),?\s+(\d{4})$/i,
-      parse: (match: RegExpMatchArray) => {
-        const monthNum = monthMap[match[1].toLowerCase()];
-        if (monthNum === undefined) return null;
-        return new Date(parseInt(match[3]), monthNum, parseInt(match[2]));
-      }
-    },
-  ];
-
-  for (const pattern of patterns) {
-    const match = trimmed.match(pattern.regex);
-    if (match) {
-      try {
-        const date = pattern.parse(match);
-        if (date && !isNaN(date.getTime())) {
-          return date;
-        }
-      } catch (e) {
-        // Continue to next pattern
-      }
-    }
-  }
-
-  // Fallback to JavaScript's Date constructor
-  try {
-    const fallbackDate = new Date(trimmed);
-    return !isNaN(fallbackDate.getTime()) ? fallbackDate : null;
-  } catch {
-    return null;
-  }
 }
 
 /**

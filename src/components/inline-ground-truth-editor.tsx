@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Check, Loader2, Terminal, Edit3, FileText, MapPin } from 'lucide-react';
+import { Loader2, Terminal, Edit3, FileText, MapPin } from 'lucide-react';
 import type { BoxFile, BoxTemplate, AccuracyField, ContextMatch } from '@/lib/types';
 import { DatePicker } from './ui/date-picker';
 import { getBoxFileEmbedLinkAction } from '@/lib/actions/box';
@@ -43,6 +43,9 @@ export default function InlineGroundTruthEditor({
   const [context, setContext] = React.useState<ContextMatch | null>(null);
   const [isContextLoading, setIsContextLoading] = React.useState(false);
   const [contextError, setContextError] = React.useState<string | null>(null);
+  
+  // Track previous isOpen state to detect open/close transitions
+  const prevIsOpenRef = React.useRef(isOpen);
 
   const { control, handleSubmit, formState: { isSubmitting }, reset } = useForm({
     defaultValues: {
@@ -50,11 +53,17 @@ export default function InlineGroundTruthEditor({
     },
   });
 
-  // Re-initialize form when the field or value changes
+  // Only reset form when modal OPENS (transitions from closed to open)
   React.useEffect(() => {
-    reset({ [field.key]: currentValue || '' });
-  }, [field.key, currentValue, reset]);
+    const wasOpen = prevIsOpenRef.current;
+    prevIsOpenRef.current = isOpen;
+    
+    if (isOpen && !wasOpen) {
+      reset({ [field.key]: currentValue || '' });
+    }
+  }, [isOpen, field.key, currentValue, reset]);
 
+  // Load embed URL
   React.useEffect(() => {
     if (isOpen && file.id) {
       setIsEmbedLoading(true);
@@ -103,10 +112,9 @@ export default function InlineGroundTruthEditor({
   const onSubmit = async (data: Record<string, any>) => {
     const newValue = data[field.key];
     
-    // Convert date objects back to strings for saving
     let valueToSave: string;
     if (newValue instanceof Date) {
-      valueToSave = newValue.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      valueToSave = newValue.toISOString().split('T')[0];
     } else {
       valueToSave = String(newValue);
     }
@@ -146,7 +154,7 @@ export default function InlineGroundTruthEditor({
             </SelectContent>
           </Select>
         );
-      default: // string and others
+      default:
         return (
           <div className="space-y-2">
             <Select onValueChange={(value) => {
@@ -173,37 +181,37 @@ export default function InlineGroundTruthEditor({
   };
 
   const renderPreview = () => {
-    if (isEmbedLoading) {
-      return (
-        <div className="flex h-full w-full items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      );
-    }
-    if (embedError) {
-      return (
-        <div className="flex h-full w-full items-center justify-center p-4">
-          <Alert variant="destructive">
-            <Terminal className="h-4 w-4" />
-            <AlertTitle>Preview Error</AlertTitle>
-            <AlertDescription>{embedError}</AlertDescription>
-          </Alert>
-        </div>
-      );
-    }
-    if (embedUrl) {
-      return (
-        <iframe
-          src={embedUrl}
-          className="h-full w-full"
-          title="PDF Preview"
-        />
-      );
-    }
-    return null;
+    return (
+      <>
+        {isEmbedLoading && (
+          <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-background z-10">
+            <Loader2 className="h-8 w-8 animate-spin" />
+          </div>
+        )}
+        
+        {embedError && !isEmbedLoading && (
+          <div className="flex h-full w-full items-center justify-center p-4">
+            <Alert variant="destructive">
+              <Terminal className="h-4 w-4" />
+              <AlertTitle>Preview Error</AlertTitle>
+              <AlertDescription>{embedError}</AlertDescription>
+            </Alert>
+          </div>
+        )}
+        
+        {embedUrl && (
+          <iframe
+            src={embedUrl}
+            className={`h-full w-full ${isEmbedLoading ? 'invisible' : 'visible'}`}
+            title="PDF Preview"
+            tabIndex={-1}
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+          />
+        )}
+      </>
+    );
   };
 
-  // Find the template field for this field
   const templateField = template.fields.find(tf => tf.key === field.key);
   if (!templateField) {
     return null;
@@ -333,4 +341,4 @@ export default function InlineGroundTruthEditor({
       </DialogContent>
     </Dialog>
   );
-} 
+}

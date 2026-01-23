@@ -84,6 +84,7 @@ export const useAgentAlphaRunner = () => {
         accuracyData,
         testModel: config.testModel,
         maxDocs: config.maxDocs,
+        holdoutRatio: config.holdoutRatio,
         configuredTemplate, // Pass template so we can check isActive status
       });
 
@@ -149,12 +150,16 @@ export const useAgentAlphaRunner = () => {
             initialAccuracy: fieldPlan.initialAccuracy,
             groundTruth: fieldPlan.groundTruth,
             sampledDocIds: workPlan.sampledDocIds,
+            trainDocIds: workPlan.trainDocIds,
+            holdoutDocIds: workPlan.holdoutDocIds,
+            holdoutThreshold: config.holdoutThreshold,
             templateKey: workPlan.templateKey,
             testModel: config.testModel,
             fieldIndex,
             totalFields: workPlan.fields.length,
             maxIterations: config.maxIterations,
             systemPromptOverride: config.customInstructions || config.systemPromptOverride,
+            preferDeterministicCompare: config.preferDeterministicCompare,
           });
 
           const fieldEndTime = Date.now();
@@ -269,6 +274,8 @@ export const useAgentAlphaRunner = () => {
           timestamp: new Date().toISOString(),
           testModel: config.testModel,
           sampledDocIds: workPlan.sampledDocIds,
+          trainDocIds: workPlan.trainDocIds,
+          holdoutDocIds: workPlan.holdoutDocIds,
           sampledDocNames,
           startTime: runStartTime,
           endTime,
@@ -319,6 +326,13 @@ export const useAgentAlphaRunner = () => {
           source: 'agent-alpha' as const,
           generationMethod: 'agent' as const,
           note: `Agent-Alpha optimized. Initial: ${(result.initialAccuracy * 100).toFixed(1)}% → Final: ${(result.finalAccuracy * 100).toFixed(1)}% (${result.iterationCount} iterations)`,
+          // Experiment metadata for auditability
+          experimentMetadata: result.experimentMetadata ? {
+            testModel: result.experimentMetadata.testModel,
+            compareConfig: result.experimentMetadata.compareConfig,
+            trainDocIds: result.experimentMetadata.trainDocIds,
+            holdoutDocIds: result.experimentMetadata.holdoutDocIds,
+          } : undefined,
         };
 
         return {

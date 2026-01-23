@@ -6,6 +6,7 @@
  */
 
 import type { AccuracyField } from './types';
+import { logger } from './logger';
 
 export type AgentAlphaPromptParams = {
   fieldName: string;
@@ -27,6 +28,7 @@ export type AgentAlphaPromptParams = {
   companyName?: string; // The company using this software (to exclude from counter party)
   documentType?: string;
   customInstructions?: string; // If provided, replaces the default prompt template
+  documentContext?: string; // NEW: Analyzed document context showing WHY extractions failed
 };
 
 /**
@@ -46,6 +48,7 @@ export function buildAgentAlphaPrompt(params: AgentAlphaPromptParams): string {
     companyName,
     documentType,
     customInstructions,
+    documentContext,
   } = params;
   
   // For counter party fields, try to detect the common company that should be EXCLUDED
@@ -113,6 +116,12 @@ Notice how the example:
       prompt += `${idx + 1}. AI returned: "${predicted}"\n   Should be: "${expected}"\n`;
     });
     prompt += `\nAnalyze WHY these failed. Common causes: wrong section, missing synonyms, format mismatch.\n`;
+  }
+  
+  // NEW: Add deep document analysis if available
+  // This shows the ACTUAL document content where extractions failed
+  if (documentContext) {
+    prompt += documentContext;
   }
 
   // Add successes
@@ -254,6 +263,55 @@ export function getExamplePromptForField(
     return `Search for the notice period required for termination or non-renewal. Look in "Termination", "Term", or "Renewal" sections for phrases like: "X days written notice", "notice period of", "prior written notice", "advance notice". Return the notice period as stated (e.g., "30 Days", "60 Days", "90 Days"). If no notice period is specified, return "Not Present". Do NOT confuse with cure periods for breach.`;
   }
 
+  // ============================================
+  // INVOICE-SPECIFIC FIELD EXAMPLES
+  // ============================================
+
+  // Vendor / Supplier Name
+  if (lowerName.includes('vendor') || lowerName.includes('supplier')) {
+    return `Search for the vendor/supplier name in the invoice. This is the company PROVIDING goods/services (issuing the invoice). Look in: (1) the document header/logo area, (2) "From:" field, (3) "Vendor:", "Supplier:", "Bill From:", "Remit To:", "Service Provider:" labels. Do NOT extract customer names from "Bill To:" or "Ship To:" sections - those are the RECIPIENTS. Return the complete business name with suffixes (Inc, LLC, Corp). If the extracting company appears as the service provider, return "Not Present".`;
+  }
+
+  // Amount Due / Total Amount
+  if (lowerName.includes('amount due') || (lowerName.includes('total') && lowerName.includes('amount'))) {
+    return `Search for the final amount due on this invoice. Look for: "Amount Due:", "Total Due:", "Balance Due:", "Total:", "Grand Total:", "Invoice Total:". This is typically at the bottom of the invoice near payment instructions. Return the EXACT numeric value including cents (e.g., "1234.56" not "1235" or "1234"). Do NOT round! Remove currency symbols but preserve decimal precision exactly as shown.`;
+  }
+
+  // Sales Tax
+  if (lowerName.includes('sales tax') || (lowerName.includes('tax') && !lowerName.includes('pre'))) {
+    return `Search for the sales tax amount on this invoice. Look for: "Sales Tax:", "Tax:", "Tax Amount:", "VAT:", "GST:", "State Tax:". It's usually shown as a line item between subtotal and total. Return the EXACT dollar amount with cents (e.g., "45.67" not "45.7" or "46"). Do NOT return the tax rate percentage. If tax shows "$0.00" or "Exempt", return "0". Return "Not Present" only if no tax line exists.`;
+  }
+
+  // Subtotal / Sales Amount
+  if (lowerName.includes('subtotal') || lowerName.includes('sales amount') || lowerName.includes('merchandise')) {
+    return `Search for the subtotal or sales amount BEFORE tax and shipping. Look for: "Subtotal:", "Sales Amount:", "Merchandise Total:", "Net Amount:", "Taxable Amount:". This appears after line items but before tax/shipping/total. Return the EXACT amount with cents (e.g., "432.50"). Do NOT confuse with the grand total that includes tax. Do NOT round.`;
+  }
+
+  // Freight / Shipping
+  if (lowerName.includes('freight') || lowerName.includes('shipping') || lowerName.includes('delivery')) {
+    return `Search for freight or shipping charges on this invoice. Look for: "Freight:", "Shipping:", "Shipping & Handling:", "S&H:", "Delivery:", "Transport:", "Carrier:". Check the charges breakdown near subtotal/total. IMPORTANT: If freight shows "$0.00", "No Charge", "Included", or "Prepaid", return "0" (not "Not Present"). Return the exact amount with cents. Return "Not Present" only if no freight line exists at all.`;
+  }
+
+  // PO Number
+  if (lowerName.includes('po number') || lowerName.includes('purchase order')) {
+    return `Search for the Purchase Order number on this invoice. Look for: "PO #:", "P.O.:", "PO Number:", "Purchase Order:", "Customer PO:", "Your Order #:", "Reference:". It's usually in the invoice header or billing info section. Do NOT confuse with: Invoice Number (often "INV-xxxx"), Confirmation Numbers, or internal reference codes. Return the exact alphanumeric value as shown. Return "Not Present" if no PO is referenced.`;
+  }
+
+  // Payment Terms
+  if (lowerName === 'term' || lowerName === 'terms' || lowerName.includes('payment term')) {
+    return `Search for payment terms on this invoice. Look for: "Terms:", "Payment Terms:", "Net Terms:", near the due date or in terms section. Common values: "NET 30", "NET 15", "NET 60", "Due on Receipt", "COD". Return the standardized term (e.g., "NET 30" not "Net 30 Days" or "Payment due in 30 days"). Return "Not Present" if no payment terms are specified.`;
+  }
+
+  // Invoice Description / Memo
+  if (lowerName.includes('description') && !lowerName.includes('item')) {
+    return `Search for a description or memo explaining this invoice's purpose. Look in: (1) header area near invoice number, (2) "Subject:", "RE:", "Memo:", "Description:", "Purpose:" fields, (3) reference line. Do NOT extract: the document title "INVOICE", invoice numbers, customer names/addresses, or individual line item descriptions. Return a meaningful description of what this invoice is for. Return "Not Present" if no overall description exists.`;
+  }
+
+  // Line Items
+  if (lowerName.includes('item') || lowerName.includes('line item')) {
+    return `Extract line items from the invoice table. Look in the main itemization table with columns like "Description", "Item", "Qty", "Unit Price", "Amount". Extract ONLY the description/name of each product or service, not quantities or prices. Do NOT include: table headers, subtotal/total rows, tax lines, or notes. Format as comma-separated list if multiple items. Return "Not Present" if no itemized products/services exist.`;
+  }
+
   // Default based on field type
   switch (fieldType) {
     case 'enum':
@@ -264,7 +322,7 @@ export function getExamplePromptForField(
       return `Search the document for the ${fieldName}. Look in headers, signature blocks, and relevant sections. Return the date in YYYY-MM-DD format. If only month and year are given, use the first day of the month. Return "Not Present" if no date is found.`;
     
     case 'number':
-      return `Search the document for the ${fieldName}. Return the numeric value without currency symbols or units. If a range is given, return the primary/base value. Return "Not Present" if no number is found.`;
+      return `Search the document for the ${fieldName}. Return the EXACT numeric value as it appears, including decimal places (e.g., "432.50" not "432" or "433"). Do NOT round numbers - preserve cents/decimals exactly. Remove currency symbols ($, €) but keep the exact numeric value. If a range is given, return the primary/base value. Return "Not Present" if no number is found.`;
     
     default:
       return `Search the entire document for the ${fieldName}. Look in relevant sections, headers, and signature blocks. Extract the exact value as it appears. If multiple values exist, return the most authoritative one. Return "Not Present" if not found.`;
@@ -291,6 +349,39 @@ function getFieldSpecificGuidance(fieldName: string, fieldType: string): string 
 
   if (lowerName.includes('renewal')) {
     return `IMPORTANT: Distinguish between: Autorenewal (automatic), Manual (requires action), Evergreen (indefinite), No Renewal (one-time). Look for "automatically renew" vs "may renew" vs "shall not renew".\n`;
+  }
+
+  // INVOICE-SPECIFIC GUIDANCE
+  if (lowerName.includes('vendor') || lowerName.includes('supplier')) {
+    return `IMPORTANT FOR INVOICES: The "Vendor" is the company SENDING the invoice (providing goods/services). Look in the document header, logo area, "From:" field, or "Remit To:" address. Do NOT confuse with the "Bill To" customer who is RECEIVING the invoice. Common labels: "From:", "Vendor:", "Supplier:", "Bill From:", "Service Provider:".\n`;
+  }
+
+  if (lowerName.includes('amount') || lowerName.includes('total') || lowerName.includes('price') || lowerName.includes('cost')) {
+    return `CRITICAL FOR NUMBERS: Extract the EXACT value including cents/decimals. Do NOT round! If document shows "$432.50", return "432.50" (not "432" or "433"). If document shows "$1,234.99", return "1234.99". Preserve decimal precision exactly as shown in the document.\n`;
+  }
+
+  if (lowerName.includes('sales tax') || lowerName.includes('tax amount')) {
+    return `IMPORTANT: Sales tax is usually shown as a separate line item near the subtotal/total. Look for "Tax:", "Sales Tax:", "Tax Amount:", "VAT:", "GST:". It's a dollar amount, not a percentage. Return the exact amount with cents (e.g., "45.67" not "45.7" or "46").\n`;
+  }
+
+  if (lowerName.includes('freight') || lowerName.includes('shipping')) {
+    return `IMPORTANT: Freight/shipping charges may appear as "$0.00" or "Included" or "Prepaid". These should be returned as "0" not "Not Present". Look for "Freight:", "Shipping:", "Delivery:", "S&H:", "Shipping & Handling:".\n`;
+  }
+
+  if (lowerName.includes('po number') || lowerName.includes('purchase order')) {
+    return `IMPORTANT: PO Numbers are customer reference numbers, distinct from Invoice Numbers. Look for "PO #:", "P.O.:", "Purchase Order:", "Customer PO:", "Your Order #:". Do NOT confuse with invoice numbers (often starting with "INV").\n`;
+  }
+
+  if (lowerName.includes('term') && !lowerName.includes('termination')) {
+    return `IMPORTANT FOR INVOICES: Payment terms like "NET 30", "NET 15", "Due on Receipt". Look in the payment terms section, near due date, or in terms/conditions area. Return the standard format (e.g., "NET 30") without extra words like "DAYS".\n`;
+  }
+
+  if (lowerName.includes('description') || lowerName.includes('memo') || lowerName.includes('subject')) {
+    return `IMPORTANT: Look for a MEANINGFUL description of the transaction purpose, not just "INVOICE" or the document title. Check memo/subject/reference lines. Common locations: near invoice number, in header area, or in "RE:" / "Subject:" / "Memo:" fields.\n`;
+  }
+
+  if (lowerName.includes('item') && (lowerName.includes('line') || fieldType === 'multiSelect')) {
+    return `IMPORTANT: Line items are the individual products/services in the invoice table. Look in the main table body with columns like "Description", "Item", "Product", "Service". Each row is typically one item. Do NOT include headers, subtotals, or tax lines.\n`;
   }
 
   return '';
@@ -364,6 +455,172 @@ export type AgentAlphaPromptResponse = {
 };
 
 /**
+ * Structured prompt validation result
+ * Validates that generated prompts meet quality requirements
+ */
+export type PromptValidation = {
+  isValid: boolean;
+  errors: string[];
+  // Required elements present?
+  hasLocation: boolean;      // "look in", "search in", "find in" with specific locations
+  hasSynonyms: boolean;      // at least 5 distinct alternative phrases in quotes
+  hasFormat: boolean;        // concrete output format specification
+  hasDisambiguation: boolean; // "do not confuse", "do not return"
+  hasNotFound: boolean;      // "not present" handling
+  // Length constraints
+  charCount: number;
+  meetsMinLength: boolean;   // >= 150 chars
+  // Quality metrics (for debugging/feedback)
+  synonymCount?: number;     // Number of distinct quoted phrases found
+};
+
+/**
+ * Validate a generated prompt against quality checklist
+ * Returns structured validation result with specific errors
+ */
+export function validatePrompt(prompt: string): PromptValidation {
+  const trimmed = (prompt || '').trim();
+  const errors: string[] = [];
+  
+  // Check length
+  const charCount = trimmed.length;
+  const meetsMinLength = charCount >= 150;
+  if (!meetsMinLength) {
+    errors.push(`Prompt too short: ${charCount} chars (need 150+)`);
+  }
+  
+  // Check for generic pattern
+  if (/^extract the .{1,50}(from this document)?\.?$/i.test(trimmed)) {
+    errors.push('Prompt is too generic - uses banned "Extract the X" pattern');
+  }
+  
+  // Check for location guidance (WHERE to look)
+  // Require specific location references, not just keyword presence
+  const locationPatterns = [
+    /look in[^.]*(?:section|paragraph|header|footer|signature|block|area|field|table|page)/i,
+    /search in[^.]*(?:section|paragraph|header|footer|signature|block|area|field|table|page)/i,
+    /check (?:the )?(?:opening|closing|first|last|header|footer|signature|notices?)/i,
+    /(?:opening|closing|first|last)\s+(?:paragraph|section|page)/i,
+    /\(\d+\)[^.]*(?:section|paragraph|block|area)/i, // numbered locations like "(1) the opening section"
+    /signature block|header area|footer area|notices section/i,
+  ];
+  const locationMatches = locationPatterns.filter(p => p.test(trimmed)).length;
+  const hasLocation = locationMatches >= 1 || /look in|search in|find in|check the|located in/i.test(trimmed);
+  if (!hasLocation) {
+    errors.push('Missing LOCATION guidance - tell AI where to look in document');
+  }
+  
+  // Check for synonyms (WHAT phrases to search for)
+  // STRENGTHENED: Require actual quoted phrases, not just keywords
+  // Extract quoted phrases (at least 3 chars each to avoid trivial matches)
+  const quotedPhrasesRaw = trimmed.match(/"[^"]{3,}"/g) || [];
+  // Get unique phrases (case-insensitive)
+  const uniqueQuotedPhrases = [...new Set(quotedPhrasesRaw.map(p => p.toLowerCase()))];
+  const quotedPhraseCount = uniqueQuotedPhrases.length;
+  
+  // Also check for comma-separated alternatives (e.g., "look for: X, Y, Z")
+  const commaListMatch = trimmed.match(/(?:look for|search for|phrases like)[^.]*[:,]\s*['"]?([^'"]+)['"]?(?:,\s*['"]?([^'"]+)['"]?)+/i);
+  const hasCommaList = commaListMatch !== null;
+  
+  // Require at least 5 distinct quoted phrases OR a clear comma-separated list with keyword
+  const hasSynonyms = quotedPhraseCount >= 5 || 
+    (quotedPhraseCount >= 3 && hasCommaList) ||
+    (quotedPhraseCount >= 3 && /phrases like|variations|synonyms/i.test(trimmed));
+  
+  if (!hasSynonyms) {
+    if (quotedPhraseCount > 0 && quotedPhraseCount < 5) {
+      errors.push(`Insufficient SYNONYMS - found ${quotedPhraseCount} phrases, need 5+ distinct alternatives`);
+    } else {
+      errors.push('Missing SYNONYMS - list 5+ alternative phrases in quotes the value might appear as');
+    }
+  }
+  
+  // Check for format specification
+  // STRENGTHENED: Require concrete format rules, not just "return" keyword
+  const formatPatterns = [
+    /return.*(?:format|YYYY|MM|DD|exactly|only the|single line|complete)/i,
+    /format.*(?:as|to|should|must)/i,
+    /output.*(?:format|as)/i,
+    /YYYY-MM-DD|YYYY\/MM\/DD/i,
+    /decimal|cents|digits|numeric/i,
+    /exactly as|exactly one|exact value/i,
+    /including (?:street|city|state|zip|suffix)/i, // address format
+    /full (?:legal |entity )?name/i, // name format
+  ];
+  const hasFormat = formatPatterns.some(p => p.test(trimmed));
+  if (!hasFormat) {
+    errors.push('Missing FORMAT - specify exact output format (date format, precision, etc.)');
+  }
+  
+  // Check for disambiguation (negative guidance)
+  const hasDisambiguation = /do not|don't|not confuse|not return|not include|not extract|avoid|exclude|instead of|rather than/i.test(trimmed);
+  if (!hasDisambiguation) {
+    errors.push('Missing DISAMBIGUATION - add "Do NOT..." guidance to prevent mistakes');
+  }
+  
+  // Check for not-found handling
+  const hasNotFound = /not present|not found|missing|if no|if not|cannot find|doesn't exist|does not exist/i.test(trimmed);
+  if (!hasNotFound) {
+    errors.push('Missing NOT-FOUND handling - specify what to return if value not found');
+  }
+  
+  // Count how many of the 5 elements are present
+  const elementCount = [hasLocation, hasSynonyms, hasFormat, hasDisambiguation, hasNotFound]
+    .filter(Boolean).length;
+  
+  // Require at least 4 of 5 elements for valid prompt
+  const isValid = meetsMinLength && elementCount >= 4 && errors.length <= 1;
+  
+  return {
+    isValid,
+    errors,
+    hasLocation,
+    hasSynonyms,
+    hasFormat,
+    hasDisambiguation,
+    hasNotFound,
+    charCount,
+    meetsMinLength,
+    synonymCount: quotedPhraseCount,
+  };
+}
+
+/**
+ * Build a repair prompt to fix validation errors
+ * Asks Box AI to fix specific issues with the generated prompt
+ */
+export function buildPromptRepairRequest(
+  originalPrompt: string,
+  validation: PromptValidation,
+  fieldName: string,
+  fieldType: string
+): string {
+  return `You generated an extraction prompt that has quality issues. Fix them.
+
+## ORIGINAL PROMPT
+"${originalPrompt}"
+
+## ISSUES TO FIX
+${validation.errors.map((e, i) => `${i + 1}. ${e}`).join('\n')}
+
+## REQUIREMENTS
+The prompt MUST include:
+${!validation.hasLocation ? '- LOCATION: Specific document sections (e.g., "opening paragraph", "signature blocks", "Notices section")' : ''}
+${!validation.hasSynonyms ? `- SYNONYMS: At least 5 distinct phrases IN QUOTES (current: ${validation.synonymCount || 0}). Example: "expires on", "terminates on", "valid until", "term ends", "completion date"` : ''}
+${!validation.hasFormat ? '- FORMAT: Concrete output specification (e.g., "YYYY-MM-DD format", "full legal entity name including LLC/Inc")' : ''}
+${!validation.hasDisambiguation ? '- DISAMBIGUATION: "Do NOT..." guidance to prevent mistakes' : ''}
+${!validation.hasNotFound ? '- NOT-FOUND: What to return if value is not found (usually "Not Present")' : ''}
+${!validation.meetsMinLength ? `- LENGTH: At least 150 characters (current: ${validation.charCount})` : ''}
+
+## FIELD INFO
+Field: "${fieldName}" (type: ${fieldType})
+
+## OUTPUT
+Return ONLY valid JSON:
+{"newPrompt": "your fixed prompt here", "reasoning": "what you fixed"}`;
+}
+
+/**
  * Parse the response from Box AI prompt generation
  * Now with fallback to example prompts if parsing fails
  */
@@ -407,13 +664,16 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
       
       // Check if the prompt is too generic/short
       if (isGenericPrompt(prompt)) {
-        console.warn(`[Agent-Alpha] Generated prompt is too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`);
-        console.warn(`[Agent-Alpha] Prompt validation failed: length=${prompt.length}, needs 150+ chars and key elements (location, synonyms, format, not-found handling)`);
+        logger.warn('Generated prompt is too generic', { 
+          promptLength: prompt.length, 
+          preview: prompt.substring(0, 50),
+          validationFailed: 'needs 150+ chars and key elements (location, synonyms, format, not-found handling)'
+        });
         
         // Use fallback if available
         if (fieldName) {
           const fallbackPrompt = getExamplePromptForField(fieldName, 'string');
-          console.warn(`[Agent-Alpha] Using fallback prompt for field: ${fieldName}`);
+          logger.warn('Using fallback prompt for field', { fieldName });
           return {
             newPrompt: fallbackPrompt,
             reasoning: `Used fallback prompt because generated prompt was too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`,
@@ -430,7 +690,7 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
       };
     }
   } catch (e) {
-    console.warn(`[Agent-Alpha] JSON parsing failed: ${e}`);
+    logger.debug('JSON parsing failed, trying regex extraction', { error: String(e) });
   }
   
   // Try to extract from text using regex
@@ -442,11 +702,11 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
     
     // Check if the prompt is too generic
     if (isGenericPrompt(prompt)) {
-      console.warn(`[Agent-Alpha] Extracted prompt is too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`);
+      logger.warn('Extracted prompt is too generic', { promptLength: prompt.length, preview: prompt.substring(0, 50) });
       
       if (fieldName) {
         const fallbackPrompt = getExamplePromptForField(fieldName, 'string');
-        console.warn(`[Agent-Alpha] Using fallback prompt for field: ${fieldName}`);
+        logger.warn('Using fallback prompt for field', { fieldName, reason: 'extracted prompt too generic' });
         return {
           newPrompt: fallbackPrompt,
           reasoning: `Used fallback prompt because extracted prompt was too generic (${prompt.length} chars): "${prompt.substring(0, 50)}..."`,
@@ -477,8 +737,10 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
   }
 
   // FALLBACK: Use our high-quality example prompt instead of the bad response
-  console.warn(`[Agent-Alpha] Failed to parse response, using fallback prompt for field: ${fieldName}`);
-  console.warn(`[Agent-Alpha] Raw response was: ${response.substring(0, 200)}...`);
+  logger.warn('Failed to parse response, using fallback prompt', { 
+    fieldName, 
+    rawResponsePreview: response.substring(0, 200) 
+  });
   
   if (fieldName) {
     const fallbackPrompt = getExamplePromptForField(fieldName, 'string');

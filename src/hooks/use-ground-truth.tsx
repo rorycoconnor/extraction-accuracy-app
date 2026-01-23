@@ -146,18 +146,29 @@ export function GroundTruthProvider({ children }: { children: React.ReactNode })
       const verifyData = getGroundTruthForFile(fileId);
       logger.debug('useGroundTruth: Verification after save', { fileId, fieldKey });
       
-      if (verifyData[fieldKey] === value) {
-        logger.info('useGroundTruth: Ground truth saved successfully', { fileId, fieldKey });
+      // Check if save was successful
+      // Note: Empty values are removed from storage (cleanup logic), so if we saved empty string,
+      // the field will be missing from storage - that's expected behavior, not a failure
+      const savedValue = verifyData[fieldKey];
+      const isEmptyValue = !value || String(value).trim() === '';
+      const isVerified = isEmptyValue 
+        ? (savedValue === undefined || savedValue === '') // Empty save: field should be missing or empty
+        : savedValue === value; // Non-empty save: field should match exactly
+      
+      if (isVerified) {
+        logger.info('useGroundTruth: Ground truth saved successfully', { fileId, fieldKey, cleared: isEmptyValue });
         
         toast({
           title: TOAST_MESSAGES.GROUND_TRUTH_UPDATED.title,
-          description: `Ground truth updated for field "${fieldKey}"`,
+          description: isEmptyValue 
+            ? `Ground truth cleared for field "${fieldKey}"` 
+            : `Ground truth updated for field "${fieldKey}"`,
         });
         
         setError(null);
         return true;
       } else {
-        logger.error('useGroundTruth: Save verification failed', { expected: value, actual: verifyData[fieldKey] });
+        logger.error('useGroundTruth: Save verification failed', { expected: value, actual: savedValue });
         throw new Error('Save verification failed');
       }
       

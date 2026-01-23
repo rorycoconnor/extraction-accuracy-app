@@ -360,6 +360,53 @@ const MainPage: React.FC = () => {
     refreshGroundTruth();
   }, [refreshGroundTruth]);
 
+  // Sync ground truth data with accuracy data when ground truth changes
+  // This ensures CSV imports on the Ground Truth page are reflected in the table
+  useEffect(() => {
+    if (!accuracyData || !accuracyData.results || accuracyData.results.length === 0) return;
+    
+    // Get the latest ground truth data directly from storage
+    const latestGroundTruthData = getGroundTruthData();
+    
+    // Check if any ground truth values need updating
+    let hasUpdates = false;
+    const updatedResults = accuracyData.results.map(fileResult => {
+      const fileGroundTruth = latestGroundTruthData[fileResult.id]?.groundTruth || {};
+      let fileHasUpdates = false;
+      
+      const updatedFields = { ...fileResult.fields };
+      Object.keys(updatedFields).forEach(fieldKey => {
+        const currentGT = updatedFields[fieldKey]?.['Ground Truth'] || '';
+        const latestGT = fileGroundTruth[fieldKey] || '';
+        
+        if (currentGT !== latestGT && latestGT) {
+          fileHasUpdates = true;
+          updatedFields[fieldKey] = {
+            ...updatedFields[fieldKey],
+            'Ground Truth': latestGT
+          };
+        }
+      });
+      
+      if (fileHasUpdates) {
+        hasUpdates = true;
+        return { ...fileResult, fields: updatedFields };
+      }
+      return fileResult;
+    });
+    
+    // Only update if there are actual changes to avoid infinite loops
+    if (hasUpdates && setAccuracyData) {
+      logger.info('Syncing ground truth data with accuracy table', { 
+        filesUpdated: updatedResults.filter((r, i) => r !== accuracyData.results[i]).length 
+      });
+      setAccuracyData({
+        ...accuracyData,
+        results: updatedResults
+      });
+    }
+  }, [accuracyData?.results?.length]); // Only run when results array length changes or on mount
+
   // ===== EVENT HANDLERS =====
   
   // Handle opening prompt studio from optimizer summary

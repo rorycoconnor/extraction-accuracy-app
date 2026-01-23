@@ -25,6 +25,7 @@ import {
   getFileMetadataStore,
   getGroundTruthData,
   getGroundTruthForFile,
+  associateFilesToTemplate,
 } from '@/lib/mock-data';
 import type { BoxFile, BoxFolder, BoxTemplate, FileMetadataStore } from '@/lib/types';
 import { Database, Pencil, Terminal, Folder, Download, Upload, CheckCircle } from 'lucide-react';
@@ -110,12 +111,21 @@ export default function GroundTruthPage() {
     setIsFileSelectionModalOpen(false);
     
     if (files.length > 0) {
+      // 🔧 FIX: Associate files to the selected template BEFORE loading
+      // This was missing - files were not being linked to the template the user selected!
+      associateFilesToTemplate(files.map(f => f.id), template.templateKey);
+      logger.info('Associated files to template', { 
+        fileCount: files.length, 
+        templateKey: template.templateKey,
+        templateName: template.displayName 
+      });
+      
       // Load the selected files into the main table
       await loadSelectedFiles(files);
       
       toast({
         title: 'Files Selected',
-        description: `Added ${files.length} files to ground truth editing.`,
+        description: `Added ${files.length} files to ground truth editing with "${template.displayName}" template.`,
       });
     }
   };
@@ -446,7 +456,13 @@ export default function GroundTruthPage() {
       // Create row object
       const row: Record<string, string> = {};
       headers.forEach((header, index) => {
-        row[header] = values[index] || '';
+        let value = values[index] || '';
+        // Strip Excel formula prefix (="value" becomes value after quote handling)
+        // The export uses ="fileId" format to prevent Excel number formatting
+        if (value.startsWith('=')) {
+          value = value.substring(1);
+        }
+        row[header] = value;
       });
       
       rows.push(row);
@@ -557,6 +573,28 @@ export default function GroundTruthPage() {
       const fieldColumns = Object.keys(rows[0]).filter(col => !metadataColumns.includes(col));
       logger.debug('CSV columns categorized', { metadataColumns, fieldColumns });
       
+      // Validate that CSV columns match template fields
+      const templateFieldKeys = template.fields.filter(f => f.isActive).map(f => f.key);
+      const matchingFields = fieldColumns.filter(col => templateFieldKeys.includes(col));
+      const unmatchedCsvColumns = fieldColumns.filter(col => !templateFieldKeys.includes(col));
+      const unmatchedTemplateFields = templateFieldKeys.filter(key => !fieldColumns.includes(key));
+      
+      logger.debug('Field matching analysis', { 
+        csvColumns: fieldColumns,
+        templateFieldKeys,
+        matchingFields,
+        unmatchedCsvColumns,
+        unmatchedTemplateFields
+      });
+      
+      if (matchingFields.length === 0) {
+        throw new Error(`CSV column headers don't match any template fields.\n\nCSV columns: ${fieldColumns.join(', ')}\n\nTemplate fields: ${templateFieldKeys.join(', ')}\n\nMake sure your CSV column headers exactly match the template field keys.`);
+      }
+      
+      if (unmatchedCsvColumns.length > 0) {
+        logger.warn('Some CSV columns do not match template fields and will be ignored', { unmatchedCsvColumns });
+      }
+      
       // Process imports
       let updatedCount = 0;
       let skippedCount = 0;
@@ -566,8 +604,19 @@ export default function GroundTruthPage() {
       for (const row of rows) {
         try {
           const fileId = row.box_file_id;
-          logger.debug('Processing row', { fileId, fileName: row.file_name });
-          if (!fileId) continue;
+          logger.info('Processing CSV row', { 
+            rawFileId: row.box_file_id,
+            parsedFileId: fileId,
+            fileName: row.file_name,
+            templateKey: row.template_key,
+            fieldValues: Object.fromEntries(
+              fieldColumns.map(col => [col, row[col] || '(empty)'])
+            )
+          });
+          if (!fileId) {
+            logger.warn('Skipping row with empty file ID', { row });
+            continue;
+          }
 
           // Get current ground truth
           const currentGroundTruth = getGroundTruth(fileId);
@@ -623,10 +672,19 @@ export default function GroundTruthPage() {
         await loadSelectedFiles(currentFiles);
       }
 
+      // Build detailed completion message
+      let completionMsg = `Updated ${updatedCount} files, skipped ${skippedCount} files.`;
+      if (unmatchedCsvColumns.length > 0) {
+        completionMsg += ` Note: ${unmatchedCsvColumns.length} CSV columns were ignored (don't match template fields).`;
+      }
+      if (errors.length > 0) {
+        completionMsg += ` ${errors.length} errors occurred.`;
+      }
+      
       toast({
         title: 'Import Completed',
-        description: `Updated ${updatedCount} files, skipped ${skippedCount} files. Status updated.${errors.length > 0 ? ` ${errors.length} errors occurred.` : ''}`,
-        variant: errors.length > 0 ? 'destructive' : 'default',
+        description: completionMsg,
+        variant: errors.length > 0 ? 'destructive' : (unmatchedCsvColumns.length > 0 ? 'default' : 'default'),
       });
 
       if (errors.length > 0) {

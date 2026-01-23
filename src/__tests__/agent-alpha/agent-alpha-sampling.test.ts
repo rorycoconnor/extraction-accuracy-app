@@ -179,10 +179,17 @@ describe('Agent-Alpha Document Sampling', () => {
         ],
       };
 
-      const result = selectDocsForAgentAlpha(failureMap, 10);
+      // Use maxDocs=2 to test greedy optimization specifically
+      // The algorithm adds more docs after coverage, so we need to limit maxDocs
+      const result = selectDocsForAgentAlpha(failureMap, 2);
 
-      // Greedy should select at most 2 docs to cover all 3 fields
-      expect(result.docs.length).toBeLessThanOrEqual(2);
+      // Greedy should select exactly 2 docs that cover all 3 fields
+      expect(result.docs.length).toBe(2);
+      
+      // All fields should be covered by the 2 selected docs
+      const coveredFields = new Set<string>();
+      result.docs.forEach(doc => doc.fieldKeys.forEach(f => coveredFields.add(f)));
+      expect(coveredFields.size).toBe(3);
     });
 
     test('should respect maxDocs limit', () => {

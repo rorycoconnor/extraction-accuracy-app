@@ -18,6 +18,9 @@ export type AgentAlphaWorkPlan = {
   templateKey: string;
   testModel: string;
   sampledDocIds: string[];
+  // Train/holdout split for overfitting prevention
+  trainDocIds: string[];
+  holdoutDocIds: string[];
   fields: FieldPlan[];
 };
 
@@ -33,9 +36,16 @@ export async function prepareAgentAlphaWorkPlan(params: {
   accuracyData: AccuracyData;
   testModel: string;
   maxDocs?: number;
+  holdoutRatio?: number; // Ratio of docs to hold out for validation
   configuredTemplate?: BoxTemplate; // Template with isActive field status
 }): Promise<AgentAlphaWorkPlan> {
-  const { accuracyData, testModel, maxDocs = AGENT_ALPHA_CONFIG.MAX_DOCS, configuredTemplate } = params;
+  const { 
+    accuracyData, 
+    testModel, 
+    maxDocs = AGENT_ALPHA_CONFIG.MAX_DOCS, 
+    holdoutRatio = AGENT_ALPHA_CONFIG.HOLDOUT_RATIO,
+    configuredTemplate 
+  } = params;
   const runId = uuidv4();
 
   logger.info(`🤖 Agent-Alpha: Preparing work plan (runId: ${runId})`);
@@ -144,6 +154,8 @@ export async function prepareAgentAlphaWorkPlan(params: {
       templateKey: accuracyData.templateKey,
       testModel,
       sampledDocIds: [],
+      trainDocIds: [],
+      holdoutDocIds: [],
       fields: [],
     };
   }
@@ -170,10 +182,14 @@ export async function prepareAgentAlphaWorkPlan(params: {
   // Get all document IDs so we can pad the sample if needed
   const allDocIds = accuracyData.results.map((r) => r.id);
   
-  const samplingResult = selectDocsForAgentAlpha(failureMap, maxDocs, allDocIds);
+  const samplingResult = selectDocsForAgentAlpha(failureMap, maxDocs, allDocIds, holdoutRatio);
   const sampledDocIds = samplingResult.docs.map((doc) => doc.docId);
+  const { trainDocIds, holdoutDocIds } = samplingResult;
 
   logger.info(`📄 Selected ${sampledDocIds.length} document(s) for testing`);
+  if (holdoutDocIds.length > 0) {
+    logger.info(`   📊 Train: ${trainDocIds.length} docs, Holdout: ${holdoutDocIds.length} docs`);
+  }
   logger.info(`🎯 Processing ${fieldsToOptimize.length} field(s)`);
 
   // Step 5: Build ground truth map for sampled documents and create field plans
@@ -195,11 +211,36 @@ export async function prepareAgentAlphaWorkPlan(params: {
     });
   }
 
+  // Log ground truth status for each field - helps identify data quality issues
+  logger.info(`📊 Ground truth status for sampled documents:`);
+  for (const plan of fieldPlans) {
+    const gtValues = Object.values(plan.groundTruth);
+    const validGtCount = gtValues.filter(gt => gt && gt.trim() !== '' && gt.trim() !== '-').length;
+    const totalDocs = gtValues.length;
+    
+    let status: string;
+    let icon: string;
+    if (validGtCount === 0) {
+      status = 'NO GT';
+      icon = '⚠️';
+    } else if (validGtCount < totalDocs) {
+      status = `PARTIAL (${validGtCount}/${totalDocs})`;
+      icon = '⚡';
+    } else {
+      status = 'FULL';
+      icon = '✅';
+    }
+    
+    logger.info(`   ${icon} ${plan.field.name}: ${status}`);
+  }
+
   const workPlan: AgentAlphaWorkPlan = {
     runId,
     templateKey: accuracyData.templateKey,
     testModel,
     sampledDocIds,
+    trainDocIds,
+    holdoutDocIds,
     fields: fieldPlans,
   };
 

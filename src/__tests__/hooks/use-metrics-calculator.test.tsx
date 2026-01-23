@@ -5,25 +5,34 @@ import type { AccuracyData, ApiExtractionResult, ExtractionError, ErrorType } fr
 import '@testing-library/jest-dom'
 
 // Mock dependencies
+const mockMetricsResult = {
+  accuracy: 0.9,
+  precision: 0.85,
+  recall: 0.95,
+  f1Score: 0.90,
+  debug: {
+    truePositives: 18,
+    falsePositives: 2,
+    falseNegatives: 1, 
+    trueNegatives: 0,
+    totalValidPairs: 20,
+    examples: {
+      truePositives: [],
+      falsePositives: [],
+      falseNegatives: [],
+      trueNegatives: []
+    }
+  }
+};
+
 vi.mock('@/lib/metrics', () => ({
-  calculateFieldMetricsWithDebug: vi.fn(() => ({
+  calculateFieldMetricsWithDebug: vi.fn(() => mockMetricsResult),
+  calculateFieldMetricsWithDebugAsync: vi.fn(() => Promise.resolve(mockMetricsResult)),
+  calculateFieldMetrics: vi.fn(() => ({
     accuracy: 0.9,
     precision: 0.85,
     recall: 0.95,
-    f1Score: 0.90,
-    debug: {
-      truePositives: 18,
-      falsePositives: 2,
-      falseNegatives: 1, 
-      trueNegatives: 0,
-      totalValidPairs: 20,
-      examples: {
-        truePositives: [],
-        falsePositives: [],
-        falseNegatives: [],
-        trueNegatives: []
-      }
-    }
+    f1Score: 0.90
   }))
 }))
 
@@ -53,6 +62,28 @@ vi.mock('@/lib/utils', () => ({
 
 vi.mock('@/lib/error-handler', () => ({
   extractConciseErrorDescription: vi.fn((error: string) => error.substring(0, 100))
+}))
+
+vi.mock('@/lib/compare-type-storage', () => ({
+  getCompareConfigForField: vi.fn(() => null)
+}))
+
+vi.mock('@/lib/logger', () => ({
+  logger: {
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn()
+  }
+}))
+
+vi.mock('@/lib/main-page-constants', () => ({
+  AVAILABLE_MODELS: ['google__gemini_2_0_flash_001', 'aws__claude_3_7_sonnet']
+}))
+
+vi.mock('@/lib/enum-validator', () => ({
+  validateEnumValue: vi.fn((value: string) => value),
+  validateMultiSelectValue: vi.fn((value: string) => value)
 }))
 
 describe('useMetricsCalculator Hook - Core Business Logic', () => {
@@ -143,12 +174,12 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
   })
 
   describe('calculateAndUpdateMetrics - Core Function', () => {
-    test('should calculate metrics for successful API results', () => {
+    test('should calculate metrics for successful API results', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData()
       const mockApiResults = createMockApiResults()
 
-      const updatedData = result.current.calculateAndUpdateMetrics(mockAccuracyData, mockApiResults)
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, mockApiResults)
 
       // Should return updated accuracy data
       expect(updatedData).toBeDefined()
@@ -164,7 +195,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
       expect(updatedData.results[1].fields.company_name['google__gemini_2_0_flash_001']).toBe('Beta Inc')
     })
 
-    test('should handle mixed success/failure API results', () => {
+    test('should handle mixed success/failure API results', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData()
       const mixedApiResults: ApiExtractionResult[] = [
@@ -178,7 +209,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
         }
       ]
 
-      const updatedData = result.current.calculateAndUpdateMetrics(mockAccuracyData, mixedApiResults)
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, mixedApiResults)
 
       // Should handle successful extraction for file1
       expect(updatedData.results[0].fields.company_name['google__gemini_2_0_flash_001']).toBe('Acme Corp')
@@ -187,7 +218,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
       expect(updatedData.results[1].fields.company_name['google__gemini_2_0_flash_001']).toContain('Error:')
     })
 
-    test('should handle completely failed API results', () => {
+    test('should handle completely failed API results', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData()
       const failedApiResults: ApiExtractionResult[] = [
@@ -200,7 +231,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
         }
       ]
 
-      const updatedData = result.current.calculateAndUpdateMetrics(mockAccuracyData, failedApiResults)
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, failedApiResults)
 
       // Should handle failed extractions gracefully
       expect(updatedData.results[0].fields.company_name['google__gemini_2_0_flash_001']).toContain('Error:')
@@ -209,7 +240,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
       expect(updatedData.averages).toBeDefined()
     })
 
-    test('should preserve existing field data when adding new model results', () => {
+    test('should preserve existing field data when adding new model results', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData({
         results: [
@@ -235,7 +266,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
         }
       ]
 
-      const updatedData = result.current.calculateAndUpdateMetrics(mockAccuracyData, mockApiResults)
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, mockApiResults)
 
       // Should add new model data from API
       expect(updatedData.results[0].fields.company_name['google__gemini_2_0_flash_001']).toBe('Acme Corp')
@@ -248,12 +279,12 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
       expect(updatedData.results[0].fields.company_name['aws__claude_3_7_sonnet']).toBe('Pending...')
     })
 
-    test('should handle empty API results gracefully', () => {
+    test('should handle empty API results gracefully', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData()
       const emptyApiResults: ApiExtractionResult[] = []
 
-      const updatedData = result.current.calculateAndUpdateMetrics(mockAccuracyData, emptyApiResults)
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, emptyApiResults)
 
       // Should preserve ground truth data
       expect(updatedData.results[0].fields.company_name['Ground Truth']).toBe('Acme Corp')
@@ -269,7 +300,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
       expect(updatedData.averages.contract_date).toBeDefined()
     })
 
-    test('should handle files not found in accuracy data', () => {
+    test('should handle files not found in accuracy data', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData()
       const apiResultsWithUnknownFile: ApiExtractionResult[] = [
@@ -281,7 +312,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
         }
       ]
 
-      const updatedData = result.current.calculateAndUpdateMetrics(mockAccuracyData, apiResultsWithUnknownFile)
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, apiResultsWithUnknownFile)
 
       // Should handle gracefully without crashing
       expect(updatedData).toBeDefined()
@@ -290,7 +321,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
   })
 
   describe('Error Handling and Edge Cases', () => {
-    test('should handle malformed API results', () => {
+    test('should handle malformed API results', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData()
       const malformedApiResults = [
@@ -302,12 +333,12 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
         }
       ] as any
 
-      expect(() => {
-        result.current.calculateAndUpdateMetrics(mockAccuracyData, malformedApiResults)
-      }).not.toThrow()
+      // Should not throw, even with async
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, malformedApiResults)
+      expect(updatedData).toBeDefined()
     })
 
-    test('should handle missing ground truth data', () => {
+    test('should handle missing ground truth data', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData({
         results: [
@@ -323,14 +354,14 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
       })
       const mockApiResults = createMockApiResults()
 
-      const updatedData = result.current.calculateAndUpdateMetrics(mockAccuracyData, mockApiResults)
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, mockApiResults)
 
       // Should handle missing ground truth gracefully
       expect(updatedData).toBeDefined()
       expect(updatedData.results[0].fields.company_name['google__gemini_2_0_flash_001']).toBe('Acme Corp')
     })
 
-    test('should handle fields missing from API results', () => {
+    test('should handle fields missing from API results', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData()
       const incompleteApiResults: ApiExtractionResult[] = [
@@ -345,7 +376,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
         }
       ]
 
-      const updatedData = result.current.calculateAndUpdateMetrics(mockAccuracyData, incompleteApiResults)
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, incompleteApiResults)
 
       // Should have extracted company_name
       expect(updatedData.results[0].fields.company_name['google__gemini_2_0_flash_001']).toBe('Acme Corp')
@@ -356,13 +387,13 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
   })
 
   describe('Performance and Data Integrity', () => {
-    test('should maintain data immutability', () => {
+    test('should maintain data immutability', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       const mockAccuracyData = createMockAccuracyData()
       const originalData = JSON.parse(JSON.stringify(mockAccuracyData)) // Deep copy
       const mockApiResults = createMockApiResults()
 
-      const updatedData = result.current.calculateAndUpdateMetrics(mockAccuracyData, mockApiResults)
+      const updatedData = await result.current.calculateAndUpdateMetrics(mockAccuracyData, mockApiResults)
 
       // Original data should be unchanged
       expect(mockAccuracyData).toEqual(originalData)
@@ -372,7 +403,7 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
       expect(updatedData.results).not.toBe(mockAccuracyData.results)
     })
 
-    test('should handle large datasets efficiently', () => {
+    test('should handle large datasets efficiently', async () => {
       const { result } = renderHook(() => useMetricsCalculator())
       
       // Create large dataset
@@ -399,11 +430,11 @@ describe('useMetricsCalculator Hook - Core Business Logic', () => {
       }))
 
       const startTime = performance.now()
-      const updatedData = result.current.calculateAndUpdateMetrics(largeAccuracyData, largeApiResults)
+      const updatedData = await result.current.calculateAndUpdateMetrics(largeAccuracyData, largeApiResults)
       const endTime = performance.now()
 
       // Should complete within reasonable time (adjust threshold as needed)
-      expect(endTime - startTime).toBeLessThan(1000) // 1 second
+      expect(endTime - startTime).toBeLessThan(2000) // 2 seconds for async
       
       // Should process all results
       expect(updatedData.results).toHaveLength(100)

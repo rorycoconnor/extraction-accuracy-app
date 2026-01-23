@@ -52,24 +52,30 @@ export type AgentAlphaSamplingDoc = {
 export type AgentAlphaSamplingResult = {
   docs: AgentAlphaSamplingDoc[];
   fieldToDocIds: Record<string, string[]>;
+  // Holdout validation split
+  trainDocIds: string[];
+  holdoutDocIds: string[];
 };
 
 /**
- * Select up to maxDocs documents for testing
+ * Select up to maxDocs documents for testing with train/holdout split
  * 
  * Strategy:
  * 1. First, use greedy algorithm to select documents that cover the most failing fields
  * 2. Then, if we haven't reached maxDocs, add more documents (even successful ones) 
  *    to improve testing coverage and robustness
+ * 3. Split selected docs into train and holdout sets based on holdoutRatio
  * 
  * @param failureMap Map of field keys to their failures
  * @param maxDocs Maximum number of documents to select (defaults to config value)
  * @param allDocIds Optional: all available document IDs to sample from (for padding)
+ * @param holdoutRatio Ratio of docs to hold out for validation (default from config)
  */
 export function selectDocsForAgentAlpha(
   failureMap: FieldFailureMap,
   maxDocs: number = AGENT_ALPHA_CONFIG.MAX_DOCS,
-  allDocIds?: string[]
+  allDocIds?: string[],
+  holdoutRatio: number = AGENT_ALPHA_CONFIG.HOLDOUT_RATIO
 ): AgentAlphaSamplingResult {
   const fieldKeys = Object.keys(failureMap);
   const docToFields = new Map<string, Set<string>>();
@@ -169,9 +175,61 @@ export function selectDocsForAgentAlpha(
     fieldToDocIds[fieldKey] = selectedDocs.map((doc) => doc.docId);
   }
 
+  // Split docs into train and holdout sets
+  // Holdout docs are used for validation to prevent overfitting
+  const allSelectedDocIds = selectedDocs.map((doc) => doc.docId);
+  const { trainDocIds, holdoutDocIds } = splitTrainHoldout(allSelectedDocIds, holdoutRatio);
+
   return {
     docs: selectedDocs,
     fieldToDocIds,
+    trainDocIds,
+    holdoutDocIds,
+  };
+}
+
+/**
+ * Split document IDs into train and holdout sets
+ * Ensures at least 1 doc in holdout if there are enough docs
+ * 
+ * @param docIds All document IDs to split
+ * @param holdoutRatio Ratio of docs to hold out (0.0 to 1.0)
+ * @returns Object with trainDocIds and holdoutDocIds arrays
+ */
+export function splitTrainHoldout(
+  docIds: string[],
+  holdoutRatio: number
+): { trainDocIds: string[]; holdoutDocIds: string[] } {
+  const totalDocs = docIds.length;
+  
+  // If we have fewer than 3 docs, don't split - use all for training
+  // (holdout validation requires meaningful sample sizes)
+  if (totalDocs < 3 || holdoutRatio <= 0) {
+    return {
+      trainDocIds: [...docIds],
+      holdoutDocIds: [],
+    };
+  }
+  
+  // Calculate holdout count, ensuring at least 1 doc if ratio > 0
+  let holdoutCount = Math.round(totalDocs * holdoutRatio);
+  
+  // Ensure we have at least 1 holdout doc if ratio > 0 and enough docs
+  if (holdoutRatio > 0 && holdoutCount === 0 && totalDocs >= 3) {
+    holdoutCount = 1;
+  }
+  
+  // Ensure we don't hold out more than half the docs
+  holdoutCount = Math.min(holdoutCount, Math.floor(totalDocs / 2));
+  
+  // Take holdout from the END of the array (greedy selection prioritized important docs first)
+  // This way, training gets the most important failure-covering docs
+  const trainDocIds = docIds.slice(0, totalDocs - holdoutCount);
+  const holdoutDocIds = docIds.slice(totalDocs - holdoutCount);
+  
+  return {
+    trainDocIds,
+    holdoutDocIds,
   };
 }
 

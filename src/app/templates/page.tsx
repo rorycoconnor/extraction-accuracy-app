@@ -44,22 +44,17 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import type { BoxTemplate, BoxTemplateField, AccuracyField } from '@/lib/types';
-import type { CompareType, CompareTypeConfig, FieldCompareConfig } from '@/lib/compare-types';
+import type { BoxTemplate, BoxTemplateField, AccuracyField, PromptVersion } from '@/lib/types';
+import type { CompareTypeConfig, FieldCompareConfig } from '@/lib/compare-types';
 import {
   COMPARE_TYPE_LABELS,
-  COMPARE_TYPE_DESCRIPTIONS,
-  COMPARE_TYPE_CATEGORIES,
-  CONFIGURABLE_COMPARE_TYPES,
   DEFAULT_LLM_COMPARISON_PROMPT,
 } from '@/lib/compare-types';
 import {
   getOrCreateCompareTypeConfig,
-  setCompareType as setCompareTypeStorage,
   setCompareParameters as setCompareParametersStorage,
   exportCompareTypeConfig,
   importAndSaveCompareTypeConfig,
-  resetToDefaults,
 } from '@/lib/compare-type-storage';
 import {
   PlusCircle,
@@ -70,7 +65,6 @@ import {
   Wand2,
   Download,
   Upload,
-  RotateCcw,
   Info,
   BookOpen,
 } from 'lucide-react';
@@ -155,6 +149,26 @@ export default function TemplatesPage() {
       setError('Failed to load compare type configuration');
     }
   }, [selectedTemplate]);
+
+  // Sync selectedFieldForPromptStudio when global accuracy data changes
+  // This ensures the Prompt Studio shows updated data after saving prompts
+  useEffect(() => {
+    if (isPromptStudioOpen && selectedFieldForPromptStudio && compatData?.accuracyData?.fields) {
+      const updatedField = compatData.accuracyData.fields.find(
+        f => f.key === selectedFieldForPromptStudio.key
+      );
+      if (updatedField) {
+        // Only update if there's an actual change to avoid infinite loops
+        const hasChanged = 
+          updatedField.prompt !== selectedFieldForPromptStudio.prompt ||
+          updatedField.promptHistory?.length !== selectedFieldForPromptStudio.promptHistory?.length;
+        
+        if (hasChanged) {
+          setSelectedFieldForPromptStudio(updatedField);
+        }
+      }
+    }
+  }, [isPromptStudioOpen, selectedFieldForPromptStudio?.key, compatData?.accuracyData?.fields]);
 
   const handleAddTemplates = (newTemplates: BoxTemplate[]) => {
     addConfiguredTemplates(newTemplates);
@@ -297,31 +311,6 @@ export default function TemplatesPage() {
       });
     } finally {
       setIsPushing(false);
-    }
-  };
-
-  // Handle compare type change
-  const handleCompareTypeChange = (fieldKey: string, compareType: CompareType) => {
-    if (!selectedTemplate) return;
-
-    try {
-      setCompareTypeStorage(selectedTemplate.templateKey, fieldKey, compareType);
-
-      // Reload config
-      const updatedConfig = getOrCreateCompareTypeConfig(selectedTemplate);
-      setCompareTypeConfig(updatedConfig);
-
-      toast({
-        title: 'Compare Type Updated',
-        description: `Compare type set to "${COMPARE_TYPE_LABELS[compareType]}"`,
-      });
-    } catch (err) {
-      logger.error('Failed to update compare type', err as Error);
-      toast({
-        title: 'Update Failed',
-        description: 'Failed to update compare type. Please try again.',
-        variant: 'destructive',
-      });
     }
   };
 
@@ -469,31 +458,6 @@ export default function TemplatesPage() {
     }
   };
 
-  // Handle reset to defaults
-  const handleResetToDefaults = () => {
-    if (!selectedTemplate) return;
-
-    try {
-      resetToDefaults(selectedTemplate);
-
-      // Reload config
-      const updatedConfig = getOrCreateCompareTypeConfig(selectedTemplate);
-      setCompareTypeConfig(updatedConfig);
-
-      toast({
-        title: 'Reset to Defaults',
-        description: 'Compare type configuration reset to default values.',
-      });
-    } catch (err) {
-      logger.error('Reset failed', err as Error);
-      toast({
-        title: 'Reset Failed',
-        description: 'Failed to reset configuration.',
-        variant: 'destructive',
-      });
-    }
-  };
-
   const renderLeftPanel = () => {
     if (isLoading) {
       return (
@@ -620,10 +584,6 @@ export default function TemplatesPage() {
             <Upload className="mr-2 h-4 w-4" />
             Import
           </Button>
-          <Button variant="outline" size="sm" onClick={handleResetToDefaults}>
-            <RotateCcw className="mr-2 h-4 w-4" />
-            Reset
-          </Button>
         </div>
 
         {/* Fields table */}
@@ -633,8 +593,6 @@ export default function TemplatesPage() {
               <TableRow>
                 <TableHead className="w-[240px]">Metadata Field</TableHead>
                 <TableHead className="w-[140px]">Type</TableHead>
-                <TableHead className="w-[200px]">Compare Type</TableHead>
-                <TableHead className="w-[140px]">Parameters</TableHead>
                 <TableHead className="w-[140px] text-right">Prompt Studio</TableHead>
               </TableRow>
             </TableHeader>
@@ -643,7 +601,6 @@ export default function TemplatesPage() {
                 const compareField = compareTypeConfig.fields.find(cf => cf.fieldKey === field.key);
                 if (!compareField) return null;
 
-                const showConfigureButton = CONFIGURABLE_COMPARE_TYPES.includes(compareField.compareType);
                 const isActive = field.isActive !== false;
 
                 // Map Box field types to display names
@@ -680,43 +637,6 @@ export default function TemplatesPage() {
                         {getBoxTypeName(field.type)}
                     </Badge>
                     </TableCell>
-                    <TableCell className="w-[200px]">
-                      <Select
-                        value={compareField.compareType}
-                        onValueChange={(value) => handleCompareTypeChange(field.key, value as CompareType)}
-                        disabled={!isActive}
-                      >
-                        <SelectTrigger className="w-full text-left">
-                          <SelectValue className="truncate" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.entries(COMPARE_TYPE_CATEGORIES).map(([category, types]) => (
-                            <div key={category}>
-                              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
-                                {category}
-                              </div>
-                              {types.map((type) => (
-                                <SelectItem key={type} value={type}>
-                                  {COMPARE_TYPE_LABELS[type]}
-                                </SelectItem>
-                ))}
-              </div>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell className="w-[140px]">
-                      {showConfigureButton && isActive && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleConfigureClick(compareField)}
-                        >
-                          <Settings2 className="mr-2 h-3 w-3" />
-                          Configure
-                        </Button>
-                      )}
-            </TableCell>
                     <TableCell className="w-[140px] text-right">
                       {isActive && (
                         <Button
@@ -1028,14 +948,79 @@ export default function TemplatesPage() {
         onClose={() => setIsPromptStudioOpen(false)}
         field={selectedFieldForPromptStudio}
         templateName={selectedTemplate?.displayName}
-        onUpdatePrompt={(fieldKey: string, newPrompt: string) => {
+        onUpdatePrompt={(fieldKey: string, newPrompt: string, generationMethod?: 'standard' | 'dspy' | 'agent') => {
           if (compatData?.updatePrompt) {
             compatData.updatePrompt(fieldKey, newPrompt);
+            // Note: generationMethod is not yet supported in the store's updatePrompt
+            // The field will be synced via the useEffect above after the store updates
           }
         }}
-        onUsePromptVersion={() => {}}
-        onToggleFavorite={() => {}}
-        onDeletePromptVersion={() => {}}
+        onUsePromptVersion={(fieldKey: string, promptVersion: PromptVersion) => {
+          // Update the active prompt to the selected version
+          if (compatData?.updatePrompt && promptVersion.prompt) {
+            compatData.updatePrompt(fieldKey, promptVersion.prompt);
+          }
+        }}
+        onToggleFavorite={(fieldKey: string, versionId: string) => {
+          // Toggle favorite for a prompt version
+          if (!compatData?.accuracyData) return;
+          
+          const newAccuracyData = JSON.parse(JSON.stringify(compatData.accuracyData));
+          const fieldToUpdate = newAccuracyData.fields.find((f: AccuracyField) => f.key === fieldKey);
+          if (!fieldToUpdate) return;
+          
+          const version = fieldToUpdate.promptHistory.find((v: PromptVersion) => v.id === versionId);
+          if (version) {
+            version.isFavorite = !version.isFavorite;
+            compatData.setAccuracyData(newAccuracyData);
+          }
+        }}
+        onDeletePromptVersion={(fieldKey: string, versionId: string) => {
+          // Delete a prompt version
+          if (!compatData?.accuracyData) return;
+          
+          const fieldInCurrentState = compatData.accuracyData.fields.find(f => f.key === fieldKey);
+          if (!fieldInCurrentState) return;
+          
+          // Don't allow deleting if it's the only version
+          if (fieldInCurrentState.promptHistory.length <= 1) {
+            toast({
+              variant: "destructive",
+              title: "Cannot Delete",
+              description: "Cannot delete the last remaining prompt version."
+            });
+            return;
+          }
+          
+          const newAccuracyData = JSON.parse(JSON.stringify(compatData.accuracyData));
+          const fieldToUpdate = newAccuracyData.fields.find((f: AccuracyField) => f.key === fieldKey);
+          if (!fieldToUpdate) return;
+          
+          // Find and remove the version
+          const versionIndex = fieldToUpdate.promptHistory.findIndex((v: PromptVersion) => v.id === versionId);
+          if (versionIndex === -1) return;
+          
+          const deletedVersion = fieldToUpdate.promptHistory[versionIndex];
+          fieldToUpdate.promptHistory.splice(versionIndex, 1);
+          
+          // If the deleted version was the active prompt, switch to the most recent version
+          if (fieldToUpdate.prompt === deletedVersion.prompt && fieldToUpdate.promptHistory.length > 0) {
+            fieldToUpdate.prompt = fieldToUpdate.promptHistory[0].prompt;
+            toast({
+              title: "Active Prompt Changed",
+              description: "The deleted version was active. Switched to the most recent version."
+            });
+          }
+          
+          // Update state and persist
+          compatData.setAccuracyData(newAccuracyData);
+          
+          logger.info('Prompt version deleted from Templates page', {
+            fieldKey,
+            deletedVersionId: versionId,
+            remainingVersions: fieldToUpdate.promptHistory.length
+          });
+        }}
         selectedFileIds={compatData?.accuracyData?.results?.map(r => r.id) ?? []}
         accuracyData={compatData?.accuracyData ?? null}
         shownColumns={compatData?.shownColumns ?? {}}

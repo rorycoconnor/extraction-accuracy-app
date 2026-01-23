@@ -62,8 +62,14 @@ NO markdown, NO code blocks, NO extra text. Just the JSON object.`;
 
 // Static defaults (used as fallbacks)
 export const AGENT_ALPHA_CONFIG = {
-  // Maximum number of documents to sample for testing
-  MAX_DOCS: 5,
+  // Maximum number of documents to sample for testing (increased for better generalization)
+  MAX_DOCS: 10,
+
+  // Holdout validation settings to prevent overfitting
+  // Ratio of documents to hold out for validation (0.2 = 20%)
+  HOLDOUT_RATIO: 0.2,
+  // Minimum accuracy required on holdout set to declare convergence
+  HOLDOUT_THRESHOLD: 1.0,
 
   // Maximum iterations per field before giving up
   MAX_ITERATIONS: 5,
@@ -72,8 +78,8 @@ export const AGENT_ALPHA_CONFIG = {
   TARGET_ACCURACY: 1.0,
 
   // Model to use for prompt generation
-  // Claude 4 Sonnet - great balance of quality and cost
-  PROMPT_GEN_MODEL: 'aws__claude_4_sonnet',
+  // Claude 4.5 Opus via AWS - highest quality for prompt engineering
+  PROMPT_GEN_MODEL: 'aws__claude_4_5_opus',
 
   // API timeout in milliseconds
   API_TIMEOUT_MS: 30000,
@@ -89,6 +95,26 @@ export const AGENT_ALPHA_CONFIG = {
   // Reduced to 2 to avoid Box API rate limits (429 errors)
   // Each field makes multiple API calls (extractions + text gen per iteration)
   FIELD_CONCURRENCY: 2,
+  
+  // Enable deep document analysis for failed extractions
+  // When enabled, the agent examines actual document content to understand WHY extractions fail
+  // This produces better prompts but adds extra API calls (1-2 per failed doc)
+  ENABLE_DOCUMENT_ANALYSIS: true,
+  
+  // Maximum iterations to perform document analysis (expensive operation)
+  // After this many iterations, skip analysis to save API calls
+  DOCUMENT_ANALYSIS_MAX_ITERATION: 2,
+  
+  // Prefer deterministic comparison types during optimization
+  // When true, llm-judge fields are temporarily downgraded to near-exact-string
+  // This ensures stable, reproducible optimization results
+  PREFER_DETERMINISTIC_COMPARE: true,
+  
+  // Prompt validation settings
+  // Enable validation of generated prompts against quality checklist
+  PROMPT_VALIDATION_ENABLED: true,
+  // Maximum repair attempts when validation fails (to control API costs)
+  PROMPT_REPAIR_MAX_ATTEMPTS: 1,
 } as const;
 
 // User-configurable runtime options
@@ -98,6 +124,11 @@ export type AgentAlphaRuntimeConfig = {
   testModel: string;
   systemPromptOverride?: string; // If set, prepends to the default system prompt
   customInstructions?: string; // If set, replaces the full prompt generation template
+  // Holdout validation settings
+  holdoutRatio?: number; // Ratio of docs to hold out (default 0.2)
+  holdoutThreshold?: number; // Min accuracy on holdout to converge (default 1.0)
+  // Deterministic mode - downgrade llm-judge to near-exact during optimization
+  preferDeterministicCompare?: boolean;
 };
 
 // Get default runtime config
@@ -108,5 +139,8 @@ export function getDefaultRuntimeConfig(): AgentAlphaRuntimeConfig {
     testModel: AGENT_ALPHA_CONFIG.DEFAULT_TEST_MODEL,
     systemPromptOverride: undefined,
     customInstructions: undefined,
+    holdoutRatio: AGENT_ALPHA_CONFIG.HOLDOUT_RATIO,
+    holdoutThreshold: AGENT_ALPHA_CONFIG.HOLDOUT_THRESHOLD,
+    preferDeterministicCompare: AGENT_ALPHA_CONFIG.PREFER_DETERMINISTIC_COMPARE,
   };
 }

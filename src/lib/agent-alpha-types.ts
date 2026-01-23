@@ -3,6 +3,7 @@
  */
 
 import type { AgentAlphaRuntimeConfig } from './agent-alpha-config';
+import type { FieldCompareConfig } from './compare-types';
 
 export type AgentAlphaStatus = 'idle' | 'configure' | 'running' | 'preview' | 'error';
 
@@ -45,6 +46,24 @@ export type AgentAlphaState = {
   actualDocCount?: number;
 };
 
+/**
+ * Experiment metadata for auditability and reproducibility
+ * Captures all parameters that affect optimization results
+ */
+export type PromptExperimentMetadata = {
+  testModel: string;
+  compareConfig?: FieldCompareConfig;
+  trainDocIds: string[];
+  holdoutDocIds: string[];
+  groundTruthHash?: string; // Hash of GT values used (for change detection)
+  iterationResults?: Array<{
+    iteration: number;
+    trainAccuracy: number;
+    holdoutAccuracy?: number;
+    promptLength: number;
+  }>;
+};
+
 export type AgentAlphaFieldResult = {
   fieldKey: string;
   fieldName: string;
@@ -57,6 +76,9 @@ export type AgentAlphaFieldResult = {
   converged: boolean; // True if reached 100% accuracy
   sampledDocIds: string[]; // Documents used for testing
   improved: boolean; // True if finalAccuracy >= initialAccuracy (prompt should be applied)
+  hasGroundTruth?: boolean; // True if field had ground truth data to measure against
+  // Experiment metadata for auditability
+  experimentMetadata?: PromptExperimentMetadata;
 };
 
 export type AgentAlphaPendingResults = {
@@ -65,6 +87,8 @@ export type AgentAlphaPendingResults = {
   timestamp: string;
   testModel: string; // Model used for testing extractions
   sampledDocIds: string[]; // Documents used for testing
+  trainDocIds?: string[]; // Training docs (subset of sampled)
+  holdoutDocIds?: string[]; // Holdout validation docs
   sampledDocNames?: Record<string, string>; // docId -> docName mapping
   startTime: number; // Timestamp when run started
   endTime: number; // Timestamp when run completed

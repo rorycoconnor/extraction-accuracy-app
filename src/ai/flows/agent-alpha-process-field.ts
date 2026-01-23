@@ -18,12 +18,18 @@ export type ProcessFieldParams = {
   initialAccuracy: number;
   groundTruth: Record<string, string>; // docId -> groundTruthValue
   sampledDocIds: string[];
+  // Train/holdout split for overfitting prevention
+  trainDocIds: string[];
+  holdoutDocIds: string[];
+  holdoutThreshold?: number; // Min accuracy on holdout to converge (default 1.0)
   templateKey: string;
   testModel: string;
   fieldIndex: number; // For logging: "1 of 5"
   totalFields: number;
   maxIterations?: number; // Override default max iterations
   systemPromptOverride?: string; // Custom system prompt to prepend
+  // Deterministic mode - downgrade llm-judge to near-exact for stable optimization
+  preferDeterministicCompare?: boolean;
 };
 
 /**
@@ -41,16 +47,49 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     initialAccuracy,
     groundTruth,
     sampledDocIds,
+    trainDocIds,
+    holdoutDocIds,
+    holdoutThreshold = AGENT_ALPHA_CONFIG.HOLDOUT_THRESHOLD,
     templateKey,
     testModel,
     fieldIndex,
     totalFields,
-    maxIterations = AGENT_ALPHA_CONFIG.MAX_ITERATIONS,
+    maxIterations: maxIterationsParam = AGENT_ALPHA_CONFIG.MAX_ITERATIONS,
     systemPromptOverride,
+    preferDeterministicCompare = AGENT_ALPHA_CONFIG.PREFER_DETERMINISTIC_COMPARE,
   } = params;
+  
+  // Use train docs for iteration testing, or fall back to all sampled docs if no split
+  const effectiveTrainDocs = trainDocIds.length > 0 ? trainDocIds : sampledDocIds;
+  const hasHoldout = holdoutDocIds.length > 0;
+  
+  // Apply deterministic mode: downgrade llm-judge to near-exact-string for stable optimization
+  let effectiveCompareConfig = compareConfig;
+  if (preferDeterministicCompare && compareConfig?.compareType === 'llm-judge') {
+    logger.info(`   ⚡ Deterministic mode: downgrading llm-judge to near-exact-string`);
+    effectiveCompareConfig = {
+      ...compareConfig,
+      compareType: 'near-exact-string',
+    };
+  }
 
-  logger.info(`\n📝 Agent-Alpha: [${fieldIndex}/${totalFields}] Processing field "${fieldName}"`);
-  logger.info(`   Initial accuracy: ${(initialAccuracy * 100).toFixed(1)}%`);
+  // Check if field has ANY ground truth across sampled docs
+  // Empty strings, "-", and whitespace-only values are considered "no ground truth"
+  const hasAnyGroundTruth = Object.values(groundTruth).some(
+    gt => gt && gt.trim() !== '' && gt.trim() !== '-'
+  );
+  
+  // If no ground truth exists, limit to 1 iteration (just generate a good prompt)
+  // There's no point iterating multiple times when we can't measure accuracy
+  let maxIterations = maxIterationsParam;
+  if (!hasAnyGroundTruth) {
+    logger.info(`\n📝 Agent-Alpha: [${fieldIndex}/${totalFields}] Processing field "${fieldName}"`);
+    logger.info(`   ⚠️ No ground truth available - generating prompt only (1 iteration)`);
+    maxIterations = 1;
+  } else {
+    logger.info(`\n📝 Agent-Alpha: [${fieldIndex}/${totalFields}] Processing field "${fieldName}"`);
+    logger.info(`   Initial accuracy: ${(initialAccuracy * 100).toFixed(1)}%`);
+  }
   logger.debug(`   Input fieldPrompt: "${fieldPrompt ? String(fieldPrompt).substring(0, 80) : 'none'}..." (${fieldPrompt?.length || 0} chars)`);
 
   // Determine initial prompt - use provided prompt OR generate a quality fallback
@@ -101,47 +140,89 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         fieldType,
         currentPrompt,
         previousPrompts,
-        sampledDocIds,
+        sampledDocIds: effectiveTrainDocs, // Use train docs for iteration
         groundTruth,
         templateKey,
         testModel,
         iterationNumber: iteration,
         maxIterations,
         options: fieldOptions,
-        compareConfig,
+        compareConfig: effectiveCompareConfig,
         systemPromptOverride,
       });
 
       finalAccuracy = iterationResult.accuracy;
-      logger.info(`   Accuracy: ${(finalAccuracy * 100).toFixed(1)}%`);
+      logger.info(`   Train accuracy: ${(finalAccuracy * 100).toFixed(1)}%`);
 
-      // Check if converged (100% accuracy reached)
+      // Check if converged on training set (100% accuracy reached)
       if (iterationResult.converged) {
-        logger.info(`   ✅ Converged! Accuracy: ${(finalAccuracy * 100).toFixed(1)}%`);
+        logger.info(`   ✅ Train set converged! Accuracy: ${(finalAccuracy * 100).toFixed(1)}%`);
         
-        // IMPORTANT: Even if we achieved 100% accuracy, if this is iteration 1 and
-        // we're using a simple/default prompt, we should still generate an improved
-        // prompt for production robustness
-        const isSimplePrompt = currentPrompt.length < 100 || 
-          currentPrompt.toLowerCase().startsWith('extract the ');
+        // If we have holdout docs, validate on them before declaring true convergence
+        let holdoutAccuracy = 1.0;
+        let holdoutPassed = true;
         
-        if (iteration === 1 && isSimplePrompt) {
-          logger.info(`   🔄 Generating robust prompt despite 100% accuracy (simple prompt detected)`);
-          // Use the generated newPrompt instead of the simple one
-          // The newPrompt was generated based on the successful extractions
-          if (iterationResult.newPrompt && iterationResult.newPrompt.length > currentPrompt.length) {
-            bestPrompt = iterationResult.newPrompt;
-            logger.info(`   ✅ Using generated robust prompt (${bestPrompt.length} chars)`);
+        if (hasHoldout) {
+          logger.info(`   🧪 Validating on ${holdoutDocIds.length} holdout doc(s)...`);
+          
+          // Run holdout validation with the current prompt
+          // validationOnly=true skips prompt generation (saves API calls)
+          const holdoutResult = await runFieldIteration({
+            fieldKey,
+            fieldName,
+            fieldType,
+            currentPrompt,
+            previousPrompts: [],
+            sampledDocIds: holdoutDocIds,
+            groundTruth,
+            templateKey,
+            testModel,
+            iterationNumber: iteration,
+            maxIterations,
+            options: fieldOptions,
+            compareConfig: effectiveCompareConfig,
+            systemPromptOverride,
+            validationOnly: true, // Only compute accuracy, don't generate new prompt
+          });
+          
+          holdoutAccuracy = holdoutResult.accuracy;
+          holdoutPassed = holdoutAccuracy >= holdoutThreshold;
+          
+          if (holdoutPassed) {
+            logger.info(`   ✅ Holdout validation PASSED: ${(holdoutAccuracy * 100).toFixed(1)}%`);
           } else {
+            logger.warn(`   ⚠️ Holdout validation FAILED: ${(holdoutAccuracy * 100).toFixed(1)}% (threshold: ${(holdoutThreshold * 100).toFixed(1)}%)`);
+            logger.warn(`   🔄 Continuing optimization to improve generalization...`);
+          }
+        }
+        
+        // Only consider truly converged if holdout validation passed (or no holdout)
+        if (holdoutPassed) {
+          // IMPORTANT: Even if we achieved 100% accuracy, if this is iteration 1 and
+          // we're using a simple/default prompt, we should still generate an improved
+          // prompt for production robustness
+          const isSimplePrompt = currentPrompt.length < 100 || 
+            currentPrompt.toLowerCase().startsWith('extract the ');
+          
+          if (iteration === 1 && isSimplePrompt) {
+            logger.info(`   🔄 Generating robust prompt despite 100% accuracy (simple prompt detected)`);
+            // Use the generated newPrompt instead of the simple one
+            // The newPrompt was generated based on the successful extractions
+            if (iterationResult.newPrompt && iterationResult.newPrompt.length > currentPrompt.length) {
+              bestPrompt = iterationResult.newPrompt;
+              logger.info(`   ✅ Using generated robust prompt (${bestPrompt.length} chars)`);
+            } else {
+              bestPrompt = currentPrompt;
+            }
+          } else {
+            // When converged with a non-simple prompt, keep the current prompt
             bestPrompt = currentPrompt;
           }
-        } else {
-          // When converged with a non-simple prompt, keep the current prompt
-          bestPrompt = currentPrompt;
+          bestAccuracy = finalAccuracy;
+          converged = true;
+          break;
         }
-        bestAccuracy = finalAccuracy;
-        converged = true;
-        break;
+        // If holdout failed, continue to next iteration (don't break)
       }
 
       // Track best accuracy and prompt (BEFORE updating currentPrompt)
@@ -198,14 +279,17 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
 
   // Check if the new prompt actually improved accuracy
   // If not, we should NOT recommend updating the prompt
-  const improved = finalAccuracy >= initialAccuracy;
+  // Exception: If no ground truth exists, always consider it "improved" since we generated a prompt from nothing
+  const improved = !hasAnyGroundTruth || finalAccuracy >= initialAccuracy;
   
-  // If accuracy got worse, keep the original prompt
+  // If accuracy got worse (and we have ground truth to measure), keep the original prompt
   const finalPromptToUse = improved ? bestPrompt : initialPrompt;
   
-  if (!improved) {
+  if (!improved && hasAnyGroundTruth) {
     logger.warn(`   ⚠️ New prompt performed WORSE than original (${(finalAccuracy * 100).toFixed(1)}% < ${(initialAccuracy * 100).toFixed(1)}%)`);
     logger.warn(`   ⚠️ Keeping original prompt - will NOT recommend update`);
+  } else if (!hasAnyGroundTruth) {
+    logger.info(`   ✅ Generated prompt for field without ground truth`);
   }
 
   const result: AgentAlphaFieldResult = {
@@ -220,6 +304,14 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     converged,
     sampledDocIds,
     improved,
+    hasGroundTruth: hasAnyGroundTruth, // Track if accuracy metrics are meaningful
+    // Experiment metadata for auditability
+    experimentMetadata: {
+      testModel,
+      compareConfig,
+      trainDocIds: effectiveTrainDocs,
+      holdoutDocIds,
+    },
   };
 
   const improvement = ((finalAccuracy - initialAccuracy) * 100).toFixed(1);
@@ -243,49 +335,52 @@ export async function processAgentAlphaFieldsBatch(
   logger.info(`Agent-Alpha Batch: Processing ${fieldParams.length} fields with concurrency ${concurrencyLimit}`);
   
   const results: AgentAlphaFieldResult[] = new Array(fieldParams.length);
-  const executing: Promise<void>[] = [];
+  const executing: Set<Promise<void>> = new Set();
   
   for (let i = 0; i < fieldParams.length; i++) {
     const params = fieldParams[i];
     const index = i;
     
-    const p = processAgentAlphaField(params).then((result) => {
-      results[index] = result;
-      logger.info(`Agent-Alpha Batch: Field ${index + 1}/${fieldParams.length} completed (${params.fieldName})`);
-      if (onFieldComplete) {
-        try {
-          onFieldComplete(result, index);
-        } catch (e) {
-          // Ignore callback errors
+    // Create a promise that processes the field and removes itself from the executing set when done
+    const fieldPromise = (async () => {
+      try {
+        const result = await processAgentAlphaField(params);
+        results[index] = result;
+        logger.info(`Agent-Alpha Batch: Field ${index + 1}/${fieldParams.length} completed (${params.fieldName})`);
+        if (onFieldComplete) {
+          try {
+            onFieldComplete(result, index);
+          } catch {
+            // Ignore callback errors
+          }
         }
+      } catch (error) {
+        logger.error(`Agent-Alpha Batch: Field ${index + 1} failed (${params.fieldName})`, error as Error);
+        // Return a failed result
+        results[index] = {
+          fieldKey: params.fieldKey,
+          fieldName: params.fieldName,
+          initialAccuracy: params.initialAccuracy,
+          finalAccuracy: params.initialAccuracy,
+          iterationCount: 0,
+          initialPrompt: params.fieldPrompt || '',
+          userOriginalPrompt: params.fieldPrompt || null, // User's original or null if none
+          finalPrompt: params.fieldPrompt || '',
+          converged: false,
+          sampledDocIds: params.sampledDocIds,
+          improved: false,
+        };
       }
-      // Remove from executing pool
-      const idx = executing.indexOf(e);
-      if (idx > -1) executing.splice(idx, 1);
-    }).catch((error) => {
-      logger.error(`Agent-Alpha Batch: Field ${index + 1} failed (${params.fieldName})`, error as Error);
-      // Return a failed result
-      results[index] = {
-        fieldKey: params.fieldKey,
-        fieldName: params.fieldName,
-        initialAccuracy: params.initialAccuracy,
-        finalAccuracy: params.initialAccuracy,
-        iterationCount: 0,
-        initialPrompt: params.fieldPrompt || '',
-        userOriginalPrompt: params.fieldPrompt || null, // User's original or null if none
-        finalPrompt: params.fieldPrompt || '',
-        converged: false,
-        sampledDocIds: params.sampledDocIds,
-        improved: false,
-      };
-      const idx = executing.indexOf(e);
-      if (idx > -1) executing.splice(idx, 1);
+    })();
+    
+    // Track this promise and set up auto-removal when it completes
+    executing.add(fieldPromise);
+    fieldPromise.finally(() => {
+      executing.delete(fieldPromise);
     });
     
-    const e = p.then(() => {});
-    executing.push(e);
-    
-    if (executing.length >= concurrencyLimit) {
+    // Wait for a slot to open if we've hit the concurrency limit
+    if (executing.size >= concurrencyLimit) {
       await Promise.race(executing);
     }
   }

@@ -12,14 +12,24 @@ GUIDELINES:
 - Generate ONLY the extraction prompt itself, with no additional explanations, introductions, or pleasantries.`,
 
   IMPROVE: `You are an expert at refining and improving extraction prompts for Box AI.
-Your task is to create a new, single, cohesive extraction prompt that intelligently combines an original prompt with a user's feedback and requirements.
+Your task is to improve an extraction prompt based on user feedback while PRESERVING what is already working.
 
-GUIDELINES:
-- The new prompt must maintain the core function of the original prompt.
-- It must seamlessly incorporate the user's specific feedback.
-- It should provide clear instructions for any edge cases mentioned by the user.
-- The final prompt must be concise (under 3 sentences) and highly actionable for an AI model.
-- Generate ONLY the improved extraction prompt, with no additional explanations, introductions, or pleasantries.`,
+CRITICAL RULES:
+1. KEEP WHAT WORKS: If the original prompt has specific guidance that is NOT mentioned in the user's feedback as problematic, PRESERVE it exactly.
+2. IDENTIFY working elements: Look for location guidance ("look in", "search for"), synonym lists, format specifications, and disambiguation rules in the original.
+3. ADD don't replace: Enhance the prompt by ADDING to existing guidance, not replacing it wholesale.
+4. Only fix what's broken: Focus your changes on addressing the user's specific feedback.
+5. Preserve structure: If the original has a logical structure (locations, then synonyms, then format), maintain that structure.
+
+REQUIRED ELEMENTS (add if missing, keep if present):
+- LOCATION: Where to look in the document (sections, headers, signature blocks)
+- SYNONYMS: Alternative phrases the value might appear as (at least 3-5)
+- FORMAT: Exact output format (date format, case, number precision)
+- DISAMBIGUATION: "Do NOT..." guidance to prevent common mistakes
+- NOT-FOUND: What to return if value isn't found (usually "Not Present")
+
+OUTPUT:
+Generate ONLY the improved extraction prompt, with no additional explanations. The prompt should be 3-5 sentences.`,
 };
 
 // Heuristics guide the AI based on field type

@@ -299,7 +299,8 @@ describe('Agent-Alpha Prompt Generation', () => {
     });
 
     test('should handle escaped quotes in prompt', () => {
-      const longPrompt = 'Look for "Company Name" in quotes, search the header section, signature blocks, and main body of the document. Also look for variations like "The Company Name" and "Company Name Inc".';
+      // Prompt must be 150+ chars and have 3+ key elements: location, synonyms, format, not-found handling
+      const longPrompt = 'Look for "Company Name" in quotes, search in the header section, signature blocks, and main body of the document. Also look for variations like "The Company Name" and "Company Name Inc". Return the exact value as found. If not found, return "Not Present".';
       const response = JSON.stringify({
         newPrompt: longPrompt,
         reasoning: 'Added quote handling',

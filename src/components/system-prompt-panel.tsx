@@ -313,15 +313,24 @@ export function SystemPromptPanel({
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto py-4 px-1 space-y-4" style={{ scrollbarGutter: 'stable' }}>
-          {/* Version Selector */}
-          <div className="space-y-2">
-            <Label>Select System Prompt Version</Label>
+          {/* Choose Version Card */}
+          <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                <Settings2 className="h-3.5 w-3.5" />
+              </div>
+              <div>
+                <h4 className="font-medium text-sm">Choose System Prompt</h4>
+                <p className="text-xs text-muted-foreground">Select an existing version or create a new one</p>
+              </div>
+            </div>
+            
             <Select
               value={isCreatingNew ? CREATE_NEW_ID : selectedVersionId}
               onValueChange={handleVersionSelect}
             >
-              <SelectTrigger className="w-full bg-background">
-                <SelectValue placeholder="Select a version" />
+              <SelectTrigger className="w-full bg-background border-2 h-11">
+                <SelectValue placeholder="Choose a system prompt version..." />
               </SelectTrigger>
               <SelectContent>
                 {versions.map((version) => (
@@ -338,20 +347,42 @@ export function SystemPromptPanel({
                   </SelectItem>
                 ))}
                 <SelectItem value={CREATE_NEW_ID}>
-                  <div className="flex items-center gap-2 text-primary">
-                    <Plus className="h-3 w-3" />
-                    <span>Create New Version</span>
+                  <div className="flex items-center gap-2 text-primary font-medium">
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Create New Version...</span>
                   </div>
                 </SelectItem>
               </SelectContent>
             </Select>
-          </div>
 
-          {/* Version Actions - Delete, Reset to Default, Set as Active */}
-          {!isCreatingNew && (
-            <div className="flex items-center justify-end gap-2 pb-4 border-b">
-              {/* Delete */}
-              {!isDefault && (
+            {/* Quick Actions Row */}
+            <div className="flex items-center gap-2 pt-1">
+              {!isCreatingNew && !isActive && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleSetAsActive}
+                  className="flex-1"
+                >
+                  Set as Active
+                </Button>
+              )}
+              {!isCreatingNew && isActive && (
+                <div className="flex-1 flex items-center justify-center gap-1.5 text-sm text-green-600 dark:text-green-400 font-medium py-1.5">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  Currently Active
+                </div>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleResetToDefault}
+                disabled={activeVersionId === versions.find(v => v.isDefault)?.id}
+              >
+                <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+                Reset
+              </Button>
+              {!isDefault && !isCreatingNew && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -360,35 +391,13 @@ export function SystemPromptPanel({
                     versionId: selectedVersionId,
                     versionName: selectedVersion?.name || '',
                   })}
-                  className="text-destructive hover:text-destructive"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               )}
-
-              {/* Reset to Default */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleResetToDefault}
-                disabled={activeVersionId === versions.find(v => v.isDefault)?.id}
-              >
-                <RotateCcw className="mr-2 h-4 w-4" />
-                Reset to Default
-              </Button>
-
-              {/* Set as Active */}
-              <Button
-                variant={isActive ? 'secondary' : 'default'}
-                size="sm"
-                onClick={handleSetAsActive}
-                disabled={isActive}
-              >
-                {isActive ? 'Currently Active' : 'Set as Active'}
-              </Button>
             </div>
-          )}
+          </div>
 
           {/* Name Input */}
           <div className="space-y-2">

@@ -1655,32 +1655,62 @@
   "1997271985438": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "vend"
+      "vendor": "BERTROM SUPPLY CO.",
+      "invoiceDate": "9/30/08",
+      "amountDue": "487",
+      "dueDate": "10/30/08",
+      "term": "NET 30",
+      "poNumber": "477-929",
+      "salesAmountNumber": "432",
+      "salesTax": "0",
+      "freightAmount": "55"
     }
   },
   "1997256691134": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "vend"
+      "vendor": "BEST BERRY",
+      "invoiceDate": "3/23/14",
+      "amountDue": "10369",
+      "dueDate": "4/2/14"
     }
   },
   "1997236847445": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "vend",
-      "description": "descrpt"
+      "vendor": "TEEK METER INC",
+      "description": "descrpt",
+      "invoiceDate": "3/22/08",
+      "amountDue": "8757.5",
+      "dueDate": "4/21/08"
     }
   },
   "1997273038900": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "vend"
+      "vendor": "Center Hoist Co.",
+      "invoiceDate": "2008-10-16",
+      "amountDue": "1038.7",
+      "dueDate": "2008-11-05",
+      "term": "NET 20",
+      "poNumber": "0401-0000009992",
+      "salesAmountNumber": "1038.7",
+      "salesTax": "0",
+      "freightAmount": "0"
     }
   },
   "1997282187839": {
     "templateKey": "invoice",
     "groundTruth": {
-      "vendor": "vend"
+      "vendor": "Expo Corp. Graphic Supplies",
+      "invoiceDate": "5/24/08",
+      "amountDue": "270.8",
+      "dueDate": "6/8/08",
+      "term": "NET 15 DAYS",
+      "poNumber": "92504087",
+      "salesAmountNumber": "261.59",
+      "salesTax": "0",
+      "freightAmount": "9.21"
     }
   },
   "1807674057288": {
@@ -5442,6 +5472,158 @@
       "general_notes": "Pending...",
       "quick_summary_of_the_deal": "Pending...",
       "document_link": "Pending..."
+    }
+  },
+  "2100470958922": {
+    "templateKey": "tishmanWithPrompts",
+    "groundTruth": {
+      "rentCommencementDate": "2021-07-06",
+      "baseRentYear1Annual": "$59,166.48 annually",
+      "renewalTermCommencement": "Commences 08/01/2024, Expires 07/31/2027",
+      "antennaeRooftopAccess": "No",
+      "annualizedAmount": "No single “annualized amount” field; uses periodized rents",
+      "leaseExecutionDate": "03/03/2021",
+      "area": "1,621.00 sqf",
+      "renewalNoticeDeadline": "10/31/2023",
+      "antennaClauseDetail": "No ownership, access, or maintenance terms stated",
+      "holdover": "2× last rent",
+      "sndaSubordination": "Explicitly “unconditionally subordinate”"
+    }
+  },
+  "2105317101033": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105310536493": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105320376586": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105310237352": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105308708094": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105310277649": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105310985645": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105320478063": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105319472521": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105312733558": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105320242431": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105311729414": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105314131859": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105317041218": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105308230413": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105311804329": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2105317706215": {
+    "templateKey": "mercer",
+    "groundTruth": {
+      "verifiedDocumentType": "Other",
+      "verifiedDocumentTypeB": "Other",
+      "verifiedDocumentTypeT": "Other"
     }
   }
 }

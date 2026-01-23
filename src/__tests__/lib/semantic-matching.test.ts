@@ -128,8 +128,10 @@ describe('Semantic Matching - Date Format Variations', () => {
   test('should match ISO date with European format', () => {
     const result = compareValues('2025-01-15', '15/01/2025');
     
-    // Note: European date format (DD/MM/YYYY) is ambiguous and not currently supported
-    expect(result.isMatch).toBe(false);
+    // European date format (DD/MM/YYYY) is now supported when day > 12 (unambiguous)
+    // 15/01/2025 is clearly DD/MM because 15 > 12
+    expect(result.isMatch).toBe(true);
+    expect(result.matchType).toBe('date_format');
   });
 
   test('should match ISO date with natural language', () => {
