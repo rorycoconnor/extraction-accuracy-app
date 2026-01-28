@@ -1,38 +1,144 @@
 /**
- * Prompt generation helpers for Agent-Alpha
- * Builds prompts for Box AI to generate improved extraction instructions
+ * @fileOverview Agent-Alpha Prompt Generation Helpers
  * 
- * BALANCED: Quality prompts while staying within Box AI limits
+ * This module provides the core prompt construction logic for Agent-Alpha.
+ * It builds structured requests for Box AI (Claude) to generate high-quality
+ * extraction prompts that achieve 100% accuracy.
+ * 
+ * ## Key Functions
+ * 
+ * - {@link buildAgentAlphaPrompt} - Constructs the full prompt generation request
+ * - {@link getExamplePromptForField} - Provides field-specific example prompts
+ * - {@link parseAgentAlphaPromptResponse} - Parses Claude's JSON response
+ * - {@link validatePrompt} - Validates prompts against quality checklist
+ * - {@link buildPromptRepairRequest} - Builds requests to fix invalid prompts
+ * 
+ * ## Prompt Quality Requirements
+ * 
+ * Every generated prompt must include 5 elements:
+ * 1. **LOCATION**: Where to look in the document
+ * 2. **SYNONYMS**: 6+ alternative phrases in quotes
+ * 3. **FORMAT**: Exact output format specification
+ * 4. **DISAMBIGUATION**: "Do NOT..." negative guidance
+ * 5. **NOT-FOUND**: What to return if value not found
+ * 
+ * Prompts must be 350-600 characters to ensure sufficient detail without being verbose.
+ * 
+ * ## Counter Party Configuration
+ * 
+ * For counter party fields, companies should configure their company name/address
+ * in their custom system prompt. This enables proper disambiguation between the
+ * extracting company and the counter party in agreements.
+ * 
+ * @module agent-alpha-prompts
  */
 
 import type { AccuracyField } from './types';
 import { logger } from './logger';
 
+/**
+ * Parameters for building an Agent-Alpha prompt generation request.
+ * 
+ * These parameters provide all the context needed for Claude to generate
+ * an improved extraction prompt, including the current state, failure analysis,
+ * and document type context.
+ * 
+ * @interface AgentAlphaPromptParams
+ */
 export type AgentAlphaPromptParams = {
+  /** Human-readable field name (e.g., "Effective Date") */
   fieldName: string;
+  /** Field type for format guidance */
   fieldType: AccuracyField['type'];
+  /** The current prompt being tested */
   currentPrompt: string;
-  previousPrompts: string[]; // Up to last 3 prompts tried
+  /** Previous prompts tried (up to last 3, to avoid repetition) */
+  previousPrompts: string[];
+  /** Examples where extraction failed */
   failureExamples: Array<{
+    /** Box file ID of the failed document */
     docId: string;
+    /** What the AI extracted (incorrect) */
     predicted: string;
+    /** What the ground truth expected */
     expected: string;
   }>;
+  /** Examples where extraction succeeded */
   successExamples: Array<{
+    /** Box file ID of the successful document */
     docId: string;
+    /** The correctly extracted value */
     value: string;
   }>;
+  /** Current iteration number (1-based) */
   iterationNumber: number;
+  /** Maximum iterations allowed */
   maxIterations: number;
+  /** Enum options for enum/multiSelect fields */
   options?: Array<{ key: string }>;
-  companyName?: string; // The company using this software (to exclude from counter party)
+  /** Company name to exclude from counter party results */
+  companyName?: string;
+  /** Explicit document type (e.g., "Lease Agreement") */
   documentType?: string;
-  customInstructions?: string; // If provided, replaces the default prompt template
-  documentContext?: string; // NEW: Analyzed document context showing WHY extractions failed
+  /** Template name for additional context */
+  templateKey?: string;
+  /** Custom instructions to replace default prompt template */
+  customInstructions?: string;
+  /** Analyzed document context from failure analysis */
+  documentContext?: string;
 };
 
 /**
- * Build a prompt for Box AI to generate an improved extraction instruction
+ * Builds the complete prompt request for Box AI to generate an improved extraction instruction.
+ * 
+ * This function constructs a carefully structured request that guides Claude to create
+ * high-quality extraction prompts. The structure includes:
+ * 
+ * 1. **Document Type Context** (first): Critical for appropriate terminology
+ * 2. **Task Description**: What field to optimize and current prompt
+ * 3. **Example Prompt**: High-quality reference structure to follow
+ * 4. **Failure Analysis**: What went wrong and why
+ * 5. **Success Examples**: What's working (to preserve)
+ * 6. **Counter Party Exclusion**: Special handling for party detection
+ * 7. **Previous Attempts**: Prompts to avoid repeating
+ * 8. **Field-Specific Guidance**: Type-specific instructions
+ * 9. **Output Format**: JSON structure requirement
+ * 
+ * ## Key Features
+ * 
+ * - **Custom Instructions Support**: If `customInstructions` is provided, uses those
+ *   instead of the default template, trusting user-defined guidance
+ * - **Counter Party Detection**: Automatically detects and excludes the "extracting
+ *   company" from counter party field results
+ * - **Document Context**: Can include analyzed document content from failure analysis
+ * - **Iteration Urgency**: Increases urgency messaging on later iterations
+ * 
+ * @param params - All context needed for prompt generation
+ * @returns The complete prompt string to send to Box AI text_gen
+ * 
+ * @example
+ * ```typescript
+ * const request = buildAgentAlphaPrompt({
+ *   fieldName: 'Effective Date',
+ *   fieldType: 'date',
+ *   currentPrompt: 'Extract the effective date',
+ *   previousPrompts: [],
+ *   failureExamples: [{
+ *     docId: 'doc1',
+ *     predicted: '2024-01-01',
+ *     expected: '2024-06-15'
+ *   }],
+ *   successExamples: [],
+ *   iterationNumber: 1,
+ *   maxIterations: 5,
+ *   documentType: 'Lease Agreement',
+ * });
+ * 
+ * // request is now a structured prompt for Claude
+ * ```
+ * 
+ * @see {@link getExamplePromptForField} - Example prompts used in requests
+ * @see {@link parseAgentAlphaPromptResponse} - For parsing the response
  */
 export function buildAgentAlphaPrompt(params: AgentAlphaPromptParams): string {
   const {
@@ -47,51 +153,77 @@ export function buildAgentAlphaPrompt(params: AgentAlphaPromptParams): string {
     options,
     companyName,
     documentType,
+    templateKey,
     customInstructions,
     documentContext,
   } = params;
   
-  // For counter party fields, try to detect the common company that should be EXCLUDED
+  // For counter party fields, use the company name provided by the user (via custom system prompt)
+  // NOTE: We no longer auto-detect company from failures - companies should configure their
+  // own company name/address in their custom system prompt for proper disambiguation
   const lowerFieldName = fieldName.toLowerCase();
   const isCounterPartyField = lowerFieldName.includes('counter party') || 
     lowerFieldName.includes('counterparty') ||
     lowerFieldName.includes('other party');
   
-  let detectedCompany = companyName;
-  if (isCounterPartyField && !detectedCompany && failureExamples.length > 0) {
-    detectedCompany = detectCommonCompanyFromFailures(failureExamples);
+  // Only use explicitly provided company name - no auto-detection
+  const detectedCompany = companyName;
+
+  // ============================================================================
+  // STEP 1: Build document type context FIRST - this is critical for guiding AI
+  // ============================================================================
+  let docTypeContext = '';
+  if (documentType || templateKey) {
+    const docTypeLabel = documentType || 'this document type';
+    docTypeContext = `## DOCUMENT TYPE CONTEXT
+${documentType ? `Document Type: ${documentType}` : ''}
+${templateKey ? `Template: "${templateKey}"` : ''}
+
+CRITICAL: You are writing extraction prompts for ${docTypeLabel} documents.
+Use your knowledge of how ${docTypeLabel} documents are typically structured to determine:
+1. WHERE "${fieldName}" typically appears in these documents
+2. WHAT terminology and labels are commonly used in ${docTypeLabel} documents
+3. WHAT sections or areas to search
+
+Do NOT use terminology from other document types. For example:
+- Don't use invoice terms (Bill To, Ship To, Vendor) when writing prompts for contracts
+- Don't use contract terms (parties, recitals, governing law) when writing prompts for invoices
+- Generate location guidance and synonyms specific to ${docTypeLabel} documents.
+
+`;
   }
 
-  // Get a high-quality example prompt for this field type
-  // Pass the detected company name so counter party examples can reference it
-  const examplePrompt = getExamplePromptForField(fieldName, fieldType, options, detectedCompany);
-
-  // If custom instructions provided, use them as the base
-  // Otherwise use the default template
+  // ============================================================================
+  // STEP 2: Build the main prompt based on whether custom instructions provided
+  // ============================================================================
   let prompt: string;
   
   if (customInstructions) {
-    // Use custom instructions as the intro, then add field-specific context
-    prompt = `${customInstructions}
+    // Custom instructions provided - trust them, don't inject hardcoded examples
+    // The user's custom prompt should already contain document-type-specific guidance
+    prompt = `${docTypeContext}${customInstructions}
 
 ## FIELD TO OPTIMIZE
 Field: "${fieldName}" (type: ${fieldType})
 
-## EXAMPLE OF A HIGH-QUALITY PROMPT
-"${examplePrompt}"
-
 ## CURRENT PROMPT (NOT WORKING WELL)
 "${currentPrompt || `Extract the ${fieldName}`}"
 `;
+    // NOTE: We intentionally do NOT add the hardcoded examplePrompt here
+    // The custom instructions should provide appropriate guidance for the document type
   } else {
-    // Default template
-    prompt = `You are an expert at writing extraction prompts for contract AI systems.
+    // No custom instructions - use default template with document context first
+    // Get a structural example prompt (AI will adapt terminology to document type)
+    const examplePrompt = getExamplePromptForField(fieldName, fieldType, options, detectedCompany);
+    
+    prompt = `${docTypeContext}You are an expert at writing extraction prompts for document AI systems.
 
 ## YOUR TASK
 Create a DETAILED extraction prompt for the field "${fieldName}" (type: ${fieldType}).
+${documentType ? `Remember: This is for ${documentType} documents - use appropriate terminology.` : ''}
 
-## EXAMPLE OF A HIGH-QUALITY PROMPT
-Here's what a GOOD extraction prompt looks like:
+## EXAMPLE OF A HIGH-QUALITY PROMPT STRUCTURE
+Here's what a GOOD extraction prompt structure looks like:
 
 "${examplePrompt}"
 
@@ -101,6 +233,8 @@ Notice how the example:
 - Specifies the EXACT output format required
 - Includes what NOT to extract (negative guidance)
 - Handles the "not found" case
+
+Adapt the terminology and locations to be appropriate for ${documentType || 'this document type'}.
 
 ## CURRENT PROMPT (NOT WORKING WELL)
 "${currentPrompt || `Extract the ${fieldName}`}"
@@ -136,11 +270,6 @@ Notice how the example:
     prompt += options.map(o => `- ${o.key}`).join('\n') + '\n';
   }
 
-  // Add document context
-  if (documentType) {
-    prompt += `\n## DOCUMENT TYPE: ${documentType}\n`;
-  }
-  
   // CRITICAL: For counter party fields, tell the AI which company to EXCLUDE
   if (isCounterPartyField && detectedCompany) {
     prompt += `\n## CRITICAL: COMPANY TO EXCLUDE
@@ -193,8 +322,65 @@ Do NOT include any text before or after the JSON. Do NOT use markdown code block
 }
 
 /**
- * Get a high-quality example prompt for a given field type
- * @param companyToExclude - Optional: the company name to explicitly exclude (for counter party fields)
+ * Gets a high-quality example extraction prompt for a field.
+ * 
+ * This function provides carefully crafted example prompts that demonstrate
+ * best practices for different field types. These examples serve as:
+ * 
+ * 1. **Templates**: Structure for Claude to follow when generating prompts
+ * 2. **Fallbacks**: Used when prompt generation/parsing fails
+ * 3. **Quality Baselines**: Reference for what a good prompt looks like
+ * 
+ * ## Supported Field Patterns
+ * 
+ * The function matches fields by name (case-insensitive) and type:
+ * 
+ * **Contract Fields:**
+ * - Counter Party Name/Address
+ * - Effective Date / Start Date
+ * - End Date / Expiration Date
+ * - Renewal Type
+ * - Termination for Convenience/Cause
+ * - Governing Law / Jurisdiction
+ * - Contract Type
+ * - Notice Period
+ * 
+ * **Invoice Fields:**
+ * - Vendor / Supplier Name
+ * - Amount Due / Total Amount
+ * - Sales Tax
+ * - Subtotal / Sales Amount
+ * - Freight / Shipping
+ * - PO Number
+ * - Payment Terms
+ * - Line Items
+ * 
+ * **Generic Types:**
+ * - enum: Returns guidance for enum selection
+ * - date: Returns date-specific format guidance
+ * - number: Returns numeric precision guidance
+ * - string: Returns general extraction guidance
+ * 
+ * @param fieldName - The field name to match against patterns
+ * @param fieldType - The field type for fallback guidance
+ * @param options - Enum options for enum fields
+ * @param companyToExclude - Company name to exclude (for counter party fields)
+ * @returns A high-quality example prompt string
+ * 
+ * @example
+ * ```typescript
+ * // Counter party with exclusion
+ * getExamplePromptForField('Counter Party Name', 'string', [], 'Acme Corp')
+ * // Returns prompt with explicit "Do NOT return 'Acme Corp'" guidance
+ * 
+ * // Date field
+ * getExamplePromptForField('Effective Date', 'date')
+ * // Returns prompt with YYYY-MM-DD format, location guidance, etc.
+ * 
+ * // Enum field with options
+ * getExamplePromptForField('Status', 'enum', [{ key: 'Active' }, { key: 'Expired' }])
+ * // Returns prompt with exact option list
+ * ```
  */
 export function getExamplePromptForField(
   fieldName: string, 
@@ -396,11 +582,37 @@ function truncate(str: string, maxLen: number): string {
 }
 
 /**
- * Detect the common company name that appears in failures
- * This is likely the "extracting company" that should be EXCLUDED from counter party results
+ * Detects the "extracting company" from failed counter party extractions.
  * 
- * Logic: If the AI keeps returning the same company name incorrectly,
- * that's probably the company using this software (appears in every contract)
+ * When extracting counter party names, a common failure pattern is the AI returning
+ * the same company name for every contract. This usually means it's returning the
+ * "extracting company" (the company using this software) rather than the actual
+ * counter party (the OTHER company in each agreement).
+ * 
+ * ## Detection Logic
+ * 
+ * 1. Count how many times each incorrect prediction appears
+ * 2. If a prediction appears 2+ times, it's likely the extracting company
+ * 3. Alternative: If only 1 failure but it looks like a company name (Inc, LLC, etc.),
+ *    treat it as the extracting company
+ * 
+ * This detected company name is then passed to prompt generation to add explicit
+ * "Do NOT return [Company Name]" guidance.
+ * 
+ * @param failureExamples - Array of failed extraction examples
+ * @returns The detected extracting company name, or undefined if not detectable
+ * 
+ * @example
+ * ```typescript
+ * const failures = [
+ *   { predicted: 'Acme Corp', expected: 'Widget Inc' },
+ *   { predicted: 'Acme Corp', expected: 'Gadget LLC' },
+ *   { predicted: 'Acme Corp', expected: 'Tech Solutions' }
+ * ];
+ * 
+ * detectCommonCompanyFromFailures(failures)
+ * // => 'Acme Corp' (appears 3 times, clearly the extracting company)
+ * ```
  */
 export function detectCommonCompanyFromFailures(
   failureExamples: Array<{ predicted: string; expected: string }>
@@ -469,24 +681,69 @@ export type PromptValidation = {
   hasNotFound: boolean;      // "not present" handling
   // Length constraints
   charCount: number;
-  meetsMinLength: boolean;   // >= 150 chars
+  meetsMinLength: boolean;   // >= 350 chars
   // Quality metrics (for debugging/feedback)
   synonymCount?: number;     // Number of distinct quoted phrases found
 };
 
 /**
- * Validate a generated prompt against quality checklist
- * Returns structured validation result with specific errors
+ * Validates a generated prompt against the quality checklist.
+ * 
+ * Every high-quality extraction prompt should include 5 elements:
+ * 
+ * 1. **LOCATION** (hasLocation): Where to look in the document
+ *    - Patterns: "look in", "search in", specific sections mentioned
+ *    
+ * 2. **SYNONYMS** (hasSynonyms): Alternative phrases to search for
+ *    - Requires: 6+ distinct quoted phrases, or 4+ with "phrases like" keyword
+ *    
+ * 3. **FORMAT** (hasFormat): Output format specification
+ *    - Patterns: "YYYY-MM-DD", "exactly", decimal/numeric guidance
+ *    
+ * 4. **DISAMBIGUATION** (hasDisambiguation): Negative guidance
+ *    - Patterns: "do not", "don't", "avoid", "exclude"
+ *    
+ * 5. **NOT-FOUND** (hasNotFound): Handling for missing values
+ *    - Patterns: "not present", "not found", "if no"
+ * 
+ * ## Validation Rules
+ * 
+ * - **Target length**: 350-600 characters
+ * - **No generic prompts**: "Extract the X" pattern is banned
+ * - **Required elements**: At least 4 of 5 elements must be present
+ * 
+ * @param prompt - The prompt to validate
+ * @returns Detailed validation result with flags and errors
+ * 
+ * @example
+ * ```typescript
+ * const result = validatePrompt("Extract the effective date.");
+ * // result.isValid = false
+ * // result.errors = [
+ * //   "Prompt too short: 30 chars (need 350+)",
+ * //   "Prompt is too generic - uses banned 'Extract the X' pattern",
+ * //   "Missing LOCATION guidance...",
+ * //   ...
+ * // ]
+ * 
+ * const good = validatePrompt("Search for the effective date in the header...");
+ * // good.isValid = true
+ * // good.hasLocation = true
+ * // good.hasSynonyms = true
+ * // ...
+ * ```
+ * 
+ * @see {@link buildPromptRepairRequest} - For fixing invalid prompts
  */
 export function validatePrompt(prompt: string): PromptValidation {
   const trimmed = (prompt || '').trim();
   const errors: string[] = [];
   
-  // Check length
+  // Check length - target 350-600 chars
   const charCount = trimmed.length;
-  const meetsMinLength = charCount >= 150;
+  const meetsMinLength = charCount >= 350;
   if (!meetsMinLength) {
-    errors.push(`Prompt too short: ${charCount} chars (need 150+)`);
+    errors.push(`Prompt too short: ${charCount} chars (need 350+)`);
   }
   
   // Check for generic pattern
@@ -522,16 +779,16 @@ export function validatePrompt(prompt: string): PromptValidation {
   const commaListMatch = trimmed.match(/(?:look for|search for|phrases like)[^.]*[:,]\s*['"]?([^'"]+)['"]?(?:,\s*['"]?([^'"]+)['"]?)+/i);
   const hasCommaList = commaListMatch !== null;
   
-  // Require at least 5 distinct quoted phrases OR a clear comma-separated list with keyword
-  const hasSynonyms = quotedPhraseCount >= 5 || 
-    (quotedPhraseCount >= 3 && hasCommaList) ||
-    (quotedPhraseCount >= 3 && /phrases like|variations|synonyms/i.test(trimmed));
+  // Require at least 6 distinct quoted phrases OR a clear comma-separated list with keyword
+  const hasSynonyms = quotedPhraseCount >= 6 || 
+    (quotedPhraseCount >= 4 && hasCommaList) ||
+    (quotedPhraseCount >= 4 && /phrases like|variations|synonyms/i.test(trimmed));
   
   if (!hasSynonyms) {
-    if (quotedPhraseCount > 0 && quotedPhraseCount < 5) {
-      errors.push(`Insufficient SYNONYMS - found ${quotedPhraseCount} phrases, need 5+ distinct alternatives`);
+    if (quotedPhraseCount > 0 && quotedPhraseCount < 6) {
+      errors.push(`Insufficient SYNONYMS - found ${quotedPhraseCount} phrases, need 6+ distinct alternatives`);
     } else {
-      errors.push('Missing SYNONYMS - list 5+ alternative phrases in quotes the value might appear as');
+      errors.push('Missing SYNONYMS - list 6+ alternative phrases in quotes the value might appear as');
     }
   }
   
@@ -586,8 +843,50 @@ export function validatePrompt(prompt: string): PromptValidation {
 }
 
 /**
- * Build a repair prompt to fix validation errors
- * Asks Box AI to fix specific issues with the generated prompt
+ * Builds a repair request for fixing validation errors in a generated prompt.
+ * 
+ * When a generated prompt fails validation, this function creates a targeted
+ * request for Claude to fix the specific issues. The repair request:
+ * 
+ * 1. Shows the original (invalid) prompt
+ * 2. Lists specific errors to fix
+ * 3. Provides requirements for each missing element
+ * 4. Requests JSON output format
+ * 
+ * ## Repair Strategy
+ * 
+ * The repair focuses on adding missing elements rather than rewriting:
+ * - If missing location, explains what location guidance looks like
+ * - If missing synonyms, shows example with 6+ quoted phrases
+ * - If too short, requests minimum 350 characters
+ * 
+ * @param originalPrompt - The prompt that failed validation
+ * @param validation - The validation result with specific errors
+ * @param fieldName - Field name for context
+ * @param fieldType - Field type for context
+ * @returns A repair request string for Box AI
+ * 
+ * @example
+ * ```typescript
+ * const validation = validatePrompt("Extract the date.");
+ * // validation.isValid = false
+ * // validation.errors = ["Prompt too short...", "Missing SYNONYMS..."]
+ * 
+ * const repairRequest = buildPromptRepairRequest(
+ *   "Extract the date.",
+ *   validation,
+ *   "Effective Date",
+ *   "date"
+ * );
+ * 
+ * // repairRequest includes:
+ * // - The original prompt
+ * // - List of issues to fix
+ * // - Requirements for missing elements
+ * // - JSON output format instruction
+ * ```
+ * 
+ * @see {@link validatePrompt} - For generating the validation result
  */
 export function buildPromptRepairRequest(
   originalPrompt: string,
@@ -606,11 +905,11 @@ ${validation.errors.map((e, i) => `${i + 1}. ${e}`).join('\n')}
 ## REQUIREMENTS
 The prompt MUST include:
 ${!validation.hasLocation ? '- LOCATION: Specific document sections (e.g., "opening paragraph", "signature blocks", "Notices section")' : ''}
-${!validation.hasSynonyms ? `- SYNONYMS: At least 5 distinct phrases IN QUOTES (current: ${validation.synonymCount || 0}). Example: "expires on", "terminates on", "valid until", "term ends", "completion date"` : ''}
+${!validation.hasSynonyms ? `- SYNONYMS: At least 6 distinct phrases IN QUOTES (current: ${validation.synonymCount || 0}). Example: "expires on", "terminates on", "valid until", "term ends", "completion date", "concludes on"` : ''}
 ${!validation.hasFormat ? '- FORMAT: Concrete output specification (e.g., "YYYY-MM-DD format", "full legal entity name including LLC/Inc")' : ''}
 ${!validation.hasDisambiguation ? '- DISAMBIGUATION: "Do NOT..." guidance to prevent mistakes' : ''}
 ${!validation.hasNotFound ? '- NOT-FOUND: What to return if value is not found (usually "Not Present")' : ''}
-${!validation.meetsMinLength ? `- LENGTH: At least 150 characters (current: ${validation.charCount})` : ''}
+${!validation.meetsMinLength ? `- LENGTH: At least 350 characters (current: ${validation.charCount})` : ''}
 
 ## FIELD INFO
 Field: "${fieldName}" (type: ${fieldType})
@@ -621,8 +920,49 @@ Return ONLY valid JSON:
 }
 
 /**
- * Parse the response from Box AI prompt generation
- * Now with fallback to example prompts if parsing fails
+ * Parses the response from Box AI prompt generation.
+ * 
+ * Claude returns responses in various formats, and this function handles all of them:
+ * 
+ * 1. **Clean JSON**: `{"newPrompt": "...", "reasoning": "..."}`
+ * 2. **Markdown-wrapped JSON**: ` ```json { ... } ``` `
+ * 3. **Partial JSON**: Extracts via regex when standard parsing fails
+ * 
+ * ## Fallback Logic
+ * 
+ * If the parsed prompt is too generic (< 350 chars or "Extract the X" pattern),
+ * the function falls back to a high-quality example prompt for the field.
+ * This ensures that optimization always produces usable results.
+ * 
+ * ## Quality Checks
+ * 
+ * A prompt is considered "generic" if:
+ * - Length < 350 characters
+ * - Matches "Extract the X" pattern
+ * - Missing 2+ of: location, synonyms, format, not-found handling
+ * 
+ * @param response - Raw response string from Box AI
+ * @param fieldName - Optional field name for fallback prompt generation
+ * @returns Parsed response with newPrompt and reasoning
+ * 
+ * @throws {Error} If parsing fails and no fieldName provided for fallback
+ * 
+ * @example
+ * ```typescript
+ * // Clean JSON
+ * parseAgentAlphaPromptResponse('{"newPrompt": "Search for...", "reasoning": "Added location"}')
+ * // => { newPrompt: "Search for...", reasoning: "Added location" }
+ * 
+ * // Markdown-wrapped
+ * parseAgentAlphaPromptResponse('```json\n{"newPrompt": "..."}\n```')
+ * // => { newPrompt: "...", reasoning: "Extracted from text" }
+ * 
+ * // Generic prompt with fallback
+ * parseAgentAlphaPromptResponse('{"newPrompt": "Extract it."}', 'Effective Date')
+ * // => { newPrompt: "[high-quality example]", reasoning: "Used fallback..." }
+ * ```
+ * 
+ * @see {@link getExamplePromptForField} - For fallback prompts
  */
 export function parseAgentAlphaPromptResponse(response: string, fieldName?: string): AgentAlphaPromptResponse {
   // Clean up the response - remove markdown code blocks if present
@@ -638,8 +978,8 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
   // Helper to check if a prompt is too generic/short
   const isGenericPrompt = (prompt: string): boolean => {
     const trimmed = prompt.trim();
-    // Too short - system prompt requires minimum 150 characters
-    if (trimmed.length < 150) return true;
+    // Too short - system prompt requires minimum 350 characters
+    if (trimmed.length < 350) return true;
     // Generic "Extract the X" pattern without additional detail
     if (/^extract the .{1,50}(from this document)?\.?$/i.test(trimmed)) return true;
     // Check if prompt lacks key elements (should have location, synonyms, format, etc.)
@@ -667,7 +1007,7 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
         logger.warn('Generated prompt is too generic', { 
           promptLength: prompt.length, 
           preview: prompt.substring(0, 50),
-          validationFailed: 'needs 150+ chars and key elements (location, synonyms, format, not-found handling)'
+          validationFailed: 'needs 350+ chars and key elements (location, synonyms, format, not-found handling)'
         });
         
         // Use fallback if available
@@ -681,7 +1021,7 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
         }
         
         // If no fieldName for fallback, throw error to trigger retry
-        throw new Error(`Generated prompt is too generic (${prompt.length} chars, needs 150+) and lacks required elements. Prompt: "${prompt.substring(0, 100)}..."`);
+        throw new Error(`Generated prompt is too generic (${prompt.length} chars, needs 350+) and lacks required elements. Prompt: "${prompt.substring(0, 100)}..."`);
       }
       
       return {
@@ -714,7 +1054,7 @@ export function parseAgentAlphaPromptResponse(response: string, fieldName?: stri
       }
       
       // If no fieldName for fallback, throw error to trigger retry
-      throw new Error(`Extracted prompt is too generic (${prompt.length} chars, needs 150+) and lacks required elements. Prompt: "${prompt.substring(0, 100)}..."`);
+      throw new Error(`Extracted prompt is too generic (${prompt.length} chars, needs 350+) and lacks required elements. Prompt: "${prompt.substring(0, 100)}..."`);
     }
     
     return {

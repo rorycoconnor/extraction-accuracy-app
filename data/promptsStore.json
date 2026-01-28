@@ -3,118 +3,182 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 46,
-    "lastModified": "2026-01-23T05:55:26.961Z"
+    "usageCount": 51,
+    "lastModified": "2026-01-23T22:29:19.436Z"
   },
   "terminationForConvenience": {
-    "activePrompt": "Search the termination, cancellation, or general provisions sections for \"Termination for Convenience\" clauses, also known as \"termination without cause,\" \"termination at will,\" \"no-fault termination,\" or \"discretionary termination.\" Return EXACTLY one of the valid enum options that best matches the clause's terms. Do NOT confuse this with \"Termination for Cause\" or breach-related termination provisions. If no termination for convenience language exists in the document, return \"Not Present.\"",
+    "activePrompt": "Search the \"Termination\" section for whether either party can terminate WITHOUT cause. Look for: \"terminate for convenience\", \"terminate at will\", \"terminate without cause\", \"terminate for any reason\", \"terminate at its sole discretion\", \"terminate upon X days notice\" (without requiring breach). Return \"Yes\" if either party can terminate without cause/breach. Return \"No\" if termination requires cause, breach, or default. Do NOT classify breach-based termination as \"convenience\".",
     "promptHistory": [
       {
-        "id": "v1",
-        "prompt": "Search the termination, cancellation, or general provisions sections for \"Termination for Convenience\" clauses, also known as \"termination without cause,\" \"termination at will,\" \"no-fault termination,\" or \"discretionary termination.\" Return EXACTLY one of the valid enum options that best matches the clause's terms. Do NOT confuse this with \"Termination for Cause\" or breach-related termination provisions. If no termination for convenience language exists in the document, return \"Not Present.\"",
-        "savedAt": "2026-01-23T05:56:56.235Z",
-        "generationMethod": "standard"
+        "id": "agent-alpha-2026-01-23T23:54:06.186Z-b1432674-7974-4a65-8300-68c2db36f013",
+        "prompt": "Search the \"Termination\" section for whether either party can terminate WITHOUT cause. Look for: \"terminate for convenience\", \"terminate at will\", \"terminate without cause\", \"terminate for any reason\", \"terminate at its sole discretion\", \"terminate upon X days notice\" (without requiring breach). Return \"Yes\" if either party can terminate without cause/breach. Return \"No\" if termination requires cause, breach, or default. Do NOT classify breach-based termination as \"convenience\".",
+        "savedAt": "2026-01-23T23:54:06.186Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 25.0% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "terminationForConvenience",
+            "fieldName": "Termination for Convenience",
+            "compareType": "exact-string"
+          },
+          "trainDocIds": [
+            "1912827412690",
+            "1912834427833",
+            "1918858263705",
+            "1918922486299"
+          ],
+          "holdoutDocIds": [
+            "1918860970908"
+          ]
+        }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 42,
-    "lastModified": "2026-01-23T05:56:56.247Z"
+    "usageCount": 50,
+    "lastModified": "2026-01-23T23:54:06.205Z"
   },
   "terminationForCause": {
-    "activePrompt": "Search the termination clauses, default provisions, and breach sections for Termination for Cause. Look for synonyms such as \"termination for default,\" \"termination for breach,\" \"termination for material breach,\" \"cause-based termination,\" or \"termination with cause.\" Return EXACTLY one of the valid enum options that best matches the document's language; if the exact term isn't found, infer from contextual descriptions of termination rights triggered by party misconduct or contract violations. Do NOT confuse with \"termination for convenience\" or general termination notice provisions. Return \"Not Present\" only if no cause-based termination language exists in the document.",
+    "activePrompt": "Search the \"Termination\" section for cause-based termination rights. Look for: \"terminate for cause\", \"material breach\", \"default\", \"failure to perform\", \"insolvency\", \"bankruptcy\". Return \"Yes\" if the agreement allows termination for cause/breach. Return \"No\" if there is no cause-based termination provision. Note: Most contracts have cause-based termination, so \"Yes\" is common.",
     "promptHistory": [
       {
-        "id": "v1",
-        "prompt": "Search the termination clauses, default provisions, and breach sections for Termination for Cause. Look for synonyms such as \"termination for default,\" \"termination for breach,\" \"termination for material breach,\" \"cause-based termination,\" or \"termination with cause.\" Return EXACTLY one of the valid enum options that best matches the document's language; if the exact term isn't found, infer from contextual descriptions of termination rights triggered by party misconduct or contract violations. Do NOT confuse with \"termination for convenience\" or general termination notice provisions. Return \"Not Present\" only if no cause-based termination language exists in the document.",
-        "savedAt": "2026-01-23T05:57:08.315Z",
-        "generationMethod": "standard"
+        "id": "agent-alpha-2026-01-23T23:54:06.186Z-8a8d2c01-d30e-4a15-8b1a-13dcaefb8ea1",
+        "prompt": "Search the \"Termination\" section for cause-based termination rights. Look for: \"terminate for cause\", \"material breach\", \"default\", \"failure to perform\", \"insolvency\", \"bankruptcy\". Return \"Yes\" if the agreement allows termination for cause/breach. Return \"No\" if there is no cause-based termination provision. Note: Most contracts have cause-based termination, so \"Yes\" is common.",
+        "savedAt": "2026-01-23T23:54:06.186Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 25.0% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "terminationForCause",
+            "fieldName": "Termination for Cause",
+            "compareType": "exact-string"
+          },
+          "trainDocIds": [
+            "1912827412690",
+            "1912834427833",
+            "1918858263705",
+            "1918922486299"
+          ],
+          "holdoutDocIds": [
+            "1918860970908"
+          ]
+        }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 43,
-    "lastModified": "2026-01-23T05:57:08.326Z"
+    "usageCount": 52,
+    "lastModified": "2026-01-23T23:54:06.208Z"
   },
   "governingLaw": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 34,
-    "lastModified": "2026-01-23T05:55:26.963Z"
+    "usageCount": 39,
+    "lastModified": "2026-01-23T22:29:19.438Z"
   },
   "venue": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 42,
-    "lastModified": "2026-01-23T05:55:26.965Z"
+    "usageCount": 47,
+    "lastModified": "2026-01-23T22:29:19.439Z"
   },
   "endDate": {
-    "activePrompt": "Search for when this agreement terminates or expires. Look for: \"end date\", \"expiration date\", \"termination date\", \"expires on\", \"valid until\", \"agreement ends\", \"term of\", \"initial term\", \"period of\". Check the term/duration section, header, and signature blocks. If no explicit end date is stated, calculate it by adding the term length (e.g., \"12 months\", \"one year\", \"36 months\") to the effective date or commencement date. When calculating, count from the start date and subtract one day to find the final day of the term (e.g., a 12-month term starting January 1, 2024 ends December 31, 2024). Return the date in YYYY-MM-DD format. Do NOT confuse with effective date, renewal date, or signature date. Return \"null\" if no end date is found and no term length is provided for calculation.",
+    "activePrompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
     "promptHistory": [
       {
-        "id": "v3",
-        "prompt": "Search for when this agreement terminates or expires. Look for: \"end date\", \"expiration date\", \"termination date\", \"expires on\", \"valid until\", \"agreement ends\", \"term of\", \"initial term\", \"period of\". Check the term/duration section, header, and signature blocks. If no explicit end date is stated, calculate it by adding the term length (e.g., \"12 months\", \"one year\", \"36 months\") to the effective date or commencement date. When calculating, count from the start date and subtract one day to find the final day of the term (e.g., a 12-month term starting January 1, 2024 ends December 31, 2024). Return the date in YYYY-MM-DD format. Do NOT confuse with effective date, renewal date, or signature date. Return \"null\" if no end date is found and no term length is provided for calculation.",
-        "savedAt": "2026-01-23T05:59:44.604Z",
-        "generationMethod": "standard"
-      },
-      {
-        "id": "v2",
-        "prompt": "Search for when this agreement terminates, expires, or ends. Look for: \"end date\", \"expiration date\", \"termination date\", \"expires on\", \"valid until\", \"agreement ends\", \"term ends\", \"contract period\", \"duration\", \"shall remain in effect until\", \"concludes on\", \"final date\". Check the term/duration section, definitions section, document header, first paragraph, and signature blocks. If the document specifies a term length (e.g., \"12 months from effective date\"), calculate the end date from the effective date. Return the date in YYYY-MM-DD format. If multiple potential end dates exist, prioritize the explicitly labeled \"End Date\", \"Expiration Date\", or \"Termination Date\" over calculated or implied dates. Do NOT confuse with the effective date, start date, renewal date, amendment date, or signature date. Return \"Not Present\" if no end date is found or cannot be determined.",
-        "savedAt": "2026-01-23T05:58:08.741Z",
-        "generationMethod": "standard"
-      },
-      {
-        "id": "v1",
-        "prompt": "Search for when this agreement terminates or expires. Look for: \"end date\", \"expiration date\", \"termination date\", \"expires on\", \"valid until\", \"agreement ends\". Check the term/duration section, header, and signature blocks. Return the date in YYYY-MM-DD format. Do NOT confuse with the effective date, renewal date, or signature date. Return \"null\" if no end date is found.",
-        "savedAt": "2026-01-23T05:56:19.655Z",
-        "generationMethod": "standard"
+        "id": "agent-alpha-2026-01-23T23:54:06.186Z-49c4da7d-685f-4b5c-beee-a80ed719da5b",
+        "prompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
+        "savedAt": "2026-01-23T23:54:06.186Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "endDate",
+            "fieldName": "End Date",
+            "compareType": "date-exact"
+          },
+          "trainDocIds": [
+            "1912827412690",
+            "1912834427833",
+            "1918858263705",
+            "1918922486299"
+          ],
+          "holdoutDocIds": [
+            "1918860970908"
+          ]
+        }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 48,
-    "lastModified": "2026-01-23T05:59:44.621Z"
+    "usageCount": 59,
+    "lastModified": "2026-01-23T23:54:06.198Z"
   },
   "effectiveDate": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 35,
-    "lastModified": "2026-01-23T05:55:26.951Z"
+    "usageCount": 40,
+    "lastModified": "2026-01-23T22:29:19.427Z"
   },
   "contractTerm": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 32,
-    "lastModified": "2026-01-23T05:55:26.953Z"
+    "usageCount": 37,
+    "lastModified": "2026-01-23T22:29:19.429Z"
   },
   "counterPartyName": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 40,
-    "lastModified": "2026-01-23T05:55:26.944Z"
+    "usageCount": 48,
+    "lastModified": "2026-01-23T22:29:19.422Z"
   },
   "counterPartyAddress": {
-    "activePrompt": "Search for the address of the OTHER contracting party (not Increo, Inc.) in this agreement. Look in: (1) the opening paragraph or preamble where parties are introduced, (2) signature blocks, (3) notice provisions section. The address may appear as \"principal place of business\", \"located at\", \"with offices at\", \"address for notices\", or \"residing at\". Do NOT return Increo, Inc.'s address or any generic mailing instructions. Return the complete street address, city, state/province, and postal code exactly as written, on a single line. If no counter party address is found, return \"Not Present\".",
+    "activePrompt": "Search for the counter party's address in Contracts. Look in: (1) opening paragraph/recitals directly after the OTHER party's name (not the extracting company), (2) 'Notices' or 'Notice to Parties' section under the counter party heading, (3) signature blocks beside the counter party's signature line. Look for: 'address for notices', 'principal place of business', 'located at', 'with offices at', 'whose address is', 'residing at'. CRITICAL: EXCLUDE the extracting company's address at 1234 Main Street, Phoenix, Arizona 85032 - this appears in every contract and is NOT the counter party. The counter party is the OTHER company in the agreement. Return the complete street address, city, state, and ZIP on a single line. If multiple addresses exist for the counter party, prefer the Notices section address. Return 'Not Present' if no counter party address is found.",
     "promptHistory": [
       {
-        "id": "v1",
-        "prompt": "Search for the address of the OTHER contracting party (not Increo, Inc.) in this agreement. Look in: (1) the opening paragraph or preamble where parties are introduced, (2) signature blocks, (3) notice provisions section. The address may appear as \"principal place of business\", \"located at\", \"with offices at\", \"address for notices\", or \"residing at\". Do NOT return Increo, Inc.'s address or any generic mailing instructions. Return the complete street address, city, state/province, and postal code exactly as written, on a single line. If no counter party address is found, return \"Not Present\".",
-        "savedAt": "2026-01-23T05:55:56.085Z",
-        "generationMethod": "standard"
+        "id": "agent-alpha-2026-01-23T23:54:06.186Z-a8cb7c4c-c920-4ee7-8c5f-637c7f0c9790",
+        "prompt": "Search for the counter party's address in Contracts. Look in: (1) opening paragraph/recitals directly after the OTHER party's name (not the extracting company), (2) 'Notices' or 'Notice to Parties' section under the counter party heading, (3) signature blocks beside the counter party's signature line. Look for: 'address for notices', 'principal place of business', 'located at', 'with offices at', 'whose address is', 'residing at'. CRITICAL: EXCLUDE the extracting company's address at 1234 Main Street, Phoenix, Arizona 85032 - this appears in every contract and is NOT the counter party. The counter party is the OTHER company in the agreement. Return the complete street address, city, state, and ZIP on a single line. If multiple addresses exist for the counter party, prefer the Notices section address. Return 'Not Present' if no counter party address is found.",
+        "savedAt": "2026-01-23T23:54:06.186Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 75.0% → Final: 100.0% (2 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "counterPartyAddress",
+            "fieldName": "Counter Party Address",
+            "compareType": "near-exact-string"
+          },
+          "trainDocIds": [
+            "1912827412690",
+            "1912834427833",
+            "1918858263705",
+            "1918922486299"
+          ],
+          "holdoutDocIds": [
+            "1918860970908"
+          ]
+        }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 40,
-    "lastModified": "2026-01-23T05:55:56.096Z"
+    "usageCount": 48,
+    "lastModified": "2026-01-23T23:54:06.189Z"
   },
   "contractType": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 47,
-    "lastModified": "2026-01-23T05:55:26.939Z"
+    "usageCount": 52,
+    "lastModified": "2026-01-23T22:29:19.420Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
@@ -177,8 +241,8 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 31,
-    "lastModified": "2026-01-23T05:55:26.972Z"
+    "usageCount": 36,
+    "lastModified": "2026-01-23T22:29:19.446Z"
   },
   "contractValue": {
     "activePrompt": "",
@@ -379,18 +443,58 @@
     "lastModified": "2025-09-13T05:56:05.071Z"
   },
   "renewalType": {
-    "activePrompt": "Search for the Renewal Type in the contract's term, renewal, or extension sections. Look for phrases such as \"automatic renewal,\" \"auto-renew,\" \"manual renewal,\" \"evergreen,\" or \"renewal upon notice.\" Return EXACTLY one of the predefined enum values that best matches the document language. Do NOT confuse renewal type with contract term length or termination provisions. If no renewal information is present or cannot be inferred from context, return \"Not Present.\"",
+    "activePrompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal, No Renewal, or Not Present. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit written agreement or action by both parties to renew, including language like \"shall not renew unless expressly agreed upon in writing\". \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without any renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\", \"shall not renew unless\", \"expressly agreed in writing\". Do NOT confuse automatic termination with autorenewal—if the agreement terminates automatically and requires written agreement to renew, this is Manual Renewal. If unclear and no renewal language exists, return \"Not Present\".",
     "promptHistory": [
       {
-        "id": "v1",
-        "prompt": "Search for the Renewal Type in the contract's term, renewal, or extension sections. Look for phrases such as \"automatic renewal,\" \"auto-renew,\" \"manual renewal,\" \"evergreen,\" or \"renewal upon notice.\" Return EXACTLY one of the predefined enum values that best matches the document language. Do NOT confuse renewal type with contract term length or termination provisions. If no renewal information is present or cannot be inferred from context, return \"Not Present.\"",
-        "savedAt": "2026-01-23T05:56:34.971Z",
+        "id": "v5",
+        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal, No Renewal, or Not Present. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit written agreement or action by both parties to renew, including language like \"shall not renew unless expressly agreed upon in writing\". \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without any renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\", \"shall not renew unless\", \"expressly agreed in writing\". Do NOT confuse automatic termination with autorenewal—if the agreement terminates automatically and requires written agreement to renew, this is Manual Renewal. If unclear and no renewal language exists, return \"Not Present\".",
+        "savedAt": "2026-01-23T23:59:18.852Z",
         "generationMethod": "standard"
+      },
+      {
+        "id": "v4",
+        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
+        "savedAt": "2026-01-23T23:58:13.481Z"
+      },
+      {
+        "id": "v3",
+        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"discuss and agree on renewal\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
+        "savedAt": "2026-01-23T23:57:14.255Z"
+      },
+      {
+        "id": "v2",
+        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"discuss renewal\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
+        "savedAt": "2026-01-23T23:56:21.591Z"
+      },
+      {
+        "id": "agent-alpha-2026-01-23T23:54:06.186Z-1eb81ae3-29d6-4434-bf8f-c710088b700a",
+        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
+        "savedAt": "2026-01-23T23:54:06.186Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 62.5% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "renewalType",
+            "fieldName": "Renewal Type",
+            "compareType": "exact-string"
+          },
+          "trainDocIds": [
+            "1912827412690",
+            "1912834427833",
+            "1918858263705",
+            "1918922486299"
+          ],
+          "holdoutDocIds": [
+            "1918860970908"
+          ]
+        }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 38,
-    "lastModified": "2026-01-23T05:56:34.984Z"
+    "usageCount": 53,
+    "lastModified": "2026-01-23T23:59:18.871Z"
   },
   "disputeResolution": {
     "activePrompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",
@@ -406,44 +510,18 @@
     "lastModified": "2025-09-17T13:51:07.758Z"
   },
   "poNumber": {
-    "activePrompt": "Search for the Purchase Order number on this invoice. Look for: \"PO #:\", \"P.O.:\", \"PO Number:\", \"Purchase Order:\", \"Customer PO:\", \"Your Order #:\", \"Reference:\". It's usually in the invoice header or billing info section. Do NOT confuse with: Invoice Number (often \"INV-xxxx\"), Confirmation Numbers, or internal reference codes. Return the exact alphanumeric value as shown. Return \"Not Present\" if no PO is referenced.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-17T06:28:07.664Z-0e0699f2-4837-4ada-becd-05dc6e949649",
-        "prompt": "Search for the Purchase Order number on this invoice. Look for: \"PO #:\", \"P.O.:\", \"PO Number:\", \"Purchase Order:\", \"Customer PO:\", \"Your Order #:\", \"Reference:\". It's usually in the invoice header or billing info section. Do NOT confuse with: Invoice Number (often \"INV-xxxx\"), Confirmation Numbers, or internal reference codes. Return the exact alphanumeric value as shown. Return \"Not Present\" if no PO is referenced.",
-        "savedAt": "2026-01-17T06:28:07.664Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 60.0% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "poNumber",
-            "fieldName": "PO Number",
-            "compareType": "near-exact-string"
-          },
-          "trainDocIds": [
-            "1997236847445",
-            "1997256691134",
-            "1997273038900",
-            "1997282187839"
-          ],
-          "holdoutDocIds": [
-            "1997271985438"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "invoice",
-    "usageCount": 12,
-    "lastModified": "2026-01-17T06:28:07.679Z"
+    "usageCount": 13,
+    "lastModified": "2026-01-23T21:21:53.215Z"
   },
   "dueDate": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "invoice",
-    "usageCount": 6,
-    "lastModified": "2026-01-17T06:22:25.525Z"
+    "usageCount": 7,
+    "lastModified": "2026-01-23T21:21:53.207Z"
   },
   "document_type": {
     "activePrompt": "",
@@ -5567,251 +5645,64 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "invoice",
-    "usageCount": 8,
-    "lastModified": "2026-01-17T06:22:25.516Z"
+    "usageCount": 9,
+    "lastModified": "2026-01-23T21:21:53.194Z"
   },
   "description": {
-    "activePrompt": "Search for a description or memo explaining this invoice's purpose. Look in: (1) header area near invoice number, (2) \"Subject:\", \"RE:\", \"Memo:\", \"Description:\", \"Purpose:\" fields, (3) reference line. Do NOT extract: the document title \"INVOICE\", invoice numbers, customer names/addresses, or individual line item descriptions. Return a meaningful description of what this invoice is for. Return \"Not Present\" if no overall description exists.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-17T06:28:07.664Z-7dd15d23-4c78-4867-9540-86c8a6d04afb",
-        "prompt": "Search for a description or memo explaining this invoice's purpose. Look in: (1) header area near invoice number, (2) \"Subject:\", \"RE:\", \"Memo:\", \"Description:\", \"Purpose:\" fields, (3) reference line. Do NOT extract: the document title \"INVOICE\", invoice numbers, customer names/addresses, or individual line item descriptions. Return a meaningful description of what this invoice is for. Return \"Not Present\" if no overall description exists.",
-        "savedAt": "2026-01-17T06:28:07.664Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 80.0% → Final: 0.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "description",
-            "fieldName": "Description",
-            "compareType": "near-exact-string"
-          },
-          "trainDocIds": [
-            "1997236847445",
-            "1997256691134",
-            "1997273038900",
-            "1997282187839"
-          ],
-          "holdoutDocIds": [
-            "1997271985438"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "invoice",
-    "usageCount": 9,
-    "lastModified": "2026-01-17T06:28:07.666Z"
+    "usageCount": 10,
+    "lastModified": "2026-01-23T21:21:53.198Z"
   },
   "invoiceDate": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "invoice",
-    "usageCount": 5,
-    "lastModified": "2026-01-17T06:22:25.522Z"
+    "usageCount": 6,
+    "lastModified": "2026-01-23T21:21:53.201Z"
   },
   "amountDue": {
-    "activePrompt": "Search for the final amount due on this invoice. Look for: \"Amount Due:\", \"Total Due:\", \"Balance Due:\", \"Total:\", \"Grand Total:\", \"Invoice Total:\". This is typically at the bottom of the invoice near payment instructions. Return the EXACT numeric value including cents (e.g., \"1234.56\" not \"1235\" or \"1234\"). Do NOT round! Remove currency symbols but preserve decimal precision exactly as shown.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-17T06:28:07.664Z-2611ca6d-78a8-44b8-8051-8f13ea86d664",
-        "prompt": "Search for the final amount due on this invoice. Look for: \"Amount Due:\", \"Total Due:\", \"Balance Due:\", \"Total:\", \"Grand Total:\", \"Invoice Total:\". This is typically at the bottom of the invoice near payment instructions. Return the EXACT numeric value including cents (e.g., \"1234.56\" not \"1235\" or \"1234\"). Do NOT round! Remove currency symbols but preserve decimal precision exactly as shown.",
-        "savedAt": "2026-01-17T06:28:07.664Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 40.0% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "amountDue",
-            "fieldName": "Amount Due",
-            "compareType": "exact-number"
-          },
-          "trainDocIds": [
-            "1997236847445",
-            "1997256691134",
-            "1997273038900",
-            "1997282187839"
-          ],
-          "holdoutDocIds": [
-            "1997271985438"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "invoice",
-    "usageCount": 10,
-    "lastModified": "2026-01-17T06:28:07.673Z"
+    "usageCount": 11,
+    "lastModified": "2026-01-23T21:21:53.204Z"
   },
   "items": {
-    "activePrompt": "Extract line items from the invoice table. Look in the main itemization table with columns like \"Description\", \"Item\", \"Qty\", \"Unit Price\", \"Amount\". Extract ONLY the description/name of each product or service, not quantities or prices. Do NOT include: table headers, subtotal/total rows, tax lines, or notes. Format as comma-separated list if multiple items. Return \"Not Present\" if no itemized products/services exist.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-17T06:28:07.664Z-e8bbf7b3-b0c9-45fc-adc0-51b885bbd349",
-        "prompt": "Extract line items from the invoice table. Look in the main itemization table with columns like \"Description\", \"Item\", \"Qty\", \"Unit Price\", \"Amount\". Extract ONLY the description/name of each product or service, not quantities or prices. Do NOT include: table headers, subtotal/total rows, tax lines, or notes. Format as comma-separated list if multiple items. Return \"Not Present\" if no itemized products/services exist.",
-        "savedAt": "2026-01-17T06:28:07.664Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 0.0% → Final: 0.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "items",
-            "fieldName": "Items",
-            "compareType": "near-exact-string"
-          },
-          "trainDocIds": [
-            "1997236847445",
-            "1997256691134",
-            "1997273038900",
-            "1997282187839"
-          ],
-          "holdoutDocIds": [
-            "1997271985438"
-          ]
-        }
-      }
-    ],
-    "lastUsedTemplate": "invoice",
-    "usageCount": 9,
-    "lastModified": "2026-01-17T06:28:07.675Z"
-  },
-  "term": {
-    "activePrompt": "Search for payment terms on this invoice. Look for: \"Terms:\", \"Payment Terms:\", \"Net Terms:\", near the due date or in terms section. Common values: \"NET 30\", \"NET 15\", \"NET 60\", \"Due on Receipt\", \"COD\". Return the standardized term (e.g., \"NET 30\" not \"Net 30 Days\" or \"Payment due in 30 days\"). Return \"Not Present\" if no payment terms are specified.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-17T06:28:07.664Z-bedba14f-bfc4-4ebe-aa22-708755deb1e1",
-        "prompt": "Search for payment terms on this invoice. Look for: \"Terms:\", \"Payment Terms:\", \"Net Terms:\", near the due date or in terms section. Common values: \"NET 30\", \"NET 15\", \"NET 60\", \"Due on Receipt\", \"COD\". Return the standardized term (e.g., \"NET 30\" not \"Net 30 Days\" or \"Payment due in 30 days\"). Return \"Not Present\" if no payment terms are specified.",
-        "savedAt": "2026-01-17T06:28:07.664Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 60.0% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "term",
-            "fieldName": "Term",
-            "compareType": "near-exact-string"
-          },
-          "trainDocIds": [
-            "1997236847445",
-            "1997256691134",
-            "1997273038900",
-            "1997282187839"
-          ],
-          "holdoutDocIds": [
-            "1997271985438"
-          ]
-        }
-      }
-    ],
-    "lastUsedTemplate": "invoice",
-    "usageCount": 9,
-    "lastModified": "2026-01-17T06:28:07.678Z"
-  },
-  "salesAmountNumber": {
-    "activePrompt": "Search for the subtotal or sales amount BEFORE tax and shipping. \nLook for: \"Subtotal:\", \"Sales Amount:\", \"Merchandise Total:\", \"Net Amount:\".\n\nIMPORTANT: Return the EXACT number as shown on the document, \nincluding ALL decimal places (e.g., \"1038.70\" not \"1038\", \n\"261.59\" not \"261\"). Do not round or truncate.",
-    "promptHistory": [
-      {
-        "id": "v2",
-        "prompt": "Search for the subtotal or sales amount BEFORE tax and shipping. \nLook for: \"Subtotal:\", \"Sales Amount:\", \"Merchandise Total:\", \"Net Amount:\".\n\nIMPORTANT: Return the EXACT number as shown on the document, \nincluding ALL decimal places (e.g., \"1038.70\" not \"1038\", \n\"261.59\" not \"261\"). Do not round or truncate.",
-        "savedAt": "2026-01-17T06:30:54.562Z"
-      },
-      {
-        "id": "agent-alpha-2026-01-17T06:28:07.664Z-737ceda9-6564-48e1-a25d-706597d67a31",
-        "prompt": "Search for the subtotal or sales amount BEFORE tax and shipping. Look for: \"Subtotal:\", \"Sales Amount:\", \"Merchandise Total:\", \"Net Amount:\", \"Taxable Amount:\". This appears after line items but before tax/shipping/total. Return the EXACT amount with cents (e.g., \"432.50\"). Do NOT confuse with the grand total that includes tax. Do NOT round.",
-        "savedAt": "2026-01-17T06:28:07.664Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 20.0% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "salesAmountNumber",
-            "fieldName": "Sales Amount Number",
-            "compareType": "exact-number"
-          },
-          "trainDocIds": [
-            "1997236847445",
-            "1997256691134",
-            "1997273038900",
-            "1997282187839"
-          ],
-          "holdoutDocIds": [
-            "1997271985438"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "invoice",
     "usageCount": 10,
-    "lastModified": "2026-01-17T06:30:54.577Z"
+    "lastModified": "2026-01-23T21:21:53.210Z"
+  },
+  "term": {
+    "activePrompt": "",
+    "promptHistory": [],
+    "lastUsedTemplate": "invoice",
+    "usageCount": 10,
+    "lastModified": "2026-01-23T21:21:53.212Z"
+  },
+  "salesAmountNumber": {
+    "activePrompt": "",
+    "promptHistory": [],
+    "lastUsedTemplate": "invoice",
+    "usageCount": 11,
+    "lastModified": "2026-01-23T21:21:53.217Z"
   },
   "salesTax": {
-    "activePrompt": "Search for the sales tax amount on this invoice. Look for: \"Sales Tax:\", \"Tax:\", \"Tax Amount:\", \"VAT:\", \"GST:\", \"State Tax:\". It's usually shown as a line item between subtotal and total. Return the EXACT dollar amount with cents (e.g., \"45.67\" not \"45.7\" or \"46\"). Do NOT return the tax rate percentage. If tax shows \"$0.00\" or \"Exempt\", return \"0\". Return \"Not Present\" only if no tax line exists.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-17T06:28:07.664Z-ac096b0a-e16f-427f-9961-85f0e917c522",
-        "prompt": "Search for the sales tax amount on this invoice. Look for: \"Sales Tax:\", \"Tax:\", \"Tax Amount:\", \"VAT:\", \"GST:\", \"State Tax:\". It's usually shown as a line item between subtotal and total. Return the EXACT dollar amount with cents (e.g., \"45.67\" not \"45.7\" or \"46\"). Do NOT return the tax rate percentage. If tax shows \"$0.00\" or \"Exempt\", return \"0\". Return \"Not Present\" only if no tax line exists.",
-        "savedAt": "2026-01-17T06:28:07.664Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 80.0% → Final: 0.0% (5 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "salesTax",
-            "fieldName": "Sales Tax",
-            "compareType": "exact-number"
-          },
-          "trainDocIds": [
-            "1997236847445",
-            "1997256691134",
-            "1997273038900",
-            "1997282187839"
-          ],
-          "holdoutDocIds": [
-            "1997271985438"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "invoice",
-    "usageCount": 9,
-    "lastModified": "2026-01-17T06:28:07.685Z"
+    "usageCount": 10,
+    "lastModified": "2026-01-23T21:21:53.219Z"
   },
   "freightAmount": {
-    "activePrompt": "Search for freight or shipping charges on this invoice. Look for: \"Freight:\", \"Shipping:\", \"Shipping & Handling:\", \"S&H:\", \"Delivery:\", \"Transport:\", \"Carrier:\". Check the charges breakdown near subtotal/total. IMPORTANT: If freight shows \"$0.00\", \"No Charge\", \"Included\", or \"Prepaid\", return \"0\" (not \"Not Present\"). Return the exact amount with cents. Return \"Not Present\" only if no freight line exists at all.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-17T06:28:07.664Z-8a703a85-8098-4133-80c8-1e5c4f55b6c8",
-        "prompt": "Search for freight or shipping charges on this invoice. Look for: \"Freight:\", \"Shipping:\", \"Shipping & Handling:\", \"S&H:\", \"Delivery:\", \"Transport:\", \"Carrier:\". Check the charges breakdown near subtotal/total. IMPORTANT: If freight shows \"$0.00\", \"No Charge\", \"Included\", or \"Prepaid\", return \"0\" (not \"Not Present\"). Return the exact amount with cents. Return \"Not Present\" only if no freight line exists at all.",
-        "savedAt": "2026-01-17T06:28:07.664Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 60.0% → Final: 50.0% (5 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "freightAmount",
-            "fieldName": "Freight Amount",
-            "compareType": "exact-number"
-          },
-          "trainDocIds": [
-            "1997236847445",
-            "1997256691134",
-            "1997273038900",
-            "1997282187839"
-          ],
-          "holdoutDocIds": [
-            "1997271985438"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "invoice",
-    "usageCount": 9,
-    "lastModified": "2026-01-17T06:28:07.687Z"
+    "usageCount": 10,
+    "lastModified": "2026-01-23T21:21:53.222Z"
   },
   "app_date": {
     "activePrompt": "rwar",
@@ -6614,8 +6505,55 @@
     "lastModified": "2026-01-16T23:55:27.312Z"
   },
   "verifiedDocumentTypeB": {
-    "activePrompt": "You are an expert document classifier for wealth advisory firms. Return ONLY the category name - no explanations.\n\nValid outputs: w2, paystub, taxReturn, bankStatement, investmentStatement, loanStatement, mortgageStatement, stockOptionPlan, wealthManagementAgreement, channelReferral, businessFinancials, businessDocuments, employeeBenefitInformation, insuranceDocuments, estatePlan, other\n\n## CLASSIFICATION RULES\n\nMatch document to category by identifying 3+ key elements. If fewer than 3 or confidence below 90%, return 'other'.\n\n**w2**: Form W-2, boxes 1-20, wages/tax withheld, employer EIN\n\n**paystub**: Pay period dates, gross/net pay, payroll deductions (federal tax, SS, Medicare), YTD totals. NOT commission-only reports\n\n**taxReturn**: IRS form (1040, 1120, 1120-S, 1065), tax year, calculated tax/refund\n\n**bankStatement**: Bank logo, statement period, transaction history, beginning/ending balance. NOT investment holdings\n\n**investmentStatement**: ALL FOUR required - if ANY missing, return 'other':\n1. From custodian: Fidelity, Schwab, Vanguard, TIAA, TD, E*TRADE, Merrill, Morgan Stanley (NOT advisor firm)\n2. Document title MUST contain one of these words: 'Statement', 'Quarterly Statement', 'Monthly Statement', 'Account Statement'\n3. Statement period shown as date range: '01/01/2024 - 03/31/2024' OR 'For quarter ended 03/31/2024'\n4. Holdings table with multiple securities and market values\n\nCRITICAL: Document must be a FORMAL PERIODIC STATEMENT, not a transaction confirmation, portal view, or single-event document.\n\nEXCLUDE (classify as 'other'):\n- Transaction confirmations (titled 'Confirmation', 'Trade Confirm', 'Transaction Report')\n- Account portal views, screenshots, or exports (titled 'NetBenefits', 'Account View', '[Account Name]')\n- Single transaction documents (buy, sell, transfer confirmations)\n- Title contains: 'Overview', 'Review', 'Analysis', 'Summary', 'Performance', 'Planning', 'Projection', 'Snapshot'\n- From advisor firms (Mercer, Edelman, etc.)\n- Presentations or custom reports\n- Tax documents ('Realized Gain/Loss', 'Cost Basis')\n- Only shows 'as of [date]' without period range\n\n**loanStatement**: Lender, account number, principal balance, interest rate, payment info. NOT mortgages\n\n**mortgageStatement**: Property address, principal, escrow/PITI. Includes Form 1098 year-end statements\n\n**stockOptionPlan**: Grant date, options/RSUs count, vesting schedule, strike price/grant value\n\n**wealthManagementAgreement**: Advisory contract, client/advisor names, services, fee structure, signatures\n\n**channelReferral**: Partner name, referred clients, commission structure\n\n**businessFinancials**: P&L/Balance Sheet/Cash Flow with financial line items. NOT tax returns with IRS forms\n\n**businessDocuments**: Articles/Bylaws/Operating Agreement, organizational docs\n\n**employeeBenefitInformation**: Benefits enrollment, health/dental/FSA/HSA/401k options. NOT custodial 401k statements\n\n**insuranceDocuments**: Policy number, coverage type, premium/limits\n\n**estatePlan**: Will/Trust/POA/Healthcare Directive, beneficiaries, notary\n\n**other**: Advisory reports, analyses, presentations, tax support docs, screenshots, transaction confirmations, portal exports, unclear documents\n\n## KEY RULES\n- Formal periodic statement ONLY = investmentStatement; everything else = other\n- Transaction confirmations = other\n- Portal views/screenshots (NetBenefits, account exports) = other\n- 'Overview'/'Review'/'Planning'/'Confirmation' in title = other\n- IRS form = taxReturn; P&L without form = businessFinancials\n- Property address = mortgageStatement\n- Uncertain = other\n\nReturn only category name.",
+    "activePrompt": "\"Search for Verified Document Type B in the following LOCATIONS: document header metadata, verification labels, classification stamps, file properties section, document control block, or footer classification markers—NOT in main content headings or titles. Look for labels matching these SYNONYMS: \"Document Type\", \"Verified Document Type\", \"Type\", \"Classification\", \"Doc Category\", \"File Type\", \"Document Classification\", \"Record Type\", \"Form Category\", \"Submission Type\", \"File Classification\". Extract ONLY the single-word or short value immediately following or adjacent to these labels. Do NOT extract prominent section headings from the document body—these are content titles, not verification labels. Valid values are EXACTLY: 'w2', 'paystub', 'taxReturn', 'bankStatement', 'investmentStatement', 'loanStatement', 'mortgageStatement', 'stockOptionPlan', 'wealthManagementAgreement', 'channelReferral', 'businessFinancials', 'businessDocuments', 'employeeBenefitInformation', 'insuranceDocuments', 'estatePlan', 'other'. CLASSIFICATION RULE: If the document does NOT clearly match one of the specific types based on an explicit verification label, default to 'other'—do NOT guess or infer a specific type from document content alone. FORMAT: Return the exact enum value as a single string with no additional text or punctuation, preserving exact casing (e.g., 'investmentStatement' not 'InvestmentStatement' or 'INVESTMENTSTATEMENT'). Return 'Not Present' only if the document is completely unreadable or empty; otherwise, return 'other' when no explicit document type label exists in the specified locations.\"",
     "promptHistory": [
+      {
+        "id": "v5",
+        "prompt": "\"Search for Verified Document Type B in the following LOCATIONS: document header metadata, verification labels, classification stamps, file properties section, document control block, or footer classification markers—NOT in main content headings or titles. Look for labels matching these SYNONYMS: \"Document Type\", \"Verified Document Type\", \"Type\", \"Classification\", \"Doc Category\", \"File Type\", \"Document Classification\", \"Record Type\", \"Form Category\", \"Submission Type\", \"File Classification\". Extract ONLY the single-word or short value immediately following or adjacent to these labels. Do NOT extract prominent section headings from the document body—these are content titles, not verification labels. Valid values are EXACTLY: 'w2', 'paystub', 'taxReturn', 'bankStatement', 'investmentStatement', 'loanStatement', 'mortgageStatement', 'stockOptionPlan', 'wealthManagementAgreement', 'channelReferral', 'businessFinancials', 'businessDocuments', 'employeeBenefitInformation', 'insuranceDocuments', 'estatePlan', 'other'. CLASSIFICATION RULE: If the document does NOT clearly match one of the specific types based on an explicit verification label, default to 'other'—do NOT guess or infer a specific type from document content alone. FORMAT: Return the exact enum value as a single string with no additional text or punctuation, preserving exact casing (e.g., 'investmentStatement' not 'InvestmentStatement' or 'INVESTMENTSTATEMENT'). Return 'Not Present' only if the document is completely unreadable or empty; otherwise, return 'other' when no explicit document type label exists in the specified locations.\"",
+        "savedAt": "2026-01-24T01:58:29.110Z",
+        "generationMethod": "standard"
+      },
+      {
+        "id": "v4",
+        "prompt": "Search for Verified Document Type B in the following LOCATIONS: document header metadata, verification labels, classification stamps, file properties section, document control block, or footer classification markers—NOT in main content headings or titles. Look for labels matching these SYNONYMS: \"Document Type\", \"Verified Document Type\", \"Type\", \"Classification\", \"Doc Category\", \"File Type\", \"Document Classification\", \"Record Type\", \"Form Category\", \"Submission Type\", \"File Classification\". Extract ONLY the single-word or short value immediately following or adjacent to these labels. Do NOT extract prominent section headings like 'Investment Statement' or 'Investment Overview' from the document body—these are content titles, not verification labels. Valid values are EXACTLY: 'Investment Statement', 'taxReturn', 'channelReferral', 'InsuanceDocuments', 'Other'. CLASSIFICATION RULE: If the document does NOT clearly match 'Investment Statement', 'taxReturn', 'channelReferral', or 'InsuanceDocuments' based on an explicit verification label, default to 'Other'—do NOT guess or infer a specific type from document content alone. FORMAT: Return the exact enum value as a single string with no additional text or punctuation (e.g., 'Other' not 'other' or 'OTHER'). Return 'Not Present' only if the document is completely unreadable or empty; otherwise, return 'Other' when no explicit document type label exists in the specified locations.",
+        "savedAt": "2026-01-24T01:55:49.923Z",
+        "generationMethod": "standard"
+      },
+      {
+        "id": "agent-alpha-2026-01-24T01:54:19.379Z-314cc340-16fd-48fd-bc26-57314a700622",
+        "prompt": "Search for Verified Document Type B in the following LOCATIONS: document header metadata, verification labels, classification stamps, file properties section, document control block, or footer classification markers—NOT in main content headings or titles. Look for labels matching these SYNONYMS: \"Document Type\", \"Verified Document Type\", \"Type\", \"Classification\", \"Doc Category\", \"File Type\", \"Document Classification\", \"Record Type\", \"Form Category\", \"Submission Type\", \"File Classification\". Extract ONLY the single-word or short value immediately following or adjacent to these labels. Do NOT extract prominent section headings like 'Investment Statement' or 'Investment Overview' from the document body—these are content titles, not verification labels. Valid values are EXACTLY: 'Investment Statement', 'taxReturn', 'channelReferral', 'InsuanceDocuments', 'Other'. FORMAT: Return the exact enum value as a single string with no additional text or punctuation (e.g., 'taxReturn' not 'Tax Return' or 'tax return'). If the labeled verification field shows 'Other' (even as a standalone word near metadata), return 'Other'. Return 'Not Present' if no explicit document type label exists in the specified locations.",
+        "savedAt": "2026-01-24T01:54:19.379Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 0.0% → Final: 12.5% (5 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "verifiedDocumentTypeB",
+            "fieldName": "Verified Document Type B",
+            "compareType": "exact-string"
+          },
+          "trainDocIds": [
+            "2105317101033",
+            "2105310536493",
+            "2105320376586",
+            "2105310237352",
+            "2105308708094",
+            "2105310277649",
+            "2105310985645",
+            "2105320478063"
+          ],
+          "holdoutDocIds": [
+            "2105319472521",
+            "2105312733558"
+          ]
+        }
+      },
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2026-01-24T01:50:50.598Z"
+      },
       {
         "id": "v1",
         "prompt": "You are an expert document classifier for wealth advisory firms. Return ONLY the category name - no explanations.\n\nValid outputs: w2, paystub, taxReturn, bankStatement, investmentStatement, loanStatement, mortgageStatement, stockOptionPlan, wealthManagementAgreement, channelReferral, businessFinancials, businessDocuments, employeeBenefitInformation, insuranceDocuments, estatePlan, other\n\n## CLASSIFICATION RULES\n\nMatch document to category by identifying 3+ key elements. If fewer than 3 or confidence below 90%, return 'other'.\n\n**w2**: Form W-2, boxes 1-20, wages/tax withheld, employer EIN\n\n**paystub**: Pay period dates, gross/net pay, payroll deductions (federal tax, SS, Medicare), YTD totals. NOT commission-only reports\n\n**taxReturn**: IRS form (1040, 1120, 1120-S, 1065), tax year, calculated tax/refund\n\n**bankStatement**: Bank logo, statement period, transaction history, beginning/ending balance. NOT investment holdings\n\n**investmentStatement**: ALL FOUR required - if ANY missing, return 'other':\n1. From custodian: Fidelity, Schwab, Vanguard, TIAA, TD, E*TRADE, Merrill, Morgan Stanley (NOT advisor firm)\n2. Document title MUST contain one of these words: 'Statement', 'Quarterly Statement', 'Monthly Statement', 'Account Statement'\n3. Statement period shown as date range: '01/01/2024 - 03/31/2024' OR 'For quarter ended 03/31/2024'\n4. Holdings table with multiple securities and market values\n\nCRITICAL: Document must be a FORMAL PERIODIC STATEMENT, not a transaction confirmation, portal view, or single-event document.\n\nEXCLUDE (classify as 'other'):\n- Transaction confirmations (titled 'Confirmation', 'Trade Confirm', 'Transaction Report')\n- Account portal views, screenshots, or exports (titled 'NetBenefits', 'Account View', '[Account Name]')\n- Single transaction documents (buy, sell, transfer confirmations)\n- Title contains: 'Overview', 'Review', 'Analysis', 'Summary', 'Performance', 'Planning', 'Projection', 'Snapshot'\n- From advisor firms (Mercer, Edelman, etc.)\n- Presentations or custom reports\n- Tax documents ('Realized Gain/Loss', 'Cost Basis')\n- Only shows 'as of [date]' without period range\n\n**loanStatement**: Lender, account number, principal balance, interest rate, payment info. NOT mortgages\n\n**mortgageStatement**: Property address, principal, escrow/PITI. Includes Form 1098 year-end statements\n\n**stockOptionPlan**: Grant date, options/RSUs count, vesting schedule, strike price/grant value\n\n**wealthManagementAgreement**: Advisory contract, client/advisor names, services, fee structure, signatures\n\n**channelReferral**: Partner name, referred clients, commission structure\n\n**businessFinancials**: P&L/Balance Sheet/Cash Flow with financial line items. NOT tax returns with IRS forms\n\n**businessDocuments**: Articles/Bylaws/Operating Agreement, organizational docs\n\n**employeeBenefitInformation**: Benefits enrollment, health/dental/FSA/HSA/401k options. NOT custodial 401k statements\n\n**insuranceDocuments**: Policy number, coverage type, premium/limits\n\n**estatePlan**: Will/Trust/POA/Healthcare Directive, beneficiaries, notary\n\n**other**: Advisory reports, analyses, presentations, tax support docs, screenshots, transaction confirmations, portal exports, unclear documents\n\n## KEY RULES\n- Formal periodic statement ONLY = investmentStatement; everything else = other\n- Transaction confirmations = other\n- Portal views/screenshots (NetBenefits, account exports) = other\n- 'Overview'/'Review'/'Planning'/'Confirmation' in title = other\n- IRS form = taxReturn; P&L without form = businessFinancials\n- Property address = mortgageStatement\n- Uncertain = other\n\nReturn only category name.",
@@ -6623,8 +6561,8 @@
       }
     ],
     "lastUsedTemplate": "mercer",
-    "usageCount": 3,
-    "lastModified": "2026-01-17T04:34:48.428Z"
+    "usageCount": 7,
+    "lastModified": "2026-01-24T01:58:29.119Z"
   },
   "verifiedDocumentTypeT": {
     "activePrompt": "You are an expert document classifier for wealth advisory firms. Return ONLY the category name - no explanations.\n\nValid outputs: w2, paystub, taxReturn, bankStatement, investmentStatement, loanStatement, mortgageStatement, stockOptionPlan, wealthManagementAgreement, channelReferral, businessFinancials, businessDocuments, employeeBenefitInformation, insuranceDocuments, estatePlan, other\n\n## CLASSIFICATION RULES\n\nMatch document to category by identifying 3+ key elements. If fewer than 3 or confidence below 90%, return 'other'.\n\n**w2**: Form W-2, boxes 1-20, wages/tax withheld, employer EIN\n\n**paystub**: Pay period dates, gross/net pay, payroll deductions (federal tax, SS, Medicare), YTD totals. NOT commission-only reports\n\n**taxReturn**: IRS form (1040, 1120, 1120-S, 1065), tax year, calculated tax/refund\n\n**bankStatement**: Bank logo, statement period, transaction history, beginning/ending balance. NOT investment holdings\n\n**investmentStatement**: ALL FOUR required - if ANY missing, return 'other':\n1. From custodian: Fidelity, Schwab, Vanguard, TIAA, TD, E*TRADE, Merrill, Morgan Stanley (NOT advisor firm)\n2. Document title MUST contain one of these words: 'Statement', 'Quarterly Statement', 'Monthly Statement', 'Account Statement'\n3. Statement period shown as date range: '01/01/2024 - 03/31/2024' OR 'For quarter ended 03/31/2024'\n4. Holdings table with multiple securities and market values\n\nCRITICAL: Document must be a FORMAL PERIODIC STATEMENT, not a transaction confirmation, portal view, or single-event document.\n\nEXCLUDE (classify as 'other'):\n- Transaction confirmations (titled 'Confirmation', 'Trade Confirm', 'Transaction Report')\n- Account portal views, screenshots, or exports (titled 'NetBenefits', 'Account View', '[Account Name]')\n- Single transaction documents (buy, sell, transfer confirmations)\n- Title contains: 'Overview', 'Review', 'Analysis', 'Summary', 'Performance', 'Planning', 'Projection', 'Snapshot'\n- From advisor firms (Mercer, Edelman, etc.)\n- Presentations or custom reports\n- Tax documents ('Realized Gain/Loss', 'Cost Basis')\n- Only shows 'as of [date]' without period range\n\n**loanStatement**: Lender, account number, principal balance, interest rate, payment info. NOT mortgages\n\n**mortgageStatement**: Property address, principal, escrow/PITI. Includes Form 1098 year-end statements\n\n**stockOptionPlan**: Grant date, options/RSUs count, vesting schedule, strike price/grant value\n\n**wealthManagementAgreement**: Advisory contract, client/advisor names, services, fee structure, signatures\n\n**channelReferral**: Partner name, referred clients, commission structure\n\n**businessFinancials**: P&L/Balance Sheet/Cash Flow with financial line items. NOT tax returns with IRS forms\n\n**businessDocuments**: Articles/Bylaws/Operating Agreement, organizational docs\n\n**employeeBenefitInformation**: Benefits enrollment, health/dental/FSA/HSA/401k options. NOT custodial 401k statements\n\n**insuranceDocuments**: Policy number, coverage type, premium/limits\n\n**estatePlan**: Will/Trust/POA/Healthcare Directive, beneficiaries, notary\n\n**other**: Advisory reports, analyses, presentations, tax support docs, screenshots, transaction confirmations, portal exports, unclear documents\n\n## KEY RULES\n- Formal periodic statement ONLY = investmentStatement; everything else = other\n- Transaction confirmations = other\n- Portal views/screenshots (NetBenefits, account exports) = other\n- 'Overview'/'Review'/'Planning'/'Confirmation' in title = other\n- IRS form = taxReturn; P&L without form = businessFinancials\n- Property address = mortgageStatement\n- Uncertain = other\n\nReturn only category name.",

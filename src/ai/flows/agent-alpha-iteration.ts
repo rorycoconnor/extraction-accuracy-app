@@ -1,5 +1,55 @@
 'use server';
 
+/**
+ * @fileOverview Agent-Alpha Iteration Engine
+ * 
+ * This module implements the core iteration loop for Agent-Alpha, an agentic
+ * prompt optimization system. Each iteration:
+ * 
+ * 1. **Extracts** metadata from sampled documents using the current prompt
+ * 2. **Compares** extractions to ground truth to calculate accuracy
+ * 3. **Analyzes** failures to understand why extractions went wrong
+ * 4. **Generates** an improved prompt using Box AI (Claude)
+ * 
+ * ## Architecture
+ * 
+ * ```
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │                    Agent-Alpha Iteration                     │
+ * ├─────────────────────────────────────────────────────────────┤
+ * │  Input: Current prompt, sampled docs, ground truth          │
+ * │                                                              │
+ * │  ┌──────────────┐   ┌──────────────┐   ┌──────────────┐    │
+ * │  │   Extract    │ → │   Compare    │ → │   Analyze    │    │
+ * │  │  (parallel)  │   │   to GT      │   │   Failures   │    │
+ * │  └──────────────┘   └──────────────┘   └──────────────┘    │
+ * │                                              ↓              │
+ * │                                    ┌──────────────┐         │
+ * │                                    │   Generate   │         │
+ * │                                    │  New Prompt  │         │
+ * │                                    └──────────────┘         │
+ * │                                              ↓              │
+ * │  Output: New prompt, accuracy, converged flag               │
+ * └─────────────────────────────────────────────────────────────┘
+ * ```
+ * 
+ * ## Convergence
+ * 
+ * The iteration converges when accuracy reaches TARGET_ACCURACY (default 100%).
+ * Even when converged, if the prompt is "simple" (< 100 chars), a more robust
+ * prompt is generated for production reliability.
+ * 
+ * ## Validation Mode
+ * 
+ * When `validationOnly: true`, the iteration only calculates accuracy without
+ * generating new prompts. This is used for holdout validation to prevent
+ * overfitting to training documents.
+ * 
+ * @module agent-alpha-iteration
+ * @see {@link runFieldIteration} - Main iteration function
+ * @see {@link AGENT_ALPHA_CONFIG} - Configuration constants
+ */
+
 import { logger } from '@/lib/logger';
 import { extractStructuredMetadataWithBoxAI, boxApiFetch, getBlankPlaceholderFileId } from '@/services/box';
 import { calculateFieldMetricsWithDebugAsync } from '@/lib/metrics';
@@ -18,10 +68,20 @@ import type { FieldCompareConfig } from '@/lib/compare-types';
 import type { BoxAIField } from '@/lib/schemas';
 import type { AgentAlphaIterationResult } from '@/lib/agent-alpha-types';
 
+/** Sentinel value returned when a field value is not found in the document */
 const NOT_PRESENT_VALUE = 'Not Present';
 
 /**
- * Infer document type from template key
+ * Infers the document type from a template key using keyword matching.
+ * 
+ * Similar to the version in generate-initial-prompt.ts but works on template keys
+ * (which may use underscores or camelCase). This helps Agent-Alpha understand
+ * what type of documents it's optimizing prompts for.
+ * 
+ * @param templateKey - The template key to analyze (e.g., "nda_template", "leaseAgreement")
+ * @returns The inferred document type or undefined
+ * 
+ * @internal
  */
 function inferDocumentType(templateKey: string): string | undefined {
   const lowerKey = templateKey.toLowerCase();
@@ -52,8 +112,27 @@ function inferDocumentType(templateKey: string): string | undefined {
 }
 
 /**
- * Maps AccuracyField type to BoxAIField type
- * BoxAI only supports: 'string' | 'date' | 'enum' | 'multiSelect' | 'number'
+ * Maps internal AccuracyField types to Box AI's supported field types.
+ * 
+ * Box AI's structured extraction only supports a limited set of types:
+ * - `string`: Free-form text
+ * - `date`: Date values (returned in various formats)
+ * - `enum`: Single selection from predefined options
+ * - `multiSelect`: Multiple selections from predefined options
+ * - `number`: Numeric values
+ * 
+ * This function handles the mapping from our internal types (which include
+ * additional types like `dropdown_multi` and `taxonomy`) to Box AI types.
+ * 
+ * @param fieldType - The internal AccuracyField type
+ * @returns The corresponding BoxAIField type
+ * 
+ * @example
+ * mapToBoxAIFieldType('dropdown_multi') // => 'multiSelect'
+ * mapToBoxAIFieldType('taxonomy')       // => 'string'
+ * mapToBoxAIFieldType('date')           // => 'date'
+ * 
+ * @internal
  */
 function mapToBoxAIFieldType(fieldType: AccuracyField['type']): BoxAIField['type'] {
   switch (fieldType) {
@@ -67,14 +146,99 @@ function mapToBoxAIFieldType(fieldType: AccuracyField['type']): BoxAIField['type
 }
 
 /**
- * Runs a single iteration of Agent-Alpha for one field
- * 1. Extracts metadata using current prompt
- * 2. Compares to ground truth
- * 3. If not converged, generates improved prompt (unless validationOnly mode)
- * 4. Returns iteration result
+ * Runs a single iteration of Agent-Alpha's optimization loop for one field.
  * 
- * @param validationOnly - If true, only extracts and computes accuracy, skips prompt generation.
- *                         Used for holdout validation to avoid wasting API calls.
+ * This is the core function that drives prompt optimization. Each iteration:
+ * 
+ * 1. **Parallel Extraction**: Extracts the field from all sampled documents simultaneously
+ *    using the current prompt. Uses Box AI structured extraction with field mode
+ *    (not template mode) to test custom prompts.
+ * 
+ * 2. **Accuracy Calculation**: Compares extracted values to ground truth using the
+ *    configured comparison method (exact match, semantic, LLM-judge, etc.).
+ *    Only documents with valid ground truth are included in accuracy calculation.
+ * 
+ * 3. **Convergence Check**: If accuracy >= TARGET_ACCURACY (default 100%), the
+ *    iteration is considered converged. However, if the prompt is "simple"
+ *    (< 100 chars or generic), a more robust prompt is still generated.
+ * 
+ * 4. **Failure Analysis** (optional): When ENABLE_DOCUMENT_ANALYSIS is true and
+ *    on early iterations, analyzes failed extractions to understand WHY they failed
+ *    by examining actual document content.
+ * 
+ * 5. **Prompt Generation**: Uses Box AI (Claude) to generate an improved prompt
+ *    based on:
+ *    - Current prompt and previous attempts
+ *    - Failure examples (what went wrong)
+ *    - Success examples (what worked)
+ *    - Document type context
+ *    - Custom instructions (if provided)
+ * 
+ * 6. **Prompt Validation**: Validates generated prompts against quality checklist
+ *    (location, synonyms, format, disambiguation, not-found handling).
+ *    Invalid prompts trigger repair attempts or fallback to examples.
+ * 
+ * ## Important: Fields Mode vs Template Mode
+ * 
+ * This function intentionally uses **fields mode** (not template mode) for extraction.
+ * When templateKey is passed to Box AI, it uses the prompts FROM the template,
+ * ignoring our custom prompts. To test our optimized prompts, we must use fields mode.
+ * 
+ * ## Validation-Only Mode
+ * 
+ * When `validationOnly: true`, the function only extracts and calculates accuracy
+ * without generating new prompts. This is used for holdout validation to:
+ * - Prevent overfitting to training documents
+ * - Save API calls during validation
+ * - Get unbiased accuracy measurements
+ * 
+ * @param params - Iteration parameters
+ * @param params.fieldKey - Unique key for the field (e.g., "effective_date")
+ * @param params.fieldName - Human-readable field name (e.g., "Effective Date")
+ * @param params.fieldType - Field type for Box AI mapping
+ * @param params.currentPrompt - The prompt to test in this iteration
+ * @param params.previousPrompts - Previous prompts tried (to avoid repetition)
+ * @param params.sampledDocIds - Box file IDs of documents to test against
+ * @param params.groundTruth - Map of docId → expected value
+ * @param params.templateKey - Template name (for document type inference only)
+ * @param params.testModel - Box AI model to use for extraction
+ * @param params.iterationNumber - Current iteration (1-based)
+ * @param params.maxIterations - Maximum iterations allowed
+ * @param params.options - Enum options for enum/multiSelect fields
+ * @param params.compareConfig - Comparison configuration for accuracy calculation
+ * @param params.systemPromptOverride - Custom system prompt for generation
+ * @param params.validationOnly - If true, skip prompt generation
+ * 
+ * @returns Iteration result with new prompt, accuracy, and convergence status
+ * 
+ * @example
+ * ```typescript
+ * const result = await runFieldIteration({
+ *   fieldKey: 'effective_date',
+ *   fieldName: 'Effective Date',
+ *   fieldType: 'date',
+ *   currentPrompt: 'Extract the effective date',
+ *   previousPrompts: [],
+ *   sampledDocIds: ['doc1', 'doc2', 'doc3'],
+ *   groundTruth: {
+ *     'doc1': '2024-01-15',
+ *     'doc2': '2024-02-01',
+ *     'doc3': '2024-03-10'
+ *   },
+ *   templateKey: 'lease_agreement',
+ *   testModel: 'azure__openai__gpt_4_1_mini',
+ *   iterationNumber: 1,
+ *   maxIterations: 5,
+ * });
+ * 
+ * console.log(result.accuracy);   // 0.67 (2/3 correct)
+ * console.log(result.converged);  // false
+ * console.log(result.newPrompt);  // Improved prompt from Claude
+ * ```
+ * 
+ * @see {@link AgentAlphaIterationResult} - Return type definition
+ * @see {@link AGENT_ALPHA_CONFIG} - Configuration constants
+ * @see {@link buildAgentAlphaPrompt} - Prompt generation helper
  */
 export async function runFieldIteration(params: {
   fieldKey: string;
@@ -324,6 +488,7 @@ export async function runFieldIteration(params: {
       maxIterations,
       options,
       documentType,
+      templateKey, // Pass template name for additional document type context
       customInstructions: systemPromptOverride, // Pass custom instructions if provided
       documentContext, // NEW: Pass analyzed document context
       // companyName would be passed if available from settings

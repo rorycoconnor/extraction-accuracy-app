@@ -2,10 +2,47 @@
 'use server';
 
 /**
- * @fileOverview Prompt generation using Box AI API
+ * @fileOverview Prompt Generation using Box AI API
  * 
- * Generates and improves prompts using Box AI text generation.
- * Supports custom system prompts for both generation and improvement.
+ * This module provides functions to generate and improve extraction prompts
+ * using Box AI's text generation capabilities. It supports:
+ * 
+ * - **Initial prompt generation**: Creates high-quality extraction prompts for metadata fields
+ * - **Prompt improvement**: Refines existing prompts based on user feedback
+ * - **Document type awareness**: Infers document types from template names for context-aware prompts
+ * - **Custom system prompts**: Allows override of default system instructions
+ * 
+ * ## Architecture
+ * 
+ * The prompt generation flow:
+ * 1. User requests a prompt for a field (name, type, template context)
+ * 2. System infers document type from template name
+ * 3. Builds structured request with guidelines, examples, and context
+ * 4. Calls Box AI text_gen endpoint with Claude model
+ * 5. Parses response (handles both plain text and JSON formats)
+ * 
+ * ## Usage
+ * 
+ * ```typescript
+ * // Generate initial prompt
+ * const result = await generateInitialPrompt({
+ *   templateName: 'Lease Agreement',
+ *   field: { name: 'Effective Date', key: 'effective_date', type: 'date' },
+ *   fileIds: ['12345'], // Optional: sample document for context
+ * });
+ * 
+ * // Improve existing prompt
+ * const improved = await improvePrompt({
+ *   originalPrompt: result.prompt,
+ *   userFeedback: 'Include signature block locations',
+ *   templateName: 'Lease Agreement',
+ *   field: { name: 'Effective Date', key: 'effective_date', type: 'date' },
+ * });
+ * ```
+ * 
+ * @module generate-initial-prompt
+ * @see {@link generateInitialPrompt} - Main function for generating prompts
+ * @see {@link improvePrompt} - Function for improving existing prompts
  */
 
 import { boxApiFetch } from '@/services/box';
@@ -14,8 +51,27 @@ import { AGENT_ALPHA_CONFIG } from '@/lib/agent-alpha-config';
 import { BoxAITextGenResponseSchema } from '@/lib/schemas';
 
 /**
- * Parse the AI response to extract just the prompt text.
- * Handles both plain text and JSON responses (Claude models often return JSON).
+ * Parses the AI response to extract the prompt text.
+ * 
+ * Box AI (especially Claude models) may return responses in various formats:
+ * - Plain text prompt
+ * - JSON with `newPrompt`, `prompt`, or `improved_prompt` keys
+ * - JSON wrapped in markdown code blocks
+ * 
+ * This function normalizes all these formats to extract just the prompt string.
+ * 
+ * @param rawResponse - The raw response string from Box AI
+ * @returns The extracted prompt text, trimmed of whitespace
+ * 
+ * @example
+ * // Plain text
+ * parsePromptResponse("Search for the effective date...") // => "Search for the effective date..."
+ * 
+ * // JSON response
+ * parsePromptResponse('{"newPrompt": "Search for..."}') // => "Search for..."
+ * 
+ * // Markdown-wrapped JSON
+ * parsePromptResponse('```json\n{"prompt": "Search..."}\n```') // => "Search..."
  */
 function parsePromptResponse(rawResponse: string): string {
   const trimmed = rawResponse.trim();
@@ -48,24 +104,216 @@ function parsePromptResponse(rawResponse: string): string {
   return trimmed;
 }
 
+/**
+ * Parameters for generating an initial extraction prompt.
+ * 
+ * @interface GeneratePromptParams
+ * @property {string} templateName - Name of the template (used for document type inference)
+ * @property {Object} field - The field to generate a prompt for
+ * @property {string} field.name - Human-readable field name (e.g., "Effective Date")
+ * @property {string} field.key - Machine key for the field (e.g., "effective_date")
+ * @property {string} field.type - Field type: 'string' | 'date' | 'enum' | 'number' | 'multiSelect'
+ * @property {string[]} [fileIds] - Optional Box file IDs to use as context (max 1 for Box AI)
+ * @property {string} [customSystemPrompt] - Optional override for the default system prompt
+ * @property {string} [documentType] - Optional explicit document type (e.g., "Lease Agreement")
+ */
 export interface GeneratePromptParams {
   templateName: string;
   field: { name: string; key: string; type: string };
   fileIds?: string[];
-  customSystemPrompt?: string;  // Optional custom system prompt override
+  customSystemPrompt?: string;
+  documentType?: string;
 }
 
+/**
+ * Parameters for improving an existing extraction prompt.
+ * 
+ * @interface ImprovePromptParams
+ * @property {string} originalPrompt - The current prompt to improve
+ * @property {string} userFeedback - User's feedback describing what needs improvement
+ * @property {string} templateName - Name of the template (used for document type inference)
+ * @property {Object} field - The field the prompt extracts
+ * @property {string} field.name - Human-readable field name
+ * @property {string} field.key - Machine key for the field
+ * @property {string} field.type - Field type
+ * @property {string[]} [fileIds] - Optional Box file IDs for context (max 1 for Box AI)
+ * @property {string} [customSystemPrompt] - Optional override for the default system prompt
+ * @property {string} [documentType] - Optional explicit document type
+ */
 export interface ImprovePromptParams {
   originalPrompt: string;
   userFeedback: string;
   templateName: string;
   field: { name: string; key: string; type: string };
   fileIds?: string[];
-  customSystemPrompt?: string;  // Optional custom system prompt override
+  customSystemPrompt?: string;
+  documentType?: string;
 }
 
+/**
+ * Infers the document type from a template name using keyword matching.
+ * 
+ * Users often name their templates descriptively (e.g., "NDA Template", "Lease Agreement").
+ * This function extracts the document type to provide context-aware prompt generation.
+ * 
+ * @param templateName - The name of the template to analyze
+ * @returns The inferred document type, or undefined if no match found
+ * 
+ * @example
+ * inferDocumentType("NDA Template")           // => "NDA (Non-Disclosure Agreement)"
+ * inferDocumentType("Lease Agreement 2024")   // => "Lease Agreement"
+ * inferDocumentType("My Custom Template")     // => undefined
+ * 
+ * @internal
+ */
+function inferDocumentType(templateName: string): string | undefined {
+  const lowerName = templateName.toLowerCase();
+  
+  if (lowerName.includes('nda') || lowerName.includes('confidential')) {
+    return 'NDA (Non-Disclosure Agreement)';
+  }
+  if (lowerName.includes('msa') || lowerName.includes('master service')) {
+    return 'MSA (Master Service Agreement)';
+  }
+  if (lowerName.includes('sow') || lowerName.includes('statement of work')) {
+    return 'SOW (Statement of Work)';
+  }
+  if (lowerName.includes('lease') || lowerName.includes('rental')) {
+    return 'Lease Agreement';
+  }
+  if (lowerName.includes('contract') || lowerName.includes('agreement')) {
+    return 'Contract';
+  }
+  if (lowerName.includes('invoice') || lowerName.includes('bill')) {
+    return 'Invoice';
+  }
+  if (lowerName.includes('amendment') || lowerName.includes('addendum')) {
+    return 'Amendment';
+  }
+  if (lowerName.includes('sop') || lowerName.includes('procedure')) {
+    return 'Standard Operating Procedure';
+  }
+  if (lowerName.includes('policy') || lowerName.includes('compliance')) {
+    return 'Policy/Compliance Document';
+  }
+  if (lowerName.includes('hr') || lowerName.includes('employee') || lowerName.includes('onboarding')) {
+    return 'HR Document';
+  }
+  if (lowerName.includes('security') || lowerName.includes('audit')) {
+    return 'Security/Audit Document';
+  }
+  
+  return undefined;
+}
+
+/**
+ * Builds a document type context section for inclusion in prompt generation requests.
+ * 
+ * This context helps the AI understand:
+ * - What type of document it's writing prompts for
+ * - Where fields typically appear in that document type
+ * - What terminology is appropriate (avoiding cross-contamination from other doc types)
+ * 
+ * @param documentType - The document type (e.g., "Lease Agreement") or undefined
+ * @param templateName - The template name for additional context
+ * @param fieldName - The field being extracted (used in guidance)
+ * @returns A formatted context string to prepend to the generation request
+ * 
+ * @example
+ * buildDocumentTypeContext("Lease Agreement", "Commercial Lease", "Monthly Rent")
+ * // Returns:
+ * // ## DOCUMENT TYPE CONTEXT
+ * // Document Type: Lease Agreement
+ * // Template: "Commercial Lease"
+ * // 
+ * // CRITICAL: You are writing extraction prompts for Lease Agreement documents...
+ * 
+ * @internal
+ */
+function buildDocumentTypeContext(documentType: string | undefined, templateName: string, fieldName: string): string {
+  if (!documentType && !templateName) return '';
+  
+  const docTypeLabel = documentType || 'this document type';
+  
+  return `## DOCUMENT TYPE CONTEXT
+${documentType ? `Document Type: ${documentType}` : ''}
+${templateName ? `Template: "${templateName}"` : ''}
+
+CRITICAL: You are writing extraction prompts for ${docTypeLabel} documents.
+Use your knowledge of how ${docTypeLabel} documents are typically structured to determine:
+1. WHERE "${fieldName}" typically appears in these documents
+2. WHAT terminology and labels are commonly used in ${docTypeLabel} documents
+3. WHAT sections or areas to search
+
+Do NOT use terminology from other document types. For example:
+- Don't use invoice terms (Bill To, Ship To, Vendor) when writing prompts for contracts
+- Don't use contract terms (parties, recitals, governing law) when writing prompts for invoices
+- Generate location guidance and synonyms specific to ${docTypeLabel} documents.
+
+`;
+}
+
+/**
+ * Generates an initial extraction prompt for a metadata field using Box AI.
+ * 
+ * This function creates high-quality, document-type-aware extraction prompts that include:
+ * - **Location guidance**: Where to look in the document
+ * - **Synonyms**: Alternative phrases the value might appear as
+ * - **Format specification**: Exact output format requirements
+ * - **Disambiguation**: What NOT to extract (common mistakes)
+ * - **Not-found handling**: What to return if value isn't found
+ * 
+ * ## Flow
+ * 
+ * 1. Loads field-specific guidelines from heuristics
+ * 2. Infers document type from template name (or uses provided)
+ * 3. Builds structured generation request with examples
+ * 4. Calls Box AI text_gen API with Claude model
+ * 5. Validates and parses the response
+ * 
+ * ## API Constraints
+ * 
+ * - Box AI Text Gen allows maximum 1 file for context
+ * - Uses `AGENT_ALPHA_CONFIG.PROMPT_GEN_MODEL` (Claude 4.5 Opus)
+ * 
+ * @param params - The generation parameters
+ * @param params.templateName - Template name for document type inference
+ * @param params.field - Field definition with name, key, and type
+ * @param params.fileIds - Optional file IDs for context (only first is used)
+ * @param params.customSystemPrompt - Optional custom system prompt override
+ * @param params.documentType - Optional explicit document type
+ * 
+ * @returns Promise resolving to generated prompt and generation method
+ * @returns {string} prompt - The generated extraction prompt
+ * @returns {'standard'|'dspy'|'agent'} generationMethod - Always 'standard' for this function
+ * 
+ * @throws {Error} If Box AI response fails schema validation
+ * 
+ * @example
+ * ```typescript
+ * const result = await generateInitialPrompt({
+ *   templateName: 'Commercial Lease',
+ *   field: {
+ *     name: 'Monthly Rent',
+ *     key: 'monthly_rent',
+ *     type: 'number'
+ *   },
+ *   fileIds: ['123456789']
+ * });
+ * 
+ * console.log(result.prompt);
+ * // "Search for the monthly rent amount in the Rent section or Payment Terms.
+ * //  Look for: 'monthly rent', 'base rent', 'rent amount', 'monthly payment'.
+ * //  Return the exact numeric value with cents (e.g., '2500.00').
+ * //  Do NOT include security deposits or one-time fees.
+ * //  Return 'Not Present' if no monthly rent is specified."
+ * ```
+ * 
+ * @see {@link improvePrompt} - For refining existing prompts
+ * @see {@link AGENT_ALPHA_CONFIG} - For model configuration
+ */
 export async function generateInitialPrompt(
-  { templateName, field, fileIds, customSystemPrompt }: GeneratePromptParams
+  { templateName, field, fileIds, customSystemPrompt, documentType }: GeneratePromptParams
 ): Promise<{ prompt: string; generationMethod: 'standard' | 'dspy' | 'agent' }> {
 
   const guidelines = [
@@ -87,13 +335,20 @@ export async function generateInitialPrompt(
   
   // Get an example prompt to guide generation
   const examplePrompt = getExamplePromptReference(field.name, field.type);
+  
+  // Infer document type from template name if not explicitly provided
+  const effectiveDocType = documentType || inferDocumentType(templateName);
+  
+  // Build document type context
+  const docTypeContext = buildDocumentTypeContext(effectiveDocType, templateName, field.name);
 
   // Build a more structured generation request
   const generationRequest = `
 SYSTEM: ${systemPrompt}
 
-## TASK
+${docTypeContext}## TASK
 Generate a high-quality extraction prompt for the field "${field.name}" (type: ${field.type}).
+${effectiveDocType ? `Remember: This is for ${effectiveDocType} documents - use appropriate terminology.` : ''}
 
 ## REQUIRED ELEMENTS
 Your prompt MUST include:
@@ -103,8 +358,10 @@ Your prompt MUST include:
 4. DISAMBIGUATION: "Do NOT..." guidance to prevent common mistakes
 5. NOT-FOUND: What to return if value isn't found (usually "Not Present")
 
-## EXAMPLE OF A HIGH-QUALITY PROMPT
+## EXAMPLE OF A HIGH-QUALITY PROMPT STRUCTURE
 "${examplePrompt}"
+
+Adapt the terminology and locations to be appropriate for ${effectiveDocType || 'this document type'}.
 
 ## FIELD CONTEXT
 - Template: "${templateName}"
@@ -147,8 +404,31 @@ Generate ONLY the extraction prompt (3-5 sentences). Include all required elemen
 }
 
 /**
- * Get a reference example prompt for a field type to guide improvement
- * Simplified version that doesn't need the full agent-alpha-prompts dependency
+ * Gets a reference example prompt for a field type to guide prompt generation.
+ * 
+ * This provides high-quality example prompts that demonstrate the structure
+ * and elements that make extraction prompts effective. The AI uses these
+ * examples to understand the expected format and adapt them for specific fields.
+ * 
+ * Example prompts include:
+ * - Location guidance (where to search)
+ * - Synonym phrases (alternative labels)
+ * - Format specifications (output format)
+ * - Disambiguation rules (what NOT to extract)
+ * - Not-found handling
+ * 
+ * @param fieldName - The field name to match against known patterns
+ * @param fieldType - The field type ('date', 'enum', 'number', 'string')
+ * @returns A high-quality example prompt string
+ * 
+ * @example
+ * getExamplePromptReference("Effective Date", "date")
+ * // Returns a date-specific example with YYYY-MM-DD format guidance
+ * 
+ * getExamplePromptReference("Counter Party", "string")
+ * // Returns guidance specific to extracting the other contracting party
+ * 
+ * @internal
  */
 function getExamplePromptReference(fieldName: string, fieldType: string): string {
   const lowerName = fieldName.toLowerCase();
@@ -178,8 +458,33 @@ function getExamplePromptReference(fieldName: string, fieldType: string): string
 }
 
 /**
- * Analyze what's working in the original prompt
- * Returns structured analysis to help preserve good elements
+ * Analyzes an existing prompt to identify which quality elements are present.
+ * 
+ * This analysis helps the improvement process preserve working elements
+ * while adding missing ones. A high-quality prompt should have all 5 elements:
+ * 
+ * 1. **Location**: WHERE to look in the document
+ * 2. **Synonyms**: Alternative phrases/labels to search for
+ * 3. **Format**: Output format specification
+ * 4. **Disambiguation**: What NOT to extract (negative guidance)
+ * 5. **Not-found**: Handling for missing values
+ * 
+ * @param prompt - The prompt to analyze
+ * @returns Analysis result with boolean flags and list of working elements
+ * 
+ * @example
+ * const analysis = analyzeOriginalPrompt("Search in the header for the date. Return in YYYY-MM-DD format.");
+ * // Returns:
+ * // {
+ * //   hasLocation: true,        // "Search in the header"
+ * //   hasSynonyms: false,       // No quoted phrases
+ * //   hasFormat: true,          // "YYYY-MM-DD format"
+ * //   hasDisambiguation: false, // No "Do NOT" guidance
+ * //   hasNotFound: false,       // No "Not Present" handling
+ * //   workingElements: ["Location guidance", "Output format specification"]
+ * // }
+ * 
+ * @internal
  */
 function analyzeOriginalPrompt(prompt: string): {
   hasLocation: boolean;
@@ -205,8 +510,66 @@ function analyzeOriginalPrompt(prompt: string): {
   return { hasLocation, hasSynonyms, hasFormat, hasDisambiguation, hasNotFound, workingElements };
 }
 
+/**
+ * Improves an existing extraction prompt based on user feedback.
+ * 
+ * This function takes a working (or partially working) prompt and refines it
+ * while preserving elements that are already effective. Key principles:
+ * 
+ * - **Preserve what works**: Analyzes the original prompt to identify working elements
+ * - **Add missing elements**: Identifies gaps (location, synonyms, format, etc.)
+ * - **Address feedback**: Incorporates specific user feedback into improvements
+ * - **Maintain structure**: Keeps the logical flow of the original prompt
+ * 
+ * ## Improvement Process
+ * 
+ * 1. Analyzes original prompt to identify working elements
+ * 2. Identifies missing quality elements
+ * 3. Builds improvement request with:
+ *    - Original prompt + working elements to preserve
+ *    - Missing elements to add
+ *    - User feedback to address
+ *    - Document type context
+ * 4. Calls Box AI for refined prompt
+ * 5. Parses and validates response
+ * 
+ * @param params - The improvement parameters
+ * @param params.originalPrompt - The current prompt to improve
+ * @param params.userFeedback - User's description of what needs improvement
+ * @param params.templateName - Template name for document type context
+ * @param params.field - Field definition with name, key, and type
+ * @param params.fileIds - Optional file IDs for context (max 1 used)
+ * @param params.customSystemPrompt - Optional custom system prompt
+ * @param params.documentType - Optional explicit document type
+ * 
+ * @returns Promise resolving to improved prompt and generation method
+ * @returns {string} prompt - The improved extraction prompt
+ * @returns {'standard'|'dspy'|'agent'} generationMethod - Always 'standard'
+ * 
+ * @throws {Error} If Box AI response fails schema validation
+ * 
+ * @example
+ * ```typescript
+ * const improved = await improvePrompt({
+ *   originalPrompt: "Search for the effective date in YYYY-MM-DD format.",
+ *   userFeedback: "Also check signature blocks and add more synonyms",
+ *   templateName: "Lease Agreement",
+ *   field: { name: "Effective Date", key: "effective_date", type: "date" }
+ * });
+ * 
+ * console.log(improved.prompt);
+ * // "Search for when this agreement becomes effective. Look in the header,
+ * //  first paragraph, and signature blocks. Look for: 'effective as of',
+ * //  'effective date', 'dated as of', 'commences on', 'entered into'.
+ * //  Return in YYYY-MM-DD format. Do NOT use signature dates unless
+ * //  explicitly labeled as effective date. Return 'Not Present' if not found."
+ * ```
+ * 
+ * @see {@link generateInitialPrompt} - For creating new prompts
+ * @see {@link analyzeOriginalPrompt} - Internal analysis function
+ */
 export async function improvePrompt(
-  { originalPrompt, userFeedback, templateName, field, fileIds, customSystemPrompt }: ImprovePromptParams
+  { originalPrompt, userFeedback, templateName, field, fileIds, customSystemPrompt, documentType }: ImprovePromptParams
 ): Promise<{ prompt: string; generationMethod: 'standard' | 'dspy' | 'agent' }> {
   
   // Use selected files for context, fallback to empty items if none provided
@@ -225,12 +588,19 @@ export async function improvePrompt(
   // Analyze what's working in the original prompt
   const analysis = analyzeOriginalPrompt(originalPrompt);
   
+  // Infer document type from template name if not explicitly provided
+  const effectiveDocType = documentType || inferDocumentType(templateName);
+  
+  // Build document type context
+  const docTypeContext = buildDocumentTypeContext(effectiveDocType, templateName, field.name);
+  
   // Build a more structured improvement request
   let improvementRequest = `
 SYSTEM: ${systemPrompt}
 
-## TASK
+${docTypeContext}## TASK
 Improve the extraction prompt below based on user feedback while PRESERVING what already works.
+${effectiveDocType ? `Remember: This is for ${effectiveDocType} documents - use appropriate terminology.` : ''}
 
 ## ORIGINAL PROMPT (to improve)
 "${originalPrompt}"
@@ -267,12 +637,16 @@ ${missingElements.map(e => `- ${e}`).join('\n')}
 - Field Name: "${field.name}"
 - Field Type: ${field.type}
 - Template: "${templateName}"
+${effectiveDocType ? `- Document Type: ${effectiveDocType}` : ''}
 
-## REFERENCE: Example of a high-quality prompt
+## REFERENCE: Example of a high-quality prompt structure
 "${examplePrompt}"
 
+Adapt terminology to be appropriate for ${effectiveDocType || 'this document type'}.
+
 ## OUTPUT
-Generate ONLY the improved prompt. Preserve what works, fix what the user mentioned, add missing elements.`;
+Generate ONLY the improved prompt. Preserve what works, fix what the user mentioned, add missing elements.
+Use terminology appropriate for ${effectiveDocType || 'this document type'} documents.`;
 
   const rawResponse = await boxApiFetch(
     '/ai/text_gen',
