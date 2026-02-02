@@ -256,15 +256,8 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       extractionLogger.debug('Current prompt', { fieldKey: field.key, prompt: field.prompt?.substring(0, 100) });
       
       // Transform UI field type to Box AI field type
-      const boxFieldType = FIELD_TYPE_MAPPING[field.type as keyof typeof FIELD_TYPE_MAPPING] || field.type;
+      let boxFieldType = FIELD_TYPE_MAPPING[field.type as keyof typeof FIELD_TYPE_MAPPING] || field.type;
       extractionLogger.debug('Field type transformation', { fieldKey: field.key, uiType: field.type, boxType: boxFieldType });
-      
-      const baseField = {
-        key: field.key,
-        type: boxFieldType,
-        displayName: field.name,
-        prompt: field.prompt,
-      };
       
       // Handle enum and multiSelect fields with options (check against transformed Box type)
       if (boxFieldType === FIELD_TYPES.ENUM || boxFieldType === FIELD_TYPES.MULTISELECT) {
@@ -284,21 +277,35 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
           }
         }
         
-        // Final fallback to defaults
-        if (fieldOptions.length === 0) {
+        // For taxonomy fields without options, treat as string (free-text extraction)
+        // Taxonomy options are stored separately in Box and may not be in the template
+        if (fieldOptions.length === 0 && field.type === 'taxonomy') {
+          extractionLogger.info('Taxonomy field without options - treating as string for free-text extraction', { fieldKey: field.key });
+          boxFieldType = FIELD_TYPES.STRING;
+        }
+        // Final fallback to defaults for non-taxonomy enum/multiSelect fields
+        else if (fieldOptions.length === 0) {
           fieldOptions = getDefaultEnumOptions(field.key, field.name);
           extractionLogger.warn('Using default options (no template options found)', { fieldKey: field.key, fieldType: field.type });
         }
         
         if (fieldOptions.length > 0) {
           return {
-            ...baseField,
+            key: field.key,
+            type: boxFieldType,
+            displayName: field.name,
+            prompt: field.prompt,
             options: fieldOptions
           };
         }
       }
       
-      return baseField;
+      return {
+        key: field.key,
+        type: boxFieldType,
+        displayName: field.name,
+        prompt: field.prompt,
+      };
     });
 
     // 🛡️ GUARDRAIL: Validate all enum and multiSelect fields have options before proceeding

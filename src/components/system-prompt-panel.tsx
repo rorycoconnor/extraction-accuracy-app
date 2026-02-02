@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { X, RotateCcw, Save, Trash2, Plus, Settings2 } from 'lucide-react';
+import { X, Save, Trash2, Plus, Settings2 } from 'lucide-react';
 import type { SystemPromptVersion } from '@/lib/system-prompt-storage';
 import {
   getAllSystemPromptVersions,
@@ -34,7 +34,6 @@ import {
   createSystemPromptVersion,
   updateSystemPromptVersion,
   deleteSystemPromptVersion,
-  resetToDefaultSystemPrompt,
 } from '@/lib/system-prompt-storage';
 
 interface SystemPromptPanelProps {
@@ -87,7 +86,7 @@ export function SystemPromptPanel({
       // Set selected version to active version
       setSelectedVersionId(activeVersion.id);
       setEditName(activeVersion.name);
-      setEditGeneratePrompt(activeVersion.generatePrompt || '');
+      setEditGeneratePrompt(activeVersion.generateInstructions || '');
       setEditImprovePrompt(activeVersion.improvePrompt || '');
       setIsCreatingNew(false);
       setHasModifications(false);
@@ -111,7 +110,7 @@ export function SystemPromptPanel({
     } else if (selectedVersion) {
       setHasModifications(
         editName !== selectedVersion.name ||
-        editGeneratePrompt !== (selectedVersion.generatePrompt || '') ||
+        editGeneratePrompt !== (selectedVersion.generateInstructions || '') ||
         editImprovePrompt !== (selectedVersion.improvePrompt || '')
       );
     }
@@ -132,7 +131,7 @@ export function SystemPromptPanel({
       if (version) {
         setSelectedVersionId(version.id);
         setEditName(version.name);
-        setEditGeneratePrompt(version.generatePrompt || '');
+        setEditGeneratePrompt(version.generateInstructions || '');
         setEditImprovePrompt(version.improvePrompt || '');
       }
     }
@@ -170,12 +169,12 @@ export function SystemPromptPanel({
 
     // Use default prompts if fields are empty
     const defaultVersion = versions.find(v => v.isDefault);
-    const generatePrompt = editGeneratePrompt.trim() || defaultVersion?.generatePrompt || '';
+    const generateInstructions = editGeneratePrompt.trim() || defaultVersion?.generateInstructions || '';
     const improvePrompt = editImprovePrompt.trim() || defaultVersion?.improvePrompt || '';
 
     const newVersion = createSystemPromptVersion(
       editName.trim(),
-      generatePrompt,
+      generateInstructions,
       improvePrompt
     );
 
@@ -201,7 +200,7 @@ export function SystemPromptPanel({
 
     const updated = updateSystemPromptVersion(selectedVersion.id, {
       name: editName.trim() || selectedVersion.name,
-      generatePrompt: editGeneratePrompt,
+      generateInstructions: editGeneratePrompt,
       improvePrompt: editImprovePrompt,
     });
 
@@ -240,7 +239,7 @@ export function SystemPromptPanel({
       if (deleteConfirm.versionId === selectedVersionId) {
         setSelectedVersionId(newActiveVersion.id);
         setEditName(newActiveVersion.name);
-        setEditGeneratePrompt(newActiveVersion.generatePrompt || '');
+        setEditGeneratePrompt(newActiveVersion.generateInstructions || '');
         setEditImprovePrompt(newActiveVersion.improvePrompt || '');
       }
 
@@ -258,35 +257,6 @@ export function SystemPromptPanel({
     setDeleteConfirm({ isOpen: false, versionId: '', versionName: '' });
   };
 
-  // Handle reset to default
-  const handleResetToDefault = () => {
-    resetToDefaultSystemPrompt();
-    
-    // Refresh versions list (only Prompt Studio versions)
-    const updatedVersions = getAllSystemPromptVersions();
-    setVersions(updatedVersions);
-    
-    // Get the new active version (which will be the default)
-    const defaultVersion = getActiveSystemPrompt();
-    setActiveVersionId(defaultVersion.id);
-    setSelectedVersionId(defaultVersion.id);
-    setEditName(defaultVersion.name);
-    setEditGeneratePrompt(defaultVersion.generatePrompt || '');
-    setEditImprovePrompt(defaultVersion.improvePrompt || '');
-    
-    if (onSystemPromptChange) {
-      onSystemPromptChange(defaultVersion);
-    }
-    
-    setIsCreatingNew(false);
-    setHasModifications(false);
-
-    toast({
-      title: 'Reset to Default',
-      description: 'System prompt has been reset to the default version.',
-    });
-  };
-
   if (!isOpen) return null;
 
   const isDefault = selectedVersion?.isDefault ?? false;
@@ -295,8 +265,8 @@ export function SystemPromptPanel({
   return (
     <>
       <div className="flex flex-col h-full">
-        {/* Header */}
-        <div className="shrink-0 flex items-center justify-between pb-4 border-b">
+        {/* Header - matches right side header height */}
+        <div className="shrink-0 flex items-center justify-between mb-4 h-8">
           <div className="flex items-center gap-2">
             <Settings2 className="h-5 w-5 text-muted-foreground" />
             <h3 className="font-semibold">System Prompt Settings</h3>
@@ -311,10 +281,10 @@ export function SystemPromptPanel({
           </Button>
         </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto py-4 px-1 space-y-4" style={{ scrollbarGutter: 'stable' }}>
+        {/* Content - aligned with right side Active Prompt card */}
+        <div className="flex-1 overflow-y-auto px-1 space-y-4" style={{ scrollbarGutter: 'stable' }}>
           {/* Choose Version Card */}
-          <div className="rounded-lg border-2 border-primary/20 bg-primary/5 p-4 space-y-3">
+          <div className="rounded-lg bg-primary/5 p-4 space-y-3">
             <div className="flex items-center gap-2">
               <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">
                 <Settings2 className="h-3.5 w-3.5" />
@@ -329,18 +299,18 @@ export function SystemPromptPanel({
               value={isCreatingNew ? CREATE_NEW_ID : selectedVersionId}
               onValueChange={handleVersionSelect}
             >
-              <SelectTrigger className="w-full bg-background border-2 h-11">
+              <SelectTrigger className="w-full bg-white dark:bg-input border-2 h-11">
                 <SelectValue placeholder="Choose a system prompt version..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white dark:bg-popover">
                 {versions.map((version) => (
                   <SelectItem key={version.id} value={version.id}>
                     <div className="flex items-center gap-2">
                       <span>{version.name}</span>
                       {version.id === activeVersionId && (
-                        <Badge variant="secondary" className="text-xs">Active</Badge>
+                        <Badge className="text-xs bg-green-100 text-green-700 border-green-300">Active</Badge>
                       )}
-                      {version.isDefault && (
+                      {version.isDefault && version.name !== 'Default' && (
                         <Badge variant="outline" className="text-xs">Default</Badge>
                       )}
                     </div>
@@ -357,43 +327,28 @@ export function SystemPromptPanel({
 
             {/* Quick Actions Row */}
             <div className="flex items-center gap-2 pt-1">
-              {!isCreatingNew && !isActive && (
+              {!isCreatingNew && !isActive ? (
                 <Button
                   variant="default"
-                  size="sm"
                   onClick={handleSetAsActive}
-                  className="flex-1"
+                  className="flex-1 h-9"
                 >
                   Set as Active
                 </Button>
+              ) : (
+                <div className="flex-1" />
               )}
-              {!isCreatingNew && isActive && (
-                <div className="flex-1 flex items-center justify-center gap-1.5 text-sm text-green-600 dark:text-green-400 font-medium py-1.5">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  Currently Active
-                </div>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleResetToDefault}
-                disabled={activeVersionId === versions.find(v => v.isDefault)?.id}
-              >
-                <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-                Reset
-              </Button>
               {!isDefault && !isCreatingNew && (
                 <Button
                   variant="outline"
-                  size="sm"
                   onClick={() => setDeleteConfirm({
                     isOpen: true,
                     versionId: selectedVersionId,
                     versionName: selectedVersion?.name || '',
                   })}
-                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  className="h-9 w-9 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               )}
             </div>
@@ -409,6 +364,7 @@ export function SystemPromptPanel({
               placeholder={isCreatingNew ? 'Enter version name...' : selectedVersion?.name}
               disabled={isDefault && !isCreatingNew}
               className={cn(
+                'bg-white dark:bg-input',
                 isDefault && !isCreatingNew && 'opacity-60'
               )}
             />
@@ -430,7 +386,7 @@ export function SystemPromptPanel({
               onChange={(e) => setEditGeneratePrompt(e.target.value)}
               placeholder={isCreatingNew ? 'Enter system prompt for generating new prompts...' : 'System prompt for generating new prompts'}
               className={cn(
-                'min-h-[150px] font-mono text-sm',
+                'min-h-[150px] font-mono text-sm bg-white dark:bg-input',
                 isDefault && !isCreatingNew && 'opacity-60',
                 hasModifications && !isCreatingNew && 'border-amber-300 dark:border-amber-700'
               )}
@@ -450,7 +406,7 @@ export function SystemPromptPanel({
               onChange={(e) => setEditImprovePrompt(e.target.value)}
               placeholder={isCreatingNew ? 'Enter system prompt for improving prompts...' : 'System prompt for improving prompts'}
               className={cn(
-                'min-h-[150px] font-mono text-sm',
+                'min-h-[150px] font-mono text-sm bg-white dark:bg-input',
                 isDefault && !isCreatingNew && 'opacity-60',
                 hasModifications && !isCreatingNew && 'border-amber-300 dark:border-amber-700'
               )}

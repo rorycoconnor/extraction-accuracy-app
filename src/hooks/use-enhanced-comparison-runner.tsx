@@ -59,6 +59,7 @@ const getActiveModelsForRun = (shownColumns: Record<string, boolean>) =>
 
 interface UseEnhancedComparisonRunnerReturn {
   handleRunComparison: () => Promise<void>;
+  cancelComparison: () => void;
   isExtracting: boolean;
   progress: { processed: number; total: number };
   isJudging: boolean;
@@ -70,6 +71,9 @@ export const useEnhancedComparisonRunner = (
   const [isJudging, setIsJudging] = useState(false);
   const { toast } = useToast();
   const { state, dispatch } = useAccuracyDataStore();
+  
+  // Cancellation support
+  const cancelledRef = useRef(false);
   const currentSession = useCurrentSession();
   const { runExtractions } = useModelExtractionRunner();
   const { refreshGroundTruth } = useGroundTruth();
@@ -98,6 +102,23 @@ export const useEnhancedComparisonRunner = (
   // Use a ref to track the latest data during extraction for real-time updates
   const currentDataRef = useRef<AccuracyData | null>(null);
 
+  // Cancel the current comparison run
+  const cancelComparison = useCallback(() => {
+    if (!isExtracting) return;
+    
+    cancelledRef.current = true;
+    stopExtraction();
+    resetProgress();
+    setIsJudging(false);
+    
+    toast({
+      title: 'Comparison cancelled',
+      description: 'The comparison run was stopped. Partial results may be available.',
+    });
+    
+    logger.info('comparison_cancelled_by_user');
+  }, [isExtracting, stopExtraction, resetProgress, toast]);
+
   const handleRunComparison = useCallback(async () => {
     if (!state.data) {
       toast({
@@ -124,6 +145,7 @@ export const useEnhancedComparisonRunner = (
     // Initialize ref with current data
     currentDataRef.current = accuracyData;
     setIsJudging(false);
+    cancelledRef.current = false; // Reset cancellation flag
 
     // Start a new comparison run
     const runId = uuidv4();
@@ -211,6 +233,12 @@ export const useEnhancedComparisonRunner = (
           }
         }
       );
+
+      // Check if cancelled before processing results
+      if (cancelledRef.current) {
+        logger.info('Comparison cancelled after extraction phase');
+        return;
+      }
 
       logger.info('Extraction completed, processing results with versioning');
 
@@ -381,6 +409,34 @@ export const useEnhancedComparisonRunner = (
           fileResult.fields[fieldKey][job.modelName] = formattedValue;
         } else {
           fileResult.fields[fieldKey][job.modelName] = NOT_PRESENT_VALUE;
+        }
+        
+        // 🔧 FIX: Handle confidence scores during real-time updates
+        // This ensures confidence scores show up immediately, not just after final processing
+        if (result.confidenceScores) {
+          const confidenceScore = findFieldValue(result.confidenceScores as Record<string, any>, fieldKey);
+          if (confidenceScore !== undefined && typeof confidenceScore === 'number') {
+            // Initialize comparisonResults structure if needed
+            if (!fileResult.comparisonResults) {
+              fileResult.comparisonResults = {};
+            }
+            if (!fileResult.comparisonResults[fieldKey]) {
+              fileResult.comparisonResults[fieldKey] = {};
+            }
+            if (!fileResult.comparisonResults[fieldKey][job.modelName]) {
+              fileResult.comparisonResults[fieldKey][job.modelName] = {
+                isMatch: false,
+                matchType: 'pending',
+                confidence: 'medium'
+              };
+            }
+            fileResult.comparisonResults[fieldKey][job.modelName].extractionConfidence = confidenceScore;
+            logger.debug('Real-time confidence score set', { 
+              fieldKey, 
+              modelName: job.modelName, 
+              confidenceScore 
+            });
+          }
         }
       } else {
         const errorMessage = result.error?.userMessage || result.error?.message || UI_LABELS.UNKNOWN_ERROR;
@@ -599,6 +655,7 @@ export const useEnhancedComparisonRunner = (
 
   return {
     handleRunComparison,
+    cancelComparison,
     isExtracting,
     progress,
     isJudging,

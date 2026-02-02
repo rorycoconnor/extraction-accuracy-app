@@ -134,12 +134,14 @@ function inferDocumentType(templateKey: string): string | undefined {
  * 
  * @internal
  */
-function mapToBoxAIFieldType(fieldType: AccuracyField['type']): BoxAIField['type'] {
+function mapToBoxAIFieldType(fieldType: AccuracyField['type'], hasOptions: boolean = false): BoxAIField['type'] {
   switch (fieldType) {
     case 'dropdown_multi':
       return 'multiSelect';
     case 'taxonomy':
-      return 'string'; // Taxonomy fields are treated as strings
+      // Taxonomy fields: use multiSelect if options exist, otherwise string for free-text
+      // Taxonomy options are stored separately in Box and may not be in the template
+      return hasOptions ? 'multiSelect' : 'string';
     default:
       return fieldType as BoxAIField['type'];
   }
@@ -250,6 +252,7 @@ export async function runFieldIteration(params: {
   groundTruth: Record<string, string>; // docId -> groundTruthValue
   templateKey: string; // Used for document type inference, NOT for extraction (we use fields mode)
   testModel: string;
+  promptGenerationModel?: string; // Model to use for prompt generation
   iterationNumber: number;
   maxIterations: number;
   options?: Array<{ key: string }>;
@@ -267,6 +270,7 @@ export async function runFieldIteration(params: {
     groundTruth,
     templateKey,
     testModel,
+    promptGenerationModel = AGENT_ALPHA_CONFIG.PROMPT_GEN_MODEL,
     iterationNumber,
     maxIterations,
     options,
@@ -279,7 +283,9 @@ export async function runFieldIteration(params: {
 
   // Step 1: Extract metadata from sampled documents using the test model IN PARALLEL
   // Map AccuracyField type to BoxAIField type once
-  const boxAIFieldType = mapToBoxAIFieldType(fieldType);
+  // Pass hasOptions to handle taxonomy fields correctly
+  const hasOptions = options && options.length > 0;
+  const boxAIFieldType = mapToBoxAIFieldType(fieldType, hasOptions);
   
   // Define extraction job type for parallel processing
   type ExtractionJob = {
@@ -504,7 +510,7 @@ export async function runFieldIteration(params: {
         ai_agent: {
           type: 'ai_agent_text_gen',
           basic_gen: {
-            model: AGENT_ALPHA_CONFIG.PROMPT_GEN_MODEL,
+            model: promptGenerationModel,
           },
         },
       }),
@@ -550,7 +556,7 @@ export async function runFieldIteration(params: {
                 ai_agent: {
                   type: 'ai_agent_text_gen',
                   basic_gen: {
-                    model: AGENT_ALPHA_CONFIG.PROMPT_GEN_MODEL,
+                    model: promptGenerationModel,
                   },
                 },
               }),

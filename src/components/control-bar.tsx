@@ -57,6 +57,7 @@ interface ControlBarProps {
   // Remove showMetrics prop - it will be computed automatically
   onSelectDocuments: () => void;
   onRunComparison: () => void;
+  onCancelComparison: () => void;
   onRunOptimizer: () => void;
   onAutoPopulateGroundTruth: () => void;
   // Remove onToggleMetrics prop - no longer needed
@@ -83,6 +84,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
   // Remove showMetrics prop - it will be computed automatically
   onSelectDocuments,
   onRunComparison,
+  onCancelComparison,
   onRunOptimizer,
   onAutoPopulateGroundTruth,
   // Remove onToggleMetrics prop - no longer needed
@@ -299,6 +301,17 @@ const ControlBar: React.FC<ControlBarProps> = ({
         {comparisonButtonLabel}
       </Button>
       
+      {/* Cancel Button - Only shows when extraction is running */}
+      {isExtracting && (
+        <Button
+          onClick={onCancelComparison}
+          variant="outline"
+          className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
+        >
+          Cancel
+        </Button>
+      )}
+      
       {/* Run Agent Button - Opens Configuration Modal */}
       {onOpenAgentConfig && (
         <Button
@@ -349,7 +362,7 @@ const ControlBar: React.FC<ControlBarProps> = ({
           <DropdownMenuSeparator />
           <DropdownMenuItem 
             onClick={() => setShowClearPromptsDialog(true)}
-            disabled={!accuracyData || !accuracyData.fields || accuracyData.fields.length === 0}
+            disabled={!accuracyData || !accuracyData.results || accuracyData.results.length === 0}
           >
             <Eraser className="mr-2 h-4 w-4" />
             Clear All Prompts

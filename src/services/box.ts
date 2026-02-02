@@ -458,12 +458,12 @@ export async function getTemplates(): Promise<BoxTemplate[]> {
   try {
     const data: BoxTemplatesResponse = await boxApiFetch(`/metadata_templates/enterprise`, { method: 'GET' });
     
-    // Log enum field options for debugging
+    // Log enum, multiSelect, and taxonomy field options for debugging
     data.entries.forEach(template => {
-      const enumFields = template.fields?.filter(f => f.type === 'enum' || f.type === 'multiSelect');
-      if (enumFields && enumFields.length > 0) {
-        enumFields.forEach(field => {
-          boxLogger.debug('Enum/MultiSelect field loaded from Box', {
+      const listFields = template.fields?.filter(f => f.type === 'enum' || f.type === 'multiSelect' || f.type === 'taxonomy');
+      if (listFields && listFields.length > 0) {
+        listFields.forEach(field => {
+          boxLogger.debug('Enum/MultiSelect/Taxonomy field loaded from Box', {
             template: template.displayName,
             field: field.displayName,
             type: field.type,
@@ -482,6 +482,78 @@ export async function getTemplates(): Promise<BoxTemplate[]> {
     boxLogger.error('Error fetching templates from Box', error instanceof Error ? error : { error });
     throw error;
   }
+}
+
+/**
+ * Fetch taxonomy options for a specific field in a metadata template.
+ * Taxonomy options are stored separately from the template and need to be fetched via this endpoint.
+ * 
+ * @param templateKey - The template key (e.g., 'contracts')
+ * @param fieldKey - The field key (e.g., 'counterPartyState')
+ * @returns Array of taxonomy options with key values
+ */
+export async function getTaxonomyFieldOptions(
+  templateKey: string,
+  fieldKey: string
+): Promise<Array<{ key: string }>> {
+  try {
+    boxLogger.debug('Fetching taxonomy options', { templateKey, fieldKey });
+    
+    const response = await boxApiFetch(
+      `/metadata_templates/enterprise/${templateKey}/fields/${fieldKey}/options`,
+      { method: 'GET' }
+    );
+    
+    // Response contains entries with displayName which we use as the key
+    const options = (response.entries || []).map((entry: { displayName: string; id: string }) => ({
+      key: entry.displayName
+    }));
+    
+    boxLogger.info('Taxonomy options loaded', {
+      templateKey,
+      fieldKey,
+      optionCount: options.length,
+      sampleOptions: options.slice(0, 5).map((o: { key: string }) => o.key).join(', ')
+    });
+    
+    return options;
+  } catch (error) {
+    boxLogger.warn('Failed to fetch taxonomy options (may not be a taxonomy field)', {
+      templateKey,
+      fieldKey,
+      error: error instanceof Error ? error.message : String(error)
+    });
+    return [];
+  }
+}
+
+/**
+ * Fetch templates with taxonomy options populated.
+ * This enhanced version fetches taxonomy options for any taxonomy fields found in templates.
+ */
+export async function getTemplatesWithTaxonomyOptions(): Promise<BoxTemplate[]> {
+  const templates = await getTemplates();
+  
+  // For each template, fetch taxonomy options for taxonomy fields
+  for (const template of templates) {
+    const taxonomyFields = template.fields?.filter(f => f.type === 'taxonomy') || [];
+    
+    for (const field of taxonomyFields) {
+      if (!field.options || field.options.length === 0) {
+        const options = await getTaxonomyFieldOptions(template.templateKey, field.key);
+        if (options.length > 0) {
+          field.options = options.map(o => ({ id: o.key, key: o.key }));
+          boxLogger.info('Populated taxonomy options for field', {
+            template: template.displayName,
+            field: field.displayName,
+            optionCount: options.length
+          });
+        }
+      }
+    }
+  }
+  
+  return templates;
 }
 
 /**
@@ -769,7 +841,8 @@ export async function extractStructuredMetadataWithBoxAI(
         requestSizeKB,
         totalPromptChars,
         attempt: attempt + 1,
-        maxRetries: BOX_AI_EXTRACTION_CONFIG.maxRetries + 1
+        maxRetries: BOX_AI_EXTRACTION_CONFIG.maxRetries + 1,
+        includeConfidenceScore: requestBody.include_confidence_score // 🔍 Verify this is true
       });
 
       // Call Box AI API with timeout handling
@@ -863,11 +936,64 @@ export async function extractStructuredMetadataWithBoxAI(
 
         // Handle Box AI response formats - simplified based on actual API behavior
         let extractedData: Record<string, any> = {};
-        let confidenceScores: Record<string, number> | undefined = result?.confidence_score;
         
-        // Log confidence scores if present
-        if (confidenceScores) {
-          boxLogger.debug('Confidence scores received', { fileId, model, scores: confidenceScores });
+        // Log response structure for debugging
+        boxLogger.debug('Box AI response structure', {
+          fileId,
+          model,
+          responseKeys: Object.keys(result || {}),
+          hasConfidenceScore: 'confidence_score' in (result || {})
+        });
+        
+        // Check multiple possible locations for confidence scores
+        let rawConfidenceScores = result?.confidence_score || result?.confidenceScore || result?.confidence_scores;
+        let confidenceScores: Record<string, number> | undefined;
+        
+        // Log raw confidence score for debugging
+        boxLogger.debug('Raw confidence_score from Box API', {
+          fileId,
+          model,
+          rawType: typeof rawConfidenceScores,
+          rawKeys: rawConfidenceScores ? Object.keys(rawConfidenceScores) : [],
+          rawValue: rawConfidenceScores ? JSON.stringify(rawConfidenceScores).slice(0, 500) : 'null/undefined'
+        });
+        
+        // 🔧 FIX: Box returns confidence scores in nested format: { fieldKey: { level: "HIGH", score: 0.95 } }
+        // We need to extract just the score values
+        if (rawConfidenceScores && typeof rawConfidenceScores === 'object' && Object.keys(rawConfidenceScores).length > 0) {
+          confidenceScores = {};
+          for (const [fieldKey, scoreData] of Object.entries(rawConfidenceScores)) {
+            if (typeof scoreData === 'number') {
+              // Already a flat number
+              confidenceScores[fieldKey] = scoreData;
+            } else if (scoreData && typeof scoreData === 'object' && 'score' in scoreData) {
+              // Nested format: { level: "HIGH", score: 0.95 }
+              confidenceScores[fieldKey] = (scoreData as { score: number }).score;
+            }
+          }
+          
+          if (Object.keys(confidenceScores).length > 0) {
+            boxLogger.info('✅ CONFIDENCE SCORES EXTRACTED', {
+              fileId, 
+              model, 
+              scoreCount: Object.keys(confidenceScores).length,
+              scores: confidenceScores
+            });
+          } else {
+            boxLogger.warn('⚠️ confidence_score field exists but no valid scores extracted', {
+              fileId,
+              model,
+              rawKeys: Object.keys(rawConfidenceScores)
+            });
+          }
+        } else {
+          // Log when confidence scores are NOT returned or empty
+          boxLogger.warn('⚠️ NO CONFIDENCE SCORES in Box response', { 
+            fileId, 
+            model,
+            hasConfidenceScoreField: 'confidence_score' in (result || {}),
+            confidenceScoreIsEmpty: rawConfidenceScores && Object.keys(rawConfidenceScores).length === 0
+          });
         }
         
         // Check for the most common response format first (what we see in logs)

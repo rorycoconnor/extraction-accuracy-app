@@ -134,19 +134,17 @@ export default function PromptStudioSheet({
         
         if (!comparison.isMatch) {
           // Check if it's a "different-format" non-match
-          const classification = (comparison as any).matchClassification;
-          if (classification === 'different-format') {
+          if (comparison.matchClassification === 'different-format') {
             hasAnyDifferentFormat = true;
           } else {
             hasAnyMismatch = true;
           }
         } else {
           hasAnyMatch = true;
-          // Use matchClassification if available, fall back to matchType
-          const classification = (comparison as any).matchClassification || comparison.matchType;
-          if (classification === 'partial') {
+          // Use matchClassification for categorization
+          if (comparison.matchClassification === 'partial') {
             hasAnyPartialMatch = true;
-          } else if (classification === 'different-format' || comparison.matchType === 'date_format') {
+          } else if (comparison.matchClassification === 'different-format' || comparison.matchType === 'date_format') {
             hasAnyDifferentFormat = true;
           }
         }
@@ -204,7 +202,7 @@ export default function PromptStudioSheet({
       
       // Get custom system prompts if not using default
       const customGeneratePrompt = activeSystemPrompt && !activeSystemPrompt.isDefault 
-        ? activeSystemPrompt.generatePrompt 
+        ? activeSystemPrompt.generateInstructions 
         : undefined;
       const customImprovePrompt = activeSystemPrompt && !activeSystemPrompt.isDefault 
         ? activeSystemPrompt.improvePrompt 
@@ -249,7 +247,8 @@ export default function PromptStudioSheet({
           field: {
             name: field.name,
             key: field.key,
-            type: field.type
+            type: field.type,
+            options: field.options  // Include dropdown/enum options for better prompts
           },
           fileIds: selectedFileIds,
           customSystemPrompt: customGeneratePrompt
@@ -298,9 +297,18 @@ export default function PromptStudioSheet({
     }
   };
 
-  const handleCopyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({ title: 'Prompt Copied', description: 'The prompt has been copied to your clipboard.' });
+  const handleCopyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({ title: 'Prompt Copied', description: 'The prompt has been copied to your clipboard.' });
+    } catch (error) {
+      logger.error('Failed to copy to clipboard', error instanceof Error ? error : undefined);
+      toast({ 
+        variant: 'destructive',
+        title: 'Copy Failed', 
+        description: 'Unable to copy to clipboard. Please try selecting and copying manually.' 
+      });
+    }
   };
 
   const handleToggleFavorite = (versionId: string) => {
@@ -398,16 +406,25 @@ export default function PromptStudioSheet({
       });
 
       // Create a test field with the current prompt
-      const boxAIFieldType = field.type === 'dropdown_multi' || field.type === 'taxonomy' 
-        ? 'multiSelect' as const 
-        : field.type;
+      // For taxonomy fields: use multiSelect if options exist, otherwise string for free-text
+      // Taxonomy options are stored separately in Box and may not be in the template
+      const hasOptions = field.options && field.options.length > 0;
+      let boxAIFieldType: 'string' | 'date' | 'enum' | 'multiSelect' | 'number' | 'float';
+      
+      if (field.type === 'dropdown_multi') {
+        boxAIFieldType = 'multiSelect';
+      } else if (field.type === 'taxonomy') {
+        boxAIFieldType = hasOptions ? 'multiSelect' : 'string';
+      } else {
+        boxAIFieldType = field.type as 'string' | 'date' | 'enum' | 'multiSelect' | 'number' | 'float';
+      }
       
       const testField = {
         key: field.key,
         type: boxAIFieldType,
         displayName: field.name,
         prompt: activePromptText,
-        options: field.options
+        ...(hasOptions && { options: field.options })
       };
 
       // Initialize results with placeholders (only for selected files)
@@ -504,7 +521,7 @@ export default function PromptStudioSheet({
       
       toast({
         title: "Test Complete",
-        description: `Tested ${modelsToTest.length} model(s) on ${accuracyData.results.length} file(s).`
+        description: `Tested ${modelsToTest.length} model(s) on ${filesToTest.length} file(s).`
       });
 
     } catch (error) {

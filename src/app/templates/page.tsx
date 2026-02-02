@@ -67,6 +67,7 @@ import {
   Upload,
   Info,
   BookOpen,
+  RefreshCw,
 } from 'lucide-react';
 import NewTemplateDialog from '@/components/new-template-dialog';
 import PromptStudioSheet from '@/components/prompt-studio-sheet';
@@ -75,7 +76,9 @@ import {
   getConfiguredTemplates,
   removeConfiguredTemplate,
   toggleTemplateFieldActive,
+  saveConfiguredTemplates,
 } from '@/lib/mock-data';
+import { getBoxTemplatesWithTaxonomyOptions } from '@/lib/actions/box';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logger';
@@ -458,6 +461,91 @@ export default function TemplatesPage() {
     }
   };
 
+  // Handle Update from Box - fetch fresh template and add new fields (including taxonomy options)
+  const handleUpdateFromBox = async (template: BoxTemplate) => {
+    try {
+      // Fetch all templates from Box with taxonomy options populated
+      const boxTemplates = await getBoxTemplatesWithTaxonomyOptions();
+      
+      // Find the matching template by templateKey
+      const freshBoxTemplate = boxTemplates.find(t => t.templateKey === template.templateKey);
+      
+      if (!freshBoxTemplate) {
+        toast({
+          title: 'Template Not Found',
+          description: `Could not find template "${template.displayName}" in Box.`,
+          variant: 'destructive',
+        });
+        return;
+      }
+      
+      // Find new fields that don't exist in local template
+      const existingFieldKeys = new Set(template.fields.map(f => f.key));
+      const newFields = freshBoxTemplate.fields.filter(f => !existingFieldKeys.has(f.key));
+      
+      if (newFields.length === 0) {
+        toast({
+          title: 'Already Up to Date',
+          description: `"${template.displayName}" has all the latest fields from Box.`,
+        });
+        return;
+      }
+      
+      // Build a map of existing field states (isActive)
+      const existingFieldStates = new Map(
+        template.fields.map(f => [f.key, f.isActive])
+      );
+      
+      // Use Box's field order, merge in local isActive states
+      const mergedFields = freshBoxTemplate.fields.map(boxField => ({
+        ...boxField,
+        isActive: existingFieldStates.has(boxField.key) 
+          ? existingFieldStates.get(boxField.key) 
+          : true,  // New fields default to active
+      }));
+      
+      // Merge new fields into local template (using Box's field order)
+      const updatedTemplate: BoxTemplate = {
+        ...template,
+        fields: mergedFields,
+      };
+      
+      // Update templates in storage
+      const allTemplates = getConfiguredTemplates();
+      const updatedTemplates = allTemplates.map(t => 
+        t.templateKey === template.templateKey ? updatedTemplate : t
+      );
+      saveConfiguredTemplates(updatedTemplates);
+      
+      // Update local state
+      setConfiguredTemplates(updatedTemplates);
+      if (selectedTemplate?.templateKey === template.templateKey) {
+        setSelectedTemplate(updatedTemplate);
+        // Reload compare type config for the updated template
+        const updatedConfig = getOrCreateCompareTypeConfig(updatedTemplate);
+        setCompareTypeConfig(updatedConfig);
+      }
+      
+      toast({
+        title: 'Template Updated',
+        description: `Added ${newFields.length} new field${newFields.length === 1 ? '' : 's'} from Box: ${newFields.map(f => f.displayName).join(', ')}`,
+      });
+      
+      logger.info('Updated template from Box', {
+        templateName: template.displayName,
+        newFieldsCount: newFields.length,
+        newFields: newFields.map(f => f.key),
+      });
+    } catch (err) {
+      logger.error('Failed to update template from Box', err as Error);
+      toast({
+        title: 'Update Failed',
+        description: err instanceof Error ? err.message : 'Failed to fetch template from Box.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   const renderLeftPanel = () => {
     if (isLoading) {
       return (
@@ -532,6 +620,15 @@ export default function TemplatesPage() {
                       Push to Library
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleUpdateFromBox(template);
+                      }}
+                    >
+                      <RefreshCw className="mr-2 h-4 w-4" />
+                      Update from Box
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
                       className="text-destructive focus:text-destructive"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -574,18 +671,6 @@ export default function TemplatesPage() {
 
     return (
       <div className="space-y-4">
-        {/* Action buttons */}
-        <div className="flex gap-2 justify-end">
-          <Button variant="outline" size="sm" onClick={handleExport}>
-            <Download className="mr-2 h-4 w-4" />
-            Export
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setIsImportDialogOpen(true)}>
-            <Upload className="mr-2 h-4 w-4" />
-            Import
-          </Button>
-        </div>
-
         {/* Fields table */}
         <div className="border rounded-lg">
           <Table>
@@ -612,6 +697,7 @@ export default function TemplatesPage() {
                     'number': 'Number',
                     'float': 'Number',
                     'date': 'Date',
+                    'taxonomy': 'Taxonomy',
                   };
                   return typeMap[type] || type;
                 };

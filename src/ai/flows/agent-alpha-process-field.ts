@@ -24,6 +24,7 @@ export type ProcessFieldParams = {
   holdoutThreshold?: number; // Min accuracy on holdout to converge (default 1.0)
   templateKey: string;
   testModel: string;
+  promptGenerationModel?: string; // Model used for generating prompts (default: from config)
   fieldIndex: number; // For logging: "1 of 5"
   totalFields: number;
   maxIterations?: number; // Override default max iterations
@@ -52,6 +53,7 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     holdoutThreshold = AGENT_ALPHA_CONFIG.HOLDOUT_THRESHOLD,
     templateKey,
     testModel,
+    promptGenerationModel = AGENT_ALPHA_CONFIG.PROMPT_GEN_MODEL,
     fieldIndex,
     totalFields,
     maxIterations: maxIterationsParam = AGENT_ALPHA_CONFIG.MAX_ITERATIONS,
@@ -144,6 +146,7 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         groundTruth,
         templateKey,
         testModel,
+        promptGenerationModel,
         iterationNumber: iteration,
         maxIterations,
         options: fieldOptions,
@@ -177,6 +180,7 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
             groundTruth,
             templateKey,
             testModel,
+            promptGenerationModel,
             iterationNumber: iteration,
             maxIterations,
             options: fieldOptions,

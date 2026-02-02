@@ -119,7 +119,12 @@ function parsePromptResponse(rawResponse: string): string {
  */
 export interface GeneratePromptParams {
   templateName: string;
-  field: { name: string; key: string; type: string };
+  field: { 
+    name: string; 
+    key: string; 
+    type: string;
+    options?: { key: string }[];  // Valid options for enum/dropdown fields
+  };
   fileIds?: string[];
   customSystemPrompt?: string;
   documentType?: string;
@@ -342,6 +347,24 @@ export async function generateInitialPrompt(
   // Build document type context
   const docTypeContext = buildDocumentTypeContext(effectiveDocType, templateName, field.name);
 
+  // Build field type context for enum/dropdown/taxonomy fields
+  // NOTE: We do NOT list all options in the prompt because:
+  // 1. Options can be very long (especially taxonomies)
+  // 2. Options may change and we don't want stale prompts
+  // 3. Box AI receives the actual options at extraction time via the field definition
+  const isDropdownType = field.type === 'enum' || field.type === 'multiSelect' || 
+                         field.type === 'dropdown_multi' || field.type === 'taxonomy';
+  const hasOptions = field.options && field.options.length > 0;
+  
+  // Show a few sample options to help the AI understand the nature of values (for context only)
+  const sampleOptions = hasOptions 
+    ? field.options!.slice(0, 3).map(o => o.key).join(', ') + (field.options!.length > 3 ? ', ...' : '')
+    : 'e.g., Option A, Option B, Option C';
+  
+  const dropdownGuidance = isDropdownType
+    ? `\n## DROPDOWN/ENUM FIELD GUIDANCE\nThis is a dropdown field with predefined options (examples: ${sampleOptions}).\nThe generated prompt should:\n- Instruct the AI to return EXACTLY one value from the available dropdown options\n- Do NOT list all the specific option values in the prompt (they are provided separately at extraction time)\n- Use language like "Return one of the available options" or "Select from the dropdown values"\n- Tell the AI to match document content to the closest available option\n`
+    : '';
+
   // Build a more structured generation request
   const generationRequest = `
 SYSTEM: ${systemPrompt}
@@ -349,12 +372,12 @@ SYSTEM: ${systemPrompt}
 ${docTypeContext}## TASK
 Generate a high-quality extraction prompt for the field "${field.name}" (type: ${field.type}).
 ${effectiveDocType ? `Remember: This is for ${effectiveDocType} documents - use appropriate terminology.` : ''}
-
+${dropdownGuidance}
 ## REQUIRED ELEMENTS
 Your prompt MUST include:
 1. LOCATION: Where to look in the document (e.g., "Look in the header", "Search the signature blocks")
 2. SYNONYMS: 3-5 alternative phrases the value might appear as, in quotes
-3. FORMAT: Exact output format (date format, number precision, etc.)
+3. FORMAT: Exact output format${isDropdownType ? ' - must select from available dropdown options' : ' (date format, number precision, etc.)'}
 4. DISAMBIGUATION: "Do NOT..." guidance to prevent common mistakes
 5. NOT-FOUND: What to return if value isn't found (usually "Not Present")
 
@@ -370,7 +393,7 @@ Adapt the terminology and locations to be appropriate for ${effectiveDocType || 
 ${guidelines.length > 0 ? `- Field-Specific Guidelines:\n${guidelines.map(g => `  - ${g}`).join('\n')}` : ''}
 
 ## OUTPUT
-Generate ONLY the extraction prompt (3-5 sentences). Include all required elements.`;
+Generate ONLY the extraction prompt (3-5 sentences). Include all required elements.${isDropdownType ? ' IMPORTANT: Do NOT list specific option values - just instruct to select from available options.' : ''}`;
 
   const rawResponse = await boxApiFetch(
     '/ai/text_gen',
@@ -438,9 +461,9 @@ function getExamplePromptReference(fieldName: string, fieldType: string): string
     return `Search for when this agreement becomes effective. Look for: "effective as of", "effective date", "dated as of", "commences on". Check the document header, first paragraph, and signature blocks. Return the date in YYYY-MM-DD format. If multiple dates exist, use the explicitly labeled "Effective Date". Do NOT use signature dates unless they are the only dates present. Return "Not Present" if no date is found.`;
   }
   
-  // Enum fields
-  if (fieldType === 'enum') {
-    return `Search the document for the ${fieldName}. Return EXACTLY one of the valid options. Look in relevant sections and match the closest option. If the exact term isn't found, infer from context. Return "Not Present" only if no relevant information exists.`;
+  // Enum/dropdown fields - use generic option language (actual options provided at extraction time)
+  if (fieldType === 'enum' || fieldType === 'multiSelect' || fieldType === 'dropdown_multi' || fieldType === 'taxonomy') {
+    return `Search for the ${fieldName} in the document title, header, or first paragraph. Look for synonyms like "Agreement Type", "Type of Contract", or similar labels. Return EXACTLY one value from the available dropdown options that best matches the document content. Do NOT infer or create values outside the available options. Return "Not Present" if no clear match exists.`;
   }
   
   // Counter party fields

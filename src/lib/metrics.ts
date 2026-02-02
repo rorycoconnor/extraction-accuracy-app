@@ -34,6 +34,7 @@ export type MetricsDebugInfo = {
 export type ComparisonResult = {
   isMatch: boolean;
   matchType: 'exact' | 'normalized' | 'partial' | 'date_format' | 'none';
+  matchClassification: 'exact' | 'normalized' | 'partial' | 'different-format' | 'none';
   confidence: 'high' | 'medium' | 'low';
 };
 
@@ -109,39 +110,39 @@ export function compareValues(predicted: string, actual: string): ComparisonResu
   const actualStr = actual != null ? String(actual) : '';
   
   if (!predictedStr || !actualStr) {
-    return { isMatch: false, matchType: 'none', confidence: 'high' };
+    return { isMatch: false, matchType: 'none', matchClassification: 'none', confidence: 'high' };
   }
   
   // Skip pending/error states
   if (predictedStr.startsWith('Pending') || predictedStr.startsWith('Error') || predictedStr.startsWith('Not Found')) {
-    return { isMatch: false, matchType: 'none', confidence: 'high' };
+    return { isMatch: false, matchType: 'none', matchClassification: 'none', confidence: 'high' };
   }
   
   // Handle "Not Present" values - they match if both are "Not Present"
   if (predictedStr === NOT_PRESENT_VALUE && actualStr === NOT_PRESENT_VALUE) {
-    return { isMatch: true, matchType: 'exact', confidence: 'high' };
+    return { isMatch: true, matchType: 'exact', matchClassification: 'exact', confidence: 'high' };
   }
   
   // If one is "Not Present" and the other isn't, they don't match
   if (predictedStr === NOT_PRESENT_VALUE || actualStr === NOT_PRESENT_VALUE) {
-    return { isMatch: false, matchType: 'none', confidence: 'high' };
+    return { isMatch: false, matchType: 'none', matchClassification: 'none', confidence: 'high' };
   }
   
   // Exact string match (case-sensitive)
   if (predictedStr === actualStr) {
-    return { isMatch: true, matchType: 'exact', confidence: 'high' };
+    return { isMatch: true, matchType: 'exact', matchClassification: 'exact', confidence: 'high' };
   }
   
   const normalizedPredicted = normalizeText(predictedStr);
   const normalizedActual = normalizeText(actualStr);
   
   if (!normalizedPredicted || !normalizedActual) {
-    return { isMatch: false, matchType: 'none', confidence: 'high' };
+    return { isMatch: false, matchType: 'none', matchClassification: 'none', confidence: 'high' };
   }
   
   // Exact match after normalization (case-insensitive, punctuation removed)
   if (normalizedPredicted === normalizedActual) {
-    return { isMatch: true, matchType: 'normalized', confidence: 'high' };
+    return { isMatch: true, matchType: 'normalized', matchClassification: 'normalized', confidence: 'high' };
   }
   
   // 🔧 NEW: Handle multi-select fields (e.g., "A, B" matches "B, A")
@@ -154,25 +155,25 @@ export function compareValues(predicted: string, actual: string): ComparisonResu
     // Compare as sorted arrays (order-independent)
     if (predictedItems.length === actualItems.length && 
         predictedItems.every((item, index) => item === actualItems[index])) {
-      return { isMatch: true, matchType: 'normalized', confidence: 'high' };
+      return { isMatch: true, matchType: 'normalized', matchClassification: 'normalized', confidence: 'high' };
     }
   }
   
   // Check for date format differences
   if (isDateLike(predictedStr) && isDateLike(actualStr)) {
     if (compareDates(predictedStr, actualStr)) {
-      return { isMatch: true, matchType: 'date_format', confidence: 'high' };
+      return { isMatch: true, matchType: 'date_format', matchClassification: 'different-format', confidence: 'high' };
     } else {
-      return { isMatch: false, matchType: 'none', confidence: 'high' };
+      return { isMatch: false, matchType: 'none', matchClassification: 'none', confidence: 'high' };
     }
   }
   
   // Partial match - check if one contains the other (useful for addresses, names, etc.)
   if (normalizedPredicted.includes(normalizedActual) || normalizedActual.includes(normalizedPredicted)) {
-    return { isMatch: true, matchType: 'partial', confidence: 'medium' };
+    return { isMatch: true, matchType: 'partial', matchClassification: 'partial', confidence: 'medium' };
   }
   
-  return { isMatch: false, matchType: 'none', confidence: 'high' };
+  return { isMatch: false, matchType: 'none', matchClassification: 'none', confidence: 'high' };
 }
 
 /**

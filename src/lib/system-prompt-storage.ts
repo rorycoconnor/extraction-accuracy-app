@@ -23,10 +23,14 @@ export interface SystemPromptVersion {
   id: string;
   name: string;
   type: SystemPromptType;
-  // For Prompt Studio
-  generatePrompt?: string;
+  // Shared between Agent Alpha and Prompt Studio Generate
+  generateInstructions?: string;
+  // For Prompt Studio Improve only (unchanged)
   improvePrompt?: string;
-  // For Agent Alpha
+  // Legacy fields (for migration) - do not use directly
+  /** @deprecated Use generateInstructions instead */
+  generatePrompt?: string;
+  /** @deprecated Use generateInstructions instead */
   agentInstructions?: string;
   isDefault: boolean;
   createdAt: string;
@@ -41,13 +45,14 @@ export interface SystemPromptStore {
 }
 
 // Create the default Prompt Studio system prompt version
+// Uses the same detailed instructions as Agent Alpha for consistency
 function createDefaultPromptStudioVersion(): SystemPromptVersion {
   const now = new Date().toISOString();
   return {
     id: DEFAULT_PROMPT_STUDIO_VERSION_ID,
     name: 'Default',
     type: 'prompt-studio',
-    generatePrompt: SYSTEM_MESSAGES.GENERATE,
+    generateInstructions: DEFAULT_PROMPT_GENERATION_INSTRUCTIONS,
     improvePrompt: SYSTEM_MESSAGES.IMPROVE,
     isDefault: true,
     createdAt: now,
@@ -56,13 +61,15 @@ function createDefaultPromptStudioVersion(): SystemPromptVersion {
 }
 
 // Create the default Agent Alpha system prompt version
+// Uses the same detailed instructions as Prompt Studio for consistency
 function createDefaultAgentVersion(): SystemPromptVersion {
   const now = new Date().toISOString();
   return {
     id: DEFAULT_AGENT_VERSION_ID,
     name: 'Default',
     type: 'agent-alpha',
-    agentInstructions: DEFAULT_PROMPT_GENERATION_INSTRUCTIONS,
+    generateInstructions: DEFAULT_PROMPT_GENERATION_INSTRUCTIONS,
+    improvePrompt: SYSTEM_MESSAGES.IMPROVE, // Include improve prompt for Prompt Studio use
     isDefault: true,
     createdAt: now,
     updatedAt: now,
@@ -227,14 +234,14 @@ Respond with ONLY valid JSON:
 
 NO markdown, NO code blocks, NO extra text. Just the JSON object.`;
 
-// Create preset Agent Alpha versions for document types
+// Create preset versions for document types (available to both Agent and Prompt Studio)
 function createContractsPresetVersion(): SystemPromptVersion {
   const now = new Date().toISOString();
   return {
     id: PRESET_CONTRACTS_ID,
     name: 'Contracts',
     type: 'agent-alpha',
-    agentInstructions: PRESET_CONTRACTS_INSTRUCTIONS,
+    generateInstructions: PRESET_CONTRACTS_INSTRUCTIONS,
     isDefault: false,
     createdAt: now,
     updatedAt: now,
@@ -247,7 +254,7 @@ function createInvoicesPresetVersion(): SystemPromptVersion {
     id: PRESET_INVOICES_ID,
     name: 'Invoices',
     type: 'agent-alpha',
-    agentInstructions: PRESET_INVOICES_INSTRUCTIONS,
+    generateInstructions: PRESET_INVOICES_INSTRUCTIONS,
     isDefault: false,
     createdAt: now,
     updatedAt: now,
@@ -260,7 +267,7 @@ function createCOIPresetVersion(): SystemPromptVersion {
     id: PRESET_COI_ID,
     name: 'Certificates of Insurance',
     type: 'agent-alpha',
-    agentInstructions: PRESET_COI_INSTRUCTIONS,
+    generateInstructions: PRESET_COI_INSTRUCTIONS,
     isDefault: false,
     createdAt: now,
     updatedAt: now,
@@ -285,28 +292,69 @@ function getInitialStore(): SystemPromptStore {
 
 // Migrate old storage format to new format
 function migrateStore(store: any): SystemPromptStore {
+  let needsSave = false;
+  
   // Check if it's the old format (has activeVersionId instead of type-specific IDs)
   if ('activeVersionId' in store && !('activePromptStudioVersionId' in store)) {
-    logger.info('Migrating system prompt store from old format');
+    logger.info('Migrating system prompt store from old format (activeVersionId)');
     
     // Migrate versions to include type
-    const migratedVersions: SystemPromptVersion[] = store.versions.map((v: any) => ({
+    store.versions = store.versions.map((v: any) => ({
       ...v,
       type: 'prompt-studio' as SystemPromptType,
       id: v.id === 'default' ? DEFAULT_PROMPT_STUDIO_VERSION_ID : v.id,
     }));
     
-    // Add default agent version if not present
-    const hasAgentDefault = migratedVersions.some(v => v.type === 'agent-alpha' && v.isDefault);
-    if (!hasAgentDefault) {
-      migratedVersions.push(createDefaultAgentVersion());
-    }
-    
-    return {
-      activePromptStudioVersionId: store.activeVersionId === 'default' ? DEFAULT_PROMPT_STUDIO_VERSION_ID : store.activeVersionId,
-      activeAgentVersionId: DEFAULT_AGENT_VERSION_ID,
-      versions: migratedVersions,
-    };
+    store.activePromptStudioVersionId = store.activeVersionId === 'default' ? DEFAULT_PROMPT_STUDIO_VERSION_ID : store.activeVersionId;
+    store.activeAgentVersionId = DEFAULT_AGENT_VERSION_ID;
+    delete store.activeVersionId;
+    needsSave = true;
+  }
+  
+  // Migrate agentInstructions and generatePrompt to generateInstructions
+  if (store.versions) {
+    store.versions = store.versions.map((v: any) => {
+      let migrated = { ...v };
+      
+      // Migrate agentInstructions to generateInstructions
+      if (v.agentInstructions && !v.generateInstructions) {
+        migrated.generateInstructions = v.agentInstructions;
+        delete migrated.agentInstructions;
+        needsSave = true;
+        logger.info(`Migrated agentInstructions to generateInstructions for version: ${v.name}`);
+      }
+      
+      // Migrate generatePrompt to generateInstructions (if no generateInstructions already)
+      if (v.generatePrompt && !v.generateInstructions) {
+        migrated.generateInstructions = v.generatePrompt;
+        delete migrated.generatePrompt;
+        needsSave = true;
+        logger.info(`Migrated generatePrompt to generateInstructions for version: ${v.name}`);
+      }
+      
+      // Ensure Default versions use the detailed DEFAULT_PROMPT_GENERATION_INSTRUCTIONS
+      // This fixes old cached defaults that had the simpler SYSTEM_MESSAGES.GENERATE
+      if (v.isDefault && v.generateInstructions && !v.generateInstructions.includes('CRITICAL RULES')) {
+        migrated.generateInstructions = DEFAULT_PROMPT_GENERATION_INSTRUCTIONS;
+        migrated.improvePrompt = SYSTEM_MESSAGES.IMPROVE;
+        needsSave = true;
+        logger.info(`Updated Default version to use detailed instructions: ${v.name}`);
+      }
+      
+      return migrated;
+    });
+  }
+  
+  // Add default agent version if not present
+  const hasAgentDefault = store.versions?.some((v: any) => v.type === 'agent-alpha' && v.isDefault);
+  if (!hasAgentDefault) {
+    store.versions = store.versions || [];
+    store.versions.push(createDefaultAgentVersion());
+    needsSave = true;
+  }
+  
+  if (needsSave) {
+    logger.info('System prompt store migration completed');
   }
   
   return store as SystemPromptStore;
@@ -403,6 +451,7 @@ function saveSystemPromptStore(store: SystemPromptStore): void {
 
 /**
  * Get the currently active Prompt Studio system prompt version
+ * Note: Now returns any version type since generate instructions are shared
  */
 export function getActiveSystemPrompt(): SystemPromptVersion {
   const store = getSystemPromptStore();
@@ -414,34 +463,47 @@ export function getActiveSystemPrompt(): SystemPromptVersion {
     return defaultVersion || createDefaultPromptStudioVersion();
   }
   
+  // Ensure generateInstructions is populated from legacy fields if needed
+  if (!active.generateInstructions) {
+    if (active.agentInstructions) {
+      active.generateInstructions = active.agentInstructions;
+    } else if (active.generatePrompt) {
+      active.generateInstructions = active.generatePrompt;
+    }
+  }
+  
   return active;
 }
 
 /**
  * Set the active Prompt Studio system prompt version by ID
+ * Also syncs with Agent Alpha to keep both using the same generate instructions
  */
 export function setActiveSystemPrompt(versionId: string): boolean {
   const store = getSystemPromptStore();
   const version = store.versions.find(v => v.id === versionId);
   
-  if (!version || version.type !== 'prompt-studio') {
-    logger.warn('Attempted to set active Prompt Studio system prompt to invalid version', { versionId });
+  if (!version) {
+    logger.warn('Attempted to set active Prompt Studio system prompt to non-existent version', { versionId });
     return false;
   }
   
+  // Set both active IDs to sync Agent and Prompt Studio
   store.activePromptStudioVersionId = versionId;
+  store.activeAgentVersionId = versionId;
   saveSystemPromptStore(store);
   
-  logger.info('Active Prompt Studio system prompt changed', { versionId });
+  logger.info('Active system prompt changed (synced Agent and Prompt Studio)', { versionId, name: version.name });
   return true;
 }
 
 /**
  * Create a new Prompt Studio system prompt version
+ * Note: Uses generateInstructions (shared with Agent) and improvePrompt (Prompt Studio only)
  */
 export function createSystemPromptVersion(
   name: string,
-  generatePrompt: string,
+  generateInstructions: string,
   improvePrompt: string
 ): SystemPromptVersion {
   const store = getSystemPromptStore();
@@ -451,7 +513,7 @@ export function createSystemPromptVersion(
     id: uuidv4(),
     name,
     type: 'prompt-studio',
-    generatePrompt,
+    generateInstructions,
     improvePrompt,
     isDefault: false,
     createdAt: now,
@@ -461,22 +523,23 @@ export function createSystemPromptVersion(
   store.versions.push(newVersion);
   saveSystemPromptStore(store);
   
-  logger.info('Created new Prompt Studio system prompt version', { id: newVersion.id, name });
+  logger.info('Created new system prompt version', { id: newVersion.id, name });
   return newVersion;
 }
 
 /**
- * Update an existing Prompt Studio system prompt version
+ * Update an existing system prompt version (works for any type)
+ * Note: Uses generateInstructions (shared with Agent) and improvePrompt (Prompt Studio only)
  */
 export function updateSystemPromptVersion(
   id: string,
-  updates: Partial<Pick<SystemPromptVersion, 'name' | 'generatePrompt' | 'improvePrompt'>>
+  updates: Partial<Pick<SystemPromptVersion, 'name' | 'generateInstructions' | 'improvePrompt'>>
 ): SystemPromptVersion | null {
   const store = getSystemPromptStore();
-  const versionIndex = store.versions.findIndex(v => v.id === id && v.type === 'prompt-studio');
+  const versionIndex = store.versions.findIndex(v => v.id === id);
   
   if (versionIndex === -1) {
-    logger.warn('Attempted to update non-existent Prompt Studio system prompt version', { id });
+    logger.warn('Attempted to update non-existent system prompt version', { id });
     return null;
   }
   
@@ -484,7 +547,7 @@ export function updateSystemPromptVersion(
   
   // Don't allow updating the default version
   if (version.isDefault) {
-    logger.warn('Attempted to update default Prompt Studio system prompt version', { id });
+    logger.warn('Attempted to update default system prompt version', { id });
     return null;
   }
   
@@ -497,19 +560,19 @@ export function updateSystemPromptVersion(
   store.versions[versionIndex] = updatedVersion;
   saveSystemPromptStore(store);
   
-  logger.info('Updated Prompt Studio system prompt version', { id, name: updatedVersion.name });
+  logger.info('Updated system prompt version', { id, name: updatedVersion.name });
   return updatedVersion;
 }
 
 /**
- * Delete a Prompt Studio system prompt version
+ * Delete a system prompt version (works for any type)
  */
 export function deleteSystemPromptVersion(id: string): boolean {
   const store = getSystemPromptStore();
-  const versionIndex = store.versions.findIndex(v => v.id === id && v.type === 'prompt-studio');
+  const versionIndex = store.versions.findIndex(v => v.id === id);
   
   if (versionIndex === -1) {
-    logger.warn('Attempted to delete non-existent Prompt Studio system prompt version', { id });
+    logger.warn('Attempted to delete non-existent system prompt version', { id });
     return false;
   }
   
@@ -517,39 +580,87 @@ export function deleteSystemPromptVersion(id: string): boolean {
   
   // Don't allow deleting the default version
   if (version.isDefault) {
-    logger.warn('Attempted to delete default Prompt Studio system prompt version', { id });
+    logger.warn('Attempted to delete default system prompt version', { id });
     return false;
   }
   
-  // If deleting the active version, switch to default
+  // If deleting the active version, switch to default (for both)
   if (store.activePromptStudioVersionId === id) {
     store.activePromptStudioVersionId = DEFAULT_PROMPT_STUDIO_VERSION_ID;
+  }
+  if (store.activeAgentVersionId === id) {
+    store.activeAgentVersionId = DEFAULT_AGENT_VERSION_ID;
   }
   
   store.versions.splice(versionIndex, 1);
   saveSystemPromptStore(store);
   
-  logger.info('Deleted Prompt Studio system prompt version', { id, name: version.name });
+  logger.info('Deleted system prompt version', { id, name: version.name });
   return true;
 }
 
 /**
- * Get all Prompt Studio system prompt versions
+ * Get all system prompt versions (available to both Prompt Studio and Agent)
+ * Note: Returns deduplicated versions - when names conflict, prefers agent-alpha type
+ * (which has more detailed instructions)
  */
 export function getAllSystemPromptVersions(): SystemPromptVersion[] {
   const store = getSystemPromptStore();
-  return store.versions.filter(v => v.type === 'prompt-studio');
+  
+  // Ensure generateInstructions is populated from legacy fields
+  const versionsWithInstructions = store.versions.map(v => {
+    if (!v.generateInstructions) {
+      if (v.agentInstructions) {
+        v.generateInstructions = v.agentInstructions;
+      } else if (v.generatePrompt) {
+        v.generateInstructions = v.generatePrompt;
+      }
+    }
+    return v;
+  });
+  
+  // Deduplicate by name, merging fields from both types
+  // Agent-alpha has better generateInstructions, prompt-studio has improvePrompt
+  const versionsByName = new Map<string, SystemPromptVersion>();
+  for (const v of versionsWithInstructions) {
+    const existing = versionsByName.get(v.name);
+    if (!existing) {
+      versionsByName.set(v.name, v);
+    } else {
+      // Merge: prefer agent-alpha's generateInstructions, but keep prompt-studio's improvePrompt
+      const merged: SystemPromptVersion = {
+        ...existing,
+        // Take generateInstructions from agent-alpha if available
+        generateInstructions: (v.type === 'agent-alpha' ? v.generateInstructions : existing.generateInstructions) || existing.generateInstructions || v.generateInstructions,
+        // Keep improvePrompt from whichever has it
+        improvePrompt: existing.improvePrompt || v.improvePrompt,
+        // Prefer agent-alpha type for the merged version
+        type: existing.type === 'agent-alpha' || v.type === 'agent-alpha' ? 'agent-alpha' : existing.type,
+      };
+      versionsByName.set(v.name, merged);
+    }
+  }
+  
+  // Ensure ALL versions have improvePrompt (use default if not set)
+  // This is needed for Prompt Studio which uses improvePrompt for the "Improve Prompt" feature
+  const result = Array.from(versionsByName.values()).map(v => ({
+    ...v,
+    improvePrompt: v.improvePrompt || SYSTEM_MESSAGES.IMPROVE,
+  }));
+  
+  return result;
 }
 
 /**
- * Reset to default Prompt Studio system prompt
+ * Reset to default system prompt (syncs both Agent and Prompt Studio)
  */
 export function resetToDefaultSystemPrompt(): void {
   const store = getSystemPromptStore();
   store.activePromptStudioVersionId = DEFAULT_PROMPT_STUDIO_VERSION_ID;
+  store.activeAgentVersionId = DEFAULT_PROMPT_STUDIO_VERSION_ID; // Sync to same default
   saveSystemPromptStore(store);
   
-  logger.info('Reset to default Prompt Studio system prompt');
+  logger.info('Reset to default system prompt (synced Agent and Prompt Studio)');
 }
 
 // ============================================================================
@@ -558,6 +669,7 @@ export function resetToDefaultSystemPrompt(): void {
 
 /**
  * Get the currently active Agent Alpha system prompt version
+ * Note: Now returns any version type since generate instructions are shared
  */
 export function getActiveAgentSystemPrompt(): SystemPromptVersion {
   const store = getSystemPromptStore();
@@ -569,34 +681,46 @@ export function getActiveAgentSystemPrompt(): SystemPromptVersion {
     return defaultVersion || createDefaultAgentVersion();
   }
   
+  // Ensure generateInstructions is populated from legacy fields if needed
+  if (!active.generateInstructions) {
+    if (active.agentInstructions) {
+      active.generateInstructions = active.agentInstructions;
+    } else if (active.generatePrompt) {
+      active.generateInstructions = active.generatePrompt;
+    }
+  }
+  
   return active;
 }
 
 /**
  * Set the active Agent Alpha system prompt version by ID
+ * Also syncs with Prompt Studio to keep both using the same generate instructions
  */
 export function setActiveAgentSystemPrompt(versionId: string): boolean {
   const store = getSystemPromptStore();
   const version = store.versions.find(v => v.id === versionId);
   
-  if (!version || version.type !== 'agent-alpha') {
-    logger.warn('Attempted to set active Agent system prompt to invalid version', { versionId });
+  if (!version) {
+    logger.warn('Attempted to set active Agent system prompt to non-existent version', { versionId });
     return false;
   }
   
+  // Set both active IDs to sync Agent and Prompt Studio
   store.activeAgentVersionId = versionId;
+  store.activePromptStudioVersionId = versionId;
   saveSystemPromptStore(store);
   
-  logger.info('Active Agent system prompt changed', { versionId });
+  logger.info('Active system prompt changed (synced Agent and Prompt Studio)', { versionId, name: version.name });
   return true;
 }
 
 /**
- * Create a new Agent Alpha system prompt version
+ * Create a new system prompt version (available to both Agent and Prompt Studio)
  */
 export function createAgentSystemPromptVersion(
   name: string,
-  agentInstructions: string
+  generateInstructions: string
 ): SystemPromptVersion {
   const store = getSystemPromptStore();
   const now = new Date().toISOString();
@@ -604,8 +728,8 @@ export function createAgentSystemPromptVersion(
   const newVersion: SystemPromptVersion = {
     id: uuidv4(),
     name,
-    type: 'agent-alpha',
-    agentInstructions,
+    type: 'agent-alpha', // Type is kept for backward compatibility but both types use generateInstructions
+    generateInstructions,
     isDefault: false,
     createdAt: now,
     updatedAt: now,
@@ -614,22 +738,22 @@ export function createAgentSystemPromptVersion(
   store.versions.push(newVersion);
   saveSystemPromptStore(store);
   
-  logger.info('Created new Agent system prompt version', { id: newVersion.id, name });
+  logger.info('Created new system prompt version', { id: newVersion.id, name });
   return newVersion;
 }
 
 /**
- * Update an existing Agent Alpha system prompt version
+ * Update an existing system prompt version (works for any type)
  */
 export function updateAgentSystemPromptVersion(
   id: string,
-  updates: Partial<Pick<SystemPromptVersion, 'name' | 'agentInstructions'>>
+  updates: Partial<Pick<SystemPromptVersion, 'name' | 'generateInstructions'>>
 ): SystemPromptVersion | null {
   const store = getSystemPromptStore();
-  const versionIndex = store.versions.findIndex(v => v.id === id && v.type === 'agent-alpha');
+  const versionIndex = store.versions.findIndex(v => v.id === id);
   
   if (versionIndex === -1) {
-    logger.warn('Attempted to update non-existent Agent system prompt version', { id });
+    logger.warn('Attempted to update non-existent system prompt version', { id });
     return null;
   }
   
@@ -637,7 +761,7 @@ export function updateAgentSystemPromptVersion(
   
   // Don't allow updating the default version
   if (version.isDefault) {
-    logger.warn('Attempted to update default Agent system prompt version', { id });
+    logger.warn('Attempted to update default system prompt version', { id });
     return null;
   }
   
@@ -650,19 +774,19 @@ export function updateAgentSystemPromptVersion(
   store.versions[versionIndex] = updatedVersion;
   saveSystemPromptStore(store);
   
-  logger.info('Updated Agent system prompt version', { id, name: updatedVersion.name });
+  logger.info('Updated system prompt version', { id, name: updatedVersion.name });
   return updatedVersion;
 }
 
 /**
- * Delete an Agent Alpha system prompt version
+ * Delete a system prompt version (works for any type)
  */
 export function deleteAgentSystemPromptVersion(id: string): boolean {
   const store = getSystemPromptStore();
-  const versionIndex = store.versions.findIndex(v => v.id === id && v.type === 'agent-alpha');
+  const versionIndex = store.versions.findIndex(v => v.id === id);
   
   if (versionIndex === -1) {
-    logger.warn('Attempted to delete non-existent Agent system prompt version', { id });
+    logger.warn('Attempted to delete non-existent system prompt version', { id });
     return false;
   }
   
@@ -670,39 +794,45 @@ export function deleteAgentSystemPromptVersion(id: string): boolean {
   
   // Don't allow deleting the default version
   if (version.isDefault) {
-    logger.warn('Attempted to delete default Agent system prompt version', { id });
+    logger.warn('Attempted to delete default system prompt version', { id });
     return false;
   }
   
-  // If deleting the active version, switch to default
+  // If deleting the active version, switch to default (for both)
   if (store.activeAgentVersionId === id) {
     store.activeAgentVersionId = DEFAULT_AGENT_VERSION_ID;
+  }
+  if (store.activePromptStudioVersionId === id) {
+    store.activePromptStudioVersionId = DEFAULT_PROMPT_STUDIO_VERSION_ID;
   }
   
   store.versions.splice(versionIndex, 1);
   saveSystemPromptStore(store);
   
-  logger.info('Deleted Agent system prompt version', { id, name: version.name });
+  logger.info('Deleted system prompt version', { id, name: version.name });
   return true;
 }
 
 /**
- * Get all Agent Alpha system prompt versions
+ * Get all system prompt versions (available to both Agent and Prompt Studio)
+ * Note: Returns deduplicated versions - when names conflict, prefers agent-alpha type
+ * (which has more detailed instructions)
  */
 export function getAllAgentSystemPromptVersions(): SystemPromptVersion[] {
-  const store = getSystemPromptStore();
-  return store.versions.filter(v => v.type === 'agent-alpha');
+  // Use the same logic as getAllSystemPromptVersions for consistency
+  return getAllSystemPromptVersions();
 }
 
 /**
- * Reset to default Agent Alpha system prompt
+ * Reset to default system prompt (syncs both Agent and Prompt Studio)
  */
 export function resetToDefaultAgentSystemPrompt(): void {
   const store = getSystemPromptStore();
   store.activeAgentVersionId = DEFAULT_AGENT_VERSION_ID;
+  store.activePromptStudioVersionId = DEFAULT_AGENT_VERSION_ID; // Sync to same default
   saveSystemPromptStore(store);
   
-  logger.info('Reset to default Agent system prompt');
+  logger.info('Reset to default system prompt (synced Agent and Prompt Studio)');
 }
 
 // ============================================================================

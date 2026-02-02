@@ -83,6 +83,7 @@ export const DEFAULT_COMPARE_TYPE_MAP: Record<string, CompareType> = {
   'date': 'date-exact',
   'enum': 'exact-string',
   'multiSelect': 'list-unordered',
+  'taxonomy': 'list-unordered',
 };
 
 /**

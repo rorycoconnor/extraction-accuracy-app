@@ -26,7 +26,8 @@
       "disputeResolution": "Pending...",
       "keyObligationsSummary": "Pending...",
       "folder_path": "Selected Files",
-      "folder_id": "selected"
+      "folder_id": "selected",
+      "counterPartyHeadquarterState": "Florida"
     }
   },
   "1918860970908": {
@@ -55,7 +56,8 @@
       "disputeResolution": "Pending...",
       "keyObligationsSummary": "Pending...",
       "folder_path": "Selected Files",
-      "folder_id": "selected"
+      "folder_id": "selected",
+      "counterPartyHeadquarterState": "Texas"
     }
   },
   "1912834427833": {
@@ -84,7 +86,8 @@
       "disputeResolution": "Pending...",
       "keyObligationsSummary": "Pending...",
       "folder_path": "Selected Files",
-      "folder_id": "selected"
+      "folder_id": "selected",
+      "counterPartyHeadquarterState": "Texas"
     }
   },
   "1918858263705": {
@@ -133,7 +136,8 @@
       "disputeResolution": "Pending...",
       "keyObligationsSummary": "Pending...",
       "folder_path": "Selected Files",
-      "folder_id": "selected"
+      "folder_id": "selected",
+      "counterPartyHeadquarterState": "Florida"
     }
   },
   "1912827412690": {
@@ -162,7 +166,8 @@
       "disputeResolution": "Pending...",
       "keyObligationsSummary": "Pending...",
       "folder_path": "Selected Files",
-      "folder_id": "selected"
+      "folder_id": "selected",
+      "counterPartyHeadquarterState": "Texas"
     }
   },
   "1918854938133": {
@@ -191,7 +196,8 @@
       "disputeResolution": "Pending...",
       "keyObligationsSummary": "Pending...",
       "folder_path": "Selected Files",
-      "folder_id": "selected"
+      "folder_id": "selected",
+      "counterPartyHeadquarterState": "Texas"
     }
   },
   "1918885002919": {
@@ -220,7 +226,8 @@
       "disputeResolution": "Pending...",
       "keyObligationsSummary": "Pending...",
       "folder_path": "Selected Files",
-      "folder_id": "selected"
+      "folder_id": "selected",
+      "counterPartyHeadquarterState": "Texas"
     }
   },
   "1924377124618": {
@@ -5624,6 +5631,12 @@
       "verifiedDocumentType": "Other",
       "verifiedDocumentTypeB": "Other",
       "verifiedDocumentTypeT": "Other"
+    }
+  },
+  "2118067158168": {
+    "templateKey": "tishmanEdgeCases",
+    "groundTruth": {
+      "effectiveDate": "September 9, 2016"
     }
   }
 }

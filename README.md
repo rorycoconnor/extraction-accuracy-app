@@ -12,10 +12,33 @@ A comprehensive tool for optimizing AI model accuracy in metadata extraction fro
 - **Template Management**: Configure extraction templates with custom fields and prompts
 - **Real-time Progress Tracking**: Enhanced progress indicators during extraction operations
 
-### Recent Optimizations (2024)
+### Agent Alpha - Agentic Prompt Optimization
+Agent Alpha is an intelligent prompt optimization system that automatically improves extraction prompts to achieve higher accuracy:
+
+- **Automatic Optimization**: Analyzes extraction failures and iteratively improves prompts until reaching target accuracy
+- **Multi-Field Processing**: Processes multiple fields in parallel for faster optimization
+- **Smart Document Sampling**: Uses holdout validation to prevent overfitting
+- **Configurable Settings**: Customize test model, document count, max attempts, and concurrency
+- **System Prompt Customization**: Create and manage custom system prompt versions for different use cases
+- **Real-time Progress**: Live progress tracking with field-by-field status updates
+- **Preview & Apply**: Review generated prompts before applying them to your template
+
+### Prompt Studio - Manual Prompt Engineering
+Prompt Studio provides a comprehensive environment for manually crafting and testing extraction prompts:
+
+- **AI-Assisted Generation**: Generate initial prompts using AI based on field type and context
+- **Iterative Improvement**: Provide feedback to improve prompts incrementally
+- **Version History**: Track all prompt versions with metrics and favorites
+- **Live Testing**: Test prompts against selected documents with real-time results
+- **System Prompt Integration**: Use custom system prompts to guide prompt generation
+- **Prompt Library**: Save and reuse successful prompts across fields
+
+### Recent Optimizations (2024-2025)
+- ✅ **Agent Alpha**: Agentic prompt optimization with parallel processing and holdout validation
+- ✅ **Prompt Studio**: AI-assisted prompt engineering with version history and testing
+- ✅ **System Prompt Management**: Customizable system prompts for Agent Alpha and Prompt Studio
 - ✅ **Extract Constants**: Reduced 58+ hardcoded strings to 28 organized constants (74% reduction)
 - ✅ **Enhanced Progress State**: Detailed progress tracking with time estimation and completion status
-- 🔄 **Performance Optimization**: Real-time progress updates and improved user experience
 
 ## 🛠️ Technology Stack
 
@@ -82,6 +105,28 @@ A comprehensive tool for optimizing AI model accuracy in metadata extraction fro
 - Run parallel extractions with real-time progress
 - View results in comprehensive comparison table
 
+#### Agent Alpha - Automatic Prompt Optimization
+1. **Run Initial Comparison**: First run a comparison to generate accuracy metrics
+2. **Launch Agent Alpha**: Click the Agent Alpha button in the toolbar
+3. **Configure Settings**:
+   - Choose a System Prompt (or use default)
+   - Select the model to test with
+   - Set number of test documents (1-25)
+   - Configure max attempts per field (1-10)
+   - Set concurrent field processing (1-8)
+4. **Start Optimization**: Click "Start Agent" to begin
+5. **Monitor Progress**: Watch real-time progress as fields are optimized
+6. **Review Results**: Preview optimized prompts with accuracy improvements
+7. **Apply Changes**: Click "Apply Prompts" to save improvements
+
+#### Prompt Studio - Manual Prompt Engineering
+1. **Open Prompt Studio**: Click the prompt icon on any field in the extraction table
+2. **Generate Initial Prompt**: Click "Generate Prompt" for AI-assisted creation
+3. **Refine the Prompt**: Edit manually or provide improvement feedback
+4. **Test Your Prompt**: Select up to 3 files and click "Test" to validate
+5. **Save Version**: Click "Save as New Version" to preserve your changes
+6. **Access Library**: Browse saved prompts from the Prompt Library
+
 #### Ground Truth Management
 - Side-by-side document preview using Box Elements
 - Inline editing of metadata fields
@@ -105,14 +150,30 @@ src/
 │   ├── ground-truth/      # Ground truth editor
 │   └── settings/          # Configuration
 ├── components/            # Reusable UI components
-│   ├── ui/               # Radix UI components
+│   ├── ui/               # Radix UI components (Radix + shadcn/ui)
+│   ├── agent-alpha/      # Agent Alpha optimization modal
+│   │   ├── agent-alpha-modal.tsx    # Main modal container
+│   │   ├── views/                   # Configure, Running, Preview views
+│   │   ├── components/              # Shared components
+│   │   └── types.ts                 # TypeScript interfaces
+│   ├── prompt-studio/    # Prompt Studio engineering interface
+│   │   ├── prompt-studio-sheet.tsx  # Main sheet component
+│   │   ├── panels/                  # File selection, test results
+│   │   └── components/              # Version history card
 │   ├── extraction-table.tsx
-│   ├── extraction-modal.tsx
-│   └── prompt-studio-sheet.tsx
+│   └── extraction-modal.tsx
 ├── lib/                  # Utilities and constants
+│   ├── agent-alpha-config.ts        # Agent Alpha configuration
+│   ├── agent-alpha-types.ts         # Type definitions
+│   └── system-prompt-storage.ts     # System prompt persistence
 ├── services/             # Box API integration
 ├── ai/                   # AI flows and prompts
+│   └── flows/
+│       ├── agent-alpha-prepare.ts   # Work plan preparation
+│       ├── agent-alpha-process-field.ts  # Field optimization
+│       └── agent-alpha-iteration.ts # Iteration logic
 └── hooks/                # Custom React hooks
+    └── use-agent-alpha-runner.ts    # Agent Alpha orchestration
 ```
 
 ### Key Optimizations
@@ -179,6 +240,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🆘 Support
 
 - Check the [documentation](./docs/) for detailed guides
+  - [User Guide](./docs/USER_GUIDE.md) - Comprehensive guide for Agent Alpha and Prompt Studio
+  - [Troubleshooting](./docs/TROUBLESHOOTING.md) - Common issues and solutions
+  - [Quick Start](./QUICK_START_AGENT_ALPHA.md) - Get started with Agent Alpha in 5 minutes
+  - [Architecture](./docs/architecture/) - System architecture and data flows
   - [Testing Documentation](./docs/testing/) - Testing strategy and implementation
   - [Feature Documentation](./docs/features/) - Feature-specific guides
   - [Implementation Guides](./docs/implementation/) - Migration and implementation plans

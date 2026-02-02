@@ -153,7 +153,8 @@ export async function extractMetadataBatch(
           model: job.model,
           duration,
           extractedFieldCount: Object.keys(extractedData).length,
-          hasConfidenceScores: !!confidenceScores
+          hasConfidenceScores: !!confidenceScores,
+          confidenceScoreCount: confidenceScores ? Object.keys(confidenceScores).length : 0
         });
 
         const result: BatchExtractionResult = {

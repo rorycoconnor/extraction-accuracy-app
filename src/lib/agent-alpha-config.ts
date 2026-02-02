@@ -75,8 +75,8 @@ NO markdown, NO code blocks, NO extra text. Just the JSON object.`;
 
 // Static defaults (used as fallbacks)
 export const AGENT_ALPHA_CONFIG = {
-  // Maximum number of documents to sample for testing (increased for better generalization)
-  MAX_DOCS: 10,
+  // Maximum number of documents to sample for testing
+  MAX_DOCS: 8,
 
   // Holdout validation settings to prevent overfitting
   // Ratio of documents to hold out for validation (0.2 = 20%)
@@ -98,16 +98,19 @@ export const AGENT_ALPHA_CONFIG = {
   API_TIMEOUT_MS: 30000,
   
   // Default test model for extractions
-  DEFAULT_TEST_MODEL: 'azure__openai__gpt_4_1_mini',
+  DEFAULT_TEST_MODEL: 'google__gemini_2_5_flash',
   
   // Concurrency limit for parallel document extractions within each iteration
   // Higher values = faster but may hit API rate limits
   EXTRACTION_CONCURRENCY: 5,
   
   // Number of fields to process in parallel
-  // Reduced to 2 to avoid Box API rate limits (429 errors)
+  // Set to 5 for faster processing - may hit Box API rate limits (429 errors) if higher
   // Each field makes multiple API calls (extractions + text gen per iteration)
-  FIELD_CONCURRENCY: 2,
+  FIELD_CONCURRENCY: 5,
+  
+  // Delay between starting new fields to avoid API rate limit bursts (in milliseconds)
+  STAGGER_DELAY_MS: 500,
   
   // Enable deep document analysis for failed extractions
   // When enabled, the agent examines actual document content to understand WHY extractions fail
@@ -130,11 +133,21 @@ export const AGENT_ALPHA_CONFIG = {
   PROMPT_REPAIR_MAX_ATTEMPTS: 1,
 } as const;
 
+// Available models for prompt generation
+// These are high-capability models suitable for writing extraction prompts
+export const PROMPT_GEN_MODELS = [
+  { id: 'google__gemini_2_5_pro', name: 'Gemini 2.5 Pro' },
+  { id: 'google__gemini_2_5_flash', name: 'Gemini 2.5 Flash' },
+  { id: 'aws__claude_4_5_opus', name: 'Claude 4.5 Opus' },
+  { id: 'aws__claude_4_5_sonnet', name: 'Claude 4.5 Sonnet' },
+] as const;
+
 // User-configurable runtime options
 export type AgentAlphaRuntimeConfig = {
   maxDocs: number;
   maxIterations: number;
   testModel: string;
+  promptGenerationModel: string; // Model used for generating/improving prompts
   systemPromptOverride?: string; // If set, prepends to the default system prompt
   customInstructions?: string; // If set, replaces the full prompt generation template
   // Holdout validation settings
@@ -142,6 +155,8 @@ export type AgentAlphaRuntimeConfig = {
   holdoutThreshold?: number; // Min accuracy on holdout to converge (default 1.0)
   // Deterministic mode - downgrade llm-judge to near-exact during optimization
   preferDeterministicCompare?: boolean;
+  // Number of fields to process in parallel (higher = faster but may hit rate limits)
+  fieldConcurrency: number;
 };
 
 // Get default runtime config
@@ -150,10 +165,12 @@ export function getDefaultRuntimeConfig(): AgentAlphaRuntimeConfig {
     maxDocs: AGENT_ALPHA_CONFIG.MAX_DOCS,
     maxIterations: AGENT_ALPHA_CONFIG.MAX_ITERATIONS,
     testModel: AGENT_ALPHA_CONFIG.DEFAULT_TEST_MODEL,
+    promptGenerationModel: 'google__gemini_2_5_pro', // Default to Gemini 2.5 Pro
     systemPromptOverride: undefined,
     customInstructions: undefined,
     holdoutRatio: AGENT_ALPHA_CONFIG.HOLDOUT_RATIO,
     holdoutThreshold: AGENT_ALPHA_CONFIG.HOLDOUT_THRESHOLD,
     preferDeterministicCompare: AGENT_ALPHA_CONFIG.PREFER_DETERMINISTIC_COMPARE,
+    fieldConcurrency: AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY,
   };
 }

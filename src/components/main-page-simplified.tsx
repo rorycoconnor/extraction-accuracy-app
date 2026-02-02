@@ -29,6 +29,7 @@ import EmptyState from '@/components/empty-state';
 import ModalContainer from '@/components/modal-container';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
 import { AgentAlphaModal } from '@/components/agent-alpha-modal';
+import CopyGroundTruthModal from '@/components/copy-ground-truth-modal';
 
 // ===== AI & BUSINESS LOGIC IMPORTS =====
 import { calculateFieldMetrics, calculateFieldMetricsWithDebug } from '@/lib/metrics';
@@ -285,6 +286,7 @@ const MainPage: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<BoxTemplate | null>(null);
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [isOptimizerSummaryOpen, setIsOptimizerSummaryOpen] = useState(false);
+  const [showCopyGroundTruthModal, setShowCopyGroundTruthModal] = useState(false);
   
   // ===== OPTIMIZER STATE =====
   const optimizerState = useOptimizerState();
@@ -473,10 +475,11 @@ const MainPage: React.FC = () => {
   };
 
   /**
-   * Handle copying Enhanced Extract results to ground truth
+   * Handle copying model results to ground truth
+   * @param sourceModel - The model ID to copy results from
    */
-  const handleAutoPopulateGroundTruth = async () => {
-    logger.info('Starting auto-populate ground truth');
+  const handleAutoPopulateGroundTruth = async (sourceModel: string) => {
+    logger.info('Starting auto-populate ground truth', { sourceModel });
     
     if (!accuracyData || !accuracyData.results || accuracyData.results.length === 0) {
       toast({
@@ -497,12 +500,11 @@ const MainPage: React.FC = () => {
     }
 
     let totalUpdated = 0;
-    const enhancedExtractModel = 'enhanced_extract_agent';
 
     logger.debug('Processing data', {
       filesCount: accuracyData.results.length,
       fieldsCount: accuracyData.fields.length,
-      enhancedExtractModel
+      sourceModel
     });
 
     try {
@@ -526,15 +528,15 @@ const MainPage: React.FC = () => {
             continue;
           }
           
-          // Get the value from Enhanced Extract
-          const extractedValue = fieldData[enhancedExtractModel];
+          // Get the value from the selected model
+          const extractedValue = fieldData[sourceModel];
           
-          logger.debug(`Enhanced Extract value`, { fieldKey, value: extractedValue });
+          logger.debug(`Model value`, { fieldKey, sourceModel, value: extractedValue });
           
           if (extractedValue && extractedValue !== '' && extractedValue !== null && extractedValue !== undefined) {
             logger.debug(`Saving field value`, { fieldKey, value: extractedValue });
             
-            // 🔧 Normalize date format to match manual ground truth editor format
+            // Normalize date format to match manual ground truth editor format
             let valueToSave = extractedValue;
             if (fieldConfig.type === 'date') {
               const parsedDate = new Date(extractedValue);
@@ -563,17 +565,17 @@ const MainPage: React.FC = () => {
         }
       }
 
-      logger.info(`Auto-populate complete`, { totalUpdated });
+      logger.info(`Auto-populate complete`, { totalUpdated, sourceModel });
 
       toast({
         title: 'Ground Truth Updated',
-        description: `Successfully copied ${totalUpdated} fields from Enhanced Extract to ground truth.`,
+        description: `Successfully copied ${totalUpdated} fields from ${formatModelName(sourceModel)} to ground truth.`,
       });
 
       // Refresh ground truth to show the updates
       refreshGroundTruth();
 
-      // 🔧 ADDED: Force refresh of the main accuracy data to show ground truth in the grid
+      // Force refresh of the main accuracy data to show ground truth in the grid
       logger.debug('Triggering accuracy data refresh to update grid');
       
       // Get the refreshed ground truth data
@@ -658,6 +660,19 @@ const MainPage: React.FC = () => {
     return visibleModels.length > 0 ? visibleModels[0] : undefined;
   }, [shownColumns]);
 
+  // Get models that were used in the comparison (for copy ground truth modal)
+  const availableModelsForCopy = useMemo(() => {
+    if (!shownColumns) {
+      return [];
+    }
+    
+    // Only include models that are shown (selected for comparison), excluding Ground Truth
+    return Object.entries(shownColumns)
+      .filter(([modelName, isVisible]) => isVisible && modelName !== 'Ground Truth')
+      .map(([modelName]) => modelName)
+      .sort();
+  }, [shownColumns]);
+
  // ===== COMPONENT RENDER =====
  
  return (
@@ -680,8 +695,9 @@ const MainPage: React.FC = () => {
           }
         }}
         onRunComparison={handleRunComparison}
+        onCancelComparison={enhancedRunner.cancelComparison}
         onRunOptimizer={optimizerRunner.runOptimizer}
-         onAutoPopulateGroundTruth={handleAutoPopulateGroundTruth}
+         onAutoPopulateGroundTruth={() => setShowCopyGroundTruthModal(true)}
          onOpenSummary={openPerformanceModal}
          onClearResults={clearResults}
          onResetData={() => setShowResetDialog(true)}
@@ -760,7 +776,7 @@ const MainPage: React.FC = () => {
          onConfirmReset={handleCompleteReset}
        />
 
-      {/* Agent-Alpha Modal */}
+{/* Agent-Alpha Modal */}
       <AgentAlphaModal
         isOpen={agentAlphaRunner.isModalOpen}
         agentAlphaState={agentAlphaRunner.agentAlphaState}
@@ -770,7 +786,15 @@ const MainPage: React.FC = () => {
         onCancel={agentAlphaRunner.discardResults}
         onStartWithConfig={agentAlphaRunner.runAgentAlphaWithConfig}
       />
-     </div>
+
+      {/* Copy Ground Truth Modal */}
+      <CopyGroundTruthModal
+        isOpen={showCopyGroundTruthModal}
+        onClose={() => setShowCopyGroundTruthModal(false)}
+        onConfirm={handleAutoPopulateGroundTruth}
+        availableModels={availableModelsForCopy}
+      />
+    </div>
    );
  };
 

@@ -60,7 +60,7 @@ const navigation: NavigationItem[] = [
 // External link moved to separate section
 const externalLink = {
   name: 'Link to PPP',
-  href: 'https://pcboxdemo.github.io/metadata/index_oauth.html',
+  href: 'https://ppp-tool.fly.dev',
   icon: ExternalLink,
 }
 

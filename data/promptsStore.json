@@ -3,182 +3,78 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 51,
-    "lastModified": "2026-01-23T22:29:19.436Z"
+    "usageCount": 64,
+    "lastModified": "2026-01-31T04:51:00.063Z"
   },
   "terminationForConvenience": {
-    "activePrompt": "Search the \"Termination\" section for whether either party can terminate WITHOUT cause. Look for: \"terminate for convenience\", \"terminate at will\", \"terminate without cause\", \"terminate for any reason\", \"terminate at its sole discretion\", \"terminate upon X days notice\" (without requiring breach). Return \"Yes\" if either party can terminate without cause/breach. Return \"No\" if termination requires cause, breach, or default. Do NOT classify breach-based termination as \"convenience\".",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-23T23:54:06.186Z-b1432674-7974-4a65-8300-68c2db36f013",
-        "prompt": "Search the \"Termination\" section for whether either party can terminate WITHOUT cause. Look for: \"terminate for convenience\", \"terminate at will\", \"terminate without cause\", \"terminate for any reason\", \"terminate at its sole discretion\", \"terminate upon X days notice\" (without requiring breach). Return \"Yes\" if either party can terminate without cause/breach. Return \"No\" if termination requires cause, breach, or default. Do NOT classify breach-based termination as \"convenience\".",
-        "savedAt": "2026-01-23T23:54:06.186Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 25.0% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "terminationForConvenience",
-            "fieldName": "Termination for Convenience",
-            "compareType": "exact-string"
-          },
-          "trainDocIds": [
-            "1912827412690",
-            "1912834427833",
-            "1918858263705",
-            "1918922486299"
-          ],
-          "holdoutDocIds": [
-            "1918860970908"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 50,
-    "lastModified": "2026-01-23T23:54:06.205Z"
+    "usageCount": 72,
+    "lastModified": "2026-01-31T04:51:00.069Z"
   },
   "terminationForCause": {
-    "activePrompt": "Search the \"Termination\" section for cause-based termination rights. Look for: \"terminate for cause\", \"material breach\", \"default\", \"failure to perform\", \"insolvency\", \"bankruptcy\". Return \"Yes\" if the agreement allows termination for cause/breach. Return \"No\" if there is no cause-based termination provision. Note: Most contracts have cause-based termination, so \"Yes\" is common.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-23T23:54:06.186Z-8a8d2c01-d30e-4a15-8b1a-13dcaefb8ea1",
-        "prompt": "Search the \"Termination\" section for cause-based termination rights. Look for: \"terminate for cause\", \"material breach\", \"default\", \"failure to perform\", \"insolvency\", \"bankruptcy\". Return \"Yes\" if the agreement allows termination for cause/breach. Return \"No\" if there is no cause-based termination provision. Note: Most contracts have cause-based termination, so \"Yes\" is common.",
-        "savedAt": "2026-01-23T23:54:06.186Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 25.0% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "terminationForCause",
-            "fieldName": "Termination for Cause",
-            "compareType": "exact-string"
-          },
-          "trainDocIds": [
-            "1912827412690",
-            "1912834427833",
-            "1918858263705",
-            "1918922486299"
-          ],
-          "holdoutDocIds": [
-            "1918860970908"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 52,
-    "lastModified": "2026-01-23T23:54:06.208Z"
+    "usageCount": 75,
+    "lastModified": "2026-01-31T04:51:00.072Z"
   },
   "governingLaw": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 39,
-    "lastModified": "2026-01-23T22:29:19.438Z"
+    "usageCount": 52,
+    "lastModified": "2026-01-31T04:51:00.065Z"
   },
   "venue": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 47,
-    "lastModified": "2026-01-23T22:29:19.439Z"
+    "usageCount": 60,
+    "lastModified": "2026-01-31T04:51:00.067Z"
   },
   "endDate": {
-    "activePrompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-23T23:54:06.186Z-49c4da7d-685f-4b5c-beee-a80ed719da5b",
-        "prompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
-        "savedAt": "2026-01-23T23:54:06.186Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "endDate",
-            "fieldName": "End Date",
-            "compareType": "date-exact"
-          },
-          "trainDocIds": [
-            "1912827412690",
-            "1912834427833",
-            "1918858263705",
-            "1918922486299"
-          ],
-          "holdoutDocIds": [
-            "1918860970908"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 59,
-    "lastModified": "2026-01-23T23:54:06.198Z"
+    "usageCount": 81,
+    "lastModified": "2026-01-31T04:51:00.058Z"
   },
   "effectiveDate": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 40,
-    "lastModified": "2026-01-23T22:29:19.427Z"
+    "usageCount": 53,
+    "lastModified": "2026-01-31T04:51:00.053Z"
   },
   "contractTerm": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 37,
-    "lastModified": "2026-01-23T22:29:19.429Z"
+    "usageCount": 50,
+    "lastModified": "2026-01-31T04:51:00.055Z"
   },
   "counterPartyName": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 48,
-    "lastModified": "2026-01-23T22:29:19.422Z"
+    "usageCount": 69,
+    "lastModified": "2026-01-31T04:51:00.046Z"
   },
   "counterPartyAddress": {
-    "activePrompt": "Search for the counter party's address in Contracts. Look in: (1) opening paragraph/recitals directly after the OTHER party's name (not the extracting company), (2) 'Notices' or 'Notice to Parties' section under the counter party heading, (3) signature blocks beside the counter party's signature line. Look for: 'address for notices', 'principal place of business', 'located at', 'with offices at', 'whose address is', 'residing at'. CRITICAL: EXCLUDE the extracting company's address at 1234 Main Street, Phoenix, Arizona 85032 - this appears in every contract and is NOT the counter party. The counter party is the OTHER company in the agreement. Return the complete street address, city, state, and ZIP on a single line. If multiple addresses exist for the counter party, prefer the Notices section address. Return 'Not Present' if no counter party address is found.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-01-23T23:54:06.186Z-a8cb7c4c-c920-4ee7-8c5f-637c7f0c9790",
-        "prompt": "Search for the counter party's address in Contracts. Look in: (1) opening paragraph/recitals directly after the OTHER party's name (not the extracting company), (2) 'Notices' or 'Notice to Parties' section under the counter party heading, (3) signature blocks beside the counter party's signature line. Look for: 'address for notices', 'principal place of business', 'located at', 'with offices at', 'whose address is', 'residing at'. CRITICAL: EXCLUDE the extracting company's address at 1234 Main Street, Phoenix, Arizona 85032 - this appears in every contract and is NOT the counter party. The counter party is the OTHER company in the agreement. Return the complete street address, city, state, and ZIP on a single line. If multiple addresses exist for the counter party, prefer the Notices section address. Return 'Not Present' if no counter party address is found.",
-        "savedAt": "2026-01-23T23:54:06.186Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 75.0% → Final: 100.0% (2 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "counterPartyAddress",
-            "fieldName": "Counter Party Address",
-            "compareType": "near-exact-string"
-          },
-          "trainDocIds": [
-            "1912827412690",
-            "1912834427833",
-            "1918858263705",
-            "1918922486299"
-          ],
-          "holdoutDocIds": [
-            "1918860970908"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 48,
-    "lastModified": "2026-01-23T23:54:06.189Z"
+    "usageCount": 70,
+    "lastModified": "2026-01-31T04:51:00.049Z"
   },
   "contractType": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 52,
-    "lastModified": "2026-01-23T22:29:19.420Z"
+    "usageCount": 70,
+    "lastModified": "2026-01-31T04:51:00.042Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
@@ -241,8 +137,8 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 36,
-    "lastModified": "2026-01-23T22:29:19.446Z"
+    "usageCount": 49,
+    "lastModified": "2026-01-31T04:51:00.074Z"
   },
   "contractValue": {
     "activePrompt": "",
@@ -443,58 +339,11 @@
     "lastModified": "2025-09-13T05:56:05.071Z"
   },
   "renewalType": {
-    "activePrompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal, No Renewal, or Not Present. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit written agreement or action by both parties to renew, including language like \"shall not renew unless expressly agreed upon in writing\". \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without any renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\", \"shall not renew unless\", \"expressly agreed in writing\". Do NOT confuse automatic termination with autorenewal—if the agreement terminates automatically and requires written agreement to renew, this is Manual Renewal. If unclear and no renewal language exists, return \"Not Present\".",
-    "promptHistory": [
-      {
-        "id": "v5",
-        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal, No Renewal, or Not Present. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit written agreement or action by both parties to renew, including language like \"shall not renew unless expressly agreed upon in writing\". \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without any renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\", \"shall not renew unless\", \"expressly agreed in writing\". Do NOT confuse automatic termination with autorenewal—if the agreement terminates automatically and requires written agreement to renew, this is Manual Renewal. If unclear and no renewal language exists, return \"Not Present\".",
-        "savedAt": "2026-01-23T23:59:18.852Z",
-        "generationMethod": "standard"
-      },
-      {
-        "id": "v4",
-        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
-        "savedAt": "2026-01-23T23:58:13.481Z"
-      },
-      {
-        "id": "v3",
-        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"discuss and agree on renewal\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
-        "savedAt": "2026-01-23T23:57:14.255Z"
-      },
-      {
-        "id": "v2",
-        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"discuss renewal\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
-        "savedAt": "2026-01-23T23:56:21.591Z"
-      },
-      {
-        "id": "agent-alpha-2026-01-23T23:54:06.186Z-1eb81ae3-29d6-4434-bf8f-c710088b700a",
-        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
-        "savedAt": "2026-01-23T23:54:06.186Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 62.5% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "renewalType",
-            "fieldName": "Renewal Type",
-            "compareType": "exact-string"
-          },
-          "trainDocIds": [
-            "1912827412690",
-            "1912834427833",
-            "1918858263705",
-            "1918922486299"
-          ],
-          "holdoutDocIds": [
-            "1918860970908"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 53,
-    "lastModified": "2026-01-23T23:59:18.871Z"
+    "usageCount": 74,
+    "lastModified": "2026-01-31T04:51:00.060Z"
   },
   "disputeResolution": {
     "activePrompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",
@@ -510,11 +359,36 @@
     "lastModified": "2025-09-17T13:51:07.758Z"
   },
   "poNumber": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Search for the Purchase Order number on this invoice. Look for: \"PO #:\", \"P.O.:\", \"PO Number:\", \"Purchase Order:\", \"Customer PO:\", \"Your Order #:\", \"Reference:\". It's usually in the invoice header or billing info section. Do NOT confuse with: Invoice Number (often \"INV-xxxx\"), Confirmation Numbers, or internal reference codes. Return the exact alphanumeric value as shown. Return \"Not Present\" if no PO is referenced.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-01-29T01:49:58.878Z-91d933ee-aa47-4b5a-9320-2ee6e82a5401",
+        "prompt": "Search for the Purchase Order number on this invoice. Look for: \"PO #:\", \"P.O.:\", \"PO Number:\", \"Purchase Order:\", \"Customer PO:\", \"Your Order #:\", \"Reference:\". It's usually in the invoice header or billing info section. Do NOT confuse with: Invoice Number (often \"INV-xxxx\"), Confirmation Numbers, or internal reference codes. Return the exact alphanumeric value as shown. Return \"Not Present\" if no PO is referenced.",
+        "savedAt": "2026-01-29T01:49:58.878Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 60.0% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "azure__openai__gpt_4_1_mini",
+          "compareConfig": {
+            "fieldKey": "poNumber",
+            "fieldName": "PO Number",
+            "compareType": "near-exact-string"
+          },
+          "trainDocIds": [
+            "1997236847445",
+            "1997271985438",
+            "1997273038900"
+          ],
+          "holdoutDocIds": [
+            "1997282187839"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "invoice",
-    "usageCount": 13,
-    "lastModified": "2026-01-23T21:21:53.215Z"
+    "usageCount": 14,
+    "lastModified": "2026-01-29T01:49:58.893Z"
   },
   "dueDate": {
     "activePrompt": "",
@@ -5649,11 +5523,36 @@
     "lastModified": "2026-01-23T21:21:53.194Z"
   },
   "description": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Search for a description or memo explaining this invoice's purpose. Look in: (1) header area near invoice number, (2) \"Subject:\", \"RE:\", \"Memo:\", \"Description:\", \"Purpose:\" fields, (3) reference line. Do NOT extract: the document title \"INVOICE\", invoice numbers, customer names/addresses, or individual line item descriptions. Return a meaningful description of what this invoice is for. Return \"Not Present\" if no overall description exists.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-01-29T01:49:58.878Z-7395098a-b7b0-45b3-810a-481e7ff8c3ad",
+        "prompt": "Search for a description or memo explaining this invoice's purpose. Look in: (1) header area near invoice number, (2) \"Subject:\", \"RE:\", \"Memo:\", \"Description:\", \"Purpose:\" fields, (3) reference line. Do NOT extract: the document title \"INVOICE\", invoice numbers, customer names/addresses, or individual line item descriptions. Return a meaningful description of what this invoice is for. Return \"Not Present\" if no overall description exists.",
+        "savedAt": "2026-01-29T01:49:58.878Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 0.0% → Final: 0.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "azure__openai__gpt_4_1_mini",
+          "compareConfig": {
+            "fieldKey": "description",
+            "fieldName": "Description",
+            "compareType": "near-exact-string"
+          },
+          "trainDocIds": [
+            "1997236847445",
+            "1997271985438",
+            "1997273038900"
+          ],
+          "holdoutDocIds": [
+            "1997282187839"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "invoice",
-    "usageCount": 10,
-    "lastModified": "2026-01-23T21:21:53.198Z"
+    "usageCount": 11,
+    "lastModified": "2026-01-29T01:49:58.881Z"
   },
   "invoiceDate": {
     "activePrompt": "",
@@ -5663,46 +5562,196 @@
     "lastModified": "2026-01-23T21:21:53.201Z"
   },
   "amountDue": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Search for the final amount due on this invoice. Look for: \"Amount Due:\", \"Total Due:\", \"Balance Due:\", \"Total:\", \"Grand Total:\", \"Invoice Total:\". This is typically at the bottom of the invoice near payment instructions. Return the EXACT numeric value including cents (e.g., \"1234.56\" not \"1235\" or \"1234\"). Do NOT round! Remove currency symbols but preserve decimal precision exactly as shown.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-01-29T01:49:58.878Z-a2d042c9-9596-4602-9fd2-6e581a1c021e",
+        "prompt": "Search for the final amount due on this invoice. Look for: \"Amount Due:\", \"Total Due:\", \"Balance Due:\", \"Total:\", \"Grand Total:\", \"Invoice Total:\". This is typically at the bottom of the invoice near payment instructions. Return the EXACT numeric value including cents (e.g., \"1234.56\" not \"1235\" or \"1234\"). Do NOT round! Remove currency symbols but preserve decimal precision exactly as shown.",
+        "savedAt": "2026-01-29T01:49:58.878Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 40.0% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "azure__openai__gpt_4_1_mini",
+          "compareConfig": {
+            "fieldKey": "amountDue",
+            "fieldName": "Amount Due",
+            "compareType": "exact-number"
+          },
+          "trainDocIds": [
+            "1997236847445",
+            "1997271985438",
+            "1997273038900"
+          ],
+          "holdoutDocIds": [
+            "1997282187839"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "invoice",
-    "usageCount": 11,
-    "lastModified": "2026-01-23T21:21:53.204Z"
+    "usageCount": 12,
+    "lastModified": "2026-01-29T01:49:58.887Z"
   },
   "items": {
-    "activePrompt": "",
-    "promptHistory": [],
-    "lastUsedTemplate": "invoice",
-    "usageCount": 10,
-    "lastModified": "2026-01-23T21:21:53.210Z"
-  },
-  "term": {
-    "activePrompt": "",
-    "promptHistory": [],
-    "lastUsedTemplate": "invoice",
-    "usageCount": 10,
-    "lastModified": "2026-01-23T21:21:53.212Z"
-  },
-  "salesAmountNumber": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Extract line items from the invoice table. Look in the main itemization table with columns like \"Description\", \"Item\", \"Qty\", \"Unit Price\", \"Amount\". Extract ONLY the description/name of each product or service, not quantities or prices. Do NOT include: table headers, subtotal/total rows, tax lines, or notes. Format as comma-separated list if multiple items. Return \"Not Present\" if no itemized products/services exist.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-01-29T01:49:58.878Z-1de93c91-c6d5-4f35-b665-6ef08d89aafe",
+        "prompt": "Extract line items from the invoice table. Look in the main itemization table with columns like \"Description\", \"Item\", \"Qty\", \"Unit Price\", \"Amount\". Extract ONLY the description/name of each product or service, not quantities or prices. Do NOT include: table headers, subtotal/total rows, tax lines, or notes. Format as comma-separated list if multiple items. Return \"Not Present\" if no itemized products/services exist.",
+        "savedAt": "2026-01-29T01:49:58.878Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 0.0% → Final: 0.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "azure__openai__gpt_4_1_mini",
+          "compareConfig": {
+            "fieldKey": "items",
+            "fieldName": "Items",
+            "compareType": "near-exact-string"
+          },
+          "trainDocIds": [
+            "1997236847445",
+            "1997271985438",
+            "1997273038900"
+          ],
+          "holdoutDocIds": [
+            "1997282187839"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "invoice",
     "usageCount": 11,
-    "lastModified": "2026-01-23T21:21:53.217Z"
+    "lastModified": "2026-01-29T01:49:58.889Z"
+  },
+  "term": {
+    "activePrompt": "Search for payment terms in Invoice documents. Look in: (1) header area near invoice number/date for labeled fields, (2) a dedicated 'Terms' or 'Payment Terms' row/cell in tables, (3) itemized details section. Look for explicit labels like: 'Payment Terms:', 'Terms:', 'Net Terms:', 'Pay Terms:', 'Credit Terms:', 'Due Terms:'. Extract values such as 'NET 20', 'NET 30', 'NET 15', 'NET 60', 'Due on Receipt'. ONLY extract when the value appears directly adjacent to an explicit label—do NOT extract from prose sentences, footer reminders, or standalone mentions like 'remit payment within 30 days'. Return standardized uppercase format (e.g., 'NET 20'). Return empty string '' if no explicitly labeled payment term field exists.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-01-29T01:49:58.878Z-9a55ce82-3c88-46c3-96b0-58aa74b42665",
+        "prompt": "Search for payment terms in Invoice documents. Look in: (1) header area near invoice number/date for labeled fields, (2) a dedicated 'Terms' or 'Payment Terms' row/cell in tables, (3) itemized details section. Look for explicit labels like: 'Payment Terms:', 'Terms:', 'Net Terms:', 'Pay Terms:', 'Credit Terms:', 'Due Terms:'. Extract values such as 'NET 20', 'NET 30', 'NET 15', 'NET 60', 'Due on Receipt'. ONLY extract when the value appears directly adjacent to an explicit label—do NOT extract from prose sentences, footer reminders, or standalone mentions like 'remit payment within 30 days'. Return standardized uppercase format (e.g., 'NET 20'). Return empty string '' if no explicitly labeled payment term field exists.",
+        "savedAt": "2026-01-29T01:49:58.878Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 60.0% → Final: 100.0% (3 iterations)",
+        "experimentMetadata": {
+          "testModel": "azure__openai__gpt_4_1_mini",
+          "compareConfig": {
+            "fieldKey": "term",
+            "fieldName": "Term",
+            "compareType": "near-exact-string"
+          },
+          "trainDocIds": [
+            "1997236847445",
+            "1997271985438",
+            "1997273038900"
+          ],
+          "holdoutDocIds": [
+            "1997282187839"
+          ]
+        }
+      }
+    ],
+    "lastUsedTemplate": "invoice",
+    "usageCount": 11,
+    "lastModified": "2026-01-29T01:49:58.891Z"
+  },
+  "salesAmountNumber": {
+    "activePrompt": "Search for the subtotal or sales amount BEFORE tax and shipping. Look for: \"Subtotal:\", \"Sales Amount:\", \"Merchandise Total:\", \"Net Amount:\", \"Taxable Amount:\". This appears after line items but before tax/shipping/total. Return the EXACT amount with cents (e.g., \"432.50\"). Do NOT confuse with the grand total that includes tax. Do NOT round.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-01-29T01:49:58.878Z-6051394f-885d-413a-bd98-0753c9c150b3",
+        "prompt": "Search for the subtotal or sales amount BEFORE tax and shipping. Look for: \"Subtotal:\", \"Sales Amount:\", \"Merchandise Total:\", \"Net Amount:\", \"Taxable Amount:\". This appears after line items but before tax/shipping/total. Return the EXACT amount with cents (e.g., \"432.50\"). Do NOT confuse with the grand total that includes tax. Do NOT round.",
+        "savedAt": "2026-01-29T01:49:58.878Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 20.0% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "azure__openai__gpt_4_1_mini",
+          "compareConfig": {
+            "fieldKey": "salesAmountNumber",
+            "fieldName": "Sales Amount Number",
+            "compareType": "exact-number"
+          },
+          "trainDocIds": [
+            "1997236847445",
+            "1997271985438",
+            "1997273038900"
+          ],
+          "holdoutDocIds": [
+            "1997282187839"
+          ]
+        }
+      }
+    ],
+    "lastUsedTemplate": "invoice",
+    "usageCount": 12,
+    "lastModified": "2026-01-29T01:49:58.894Z"
   },
   "salesTax": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Search for the sales tax amount on this invoice. Look for: \"Sales Tax:\", \"Tax:\", \"Tax Amount:\", \"VAT:\", \"GST:\", \"State Tax:\". It's usually shown as a line item between subtotal and total. Return the EXACT dollar amount with cents (e.g., \"45.67\" not \"45.7\" or \"46\"). Do NOT return the tax rate percentage. If tax shows \"$0.00\" or \"Exempt\", return \"0\". Return \"Not Present\" only if no tax line exists.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-01-29T01:49:58.878Z-5828a759-7964-40ed-9029-7be8662293d6",
+        "prompt": "Search for the sales tax amount on this invoice. Look for: \"Sales Tax:\", \"Tax:\", \"Tax Amount:\", \"VAT:\", \"GST:\", \"State Tax:\". It's usually shown as a line item between subtotal and total. Return the EXACT dollar amount with cents (e.g., \"45.67\" not \"45.7\" or \"46\"). Do NOT return the tax rate percentage. If tax shows \"$0.00\" or \"Exempt\", return \"0\". Return \"Not Present\" only if no tax line exists.",
+        "savedAt": "2026-01-29T01:49:58.878Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 60.0% → Final: 0.0% (5 iterations)",
+        "experimentMetadata": {
+          "testModel": "azure__openai__gpt_4_1_mini",
+          "compareConfig": {
+            "fieldKey": "salesTax",
+            "fieldName": "Sales Tax",
+            "compareType": "exact-number"
+          },
+          "trainDocIds": [
+            "1997236847445",
+            "1997271985438",
+            "1997273038900"
+          ],
+          "holdoutDocIds": [
+            "1997282187839"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "invoice",
-    "usageCount": 10,
-    "lastModified": "2026-01-23T21:21:53.219Z"
+    "usageCount": 11,
+    "lastModified": "2026-01-29T01:49:58.896Z"
   },
   "freightAmount": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "LOCATION: Scan the ENTIRE invoice line-by-line, focusing on itemized charge sections, line item tables, subtotal/total areas, charge summaries, footer sections, and any supplementary fee breakdowns. Check both the main body and any boxed summary sections near the bottom of the document. SYNONYMS: Look for \"Freight\", \"FRT\", \"Shipping\", \"Ship Chg\", \"Delivery\", \"Transport\", \"Carrier\", \"S&H\", \"Freight Charges\", \"Shipping Cost\", \"Delivery Fee\", \"Shipping & Handling\", \"Freight Fee\", \"Carrier Charges\", \"Transportation\", \"Logistics Fee\". ZERO-VALUE RULE: If freight line exists but shows '$0.00', '0.00', 'NO CHARGE', 'INCLUDED', 'PREPAID', 'N/C', '-', or blank amount, return '0'. This is NOT the same as missing - return '0' for zero-value freight. FORMAT: Return numeric value with exact decimal places as printed (e.g., '55.00' stays '55.00', '125.50' stays '125.50'). Strip $ and commas only. Do NOT confuse with Tax, Insurance, or Handling if listed separately. Return 'Not Present' ONLY when no freight/shipping line appears anywhere on invoice.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-01-29T01:49:58.878Z-03ab363e-ebe7-4181-8bba-fed302d1d7e6",
+        "prompt": "LOCATION: Scan the ENTIRE invoice line-by-line, focusing on itemized charge sections, line item tables, subtotal/total areas, charge summaries, footer sections, and any supplementary fee breakdowns. Check both the main body and any boxed summary sections near the bottom of the document. SYNONYMS: Look for \"Freight\", \"FRT\", \"Shipping\", \"Ship Chg\", \"Delivery\", \"Transport\", \"Carrier\", \"S&H\", \"Freight Charges\", \"Shipping Cost\", \"Delivery Fee\", \"Shipping & Handling\", \"Freight Fee\", \"Carrier Charges\", \"Transportation\", \"Logistics Fee\". ZERO-VALUE RULE: If freight line exists but shows '$0.00', '0.00', 'NO CHARGE', 'INCLUDED', 'PREPAID', 'N/C', '-', or blank amount, return '0'. This is NOT the same as missing - return '0' for zero-value freight. FORMAT: Return numeric value with exact decimal places as printed (e.g., '55.00' stays '55.00', '125.50' stays '125.50'). Strip $ and commas only. Do NOT confuse with Tax, Insurance, or Handling if listed separately. Return 'Not Present' ONLY when no freight/shipping line appears anywhere on invoice.",
+        "savedAt": "2026-01-29T01:49:58.878Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 40.0% → Final: 50.0% (5 iterations)",
+        "experimentMetadata": {
+          "testModel": "azure__openai__gpt_4_1_mini",
+          "compareConfig": {
+            "fieldKey": "freightAmount",
+            "fieldName": "Freight Amount",
+            "compareType": "exact-number"
+          },
+          "trainDocIds": [
+            "1997236847445",
+            "1997271985438",
+            "1997273038900"
+          ],
+          "holdoutDocIds": [
+            "1997282187839"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "invoice",
-    "usageCount": 10,
-    "lastModified": "2026-01-23T21:21:53.222Z"
+    "usageCount": 11,
+    "lastModified": "2026-01-29T01:49:58.898Z"
   },
   "app_date": {
     "activePrompt": "rwar",
@@ -6680,5 +6729,12 @@
     "lastUsedTemplate": "tishman",
     "usageCount": 2,
     "lastModified": "2026-01-22T03:16:12.503Z"
+  },
+  "counterPartyHeadquarterState": {
+    "activePrompt": "",
+    "promptHistory": [],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 8,
+    "lastModified": "2026-01-31T04:51:00.076Z"
   }
 }

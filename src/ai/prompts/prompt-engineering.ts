@@ -49,7 +49,7 @@ export const FIELD_TYPE_HEURISTICS: Record<string, string[]> = {
 // Keyword heuristics handle common field names
 export const FIELD_KEY_HEURISTICS: Record<string, string[]> = {
   counterparty: [
-    'The counterparty is the other party in the agreement, not our company (Increo, Inc.).',
+    'The counterparty is the OTHER party in the agreement - not your organization. Look for "by and between" clauses to identify both parties.',
   ],
   term: [
     'If the term is not explicitly stated, try to calculate it from the start and end dates.',

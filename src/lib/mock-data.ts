@@ -40,7 +40,7 @@ export function getConfiguredTemplates(): BoxTemplate[] {
   return [];
 }
 
-function saveConfiguredTemplates(templates: BoxTemplate[]) {
+export function saveConfiguredTemplates(templates: BoxTemplate[]) {
     if (typeof window === 'undefined') {
         return;
     }

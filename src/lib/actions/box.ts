@@ -1,6 +1,6 @@
 'use server';
 
-import { getTemplates, getFolderItems, getFolderContents, getBoxFileContent, getBoxFileEmbedLink } from '@/services/box';
+import { getTemplates, getTemplatesWithTaxonomyOptions, getFolderItems, getFolderContents, getBoxFileContent, getBoxFileEmbedLink } from '@/services/box';
 import { logger } from '@/lib/logger';
 import type { BoxTemplate, BoxFile, BoxFolder } from '@/lib/types';
 
@@ -10,6 +10,20 @@ export async function getBoxTemplates(): Promise<BoxTemplate[]> {
         return templates;
     } catch (error) {
         logger.error('Error in getBoxTemplates server action', error instanceof Error ? error : { error });
+        throw error;
+    }
+}
+
+/**
+ * Get templates with taxonomy options populated.
+ * This fetches taxonomy field options from Box for fields that don't have options.
+ */
+export async function getBoxTemplatesWithTaxonomyOptions(): Promise<BoxTemplate[]> {
+    try {
+        const templates = await getTemplatesWithTaxonomyOptions();
+        return templates;
+    } catch (error) {
+        logger.error('Error in getBoxTemplatesWithTaxonomyOptions server action', error instanceof Error ? error : { error });
         throw error;
     }
 }

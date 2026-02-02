@@ -11,22 +11,31 @@ export function calculateAvgImprovement(results: AgentAlphaPendingResults['resul
   return ((totalImprovement / results.length) * 100).toFixed(1);
 }
 
-export function formatEstimatedTime(totalFields: number, maxIterations?: number, maxDocs?: number): string {
+export function formatEstimatedTime(
+  totalFields: number, 
+  maxIterations?: number, 
+  maxDocs?: number,
+  fieldConcurrency?: number
+): string {
   const iterations = maxIterations || AGENT_ALPHA_CONFIG.MAX_ITERATIONS;
   const docs = maxDocs || AGENT_ALPHA_CONFIG.MAX_DOCS;
-  const fieldConcurrency = AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY;
+  const concurrency = fieldConcurrency || AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY;
   
   // With parallelization:
-  // - Documents are extracted in parallel (5 at a time)
-  // - Fields are processed in parallel (2 at a time)
-  // Each iteration takes ~6-8 seconds (parallel doc extraction)
-  // Average iterations per field is typically ~2-3 (not always max)
+  // - Documents are extracted in parallel (EXTRACTION_CONCURRENCY at a time)
+  // - Fields are processed in parallel (fieldConcurrency at a time)
+  // Real-world timing shows ~20-25 seconds per iteration including:
+  // - Document extraction API calls
+  // - Prompt generation API call
+  // - Rate limit delays (500ms stagger)
+  // - Network latency
   const avgIterationsPerField = Math.min(iterations, 3);
-  const secondsPerIteration = 6 + (docs / AGENT_ALPHA_CONFIG.EXTRACTION_CONCURRENCY) * 3;
+  // Based on observed timings: ~20 seconds base + extraction time
+  const secondsPerIteration = 20 + (docs / AGENT_ALPHA_CONFIG.EXTRACTION_CONCURRENCY) * 6;
   const secondsPerField = avgIterationsPerField * secondsPerIteration;
   
   // Fields processed in parallel batches
-  const fieldBatches = Math.ceil(totalFields / fieldConcurrency);
+  const fieldBatches = Math.ceil(totalFields / concurrency);
   const estimatedSeconds = fieldBatches * secondsPerField;
   
   const minutes = Math.floor(estimatedSeconds / 60);

@@ -109,7 +109,7 @@ export const useAgentAlphaRunner = () => {
         },
       });
 
-      const concurrencyLimit = AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY;
+      const concurrencyLimit = config.fieldConcurrency;
       logger.info(`Agent-Alpha: Processing ${workPlan.fields.length} fields with concurrency limit of ${concurrencyLimit}...`);
       toast({
         title: 'Agent-Alpha Started',
@@ -118,6 +118,10 @@ export const useAgentAlphaRunner = () => {
 
       // Step 2: Process fields with controlled concurrency
       const results: AgentAlphaFieldResult[] = [];
+      
+      // Track parallel execution for debugging
+      let maxConcurrentFields = 0;
+      const fieldTimings: { fieldName: string; startTime: number; endTime: number }[] = [];
 
       // Process a single field - dispatches STARTED when it begins, COMPLETED when done
       const processFieldWithDispatch = async (fieldPlan: typeof workPlan.fields[0], fieldIndex: number): Promise<AgentAlphaFieldResult | null> => {
@@ -134,7 +138,12 @@ export const useAgentAlphaRunner = () => {
           },
         });
 
-        logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] Starting ${fieldPlan.field.name}...`);
+        logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] Starting ${fieldPlan.field.name} (concurrent: ${executing.size + 1})...`);
+        
+        // Track concurrent execution
+        if (executing.size + 1 > maxConcurrentFields) {
+          maxConcurrentFields = executing.size + 1;
+        }
 
         try {
           // Get compare config for this field from compare type storage
@@ -155,6 +164,7 @@ export const useAgentAlphaRunner = () => {
             holdoutThreshold: config.holdoutThreshold,
             templateKey: workPlan.templateKey,
             testModel: config.testModel,
+            promptGenerationModel: config.promptGenerationModel,
             fieldIndex,
             totalFields: workPlan.fields.length,
             maxIterations: config.maxIterations,
@@ -165,8 +175,15 @@ export const useAgentAlphaRunner = () => {
           const fieldEndTime = Date.now();
           const fieldTimeMs = fieldEndTime - fieldStartTime;
           
+          // Track timing for parallel analysis
+          fieldTimings.push({
+            fieldName: fieldPlan.field.name,
+            startTime: fieldStartTime,
+            endTime: fieldEndTime,
+          });
+          
           // Dispatch completion IMMEDIATELY when this field finishes
-          logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] Completed ${fieldPlan.field.name} - dispatching update`);
+          logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] Completed ${fieldPlan.field.name} in ${(fieldTimeMs / 1000).toFixed(1)}s (remaining concurrent: ${executing.size - 1})`);
           dispatch({
             type: 'AGENT_ALPHA_FIELD_COMPLETED',
             payload: {
@@ -213,7 +230,7 @@ export const useAgentAlphaRunner = () => {
       const executing: Set<Promise<void>> = new Set();
       
       // Small delay between starting fields to avoid API rate limit bursts
-      const STAGGER_DELAY_MS = 500; // 500ms between starting new fields
+      const staggerDelayMs = AGENT_ALPHA_CONFIG.STAGGER_DELAY_MS;
       
       for (let i = 0; i < workPlan.fields.length; i++) {
         const fieldPlan = workPlan.fields[i];
@@ -235,25 +252,43 @@ export const useAgentAlphaRunner = () => {
         if (executing.size >= concurrencyLimit) {
           await Promise.race(executing);
           // Add small delay after a slot opens to avoid burst patterns
-          await new Promise(resolve => setTimeout(resolve, STAGGER_DELAY_MS));
+          await new Promise(resolve => setTimeout(resolve, staggerDelayMs));
         }
       }
       
       // Wait for remaining fields to complete
       await Promise.all(executing);
       
+      // Log parallel execution analysis
       logger.info(`Agent-Alpha: All ${workPlan.fields.length} fields processed.`);
+      logger.info(`Agent-Alpha: Parallel execution stats - Max concurrent fields: ${maxConcurrentFields}/${concurrencyLimit}`);
+      
+      // Calculate overlap to verify parallelism
+      if (fieldTimings.length > 1) {
+        let overlapCount = 0;
+        for (let i = 0; i < fieldTimings.length; i++) {
+          for (let j = i + 1; j < fieldTimings.length; j++) {
+            const a = fieldTimings[i];
+            const b = fieldTimings[j];
+            // Check if fields overlapped in time
+            if (a.startTime < b.endTime && b.startTime < a.endTime) {
+              overlapCount++;
+            }
+          }
+        }
+        logger.info(`Agent-Alpha: Parallel execution verified - ${overlapCount} field pairs processed concurrently`);
+      }
 
       // Step 3: Calculate timing and prepare results
       const endTime = Date.now();
       const actualTimeMs = endTime - runStartTime;
       
       // Estimate based on config (with parallelization)
-      // Fields run in parallel (2 at a time), docs run in parallel (5 at a time)
+      // Fields run in parallel (fieldConcurrency at a time), docs run in parallel (5 at a time)
       const avgIterations = Math.min(config.maxIterations, 3);
       const secondsPerIteration = 6 + (config.maxDocs / AGENT_ALPHA_CONFIG.EXTRACTION_CONCURRENCY) * 3;
       const secondsPerField = avgIterations * secondsPerIteration;
-      const fieldBatches = Math.ceil(workPlan.fields.length / AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY);
+      const fieldBatches = Math.ceil(workPlan.fields.length / config.fieldConcurrency);
       const estimatedTimeMs = fieldBatches * secondsPerField * 1000;
       
       // Build document name mapping

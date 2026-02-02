@@ -15,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { getBoxTemplates } from '@/lib/actions/box';
+import { getBoxTemplatesWithTaxonomyOptions } from '@/lib/actions/box';
 import type { BoxTemplate } from '@/lib/types';
 import { Loader2, Terminal } from 'lucide-react';
 import { logger } from '@/lib/logger';
@@ -43,7 +43,7 @@ export default function NewTemplateDialog({
       setIsLoading(true);
       setError(null);
       setSelectedTemplateIds(new Set());
-      getBoxTemplates()
+      getBoxTemplatesWithTaxonomyOptions()
         .then(setAllTemplates)
         .catch((err) => {
           setError(err instanceof Error ? err.message : 'An unknown error occurred.');

@@ -46,6 +46,10 @@ export default function InlineGroundTruthEditor({
   
   // Track previous isOpen state to detect open/close transitions
   const prevIsOpenRef = React.useRef(isOpen);
+  
+  // Track focused element to restore after iframe loads (focus theft prevention)
+  const focusedElementRef = React.useRef<HTMLElement | null>(null);
+  const formContainerRef = React.useRef<HTMLDivElement>(null);
 
   const { control, handleSubmit, formState: { isSubmitting }, reset } = useForm({
     defaultValues: {
@@ -72,6 +76,11 @@ export default function InlineGroundTruthEditor({
 
       getBoxFileEmbedLinkAction(file.id)
         .then(url => {
+          // Capture currently focused element before iframe renders
+          if (document.activeElement instanceof HTMLElement && 
+              formContainerRef.current?.contains(document.activeElement)) {
+            focusedElementRef.current = document.activeElement;
+          }
           setEmbedUrl(url);
         })
         .catch(err => {
@@ -83,6 +92,57 @@ export default function InlineGroundTruthEditor({
         });
     }
   }, [isOpen, file.id]);
+
+  // Handle iframe load to restore focus after Box embed steals it
+  const handleIframeLoad = React.useCallback(() => {
+    // Box's embed viewer steals focus multiple times as it initializes.
+    // We monitor and restore focus for a short period after load.
+    const restoreFocus = () => {
+      if (focusedElementRef.current && document.body.contains(focusedElementRef.current)) {
+        // Check if focus has moved to something outside our form (like the iframe)
+        const activeElement = document.activeElement;
+        const isInForm = formContainerRef.current?.contains(activeElement);
+        const isInIframe = activeElement?.tagName === 'IFRAME';
+        
+        if (!isInForm || isInIframe) {
+          focusedElementRef.current.focus();
+        }
+      }
+    };
+
+    // Restore focus multiple times to combat Box's repeated focus theft
+    // Box viewer initializes in phases and may steal focus multiple times
+    requestAnimationFrame(restoreFocus);
+    setTimeout(restoreFocus, 100);
+    setTimeout(restoreFocus, 300);
+    setTimeout(restoreFocus, 500);
+  }, []);
+
+  // Track focus changes within the form to know what to restore
+  const handleFormFocus = React.useCallback((e: React.FocusEvent) => {
+    if (e.target instanceof HTMLElement) {
+      focusedElementRef.current = e.target;
+    }
+  }, []);
+
+  // Detect when focus leaves the form to the iframe and restore it
+  const handleFormBlur = React.useCallback((e: React.FocusEvent) => {
+    // Use setTimeout to check where focus went after the blur completes
+    setTimeout(() => {
+      const activeElement = document.activeElement;
+      const isInIframe = activeElement?.tagName === 'IFRAME';
+      const isInForm = formContainerRef.current?.contains(activeElement);
+      
+      // If focus went to the iframe and we had a focused form element, restore focus
+      if ((isInIframe || !isInForm) && focusedElementRef.current && document.body.contains(focusedElementRef.current)) {
+        // Only restore if the user was actively editing (input, textarea, or select)
+        const tagName = focusedElementRef.current.tagName.toLowerCase();
+        if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') {
+          focusedElementRef.current.focus();
+        }
+      }
+    }, 0);
+  }, []);
 
   // Fetch context information when the editor opens with a current value
   React.useEffect(() => {
@@ -206,6 +266,7 @@ export default function InlineGroundTruthEditor({
             title="PDF Preview"
             tabIndex={-1}
             sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+            onLoad={handleIframeLoad}
           />
         )}
       </>
@@ -229,7 +290,7 @@ export default function InlineGroundTruthEditor({
           </div>
           
           {/* Right Side: Field Editor */}
-          <div className="flex-[2] flex flex-col border-l">
+          <div className="flex-[2] flex flex-col border-l" ref={formContainerRef} onFocusCapture={handleFormFocus} onBlurCapture={handleFormBlur}>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
               <DialogHeader className="p-6 border-b">
                 <DialogTitle className="font-headline text-xl flex items-center gap-2">

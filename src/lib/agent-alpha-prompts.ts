@@ -264,10 +264,17 @@ Adapt the terminology and locations to be appropriate for ${documentType || 'thi
     prompt += successExamples.slice(0, 2).map(ex => `"${truncate(ex.value, 60)}"`).join(', ') + '\n';
   }
 
-  // Add valid options for enum types
-  if (options && options.length > 0) {
-    prompt += `\n## VALID OPTIONS (must return EXACTLY one of these)\n`;
-    prompt += options.map(o => `- ${o.key}`).join('\n') + '\n';
+  // Add dropdown/enum guidance with sample options (not all options)
+  // NOTE: We do NOT list all options because:
+  // 1. Options can be very long (especially taxonomies)
+  // 2. Options may change and we don't want stale prompts
+  // 3. Box AI receives the actual options at extraction time via the field definition
+  const isDropdownType = fieldType === 'enum' || fieldType === 'multiSelect' || 
+                         fieldType === 'dropdown_multi' || fieldType === 'taxonomy';
+  if (isDropdownType && options && options.length > 0) {
+    const sampleOptions = options.slice(0, 3).map(o => o.key).join(', ') + 
+                         (options.length > 3 ? ', ...' : '');
+    prompt += `\n## DROPDOWN/ENUM FIELD GUIDANCE\nThis is a dropdown field with predefined options (examples: ${sampleOptions}).\nThe generated prompt should:\n- Instruct the AI to return EXACTLY one value from the available dropdown options\n- Do NOT list all the specific option values in the prompt (they are provided separately at extraction time)\n- Use language like "Return one of the available options" or "Select from the dropdown values"\n- Tell the AI to match document content to the closest available option\n`;
   }
 
   // CRITICAL: For counter party fields, tell the AI which company to EXCLUDE
@@ -501,8 +508,11 @@ export function getExamplePromptForField(
   // Default based on field type
   switch (fieldType) {
     case 'enum':
-      const enumOptions = options?.map(o => o.key).join(', ') || '[list of valid options]';
-      return `Search the document for the ${fieldName}. Return EXACTLY one of these values: ${enumOptions}. Look in relevant sections and match the closest option. If the exact term isn't found, infer from context. Return "Not Present" only if no relevant information exists.`;
+    case 'multiSelect':
+    case 'dropdown_multi':
+    case 'taxonomy':
+      // Use generic language - actual options provided at extraction time via field definition
+      return `Search for the ${fieldName} in the document title, header, or first paragraph. Look for synonyms like "Agreement Type", "Type of Contract", or similar labels. Return EXACTLY one value from the available dropdown options that best matches the document content. Do NOT infer or create values outside the available options. Return "Not Present" if no clear match exists.`;
     
     case 'date':
       return `Search the document for the ${fieldName}. Look in headers, signature blocks, and relevant sections. Return the date in YYYY-MM-DD format. If only month and year are given, use the first day of the month. Return "Not Present" if no date is found.`;

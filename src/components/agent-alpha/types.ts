@@ -20,26 +20,20 @@ export interface AgentAlphaModalProps {
 export interface ConfigureViewProps {
   config: AgentAlphaRuntimeConfig;
   setConfig: React.Dispatch<React.SetStateAction<AgentAlphaRuntimeConfig>>;
-  showInstructionsEditor: boolean;
-  setShowInstructionsEditor: (show: boolean) => void;
   availableModels: string[];
   // Version management
   versions: SystemPromptVersion[];
   selectedVersionId: string;
   activeVersionId: string;
-  isCreatingNew: boolean;
-  newVersionName: string;
   editedInstructions: string;
   hasModifiedInstructions: boolean;
   // Handlers
   onVersionSelect: (versionId: string) => void;
   onInstructionsChange: (value: string) => void;
-  onResetInstructions: () => void;
-  onSaveAsNew: () => void;
+  onSaveAsNew: (versionName: string) => void;
   onUpdateCurrent: () => void;
   onSetAsActive: () => void;
-  onDeleteVersion: (versionId: string, versionName: string) => void;
-  setNewVersionName: (name: string) => void;
+  onDeleteVersion: () => void;
 }
 
 export interface RunningViewProps {

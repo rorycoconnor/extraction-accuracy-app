@@ -28,7 +28,6 @@ import {
   updateAgentSystemPromptVersion,
   deleteAgentSystemPromptVersion,
   getAllAgentSystemPromptVersions,
-  resetToDefaultAgentSystemPrompt,
 } from '@/lib/system-prompt-storage';
 
 // Import view components
@@ -37,7 +36,6 @@ import { RunningView } from './views/running-view';
 import { PreviewView } from './views/preview-view';
 import { ErrorView } from './views/error-view';
 import type { AgentAlphaModalProps } from './types';
-import { CREATE_NEW_ID } from './types';
 
 export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
   isOpen,
@@ -57,7 +55,6 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
 
   // Configuration state
   const [config, setConfig] = useState<AgentAlphaRuntimeConfig>(getDefaultRuntimeConfig());
-  const [showInstructionsEditor, setShowInstructionsEditor] = useState(false);
   const [editedInstructions, setEditedInstructions] = useState(DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
   const [hasModifiedInstructions, setHasModifiedInstructions] = useState(false);
   
@@ -65,13 +62,14 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
   const [versions, setVersions] = useState<SystemPromptVersion[]>([]);
   const [selectedVersionId, setSelectedVersionId] = useState<string>('');
   const [activeVersionId, setActiveVersionId] = useState<string>('');
-  const [isCreatingNew, setIsCreatingNew] = useState(false);
-  const [newVersionName, setNewVersionName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; versionId: string; versionName: string }>({
     isOpen: false,
     versionId: '',
     versionName: '',
   });
+  
+  // State for unsaved results confirmation dialog
+  const [showUnsavedConfirm, setShowUnsavedConfirm] = useState(false);
 
   // Track whether we're in the initial load phase to prevent race conditions
   const isInitialLoadRef = useRef(true);
@@ -84,7 +82,7 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
     setVersions(allVersions);
     setActiveVersionId(active.id);
     setSelectedVersionId(active.id);
-    setEditedInstructions(active.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+    setEditedInstructions(active.generateInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
     setHasModifiedInstructions(false);
     
     return { allVersions, active };
@@ -106,22 +104,15 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
       const { active } = initializeVersionState();
       
       // Set up config with correct values
+      // Always use the default from config (Gemini 2.5 Flash), not from last comparison
       const defaultConfig = getDefaultRuntimeConfig();
       
-      // Use the model from last comparison if available
-      if (defaultModel) {
-        defaultConfig.testModel = defaultModel;
-      }
-      
       // Set customInstructions directly based on active version
-      if (!active.isDefault && active.agentInstructions) {
-        defaultConfig.customInstructions = active.agentInstructions;
+      if (!active.isDefault && active.generateInstructions) {
+        defaultConfig.customInstructions = active.generateInstructions;
       }
       
       setConfig(defaultConfig);
-      setShowInstructionsEditor(false);
-      setIsCreatingNew(false);
-      setNewVersionName('');
       
       // Mark initial load complete after state updates are queued
       // Use setTimeout to ensure this runs after React processes state updates
@@ -149,8 +140,8 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
     }
     
     // Update config with the new active version's instructions
-    if (!activeVersion.isDefault && activeVersion.agentInstructions) {
-      setConfig(prev => ({ ...prev, customInstructions: activeVersion.agentInstructions }));
+    if (!activeVersion.isDefault && activeVersion.generateInstructions) {
+      setConfig(prev => ({ ...prev, customInstructions: activeVersion.generateInstructions }));
     } else {
       setConfig(prev => ({ ...prev, customInstructions: undefined }));
     }
@@ -166,55 +157,29 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
   const isActive = selectedVersionId === activeVersionId;
 
   const handleVersionSelect = (versionId: string) => {
-    if (versionId === CREATE_NEW_ID) {
-      setIsCreatingNew(true);
-      setNewVersionName('');
-      setEditedInstructions(selectedVersion?.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+    setSelectedVersionId(versionId);
+    const version = versions.find(v => v.id === versionId);
+    if (version) {
+      setEditedInstructions(version.generateInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
       setHasModifiedInstructions(false);
-    } else {
-      setIsCreatingNew(false);
-      setSelectedVersionId(versionId);
-      const version = versions.find(v => v.id === versionId);
-      if (version) {
-        setEditedInstructions(version.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
-        setHasModifiedInstructions(false);
-      }
     }
   };
 
   const handleInstructionsChange = (value: string) => {
     setEditedInstructions(value);
-    const currentVersion = isCreatingNew ? null : selectedVersion;
-    const originalInstructions = currentVersion?.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS;
+    const originalInstructions = selectedVersion?.generateInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS;
     setHasModifiedInstructions(value !== originalInstructions);
   };
 
-  const handleResetInstructions = () => {
-    resetToDefaultAgentSystemPrompt();
-    const defaultVersion = versions.find(v => v.isDefault);
-    if (defaultVersion) {
-      setSelectedVersionId(defaultVersion.id);
-      setActiveVersionId(defaultVersion.id);
-      setEditedInstructions(defaultVersion.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
-    } else {
-      setEditedInstructions(DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
-    }
-    setHasModifiedInstructions(false);
-    setIsCreatingNew(false);
-    toast({ title: 'Reset to Default', description: 'Agent system prompt reset to default version.' });
-  };
-
-  const handleSaveAsNew = () => {
-    if (!newVersionName.trim()) {
+  const handleSaveAsNew = (versionName: string) => {
+    if (!versionName.trim()) {
       toast({ title: 'Error', description: 'Please enter a version name.', variant: 'destructive' });
       return;
     }
     
-    const newVersion = createAgentSystemPromptVersion(newVersionName.trim(), editedInstructions);
+    const newVersion = createAgentSystemPromptVersion(versionName.trim(), editedInstructions);
     setVersions(getAllAgentSystemPromptVersions());
     setSelectedVersionId(newVersion.id);
-    setIsCreatingNew(false);
-    setNewVersionName('');
     setHasModifiedInstructions(false);
     
     // Auto-set as active
@@ -225,22 +190,25 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
   };
 
   const handleUpdateCurrent = () => {
-    if (isDefault || isCreatingNew) return;
+    if (isDefault) return;
     
     const updated = updateAgentSystemPromptVersion(selectedVersionId, {
-      agentInstructions: editedInstructions,
+      generateInstructions: editedInstructions,
     });
     
     if (updated) {
       setVersions(getAllAgentSystemPromptVersions());
       setHasModifiedInstructions(false);
-      toast({ title: 'Version Updated', description: `"${updated.name}" has been updated.` });
+      
+      // Auto-set as active when updating
+      setActiveAgentSystemPrompt(selectedVersionId);
+      setActiveVersionId(selectedVersionId);
+      
+      toast({ title: 'Version Updated', description: `"${updated.name}" has been updated and set as active.` });
     }
   };
 
   const handleSetAsActive = () => {
-    if (isCreatingNew) return;
-    
     setActiveAgentSystemPrompt(selectedVersionId);
     setActiveVersionId(selectedVersionId);
     toast({ title: 'Active Version Changed', description: `"${selectedVersion?.name}" is now active.` });
@@ -259,7 +227,7 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
         const active = getActiveAgentSystemPrompt();
         setSelectedVersionId(active.id);
         setActiveVersionId(active.id);
-        setEditedInstructions(active.agentInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
+        setEditedInstructions(active.generateInstructions || DEFAULT_PROMPT_GENERATION_INSTRUCTIONS);
       }
       
       toast({ title: 'Version Deleted', description: `"${deleteConfirm.versionName}" has been deleted.` });
@@ -274,13 +242,33 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
     }
   };
 
+  // Handle close attempt - show confirmation if in preview mode with results
+  const handleCloseAttempt = useCallback(() => {
+    if (isPreview && results && results.results.length > 0) {
+      // Show confirmation dialog before closing
+      setShowUnsavedConfirm(true);
+    } else {
+      onCancel();
+    }
+  }, [isPreview, results, onCancel]);
+
+  // Handle discard and close
+  const handleDiscardAndClose = () => {
+    setShowUnsavedConfirm(false);
+    onCancel();
+  };
+
+  // Handle apply and close
+  const handleApplyAndClose = () => {
+    setShowUnsavedConfirm(false);
+    onApply();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onCancel()}>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && handleCloseAttempt()}>
       <DialogContent className={cn(
-        "max-h-[90vh] overflow-y-auto transition-all duration-300",
-        isConfigure && showInstructionsEditor ? "max-w-[95vw] w-[95vw]" : 
-        isConfigure ? "max-w-4xl w-full" : 
-        "max-w-[95vw] w-[95vw]"
+        "overflow-y-auto transition-all duration-300",
+        isConfigure ? "max-w-[85vw] w-[85vw] max-h-[85vh]" : "max-w-[95vw] w-[95vw] max-h-[90vh]"
       )}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -297,24 +285,22 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
           <ConfigureView
             config={config}
             setConfig={setConfig}
-            showInstructionsEditor={showInstructionsEditor}
-            setShowInstructionsEditor={setShowInstructionsEditor}
             availableModels={availableModels}
             versions={versions}
             selectedVersionId={selectedVersionId}
             activeVersionId={activeVersionId}
-            isCreatingNew={isCreatingNew}
-            newVersionName={newVersionName}
             editedInstructions={editedInstructions}
             hasModifiedInstructions={hasModifiedInstructions}
             onVersionSelect={handleVersionSelect}
             onInstructionsChange={handleInstructionsChange}
-            onResetInstructions={handleResetInstructions}
             onSaveAsNew={handleSaveAsNew}
             onUpdateCurrent={handleUpdateCurrent}
             onSetAsActive={handleSetAsActive}
-            onDeleteVersion={(versionId, versionName) => setDeleteConfirm({ isOpen: true, versionId, versionName })}
-            setNewVersionName={setNewVersionName}
+            onDeleteVersion={() => setDeleteConfirm({
+              isOpen: true,
+              versionId: selectedVersionId,
+              versionName: selectedVersion?.name || '',
+            })}
           />
         )}
 
@@ -348,7 +334,7 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
         
         {isPreview && (
           <DialogFooter className="!justify-start gap-2">
-            <Button onClick={onCancel} variant="outline">
+            <Button onClick={handleCloseAttempt} variant="outline">
               Cancel
             </Button>
             <Button onClick={onApply}>
@@ -371,6 +357,26 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteVersion} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Unsaved Results Confirmation Dialog */}
+      <AlertDialog open={showUnsavedConfirm} onOpenChange={setShowUnsavedConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Optimized Prompts</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have optimized prompts that haven&apos;t been applied yet. Would you like to apply them before closing, or discard the changes?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-2 sm:gap-0">
+            <AlertDialogCancel onClick={handleDiscardAndClose}>
+              Discard Changes
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleApplyAndClose} className="bg-blue-600 hover:bg-blue-700">
+              Apply All Prompts
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

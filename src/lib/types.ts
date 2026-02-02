@@ -119,7 +119,7 @@ export type BoxTemplateField = {
   id: string;
   key: string;
   displayName: string;
-  type: 'string' | 'date' | 'enum' | 'multiSelect' | 'float' | 'number';
+  type: 'string' | 'date' | 'enum' | 'multiSelect' | 'float' | 'number' | 'taxonomy';
   isActive?: boolean;
   options?: {
     id: string;
@@ -136,7 +136,7 @@ export type BoxTemplate = {
 
 export type BoxAIStructuredPromptField = {
     key: string;
-    type: 'string' | 'date' | 'enum' | 'number';
+    type: 'string' | 'date' | 'enum' | 'number' | 'taxonomy';
     displayName: string;
     instruction?: string;
 };
