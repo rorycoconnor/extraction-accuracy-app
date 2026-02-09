@@ -126,7 +126,8 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
   const retryFailedFiles = async (
     originalResults: ApiExtractionResult[],
     originalJobs: ExtractionJob[],
-    fieldsForExtraction: any[]
+    fieldsForExtraction: any[],
+    templateKey?: string
   ): Promise<ApiExtractionResult[]> => {
     // Group results by file and model to analyze failures
     const resultsByFile = new Map<string, Map<string, ApiExtractionResult>>();
@@ -180,12 +181,16 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         };
       });
 
+      // Same logic as primary extraction: Enhanced Agent uses template, others use inline fields
+      const isEnhancedModel = actualModelName === 'enhanced_extract_agent';
+      const useTemplate = isEnhancedModel && templateKey;
+
       return {
         jobId: `retry-${index}`,
         fileId: job.fileResult.id,
-        fields: mappedFields,
+        fields: useTemplate ? undefined : mappedFields,
         model: actualModelName,
-        templateKey: undefined
+        templateKey: useTemplate ? templateKey : undefined
       };
     });
 
@@ -382,12 +387,17 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       setApiRequestDebugData(null);
     }
 
-    const CONCURRENCY_LIMIT = 10; // Allow up to 10 parallel extractions
+    // Reduce concurrency for Enhanced Extract Agent to avoid overwhelming Box AI
+    // Enhanced Agent uses chain-of-thought reasoning and is much heavier per request
+    const hasEnhancedAgent = selectedModels.some(m => 
+      m.includes('enhanced_extract_agent')
+    );
+    const CONCURRENCY_LIMIT = hasEnhancedAgent ? 3 : 10;
     
     // Chunk size for UI progress updates
-    // With timeouts now in place (3 min per file, 5 min global), we can use larger chunks
-    // for better parallelism while still being protected from hanging
-    const PROGRESS_CHUNK_SIZE = 10; // Full parallelism - timeouts protect against hangs
+    // With timeouts now in place, we can use larger chunks for standard models
+    // but keep smaller chunks for Enhanced Agent for better progress feedback
+    const PROGRESS_CHUNK_SIZE = hasEnhancedAgent ? 3 : 10;
 
     // Prepare all batch extraction jobs
     const batchJobs: BatchExtractionJob[] = extractionJobs.map((job, index) => {
@@ -412,12 +422,20 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         };
       });
 
+      // Enhanced Extract Agent should use metadata_template (not inline fields).
+      // Reason: Box's Enhanced Agent has its own internal prompting and is optimized
+      // for metadata templates. Sending 90+ inline fields causes Box 500 errors.
+      // The Box UI uses metadata_template for Enhanced Agent, which is why it works there.
+      // For standard models, we keep using inline fields to enable prompt testing.
+      const isEnhancedModel = actualModelName === 'enhanced_extract_agent';
+      const useTemplate = isEnhancedModel && templateKeyForValidation;
+
       return {
         jobId: `extraction-${index}`,
         fileId: job.fileResult.id,
-        fields: mappedFields,
+        fields: useTemplate ? undefined : mappedFields,
         model: actualModelName,
-        templateKey: undefined // Always use fields-based extraction for prompt testing
+        templateKey: useTemplate ? templateKeyForValidation : undefined
       };
     });
 
@@ -425,6 +443,16 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
       jobCount: batchJobs.length,
       concurrencyLimit: CONCURRENCY_LIMIT 
     });
+
+    // Show info toast when Enhanced Extract Agent is used with many fields
+    if (hasEnhancedAgent && fieldsForExtraction.length > 20) {
+      const fileCount = accuracyData.results.length;
+      const estimatedMinutes = Math.ceil(fileCount * 5); // ~5 min per file for Enhanced Agent with many fields
+      toast({
+        title: 'Enhanced Extract Agent',
+        description: `Processing ${fileCount} file${fileCount > 1 ? 's' : ''} with ${fieldsForExtraction.length} fields. This may take ${estimatedMinutes}+ minutes. Concurrency reduced to ${CONCURRENCY_LIMIT} to avoid overloading Box AI.`,
+      });
+    }
 
     // Split into smaller chunks for progress updates (can't pass callbacks across server boundary)
     // Smaller chunks = more frequent UI updates (but more server calls)
@@ -532,7 +560,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
     setApiDebugData(apiResults);
 
     // Check for files where ALL fields failed and retry once
-    const retryResults = await retryFailedFiles(apiResults, extractionJobs, fieldsForExtraction);
+    const retryResults = await retryFailedFiles(apiResults, extractionJobs, fieldsForExtraction, templateKeyForValidation);
     const finalResults = [...apiResults, ...retryResults];
     
     // Update debug data with final results including retries

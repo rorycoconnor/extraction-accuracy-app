@@ -3,78 +3,229 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 64,
-    "lastModified": "2026-01-31T04:51:00.063Z"
+    "usageCount": 69,
+    "lastModified": "2026-02-06T19:32:02.379Z"
   },
   "terminationForConvenience": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Search the \"Termination\" section for whether either party can terminate WITHOUT cause. Look for: \"terminate for convenience\", \"terminate at will\", \"terminate without cause\", \"terminate for any reason\", \"terminate at its sole discretion\", \"terminate upon X days notice\" (without requiring breach). Return \"Yes\" if either party can terminate without cause/breach. Return \"No\" if termination requires cause, breach, or default. Do NOT classify breach-based termination as \"convenience\".",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-02-06T19:44:22.322Z-39ad0be5-7cf6-4edd-8a33-3ee1bc117bb3",
+        "prompt": "Search the \"Termination\" section for whether either party can terminate WITHOUT cause. Look for: \"terminate for convenience\", \"terminate at will\", \"terminate without cause\", \"terminate for any reason\", \"terminate at its sole discretion\", \"terminate upon X days notice\" (without requiring breach). Return \"Yes\" if either party can terminate without cause/breach. Return \"No\" if termination requires cause, breach, or default. Do NOT classify breach-based termination as \"convenience\".",
+        "savedAt": "2026-02-06T19:44:22.322Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 25.0% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "terminationForConvenience",
+            "fieldName": "Termination for Convenience",
+            "compareType": "exact-string"
+          },
+          "trainDocIds": [
+            "1918858263705",
+            "1920031763042",
+            "1918922486299",
+            "1918860970908",
+            "1918885002919",
+            "1918854938133"
+          ],
+          "holdoutDocIds": [
+            "1912827412690",
+            "1912834427833"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 72,
-    "lastModified": "2026-01-31T04:51:00.069Z"
+    "usageCount": 79,
+    "lastModified": "2026-02-06T19:44:22.342Z"
   },
   "terminationForCause": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Search the \"Termination,\" \"Default,\" or \"Breach\" sections for cause-based termination rights, looking for phrases like \"terminate for cause,\" \"material breach,\" \"default,\" \"failure to perform,\" \"insolvency,\" \"bankruptcy,\" or \"cure period.\" Return EXACTLY \"Yes\" if the agreement explicitly grants a party the right to terminate due to breach or default by the other party; return EXACTLY \"No\" if no cause-based termination provision exists. Do NOT confuse termination for convenience (at-will termination without cause) with termination for cause; if only convenience termination is present, return \"No.\"",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "Search the \"Termination,\" \"Default,\" or \"Breach\" sections for cause-based termination rights, looking for phrases like \"terminate for cause,\" \"material breach,\" \"default,\" \"failure to perform,\" \"insolvency,\" \"bankruptcy,\" or \"cure period.\" Return EXACTLY \"Yes\" if the agreement explicitly grants a party the right to terminate due to breach or default by the other party; return EXACTLY \"No\" if no cause-based termination provision exists. Do NOT confuse termination for convenience (at-will termination without cause) with termination for cause; if only convenience termination is present, return \"No.\"",
+        "savedAt": "2026-02-06T19:57:44.912Z",
+        "generationMethod": "standard"
+      },
+      {
+        "id": "agent-alpha-2026-02-06T19:44:22.322Z-555d5cc2-25a5-41ba-b291-9f4c1de6b285",
+        "prompt": "Search the \"Termination\" section for cause-based termination rights. Look for: \"terminate for cause\", \"material breach\", \"default\", \"failure to perform\", \"insolvency\", \"bankruptcy\". Return \"Yes\" if the agreement allows termination for cause/breach. Return \"No\" if there is no cause-based termination provision. Note: Most contracts have cause-based termination, so \"Yes\" is common.",
+        "savedAt": "2026-02-06T19:44:22.322Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 62.5% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "terminationForCause",
+            "fieldName": "Termination for Cause",
+            "compareType": "exact-string"
+          },
+          "trainDocIds": [
+            "1918858263705",
+            "1920031763042",
+            "1918922486299",
+            "1918860970908",
+            "1918885002919",
+            "1918854938133"
+          ],
+          "holdoutDocIds": [
+            "1912827412690",
+            "1912834427833"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 75,
-    "lastModified": "2026-01-31T04:51:00.072Z"
+    "usageCount": 83,
+    "lastModified": "2026-02-06T19:57:44.927Z"
   },
   "governingLaw": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 52,
-    "lastModified": "2026-01-31T04:51:00.065Z"
+    "usageCount": 57,
+    "lastModified": "2026-02-06T19:32:02.381Z"
   },
   "venue": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 60,
-    "lastModified": "2026-01-31T04:51:00.067Z"
+    "usageCount": 65,
+    "lastModified": "2026-02-06T19:32:02.385Z"
   },
   "endDate": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-02-06T19:44:22.322Z-7718b54f-dd58-473e-b846-7353cd8f82ab",
+        "prompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
+        "savedAt": "2026-02-06T19:44:22.322Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 100.0% (1 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "endDate",
+            "fieldName": "End Date",
+            "compareType": "date-exact"
+          },
+          "trainDocIds": [
+            "1918858263705",
+            "1920031763042",
+            "1918922486299",
+            "1918860970908",
+            "1918885002919",
+            "1918854938133"
+          ],
+          "holdoutDocIds": [
+            "1912827412690",
+            "1912834427833"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 81,
-    "lastModified": "2026-01-31T04:51:00.058Z"
+    "usageCount": 89,
+    "lastModified": "2026-02-06T19:44:22.339Z"
   },
   "effectiveDate": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 53,
-    "lastModified": "2026-01-31T04:51:00.053Z"
+    "usageCount": 58,
+    "lastModified": "2026-02-06T19:32:02.368Z"
   },
   "contractTerm": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 50,
-    "lastModified": "2026-01-31T04:51:00.055Z"
+    "usageCount": 55,
+    "lastModified": "2026-02-06T19:32:02.371Z"
   },
   "counterPartyName": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Search for the counter party name in the opening paragraph after 'by and between', 'Agreement between', 'entered into by', 'made by and between', 'this Agreement is between', 'contract between', 'parties to this agreement', 'entered into as of'. Also check signature blocks and the 'Parties' or 'Recitals' section. Look for: 'Party', 'Disclosing Party', 'Receiving Party', 'Contractor', 'Vendor', 'Supplier', 'Licensee', 'Client', 'Purchaser', 'Buyer', 'Service Provider', 'Consultant'. CRITICAL: The extracting company is Increo, Inc. at 1234 Main Street, Phoenix, Arizona 85032 - you must return the OTHER party, NOT Increo, Inc. Do NOT return 'Increo, Inc.' or any variation of the extracting company name. Do NOT return generic party labels like 'Party A' or 'the Contractor' without the actual entity name. Do NOT return addresses, individuals' names, or partial company names. Do NOT confuse subsidiaries or affiliates of Increo with the counter party. Return ONLY the full legal entity name exactly as written including suffixes (LLC, Inc., Corp., Ltd.). Return 'Not Present' if no counter party is identified.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-02-06T19:44:22.322Z-20553917-c282-46ff-9b71-84b1ea69d34a",
+        "prompt": "Search for the counter party name in the opening paragraph after 'by and between', 'Agreement between', 'entered into by', 'made by and between', 'this Agreement is between', 'contract between', 'parties to this agreement', 'entered into as of'. Also check signature blocks and the 'Parties' or 'Recitals' section. Look for: 'Party', 'Disclosing Party', 'Receiving Party', 'Contractor', 'Vendor', 'Supplier', 'Licensee', 'Client', 'Purchaser', 'Buyer', 'Service Provider', 'Consultant'. CRITICAL: The extracting company is Increo, Inc. at 1234 Main Street, Phoenix, Arizona 85032 - you must return the OTHER party, NOT Increo, Inc. Do NOT return 'Increo, Inc.' or any variation of the extracting company name. Do NOT return generic party labels like 'Party A' or 'the Contractor' without the actual entity name. Do NOT return addresses, individuals' names, or partial company names. Do NOT confuse subsidiaries or affiliates of Increo with the counter party. Return ONLY the full legal entity name exactly as written including suffixes (LLC, Inc., Corp., Ltd.). Return 'Not Present' if no counter party is identified.",
+        "savedAt": "2026-02-06T19:44:22.322Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 100.0% (2 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "counterPartyName",
+            "fieldName": "Counter Party Name",
+            "compareType": "near-exact-string"
+          },
+          "trainDocIds": [
+            "1918858263705",
+            "1920031763042",
+            "1918922486299",
+            "1918860970908",
+            "1918885002919",
+            "1918854938133"
+          ],
+          "holdoutDocIds": [
+            "1912827412690",
+            "1912834427833"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 69,
-    "lastModified": "2026-01-31T04:51:00.046Z"
+    "usageCount": 77,
+    "lastModified": "2026-02-06T19:44:22.324Z"
   },
   "counterPartyAddress": {
-    "activePrompt": "",
-    "promptHistory": [],
+    "activePrompt": "Search for the counter party's address (the OTHER party, NOT Increo, Inc. or 1234 Main Street, Phoenix, Arizona 85032). Look in: (1) directly below the counter party's name in opening recitals, (2) 'Notices' or 'Notice Address' sections, (3) 'Ship to' blocks with company names, (4) signature blocks. Look for: 'Address:', 'Located at', 'Principal place of business', 'Ship to:', 'Notice to:', 'with offices at'. EXCLUDE any address containing 'Main Street, Phoenix' as this is the extracting company. Return the complete street, city, state, and ZIP on a single line. If multiple counter party addresses exist, prefer the Notices section. Return 'Not Present' if not found.",
+    "promptHistory": [
+      {
+        "id": "agent-alpha-2026-02-06T19:44:22.322Z-8a4a3664-22da-4f8b-b689-d0fe44fe6f81",
+        "prompt": "Search for the counter party's address (the OTHER party, NOT Increo, Inc. or 1234 Main Street, Phoenix, Arizona 85032). Look in: (1) directly below the counter party's name in opening recitals, (2) 'Notices' or 'Notice Address' sections, (3) 'Ship to' blocks with company names, (4) signature blocks. Look for: 'Address:', 'Located at', 'Principal place of business', 'Ship to:', 'Notice to:', 'with offices at'. EXCLUDE any address containing 'Main Street, Phoenix' as this is the extracting company. Return the complete street, city, state, and ZIP on a single line. If multiple counter party addresses exist, prefer the Notices section. Return 'Not Present' if not found.",
+        "savedAt": "2026-02-06T19:44:22.322Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 100.0% (2 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "counterPartyAddress",
+            "fieldName": "Counter Party Address",
+            "compareType": "near-exact-string"
+          },
+          "trainDocIds": [
+            "1918858263705",
+            "1920031763042",
+            "1918922486299",
+            "1918860970908",
+            "1918885002919",
+            "1918854938133"
+          ],
+          "holdoutDocIds": [
+            "1912827412690",
+            "1912834427833"
+          ]
+        }
+      }
+    ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 70,
-    "lastModified": "2026-01-31T04:51:00.049Z"
+    "usageCount": 77,
+    "lastModified": "2026-02-06T19:44:22.335Z"
   },
   "contractType": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 70,
-    "lastModified": "2026-01-31T04:51:00.042Z"
+    "usageCount": 75,
+    "lastModified": "2026-02-06T19:32:02.361Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
@@ -137,8 +288,8 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 49,
-    "lastModified": "2026-01-31T04:51:00.074Z"
+    "usageCount": 54,
+    "lastModified": "2026-02-06T19:32:02.392Z"
   },
   "contractValue": {
     "activePrompt": "",
@@ -342,8 +493,8 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 74,
-    "lastModified": "2026-01-31T04:51:00.060Z"
+    "usageCount": 80,
+    "lastModified": "2026-02-06T19:32:02.376Z"
   },
   "disputeResolution": {
     "activePrompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",
@@ -6734,7 +6885,7 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 8,
-    "lastModified": "2026-01-31T04:51:00.076Z"
+    "usageCount": 15,
+    "lastModified": "2026-02-06T19:32:02.394Z"
   }
 }

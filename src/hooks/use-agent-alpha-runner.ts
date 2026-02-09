@@ -70,6 +70,14 @@ export const useAgentAlphaRunner = () => {
 
     const runId = uuidv4();
     const runStartTime = Date.now();
+    
+    // Log the received config to verify parallelism settings
+    logger.info('Agent-Alpha: === RECEIVED CONFIG ===', {
+      fieldConcurrency: config.fieldConcurrency,
+      maxDocs: config.maxDocs,
+      maxIterations: config.maxIterations,
+      testModel: config.testModel,
+    });
 
     try {
       // Step 1: Get configured template to check which fields are active
@@ -121,7 +129,14 @@ export const useAgentAlphaRunner = () => {
       
       // Track parallel execution for debugging
       let maxConcurrentFields = 0;
-      const fieldTimings: { fieldName: string; startTime: number; endTime: number }[] = [];
+      const fieldTimings: { fieldName: string; startTime: number; endTime: number; fieldIndex: number }[] = [];
+      
+      // Log parallelism configuration
+      logger.info(`Agent-Alpha: === PARALLELISM CONFIG ===`);
+      logger.info(`Agent-Alpha: Field concurrency limit: ${concurrencyLimit}`);
+      logger.info(`Agent-Alpha: Extraction concurrency: ${AGENT_ALPHA_CONFIG.EXTRACTION_CONCURRENCY}`);
+      logger.info(`Agent-Alpha: Stagger delay: ${AGENT_ALPHA_CONFIG.STAGGER_DELAY_MS}ms`);
+      logger.info(`Agent-Alpha: Total fields to process: ${workPlan.fields.length}`);
 
       // Process a single field - dispatches STARTED when it begins, COMPLETED when done
       const processFieldWithDispatch = async (fieldPlan: typeof workPlan.fields[0], fieldIndex: number): Promise<AgentAlphaFieldResult | null> => {
@@ -138,11 +153,17 @@ export const useAgentAlphaRunner = () => {
           },
         });
 
-        logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] Starting ${fieldPlan.field.name} (concurrent: ${executing.size + 1})...`);
+        const startOffset = fieldStartTime - runStartTime;
+        logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] STARTING "${fieldPlan.field.name}" at +${startOffset}ms (concurrent: ${executing.size + 1})`);
         
         // Track concurrent execution
         if (executing.size + 1 > maxConcurrentFields) {
           maxConcurrentFields = executing.size + 1;
+        }
+        
+        // Log if we hit max concurrency
+        if (executing.size + 1 === concurrencyLimit) {
+          logger.info(`Agent-Alpha: Reached max concurrency (${concurrencyLimit}), will wait for slot before starting more fields`);
         }
 
         try {
@@ -180,7 +201,11 @@ export const useAgentAlphaRunner = () => {
             fieldName: fieldPlan.field.name,
             startTime: fieldStartTime,
             endTime: fieldEndTime,
+            fieldIndex,
           });
+          
+          // Log completion with timing details
+          logger.info(`Agent-Alpha: Field ${fieldIndex} "${fieldPlan.field.name}" COMPLETED at ${fieldEndTime - runStartTime}ms (took ${fieldTimeMs}ms)`);
           
           // Dispatch completion IMMEDIATELY when this field finishes
           logger.info(`Agent-Alpha: [${fieldIndex}/${workPlan.fields.length}] Completed ${fieldPlan.field.name} in ${(fieldTimeMs / 1000).toFixed(1)}s (remaining concurrent: ${executing.size - 1})`);
@@ -266,6 +291,8 @@ export const useAgentAlphaRunner = () => {
       // Calculate overlap to verify parallelism
       if (fieldTimings.length > 1) {
         let overlapCount = 0;
+        const overlappingPairs: string[] = [];
+        
         for (let i = 0; i < fieldTimings.length; i++) {
           for (let j = i + 1; j < fieldTimings.length; j++) {
             const a = fieldTimings[i];
@@ -273,10 +300,41 @@ export const useAgentAlphaRunner = () => {
             // Check if fields overlapped in time
             if (a.startTime < b.endTime && b.startTime < a.endTime) {
               overlapCount++;
+              overlappingPairs.push(`${a.fieldIndex}+${b.fieldIndex}`);
             }
           }
         }
-        logger.info(`Agent-Alpha: Parallel execution verified - ${overlapCount} field pairs processed concurrently`);
+        
+        logger.info(`Agent-Alpha: === PARALLELISM ANALYSIS ===`);
+        logger.info(`Agent-Alpha: Overlapping field pairs: ${overlapCount} (expected ~${Math.min(concurrencyLimit * (workPlan.fields.length - concurrencyLimit), workPlan.fields.length * (workPlan.fields.length - 1) / 2)} for full parallelism)`);
+        
+        if (overlapCount === 0) {
+          logger.warn(`Agent-Alpha: ⚠️ NO PARALLEL EXECUTION DETECTED - fields ran sequentially!`);
+          logger.warn(`Agent-Alpha: This suggests a bug or all fields completing extremely quickly.`);
+        } else if (overlapCount < concurrencyLimit) {
+          logger.warn(`Agent-Alpha: ⚠️ PARTIAL PARALLELISM - only ${overlapCount} pairs overlapped (limit was ${concurrencyLimit})`);
+        } else {
+          logger.info(`Agent-Alpha: ✅ Parallelism working - ${overlapCount} field pairs processed concurrently`);
+        }
+        
+        // Log completion order vs start order
+        const completionOrder = [...fieldTimings]
+          .sort((a, b) => a.endTime - b.endTime)
+          .map(f => f.fieldIndex);
+        const startOrder = [...fieldTimings]
+          .sort((a, b) => a.startTime - b.startTime)
+          .map(f => f.fieldIndex);
+        
+        logger.info(`Agent-Alpha: Start order:      [${startOrder.join(', ')}]`);
+        logger.info(`Agent-Alpha: Completion order: [${completionOrder.join(', ')}]`);
+        
+        // Check if completion order matches start order (indicates sequential execution)
+        const isSequential = completionOrder.every((idx, i) => idx === startOrder[i]);
+        if (isSequential && overlapCount > 0) {
+          logger.info(`Agent-Alpha: Note: Fields completed in same order they started, but with overlap (normal for similar-sized work)`);
+        } else if (isSequential) {
+          logger.warn(`Agent-Alpha: ⚠️ Fields completed in exact start order with no overlap - likely sequential execution`);
+        }
       }
 
       // Step 3: Calculate timing and prepare results

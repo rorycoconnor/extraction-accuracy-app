@@ -145,7 +145,7 @@ export function compareValues(predicted: string, actual: string): ComparisonResu
     return { isMatch: true, matchType: 'normalized', matchClassification: 'normalized', confidence: 'high' };
   }
   
-  // 🔧 NEW: Handle multi-select fields (e.g., "A, B" matches "B, A")
+  // Handle multi-select fields (e.g., "A, B" matches "B, A")
   // Check if values contain commas (likely multi-select from Box)
   if (predictedStr.includes(',') || actualStr.includes(',')) {
     // Split by comma, trim whitespace, normalize, and sort

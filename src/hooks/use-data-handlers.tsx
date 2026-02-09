@@ -182,7 +182,7 @@ export const useDataHandlers = ({
     setAccuracyData(newAccuracyData);
     saveAccuracyData(newAccuracyData);
     
-    // 🆕 NEW: Also save to cross-template prompt storage
+    // Also save to cross-template prompt storage
     saveFieldPrompt(
       fieldKey,
       newPrompt,
@@ -235,7 +235,7 @@ export const useDataHandlers = ({
     setAccuracyData(newAccuracyData);
     saveAccuracyData(newAccuracyData);
     
-    // 🆕 NEW: Also update cross-template prompt storage
+    // Also update cross-template prompt storage
     updateFieldActivePrompt(fieldKey, promptVersion.prompt);
     
     setSelectedFieldForPromptStudio(fieldToUpdate);

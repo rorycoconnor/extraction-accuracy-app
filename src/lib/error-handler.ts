@@ -389,6 +389,9 @@ export function extractConciseErrorDescription(errorMessage: string): string {
     { pattern: /file.*too.*large|size.*exceed/i, description: 'File too large' },
     
     // Timeout errors
+    { pattern: /timed out after \d+ minutes/i, description: 'Request timeout' },
+    { pattern: /Job .* timed out after/i, description: 'Request timeout' },
+    { pattern: /Global batch timeout/i, description: 'Batch timeout' },
     { pattern: /504|gateway.*timeout/i, description: 'Gateway timeout' },
     { pattern: /timeout|timed?\s*out/i, description: 'Timeout' },
     { pattern: /request.*took.*too.*long/i, description: 'Request timeout' },
@@ -403,6 +406,9 @@ export function extractConciseErrorDescription(errorMessage: string): string {
     { pattern: /file.*not.*exist|does.*not.*exist/i, description: 'File not found' },
     
     // Box AI specific errors
+    { pattern: /<!DOCTYPE html/i, description: 'Box AI gateway error' },
+    { pattern: /Box AI API returned 502/i, description: 'Box AI gateway error' },
+    { pattern: /Box AI API returned 500/i, description: 'Box AI server error' },
     { pattern: /model.*not.*available|model.*unavailable/i, description: 'Model unavailable' },
     { pattern: /invalid.*model|model.*invalid/i, description: 'Invalid model' },
     { pattern: /should be equal to one of the allowed values/i, description: 'Invalid model' },

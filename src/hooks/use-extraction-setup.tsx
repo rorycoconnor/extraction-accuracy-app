@@ -75,15 +75,15 @@ export const useExtractionSetup = ({
 
     logger.info('Loading ground truth data using unified system', { fileCount: selectedFiles.length });
 
-    // 🔧 NEW: Load existing accuracy data and migrate to cross-template storage
+    // Load existing accuracy data and migrate to cross-template storage
     const existingAccuracyData = getAccuracyData();
     logger.debug('Existing accuracy data', { found: !!existingAccuracyData, templateKey: existingAccuracyData?.templateKey });
     logger.debug('Current template', { templateKey: template.templateKey });
     
-    // 🆕 NEW: Ensure prompt data is restored from files
+    // Ensure prompt data is restored from files
     await restorePromptDataFromFiles();
     
-    // 🆕 NEW: Migrate existing prompts to cross-template storage
+    // Migrate existing prompts to cross-template storage
     if (existingAccuracyData) {
       const migratedCount = migrateFromAccuracyData(existingAccuracyData);
       if (migratedCount > 0) {
@@ -97,7 +97,7 @@ export const useExtractionSetup = ({
       templateKey: template.templateKey,
       baseModel: AVAILABLE_MODELS[0],
       fields: activeFields.map((field) => {
-        // 🆕 NEW: Get prompt data from cross-template storage
+        // Get prompt data from cross-template storage
         const crossTemplatePromptData = getFieldPrompt(field.key);
         
         // Log enum field options for debugging

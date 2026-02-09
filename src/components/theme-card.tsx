@@ -8,7 +8,7 @@ export function ThemeCard() {
     <Card>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold">Appearance</CardTitle>
+          <CardTitle className="text-base font-semibold">Theme</CardTitle>
           <ThemeToggle />
         </div>
       </CardHeader>

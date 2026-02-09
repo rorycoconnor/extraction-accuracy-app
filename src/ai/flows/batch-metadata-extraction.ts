@@ -11,12 +11,12 @@ import type { ExtractMetadataInput, ExtractMetadataOutput } from '@/lib/schemas'
  * in a single server action call, acquiring the access token only once.
  */
 
-// Global timeout for entire batch extraction (5 minutes)
-// This ensures the UI doesn't hang forever waiting for problematic files
-const BATCH_GLOBAL_TIMEOUT_MS = 300000; // 5 minutes
+// Global timeout for entire batch extraction (15 minutes)
+// Enhanced Extract Agent with many fields can take 5-10 minutes per file
+const BATCH_GLOBAL_TIMEOUT_MS = 900000; // 15 minutes
 
-// Per-job timeout (3 minutes) - shorter than global to allow for cleanup
-const JOB_TIMEOUT_MS = 180000; // 3 minutes
+// Per-job timeout (10 minutes) - must be >= the Enhanced Agent timeout in box.ts
+const JOB_TIMEOUT_MS = 600000; // 10 minutes
 
 export interface BatchExtractionJob extends ExtractMetadataInput {
   jobId: string; // Unique identifier for tracking this specific job
@@ -29,7 +29,7 @@ export interface BatchExtractionResult {
   confidenceScores?: Record<string, number>;
   error?: string;
   duration?: number;
-  timedOut?: boolean; // NEW: indicates if this job was killed by timeout
+  timedOut?: boolean;
 }
 
 export interface BatchProgressCallback {

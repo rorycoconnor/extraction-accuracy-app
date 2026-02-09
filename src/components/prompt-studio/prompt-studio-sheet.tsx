@@ -73,11 +73,13 @@ export default function PromptStudioSheet({
   const [activeSystemPrompt, setActiveSystemPrompt] = React.useState<SystemPromptVersion | null>(null);
   const { toast } = useToast();
 
-  // Load active system prompt on mount
+  // Load active system prompt on mount and when sheet opens
   React.useEffect(() => {
-    const activePrompt = getActiveSystemPrompt();
-    setActiveSystemPrompt(activePrompt);
-  }, []);
+    if (isOpen) {
+      const activePrompt = getActiveSystemPrompt();
+      setActiveSystemPrompt(activePrompt);
+    }
+  }, [isOpen]);
 
   // Handle system prompt change from the panel
   const handleSystemPromptChange = React.useCallback((version: SystemPromptVersion) => {
@@ -581,7 +583,12 @@ export default function PromptStudioSheet({
             <div className="flex flex-col transition-all duration-500 ease-in-out border-r pr-8" style={{ flex: '0 0 50%', minWidth: 0, minHeight: 0 }}>
               <SystemPromptPanel
                 isOpen={showSystemPromptPanel}
-                onClose={() => setShowSystemPromptPanel(false)}
+                onClose={() => {
+                  setShowSystemPromptPanel(false);
+                  // Refresh active system prompt when panel closes
+                  const activePrompt = getActiveSystemPrompt();
+                  setActiveSystemPrompt(activePrompt);
+                }}
                 onSystemPromptChange={handleSystemPromptChange}
               />
             </div>

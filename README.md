@@ -2,15 +2,17 @@
 
 A comprehensive tool for optimizing AI model accuracy in metadata extraction from Box documents.
 
-## 🚀 Features
+## Features
 
 ### Core Functionality
-- **Multi-Model AI Testing**: Compare results from Google Gemini 2.0 Flash, Enhanced Extract Agent, and other Box AI models
+- **Multi-Model AI Testing**: Compare results across 15+ models from Google, Anthropic, OpenAI, and Box (Gemini 2.5 Flash/Pro, Claude 3.7/4/4.5 Sonnet, GPT-4.1/5/5.1, OpenAI O3, Enhanced Extract Agent)
 - **Metadata Extraction**: Extract structured metadata from contracts and documents stored in Box
 - **Ground Truth Management**: Create and manage ground truth data with side-by-side document preview
 - **Performance Metrics**: Calculate accuracy, precision, recall, and F1 scores for model comparison
 - **Template Management**: Configure extraction templates with custom fields and prompts
-- **Real-time Progress Tracking**: Enhanced progress indicators during extraction operations
+- **Real-time Progress Tracking**: Live progress updates as extractions complete with ~10x speedup via server-side parallel processing
+- **Comparison Types**: Configure per-field comparison strategies (exact, near-exact, semantic, LLM-as-judge)
+- **Semantic Matching**: Intelligent value matching with acronym expansion and bidirectional matching
 
 ### Agent Alpha - Agentic Prompt Optimization
 Agent Alpha is an intelligent prompt optimization system that automatically improves extraction prompts to achieve higher accuracy:
@@ -31,25 +33,19 @@ Prompt Studio provides a comprehensive environment for manually crafting and tes
 - **Version History**: Track all prompt versions with metrics and favorites
 - **Live Testing**: Test prompts against selected documents with real-time results
 - **System Prompt Integration**: Use custom system prompts to guide prompt generation
-- **Prompt Library**: Save and reuse successful prompts across fields
+- **Prompt Library**: Save and reuse successful prompts across fields and templates
 
-### Recent Optimizations (2024-2025)
-- ✅ **Agent Alpha**: Agentic prompt optimization with parallel processing and holdout validation
-- ✅ **Prompt Studio**: AI-assisted prompt engineering with version history and testing
-- ✅ **System Prompt Management**: Customizable system prompts for Agent Alpha and Prompt Studio
-- ✅ **Extract Constants**: Reduced 58+ hardcoded strings to 28 organized constants (74% reduction)
-- ✅ **Enhanced Progress State**: Detailed progress tracking with time estimation and completion status
+## Technology Stack
 
-## 🛠️ Technology Stack
-
-- **Frontend**: Next.js 15.3.3 with TypeScript and React 18
+- **Frontend**: Next.js 15.3.6 with TypeScript and React 19
 - **UI Framework**: Radix UI components with Tailwind CSS
-- **AI Integration**: Google Genkit with Box AI Enterprise models
-- **Box Integration**: Box Node SDK with service account authentication
-- **Styling**: Tailwind CSS with custom design system
+- **AI Integration**: Box AI Enterprise models (multi-vendor: Google, Anthropic, OpenAI, Azure)
+- **Box Integration**: Box Node SDK with OAuth, Service Account, and Developer Token authentication
+- **Styling**: Tailwind CSS with custom design system and dark mode support
+- **Testing**: Vitest with React Testing Library
 - **Development**: Hot reload with comprehensive error handling
 
-## 📦 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+ and npm
@@ -87,10 +83,10 @@ Prompt Studio provides a comprehensive environment for manually crafting and tes
 5. **Open your browser**
    Navigate to [http://localhost:9002](http://localhost:9002)
 
-## 🎯 Usage
+## Usage
 
 ### Quick Start
-1. **Configure Settings**: Add your Box Developer Token or Service Account credentials
+1. **Configure Settings**: Add your Box Developer Token, Service Account, or connect via OAuth
 2. **Select Template**: Choose from pre-configured templates or create custom ones
 3. **Run Extraction**: Select documents and AI models to compare
 4. **Review Results**: Analyze extraction results and performance metrics
@@ -99,10 +95,10 @@ Prompt Studio provides a comprehensive environment for manually crafting and tes
 ### Key Workflows
 
 #### Document Extraction
-- Select documents from Box folder (ID: 329136417488)
-- Choose AI models for comparison
+- Browse and select documents from any Box folder
+- Choose AI models for comparison (with or without custom prompts)
 - Configure extraction templates with custom fields
-- Run parallel extractions with real-time progress
+- Run parallel extractions with real-time progress (~10x speedup)
 - View results in comprehensive comparison table
 
 #### Agent Alpha - Automatic Prompt Optimization
@@ -139,7 +135,7 @@ Prompt Studio provides a comprehensive environment for manually crafting and tes
 - Track improvement over time
 - Export results for further analysis
 
-## 🏗️ Architecture
+## Architecture
 
 ### Component Structure
 ```
@@ -162,27 +158,38 @@ src/
 │   │   └── components/              # Version history card
 │   ├── extraction-table.tsx
 │   └── extraction-modal.tsx
+├── features/             # Feature modules
+│   └── prompt-library/              # Cross-template prompt management
 ├── lib/                  # Utilities and constants
-│   ├── agent-alpha-config.ts        # Agent Alpha configuration
-│   ├── agent-alpha-types.ts         # Type definitions
-│   └── system-prompt-storage.ts     # System prompt persistence
-├── services/             # Box API integration
+│   ├── actions/                     # Server actions (Box API, storage, settings)
+│   ├── agent-alpha-*.ts             # Agent Alpha config, types, prompts, sampling
+│   ├── compare-engine.ts            # Comparison strategies
+│   ├── concurrency.ts               # Parallel processing utilities
+│   ├── error-handler.ts             # Error classification and retry
+│   └── types.ts                     # Core type definitions
+├── services/             # External service integration
+│   ├── box.ts                       # Box API (extraction, templates, files)
+│   └── oauth.ts                     # OAuth token management
+├── store/                # State management
+│   └── AccuracyDataStore.tsx        # Zustand-style context + reducer store
 ├── ai/                   # AI flows and prompts
 │   └── flows/
-│       ├── agent-alpha-prepare.ts   # Work plan preparation
-│       ├── agent-alpha-process-field.ts  # Field optimization
-│       └── agent-alpha-iteration.ts # Iteration logic
+│       ├── batch-metadata-extraction.ts  # Parallel batch extraction
+│       ├── agent-alpha-*.ts              # Agent Alpha iteration logic
+│       └── llm-comparison.ts             # LLM-as-judge comparison
 └── hooks/                # Custom React hooks
-    └── use-agent-alpha-runner.ts    # Agent Alpha orchestration
+    ├── use-agent-alpha-runner.ts    # Agent Alpha orchestration
+    └── use-model-extraction-runner.tsx  # Batch extraction runner
 ```
 
-### Key Optimizations
-- **Constants Management**: Centralized string constants for maintainability
-- **Progress Tracking**: Enhanced state management with detailed progress info
-- **Type Safety**: Comprehensive TypeScript types and interfaces
-- **Error Handling**: Robust error handling throughout the application
+### Key Technical Highlights
+- **Parallel Extraction**: Server-side batch processing with 10 concurrent requests (~10x speedup)
+- **Error Resilience**: Structured error classification with retry logic and exponential backoff
+- **Type Safety**: Comprehensive TypeScript types with Zod schemas for runtime validation
+- **State Management**: Unified store with React Context + useReducer pattern
+- **Prompt Versioning**: Full history tracking with metrics, source tracking, and cross-template storage
 
-## 🔧 Configuration
+## Configuration
 
 ### Box Setup
 1. Create a Box Developer Account
@@ -197,7 +204,7 @@ Templates are stored in localStorage and can be configured with:
 - Model-specific optimizations
 - Validation rules and constraints
 
-## 📊 Performance Metrics
+## Performance Metrics
 
 The application calculates comprehensive metrics:
 - **Accuracy**: Overall correctness of extractions
@@ -205,27 +212,7 @@ The application calculates comprehensive metrics:
 - **Recall**: Completeness of extraction
 - **F1 Score**: Harmonic mean of precision and recall
 
-## 🚀 Recent Improvements
-
-### Extract Constants Optimization (Completed)
-- **Phase 1**: UI Labels - Centralized user-facing strings
-- **Phase 2**: Field Types - Standardized data types
-- **Phase 3**: Toast Messages - Consistent notification templates
-- **Phase 4**: Enum Options - Reusable dropdown values
-
-### Enhanced Progress State (Completed)
-- Real-time progress tracking during extraction
-- Detailed status messages with current operation context
-- Time estimation and completion tracking
-- Success/failure indicators with visual feedback
-
-### Next Steps
-- Real-time progress UI updates
-- Custom hooks for complex logic extraction
-- Performance optimization for large datasets
-- Enhanced error handling and recovery
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -233,24 +220,21 @@ The application calculates comprehensive metrics:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 🆘 Support
+## Documentation
 
-- Check the [documentation](./docs/) for detailed guides
-  - [User Guide](./docs/USER_GUIDE.md) - Comprehensive guide for Agent Alpha and Prompt Studio
-  - [Troubleshooting](./docs/TROUBLESHOOTING.md) - Common issues and solutions
-  - [Quick Start](./QUICK_START_AGENT_ALPHA.md) - Get started with Agent Alpha in 5 minutes
-  - [Architecture](./docs/architecture/) - System architecture and data flows
-  - [Testing Documentation](./docs/testing/) - Testing strategy and implementation
-  - [Feature Documentation](./docs/features/) - Feature-specific guides
-  - [Implementation Guides](./docs/implementation/) - Migration and implementation plans
-- Report issues in the GitHub Issues section
-- Contact the development team for enterprise support
+- [Documentation Index](./docs/README.md) - Full documentation navigation
+- [User Guide](./docs/USER_GUIDE.md) - Comprehensive guide for Agent Alpha and Prompt Studio
+- [Troubleshooting](./docs/TROUBLESHOOTING.md) - Common issues and solutions
+- [Quick Start: Agent Alpha](./QUICK_START_AGENT_ALPHA.md) - Get started in 5 minutes
+- [Architecture](./docs/architecture/) - System architecture, AI prompt design, and data flows
+- [Testing](./docs/testing/) - Testing strategy and implementation plans
+- [Features](./docs/features/) - Feature-specific documentation
 
-## 🔗 Links
+## Links
 
 - [Box Developer Documentation](https://developer.box.com/)
 - [Box AI Enterprise](https://www.box.com/ai/)

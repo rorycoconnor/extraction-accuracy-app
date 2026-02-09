@@ -737,7 +737,8 @@ type BoxAIExtractRequestBody = {
     fields?: BoxAIField[];
     metadata_template?: {
         template_key: string;
-        scope: 'enterprise';
+        type: 'metadata_template';
+        scope: string;
     };
     include_confidence_score?: boolean;
     ai_agent?: {
@@ -764,14 +765,15 @@ export type BoxAIExtractionResult = {
 }
 
 // Configuration for Box AI extraction with retry and timeout
-// OPTIMIZED: Reduced timeouts and retries to fail faster and not block UI
+// Enhanced Extract Agent needs longer timeouts due to chain-of-thought reasoning on complex docs
 const BOX_AI_EXTRACTION_CONFIG = {
-  maxRetries: 2, // Reduced from 3 - fail faster if Box is struggling with a file
-  initialDelayMs: 2000, // Reduced from 3000 - faster retry cycles
-  maxDelayMs: 10000, // Reduced from 60000 - don't wait too long between retries
+  maxRetries: 2,
+  initialDelayMs: 2000,
+  maxDelayMs: 10000,
   backoffMultiplier: 2,
-  timeoutMs: 180000, // Reduced from 900000 (15 min) to 180000 (3 min) - faster timeout per file
-  retryableStatusCodes: [502, 503, 504], // Removed 500 - Box 500 errors on specific files won't recover with retries
+  timeoutMs: 180000, // Default: 3 minutes for standard models
+  enhancedAgentTimeoutMs: 600000, // 10 minutes for Enhanced Extract Agent (complex docs + many fields)
+  retryableStatusCodes: [500, 502, 503, 504], // Re-added 500 - Box AI 500 errors can be transient
 };
 
 export async function extractStructuredMetadataWithBoxAI(
@@ -793,6 +795,7 @@ export async function extractStructuredMetadataWithBoxAI(
         boxLogger.debug('Using Box metadata template', { templateKey });
         requestBody.metadata_template = {
           template_key: templateKey,
+          type: 'metadata_template',
           scope: 'enterprise'
         };
       } else if (fields) {
@@ -827,6 +830,13 @@ export async function extractStructuredMetadataWithBoxAI(
         boxLogger.debug(`Using custom AI agent with model`, { model, fileId });
       }
 
+      // Determine timeout based on model type
+      // Enhanced Extract Agent uses chain-of-thought reasoning and needs more time
+      const isEnhancedAgent = model === 'enhanced_extract_agent';
+      const effectiveTimeoutMs = isEnhancedAgent
+        ? BOX_AI_EXTRACTION_CONFIG.enhancedAgentTimeoutMs
+        : BOX_AI_EXTRACTION_CONFIG.timeoutMs;
+
       // Calculate and log request size for diagnostics
       const requestBodyStr = JSON.stringify(requestBody);
       const requestSizeKB = Math.round(new Blob([requestBodyStr]).size / 1024);
@@ -837,18 +847,39 @@ export async function extractStructuredMetadataWithBoxAI(
         model, 
         fileId, 
         hasTemplate: !!templateKey,
+        templateKey: templateKey || null,
         fieldCount,
         requestSizeKB,
         totalPromptChars,
         attempt: attempt + 1,
         maxRetries: BOX_AI_EXTRACTION_CONFIG.maxRetries + 1,
-        includeConfidenceScore: requestBody.include_confidence_score // 🔍 Verify this is true
+        includeConfidenceScore: requestBody.include_confidence_score,
+        timeoutMs: effectiveTimeoutMs
       });
+      
+      // Log full request body on first attempt for debugging
+      if (attempt === 0) {
+        // Truncate fields array for logging but show structure
+        const logBody = { ...requestBody };
+        if (logBody.fields && logBody.fields.length > 3) {
+          const sample = logBody.fields.slice(0, 2);
+          boxLogger.debug('Request body (first attempt)', {
+            fileId,
+            body: JSON.stringify({ ...logBody, fields: [...sample, `... and ${logBody.fields.length - 2} more fields`] })
+          });
+        } else {
+          boxLogger.debug('Request body (first attempt)', {
+            fileId,
+            body: requestBodyStr.substring(0, 1000)
+          });
+        }
+      }
 
       // Call Box AI API with timeout handling
+      
       const accessToken = await getAccessToken();
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), BOX_AI_EXTRACTION_CONFIG.timeoutMs);
+      const timeoutId = setTimeout(() => controller.abort(), effectiveTimeoutMs);
       
       const startTime = Date.now();
       
@@ -1071,7 +1102,7 @@ export async function extractStructuredMetadataWithBoxAI(
         
         // Handle timeout errors
         if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-          const timeoutMinutes = Math.round(BOX_AI_EXTRACTION_CONFIG.timeoutMs / 60000);
+          const timeoutMinutes = Math.round(effectiveTimeoutMs / 60000);
           boxLogger.error(`Box AI extraction timeout after ${timeoutMinutes} minutes`, fetchError);
           throw new Error(`Box AI extraction timed out after ${timeoutMinutes} minutes. The document may be too complex or Box AI is experiencing issues.`);
         }

@@ -34,6 +34,8 @@ export interface ConfigureViewProps {
   onUpdateCurrent: () => void;
   onSetAsActive: () => void;
   onDeleteVersion: () => void;
+  onRenameVersion: () => void;
+  onCreateNew: () => void;
 }
 
 export interface RunningViewProps {

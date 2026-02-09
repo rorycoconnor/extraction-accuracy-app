@@ -449,7 +449,7 @@ export async function runFieldIteration(params: {
     // Infer document type from template key if available
     const documentType = inferDocumentType(templateKey);
     
-    // NEW: Analyze failed documents to understand WHY extractions failed
+    // Analyze failed documents to understand WHY extractions failed
     // This gives us actual document context to help write better prompts
     let documentContext = '';
     const shouldAnalyze = AGENT_ALPHA_CONFIG.ENABLE_DOCUMENT_ANALYSIS && 
@@ -496,7 +496,7 @@ export async function runFieldIteration(params: {
       documentType,
       templateKey, // Pass template name for additional document type context
       customInstructions: systemPromptOverride, // Pass custom instructions if provided
-      documentContext, // NEW: Pass analyzed document context
+      documentContext, // Pass analyzed document context
       // companyName would be passed if available from settings
     });
 

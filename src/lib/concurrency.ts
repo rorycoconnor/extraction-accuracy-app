@@ -22,28 +22,72 @@ export async function processWithConcurrency<T, R>(
   limit: number,
   fn: (item: T) => Promise<R>
 ): Promise<R[]> {
-  const results: Promise<R>[] = [];
-  const executing: Promise<void>[] = [];
+  const results: R[] = new Array(items.length);
+  const executing: Set<Promise<void>> = new Set();
+  
+  // Track timing for diagnostics
+  const startTimes: number[] = [];
+  const endTimes: number[] = [];
+  const batchStartTime = Date.now();
 
-  for (const item of items) {
-    const p = fn(item).then(res => {
-      // When a promise resolves, remove it from the executing pool
-      const index = executing.indexOf(e);
-      if (index > -1) {
-        executing.splice(index, 1);
+  for (let i = 0; i < items.length; i++) {
+    const index = i;
+    const item = items[i];
+    
+    // Create a tracked promise for this item
+    const itemPromise = (async () => {
+      startTimes[index] = Date.now() - batchStartTime;
+      
+      try {
+        const result = await fn(item);
+        results[index] = result;
+        endTimes[index] = Date.now() - batchStartTime;
+      } catch (error) {
+        endTimes[index] = Date.now() - batchStartTime;
+        throw error;
       }
-      return res;
+    })();
+
+    // Track the promise and auto-remove when done
+    const trackedPromise = itemPromise.finally(() => {
+      executing.delete(trackedPromise);
     });
+    
+    executing.add(trackedPromise);
 
-    results.push(p);
-
-    const e = p.then(() => {});
-    executing.push(e);
-
-    if (executing.length >= limit) {
+    // Wait for a slot to open if we've hit the limit
+    if (executing.size >= limit) {
       await Promise.race(executing);
     }
   }
 
-  return Promise.all(results);
+  // Wait for all remaining items to complete
+  await Promise.all(executing);
+  
+  // Log timing diagnostics if there were multiple items
+  if (items.length > 1) {
+    const overlapCount = countOverlaps(startTimes, endTimes);
+    console.log(`[processWithConcurrency] Processed ${items.length} items with limit ${limit}`);
+    console.log(`[processWithConcurrency] Overlapping pairs: ${overlapCount} (indicates parallel execution)`);
+    console.log(`[processWithConcurrency] Total time: ${Date.now() - batchStartTime}ms`);
+  }
+
+  return results;
+}
+
+/**
+ * Count how many item pairs had overlapping execution times.
+ * Higher number = more parallelism.
+ */
+function countOverlaps(startTimes: number[], endTimes: number[]): number {
+  let count = 0;
+  for (let i = 0; i < startTimes.length; i++) {
+    for (let j = i + 1; j < startTimes.length; j++) {
+      // Check if items i and j overlapped in time
+      if (startTimes[i] < endTimes[j] && startTimes[j] < endTimes[i]) {
+        count++;
+      }
+    }
+  }
+  return count;
 } 

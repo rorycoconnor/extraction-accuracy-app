@@ -632,7 +632,7 @@ export const useEnhancedComparisonRunner = (
       newAverages[fieldKey] = modelAvgs;
     }
     
-    // 🆕 NEW: Update prompt version metrics for any recently saved prompts
+    // Update prompt version metrics for any recently saved prompts
     const updatedAccuracyDataWithMetrics = updatePromptVersionMetrics({
       ...accuracyData,
       results: processedResults,

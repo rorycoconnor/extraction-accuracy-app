@@ -1,4 +1,4 @@
-# 🚀 Agent-Alpha Quick Start Guide
+# Agent-Alpha Quick Start Guide
 
 ## What is Agent-Alpha?
 An agentic approach to generating high-quality extraction prompts using iterative refinement and Gemini best practices.
@@ -13,17 +13,17 @@ npm run dev
 ```
 
 ### 2. Load Data
-- Open http://localhost:3000
+- Open http://localhost:9002
 - Select **Contracts** template
 - Add **8 documents** with ground truth
 
 ### 3. Run Comparison
-- Select **2 models** (e.g., Gemini Flash + Enhanced Extract)
+- Select **2 models** (e.g., Gemini 2.5 Flash + Enhanced Extract Agent)
 - Click **"Run Comparison"**
 - Wait for results (should see some fields < 100%)
 
 ### 4. Run Agent-Alpha
-- Select **test model** from dropdown (e.g., Google Flash 2.0)
+- Select **test model** from dropdown (e.g., Gemini 2.5 Flash)
 - Click **"Agent - Alpha"** button
 - Confirm in dialog
 - **Watch progress modal** (shows current field, iteration, time)
@@ -123,12 +123,13 @@ npm run dev
 
 ---
 
-## Files to Check
+## Key Files
 
-- **`src/lib/agent-alpha-prompts.ts`** - Prompt generation logic ⭐
-- **`src/components/agent-alpha-modal.tsx`** - Progress & preview UI
+- **`src/lib/agent-alpha-prompts.ts`** - Prompt generation logic
+- **`src/components/agent-alpha/agent-alpha-modal.tsx`** - Progress & preview UI
 - **`src/hooks/use-agent-alpha-runner.ts`** - React integration
-- **`AGENT_ALPHA_GEMINI_IMPROVEMENTS.md`** - Detailed documentation
+- **`docs/architecture/agent-alpha-gemini-improvements.md`** - Detailed Gemini best practices
+- **`docs/architecture/agent-alpha-prompt-improvements.md`** - V2 prompt generation design
 
 ---
 
@@ -138,19 +139,4 @@ npm run dev
 - **Convergence Speed**: Fewer iterations needed (< 5)
 - **Accuracy Improvement**: Higher final accuracy vs initial
 - **Time**: 1-2 minutes for 12 fields
-
----
-
-## Next Steps
-
-1. ✅ Test with real data (now!)
-2. Monitor prompt quality in preview modal
-3. Check Prompt Studio for saved versions
-4. Iterate on best practices if needed
-
----
-
-**Ready to go!** 🎉
-
-Just run comparison, click Agent-Alpha, and watch it work!
 

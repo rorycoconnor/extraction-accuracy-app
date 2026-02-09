@@ -252,7 +252,7 @@ Adapt the terminology and locations to be appropriate for ${documentType || 'thi
     prompt += `\nAnalyze WHY these failed. Common causes: wrong section, missing synonyms, format mismatch.\n`;
   }
   
-  // NEW: Add deep document analysis if available
+  // Add deep document analysis if available
   // This shows the ACTUAL document content where extractions failed
   if (documentContext) {
     prompt += documentContext;

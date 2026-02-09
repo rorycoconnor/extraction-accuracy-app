@@ -14,6 +14,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Sparkles } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { logger } from '@/lib/logger';
@@ -66,6 +68,14 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
     isOpen: false,
     versionId: '',
     versionName: '',
+  });
+  
+  // Rename dialog state
+  const [renameDialog, setRenameDialog] = useState<{ isOpen: boolean; versionId: string; versionName: string; newName: string }>({
+    isOpen: false,
+    versionId: '',
+    versionName: '',
+    newName: '',
   });
   
   // State for unsaved results confirmation dialog
@@ -236,6 +246,47 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
     setDeleteConfirm({ isOpen: false, versionId: '', versionName: '' });
   };
 
+  const handleRenameVersion = () => {
+    if (!renameDialog.versionId || !renameDialog.newName.trim()) return;
+    
+    const updated = updateAgentSystemPromptVersion(renameDialog.versionId, {
+      name: renameDialog.newName.trim(),
+    });
+    
+    if (updated) {
+      setVersions(getAllAgentSystemPromptVersions());
+      toast({ title: 'Version Renamed', description: `Renamed to "${updated.name}".` });
+    }
+    
+    setRenameDialog({ isOpen: false, versionId: '', versionName: '', newName: '' });
+  };
+
+  const handleCreateNew = () => {
+    // Generate a default name based on the selected version
+    const baseName = selectedVersion?.name || 'Custom';
+    const versionPattern = new RegExp(`^${baseName.replace(/\s+V\d+$/, '')}\\s+V(\\d+)$`);
+    const existingNumbers = versions
+      .map(v => {
+        const match = v.name.match(versionPattern);
+        return match ? parseInt(match[1], 10) : 0;
+      })
+      .filter(n => n > 0);
+    const nextNum = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+    const newName = `${baseName.replace(/\s+V\d+$/, '')} V${nextNum}`;
+    
+    // Create with current edited instructions
+    const newVersion = createAgentSystemPromptVersion(newName, editedInstructions);
+    setVersions(getAllAgentSystemPromptVersions());
+    setSelectedVersionId(newVersion.id);
+    setHasModifiedInstructions(false);
+    
+    // Auto-set as active
+    setActiveAgentSystemPrompt(newVersion.id);
+    setActiveVersionId(newVersion.id);
+    
+    toast({ title: 'Version Created', description: `"${newVersion.name}" saved and set as active.` });
+  };
+
   const handleStartAgent = () => {
     if (onStartWithConfig) {
       onStartWithConfig(config);
@@ -301,6 +352,13 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
               versionId: selectedVersionId,
               versionName: selectedVersion?.name || '',
             })}
+            onRenameVersion={() => setRenameDialog({
+              isOpen: true,
+              versionId: selectedVersionId,
+              versionName: selectedVersion?.name || '',
+              newName: selectedVersion?.name || '',
+            })}
+            onCreateNew={handleCreateNew}
           />
         )}
 
@@ -357,6 +415,43 @@ export const AgentAlphaModal: React.FC<AgentAlphaModalProps> = ({
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteVersion} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Rename Dialog */}
+      <AlertDialog open={renameDialog.isOpen} onOpenChange={(open) => !open && setRenameDialog({ isOpen: false, versionId: '', versionName: '', newName: '' })}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Rename System Prompt</AlertDialogTitle>
+            <AlertDialogDescription>
+              Enter a new name for &quot;{renameDialog.versionName}&quot;.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4">
+            <Label htmlFor="rename-input" className="sr-only">New name</Label>
+            <Input
+              id="rename-input"
+              value={renameDialog.newName}
+              onChange={(e) => setRenameDialog(prev => ({ ...prev, newName: e.target.value }))}
+              placeholder="Enter new name..."
+              className="w-full"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && renameDialog.newName.trim()) {
+                  handleRenameVersion();
+                }
+              }}
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleRenameVersion} 
+              disabled={!renameDialog.newName.trim() || renameDialog.newName.trim() === renameDialog.versionName}
+            >
+              Rename
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

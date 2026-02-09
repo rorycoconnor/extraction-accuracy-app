@@ -7,7 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Save, Plus, Trash2 } from 'lucide-react';
+import { Save, Plus, Trash2, MoreHorizontal, Pencil } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn, formatModelName } from '@/lib/utils';
 import { AGENT_ALPHA_CONFIG, PROMPT_GEN_MODELS } from '@/lib/agent-alpha-config';
 import { formatEstimatedTime } from '../utils';
@@ -30,6 +36,8 @@ export const ConfigureView: React.FC<ConfigureViewProps> = ({
   onUpdateCurrent,
   onSetAsActive,
   onDeleteVersion,
+  onRenameVersion,
+  onCreateNew,
 }) => {
   // Get the currently selected version
   const selectedVersion = versions.find(v => v.id === selectedVersionId);
@@ -91,14 +99,38 @@ export const ConfigureView: React.FC<ConfigureViewProps> = ({
             >
               Set as Active
             </Button>
+            <Button
+              variant="outline"
+              onClick={onCreateNew}
+              className="flex-1 h-9"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create New
+            </Button>
             {!isDefault && (
-              <Button
-                variant="outline"
-                onClick={onDeleteVersion}
-                className="h-9 w-9 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-9 w-9 p-0"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-white dark:bg-popover">
+                  <DropdownMenuItem onClick={onRenameVersion}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Rename
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={onDeleteVersion}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
           
