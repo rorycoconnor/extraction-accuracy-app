@@ -144,6 +144,34 @@ export interface ModelConfig {
 export const MODEL_CONFIGS: ModelConfig[] = [
   // Google Gemini Models
   {
+    id: 'google__gemini_3_pro',
+    name: 'Gemini 3 Pro',
+    vendor: 'Google',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_3_pro_no_prompt',
+    name: 'Gemini 3 Pro (no prompt)',
+    vendor: 'Google',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_3_flash',
+    name: 'Gemini 3 Flash',
+    vendor: 'Google',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_3_flash_no_prompt',
+    name: 'Gemini 3 Flash (no prompt)',
+    vendor: 'Google',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
     id: 'google__gemini_2_5_flash',
     name: 'Google 2.5 Flash',
     vendor: 'Google',

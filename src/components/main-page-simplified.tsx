@@ -490,7 +490,8 @@ const MainPage: React.FC = () => {
       return;
     }
 
-    if (!selectedTemplate) {
+    const templateKey = selectedTemplate?.templateKey ?? accuracyData.templateKey;
+    if (!templateKey) {
       toast({
         title: 'No Template Selected',
         description: 'Please select documents first.',
@@ -549,7 +550,7 @@ const MainPage: React.FC = () => {
             
             const success = await saveGroundTruth(
               fileResult.id,
-              selectedTemplate.templateKey,
+              templateKey,
               fieldKey,
               valueToSave
             );
