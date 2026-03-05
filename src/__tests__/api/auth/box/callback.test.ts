@@ -7,6 +7,19 @@ vi.mock('@/services/oauth', () => ({
   storeOAuthTokens: vi.fn()
 }))
 
+// Mock Next.js cookies for CSRF state validation
+const mockCookieStore = {
+  get: vi.fn(),
+  set: vi.fn(),
+  delete: vi.fn(),
+  getAll: vi.fn().mockReturnValue([]),
+  has: vi.fn(),
+}
+
+vi.mock('next/headers', () => ({
+  cookies: vi.fn(() => Promise.resolve(mockCookieStore))
+}))
+
 // Mock fetch for Box API calls
 global.fetch = vi.fn()
 
@@ -22,6 +35,12 @@ describe('Box OAuth Callback API Route', () => {
       BOX_CLIENT_ID: 'test_client_id',
       BOX_CLIENT_SECRET: 'test_client_secret'
     }
+
+    // Default: provide a matching state cookie for CSRF validation
+    mockCookieStore.get.mockImplementation((name: string) => {
+      if (name === 'box_oauth_state') return { value: 'valid_state' }
+      return null
+    })
   })
 
   afterEach(() => {
@@ -58,7 +77,7 @@ describe('Box OAuth Callback API Route', () => {
       
       const request = createMockRequest({
         code: 'valid_auth_code',
-        state: 'random_state_value'
+        state: 'valid_state'
       })
       
       const response = await GET(request)
@@ -108,7 +127,7 @@ describe('Box OAuth Callback API Route', () => {
       
       const request = createMockRequest({
         code: 'valid_code',
-        state: 'state'
+        state: 'valid_state'
       })
       
       await GET(request)
@@ -142,7 +161,7 @@ describe('Box OAuth Callback API Route', () => {
 
     test('should handle missing authorization code', async () => {
       const request = createMockRequest({
-        state: 'some_state'
+        state: 'valid_state'
         // Missing 'code' parameter
       })
       
@@ -171,7 +190,7 @@ describe('Box OAuth Callback API Route', () => {
       
       const request = createMockRequest({
         code: 'invalid_code',
-        state: 'state'
+        state: 'valid_state'
       })
       
       const response = await GET(request)
@@ -187,7 +206,7 @@ describe('Box OAuth Callback API Route', () => {
       
       const request = createMockRequest({
         code: 'valid_code',
-        state: 'state'
+        state: 'valid_state'
       })
       
       const response = await GET(request)
@@ -217,7 +236,7 @@ describe('Box OAuth Callback API Route', () => {
       
       const request = createMockRequest({
         code: 'valid_code',
-        state: 'state'
+        state: 'valid_state'
       })
       
       const response = await GET(request)
@@ -236,7 +255,7 @@ describe('Box OAuth Callback API Route', () => {
       
       const request = createMockRequest({
         code: 'valid_code',
-        state: 'state'
+        state: 'valid_state'
       })
       
       const response = await GET(request)
@@ -247,25 +266,37 @@ describe('Box OAuth Callback API Route', () => {
       expect(response.headers.get('Location')).toContain('message=missing_credentials')
     })
 
-    test('should include CSRF state validation (when implemented)', async () => {
-      // This test documents expected behavior for state validation
+    test('should reject mismatched CSRF state parameter', async () => {
       const request = createMockRequest({
         code: 'valid_code',
         state: 'potentially_malicious_state'
       })
       
-      // Current implementation doesn't validate state, but should redirect successfully
-      // In a production environment, state validation would be critical
       const response = await GET(request)
       
-      // Should process request (current behavior) - Next.js uses 307 by default
       expect(response.status).toBe(307)
+      expect(response.headers.get('Location')).toContain('message=invalid_state')
+      expect(fetch).not.toHaveBeenCalled()
+    })
+
+    test('should reject missing CSRF state parameter', async () => {
+      mockCookieStore.get.mockReturnValue(null)
+      
+      const request = createMockRequest({
+        code: 'valid_code',
+        state: 'any_state'
+      })
+      
+      const response = await GET(request)
+      
+      expect(response.status).toBe(307)
+      expect(response.headers.get('Location')).toContain('message=invalid_state')
     })
 
     test('should use secure redirect URLs', async () => {
       const request = createMockRequest({
         code: 'valid_code',
-        state: 'state'
+        state: 'valid_state'
       })
       
       const response = await GET(request)
@@ -294,7 +325,7 @@ describe('Box OAuth Callback API Route', () => {
       
       const request = createMockRequest({
         code: 'auth_code',
-        state: 'state'
+        state: 'valid_state'
       })
       
       await GET(request)
@@ -335,7 +366,7 @@ describe('Box OAuth Callback API Route', () => {
       
       const request = createMockRequest({
         code: 'code',
-        state: 'state'
+        state: 'valid_state'
       })
       
       await GET(request)
@@ -360,7 +391,7 @@ describe('Box OAuth Callback API Route', () => {
       
       const request = createMockRequest({
         code: 'code',
-        state: 'state'
+        state: 'valid_state'
       })
       
       const response = await GET(request)

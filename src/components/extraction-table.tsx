@@ -272,9 +272,7 @@ export default function ExtractionTable({
             borderSpacing: 0,
           }}
         >
-          {/* Force borders with explicit header row targeting */}
-          <style dangerouslySetInnerHTML={{
-            __html: `
+          <style>{`
               .extraction-table {
                 border-collapse: collapse;
               }
@@ -283,7 +281,6 @@ export default function ExtractionTable({
                 border-right: 1px solid hsl(var(--border));
                 border-bottom: 1px solid hsl(var(--border));
               }
-              /* Force borders on header rows with maximum specificity */
               .extraction-table thead tr:nth-child(1) {
                 border-bottom: 1px solid hsl(var(--border)) !important;
               }
@@ -301,8 +298,7 @@ export default function ExtractionTable({
               .extraction-table .thick-border-bottom {
                 border-bottom: 2px solid hsl(var(--foreground) / 0.2);
               }
-            `
-          }} />
+          `}</style>
           <TableHeader className="sticky top-0 z-20 bg-background shadow-sm">
             {/* Row 1: Field Names */}
             <TableRow>

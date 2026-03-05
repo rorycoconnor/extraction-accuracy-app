@@ -510,8 +510,19 @@ function extractContext(text: string, startIndex: number, endIndex: number): str
   return contextSentences.map(s => s.text).join(' ').trim();
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 /**
- * Highlights the found value within the context
+ * Highlights the found value within the context.
+ * All text is HTML-escaped before the highlight mark is inserted
+ * to prevent XSS from document content.
  */
 function highlightValueInContext(
   context: string,
@@ -528,13 +539,12 @@ function highlightValueInContext(
   
   const index = searchContext.indexOf(searchValue);
   if (index === -1) {
-    return context; // Return original if not found
+    return escapeHtml(context);
   }
   
-  // Use the original casing from context for the highlighted portion
-  const beforeHighlight = context.substring(0, index);
-  const highlightedPart = context.substring(index, index + searchValue.length);
-  const afterHighlight = context.substring(index + searchValue.length);
+  const beforeHighlight = escapeHtml(context.substring(0, index));
+  const highlightedPart = escapeHtml(context.substring(index, index + searchValue.length));
+  const afterHighlight = escapeHtml(context.substring(index + searchValue.length));
   
   return `${beforeHighlight}<mark class="bg-yellow-200 dark:bg-yellow-800 px-1 rounded">${highlightedPart}</mark>${afterHighlight}`;
 }

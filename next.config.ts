@@ -17,11 +17,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // Increase Server Actions body size limit for large extraction results
-  // Default is 1 MB, increased to 10 MB to handle large templates with many fields
   experimental: {
     serverActions: {
-      bodySizeLimit: '10mb',
+      bodySizeLimit: '4mb',
     },
   },
 };

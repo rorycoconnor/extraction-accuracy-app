@@ -29,45 +29,39 @@ const COOKIE_NAMES = {
 export async function storeOAuthTokens(tokens: OAuthTokens): Promise<void> {
   const cookieStore = await cookies();
   
-  // Set secure HTTP-only cookies with tokens
-  cookieStore.set(COOKIE_NAMES.ACCESS_TOKEN, tokens.accessToken, {
+  const accessTokenMaxAgeSec = Math.max(0, Math.floor((tokens.expiresAt - Date.now()) / 1000));
+  const refreshTokenMaxAgeSec = 7 * 24 * 60 * 60; // 7 days (reduced from 30)
+
+  const commonOpts = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-    sameSite: 'lax',
-    maxAge: tokens.expiresAt - Date.now(), // Cookie expires when token expires
-    path: '/'
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    path: '/',
+  };
+
+  cookieStore.set(COOKIE_NAMES.ACCESS_TOKEN, tokens.accessToken, {
+    ...commonOpts,
+    maxAge: accessTokenMaxAgeSec,
   });
   
   cookieStore.set(COOKIE_NAMES.REFRESH_TOKEN, tokens.refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 30 * 24 * 60 * 60, // 30 days for refresh token
-    path: '/'
+    ...commonOpts,
+    maxAge: refreshTokenMaxAgeSec,
   });
   
   cookieStore.set(COOKIE_NAMES.EXPIRES_AT, tokens.expiresAt.toString(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: tokens.expiresAt - Date.now(),
-    path: '/'
+    ...commonOpts,
+    maxAge: accessTokenMaxAgeSec,
   });
   
   cookieStore.set(COOKIE_NAMES.TOKEN_TYPE, tokens.tokenType, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: tokens.expiresAt - Date.now(),
-    path: '/'
+    ...commonOpts,
+    maxAge: accessTokenMaxAgeSec,
   });
   
   cookieStore.set(COOKIE_NAMES.LAST_CONNECTED, new Date().toISOString(), {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    path: '/'
+    ...commonOpts,
+    maxAge: refreshTokenMaxAgeSec,
   });
   
   // Verify cookies were set
@@ -300,14 +294,24 @@ export async function disconnectOAuth(): Promise<void> {
 }
 
 /**
- * Get OAuth authorization URL for Box
+ * Get OAuth authorization URL for Box.
+ * Stores a cryptographically random state token in an HTTP-only cookie
+ * so the callback can validate it to prevent CSRF attacks.
  */
 export async function getOAuthAuthorizationUrl(): Promise<string> {
   const clientId = process.env.NEXT_PUBLIC_BOX_CLIENT_ID || 'your_box_client_id';
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:9002'}/api/auth/box/callback`;
-  const state = Math.random().toString(36).substring(7);
-  
-  // Build authorization URL - Box will use scopes configured in Developer Console
+  const state = crypto.randomUUID();
+
+  const cookieStore = await cookies();
+  cookieStore.set('box_oauth_state', state, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 600, // 10 minutes
+    path: '/',
+  });
+
   const authUrl = new URL('https://account.box.com/api/oauth2/authorize');
   authUrl.searchParams.set('client_id', clientId);
   authUrl.searchParams.set('response_type', 'code');

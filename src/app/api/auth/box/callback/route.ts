@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { storeOAuthTokens } from '@/services/oauth';
 import { logger } from '@/lib/logger';
 
@@ -14,6 +15,21 @@ export async function GET(request: NextRequest) {
       logger.error('Box OAuth error', { error });
       return NextResponse.redirect(
         new URL('/settings?error=oauth_failed&message=' + encodeURIComponent(error), request.url)
+      );
+    }
+
+    // Validate CSRF state parameter
+    const cookieStore = await cookies();
+    const storedState = cookieStore.get('box_oauth_state')?.value;
+    cookieStore.delete('box_oauth_state');
+
+    if (!state || !storedState || state !== storedState) {
+      logger.error('OAuth state mismatch - possible CSRF attack', {
+        hasState: !!state,
+        hasStoredState: !!storedState,
+      });
+      return NextResponse.redirect(
+        new URL('/settings?error=oauth_failed&message=invalid_state', request.url)
       );
     }
 
@@ -41,7 +57,6 @@ export async function GET(request: NextRequest) {
       logger.error('Missing Box OAuth credentials', {
         hasClientId: !!clientId,
         hasClientSecret: !!clientSecret,
-        envVars: Object.keys(process.env).filter(k => k.includes('BOX'))
       });
       return NextResponse.redirect(
         new URL('/settings?error=oauth_failed&message=missing_credentials', request.url)

@@ -8,14 +8,15 @@ export async function GET(
 ) {
   try {
     const { fileId } = await params;
-    const { searchParams } = new URL(request.url);
+
+    if (!fileId || !/^\d{1,20}$/.test(fileId)) {
+      return new NextResponse('Invalid file ID', { status: 400 });
+    }
     
     logger.debug('Fetching thumbnail for file', { fileId });
     
     // Get Box access token
-    logger.debug('Getting Box access token');
     const accessToken = await getBoxAccessToken();
-    logger.debug('Got Box access token', { tokenLength: accessToken.length });
     
     // Box API supports specific thumbnail sizes: 32x32, 94x94, 160x160, 320x320, 1024x1024, 2048x2048 for JPG
     // For PNG: 1024x1024, 2048x2048
@@ -34,7 +35,7 @@ export async function GET(
     if (!response.ok) {
       const errorText = await response.text();
       logger.error('Box thumbnail API error', { status: response.status, statusText: response.statusText, errorText });
-      return new NextResponse(`Thumbnail not available: ${response.status} ${response.statusText}`, { status: response.status });
+      return new NextResponse('Thumbnail not available', { status: response.status });
     }
     
     // Get the image data

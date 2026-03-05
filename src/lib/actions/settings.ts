@@ -1,17 +1,34 @@
-
 'use server';
 
 import fs from 'fs/promises';
 import path from 'path';
 import { logger } from '@/lib/logger';
 
-/**
- * Updates or removes key-value pairs in the .env file.
- * Reads the existing .env file, applies the given updates, and writes it back.
- * If a value for a key is `undefined`, the key is removed from the file.
- * @param updates An object where keys are env variable names and values are their new content.
- */
+const ALLOWED_ENV_KEYS = new Set([
+  'BOX_CONFIG_JSON_BASE64',
+  'BOX_DEVELOPER_TOKEN',
+  'BOX_ENTERPRISE_ID',
+  'BOX_CLIENT_ID',
+  'BOX_CLIENT_SECRET',
+  'GEMINI_API_KEY',
+]);
+
+const ENV_KEY_PATTERN = /^[A-Z][A-Z0-9_]*$/;
+
+function sanitizeEnvValue(value: string): string {
+  return value.replace(/[\r\n]/g, '').trim();
+}
+
 async function updateEnvFile(updates: Record<string, string | undefined>) {
+    for (const key of Object.keys(updates)) {
+      if (!ALLOWED_ENV_KEYS.has(key)) {
+        throw new Error(`Env key not allowed: ${key}`);
+      }
+      if (!ENV_KEY_PATTERN.test(key)) {
+        throw new Error(`Invalid env key format: ${key}`);
+      }
+    }
+
     const envPath = path.resolve(process.cwd(), '.env');
     let envConfig: Record<string, string> = {};
 
@@ -28,19 +45,16 @@ async function updateEnvFile(updates: Record<string, string | undefined>) {
         });
     } catch (e) {
         if ((e as NodeJS.ErrnoException).code !== 'ENOENT') {
-            // If the error is anything other than "file not found", re-throw it.
             throw e;
         }
-        // If file doesn't exist, we'll create it.
     }
 
-    // Apply updates and deletions
     for (const key in updates) {
         const value = updates[key];
         if (value === undefined) {
             delete envConfig[key];
         } else {
-            envConfig[key] = value;
+            envConfig[key] = sanitizeEnvValue(value);
         }
     }
     
@@ -48,7 +62,9 @@ async function updateEnvFile(updates: Record<string, string | undefined>) {
         .map(([k, v]) => `${k}=${v}`)
         .join('\n');
 
-    await fs.writeFile(envPath, newContent);
+    const tmpPath = `${envPath}.tmp`;
+    await fs.writeFile(tmpPath, newContent);
+    await fs.rename(tmpPath, envPath);
 }
 
 

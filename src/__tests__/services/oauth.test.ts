@@ -80,7 +80,7 @@ describe('OAuth Service - Backend API Testing', () => {
           httpOnly: true,
           secure: false,
           sameSite: 'lax',
-          maxAge: 30 * 24 * 60 * 60, // 30 days
+          maxAge: 7 * 24 * 60 * 60, // 7 days
           path: '/'
         })
       )
@@ -271,7 +271,6 @@ describe('OAuth Service - Backend API Testing', () => {
 
   describe('OAuth Authorization Flow', () => {
     test('should generate valid authorization URL', async () => {
-      // The implementation uses NEXT_PUBLIC_BOX_CLIENT_ID, not BOX_CLIENT_ID
       process.env.NEXT_PUBLIC_BOX_CLIENT_ID = 'test_client_id'
       process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3000'
       
@@ -279,18 +278,25 @@ describe('OAuth Service - Backend API Testing', () => {
       
       const url = new URL(authUrl)
       
-      // Should be Box OAuth URL
       expect(url.origin).toBe('https://account.box.com')
       expect(url.pathname).toBe('/api/oauth2/authorize')
       
-      // Should have required parameters
       expect(url.searchParams.get('response_type')).toBe('code')
       expect(url.searchParams.get('client_id')).toBe('test_client_id')
       expect(url.searchParams.get('redirect_uri')).toContain('/api/auth/box/callback')
       expect(url.searchParams.get('state')).toBeDefined()
-      
-      // Note: scopes are configured in Box Developer Console, not in URL
-      // So we don't check for scope in the URL
+
+      // Should store state in HTTP-only cookie for CSRF protection
+      expect(mockCookies.set).toHaveBeenCalledWith(
+        'box_oauth_state',
+        url.searchParams.get('state'),
+        expect.objectContaining({
+          httpOnly: true,
+          sameSite: 'lax',
+          maxAge: 600,
+          path: '/',
+        })
+      )
     })
 
     test('should include anti-CSRF state parameter', async () => {

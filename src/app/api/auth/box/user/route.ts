@@ -202,7 +202,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: false,
       error: 'Failed to fetch user information',
-      details: error instanceof Error ? error.message : 'Unknown error',
       user: null,
       authMethod: null
     }, { status: 500 });

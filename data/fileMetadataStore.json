@@ -5638,5 +5638,22 @@
     "groundTruth": {
       "effectiveDate": "September 9, 2016"
     }
+  },
+  "2145335061409": {
+    "templateKey": "nycFpr",
+    "groundTruth": {
+      "taxIdOrPensionNumber": "201464",
+      "socialSecurityNumberLast4Digits": "4291",
+      "phoneDaytimeCell": "571-232-5555",
+      "firstName": "James",
+      "middleInitialName": "T",
+      "lastName": "Booker",
+      "address": "16039 Central Avenue",
+      "apartmentNumber": "268",
+      "city": "New York",
+      "state": "NY",
+      "zipCode": "07020",
+      "email": "obooker256@gmail.com"
+    }
   }
 }
