@@ -28,6 +28,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ExternalLink, CheckCircle, XCircle } from 'lucide-react';
 import { updateBoxSettings } from '@/lib/actions/settings';
+import { getOAuthUrl } from '@/lib/actions/auth';
 import { logger } from '@/lib/logger';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Suspense } from 'react';
@@ -285,42 +286,14 @@ function SettingsContent() {
   const handleOAuthConnect = async () => {
     setIsConnectingOAuth(true);
     try {
-      // Redirect to Box OAuth2.0 authorization URL
-      const clientId = process.env.NEXT_PUBLIC_BOX_CLIENT_ID;
-      
-      if (!clientId || clientId === 'your_box_client_id') {
-        toast({
-          variant: 'destructive',
-          title: 'Configuration Error',
-          description: 'NEXT_PUBLIC_BOX_CLIENT_ID is not set. Please check your .env.local file and restart the server.',
-        });
-        setIsConnectingOAuth(false);
-        logger.error('OAuth connect failed: Missing NEXT_PUBLIC_BOX_CLIENT_ID');
-        return;
-      }
-      
-      const redirectUri = `${window.location.origin}/api/auth/box/callback`;
-      const state = Math.random().toString(36).substring(7);
-      
-      // Build authorization URL - Box will use scopes configured in Developer Console
-      const authUrlObj = new URL('https://account.box.com/api/oauth2/authorize');
-      authUrlObj.searchParams.set('client_id', clientId);
-      authUrlObj.searchParams.set('response_type', 'code');
-      authUrlObj.searchParams.set('redirect_uri', redirectUri);
-      authUrlObj.searchParams.set('state', state);
-      const authUrl = authUrlObj.toString();
+      const authUrl = await getOAuthUrl(window.location.origin);
       
       logger.debug('Initiating OAuth redirect', {
-        clientId: clientId.substring(0, 10) + '...', // Log partial ID for debugging
-        redirectUri,
         origin: window.location.origin,
-        authUrlLength: authUrl.length
       });
-      
-      // Use window.location.replace for immediate redirect
+
       window.location.href = authUrl;
-      
-      // If redirect doesn't happen within 1 second, show error
+
       setTimeout(() => {
         if (document.hasFocus()) {
           setIsConnectingOAuth(false);
@@ -329,7 +302,6 @@ function SettingsContent() {
             title: 'Redirect Failed',
             description: 'Unable to redirect to Box. Please check your browser settings or try again.',
           });
-          logger.error('OAuth redirect did not occur');
         }
       }, 1000);
     } catch (error) {
