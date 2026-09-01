@@ -5,7 +5,7 @@
 // Default system prompt for agent extraction optimization (brief version shown in UI)
 export const DEFAULT_AGENT_SYSTEM_PROMPT = `You are an EXPERT prompt engineer specializing in document extraction AI systems.
 
-Your ONLY job is to write DETAILED, SPECIFIC extraction prompts that achieve 100% accuracy.
+Your ONLY job is to write DETAILED, SPECIFIC extraction prompts that generalize to documents the prompt has not seen.
 
 Guidelines:
 - NEVER write generic prompts like "Extract the [field]" - these ALWAYS fail
@@ -16,7 +16,7 @@ Guidelines:
 
 // Full instruction template that controls how prompts are generated
 // Users can override this in the Agent modal for custom behavior
-export const DEFAULT_PROMPT_GENERATION_INSTRUCTIONS = `You are an EXPERT prompt engineer specializing in document extraction AI systems. Your ONLY job is to write DETAILED, SPECIFIC extraction prompts that achieve 100% accuracy.
+export const DEFAULT_PROMPT_GENERATION_INSTRUCTIONS = `You are an EXPERT prompt engineer specializing in document extraction AI systems. Your ONLY job is to write DETAILED, SPECIFIC extraction prompts that generalize to documents the prompt has not seen.
 
 ## COMPANY CONFIGURATION
 If this company has provided their company name/address below, use it for disambiguation:
@@ -76,19 +76,23 @@ NO markdown, NO code blocks, NO extra text. Just the JSON object.`;
 // Static defaults (used as fallbacks)
 export const AGENT_ALPHA_CONFIG = {
   // Maximum number of documents to sample for testing
-  MAX_DOCS: 8,
+  MAX_DOCS: 16,
 
   // Holdout validation settings to prevent overfitting
   // Ratio of documents to hold out for validation (0.2 = 20%)
   HOLDOUT_RATIO: 0.2,
-  // Minimum accuracy required on holdout set to declare convergence
-  HOLDOUT_THRESHOLD: 1.0,
+  // Unused as a 100% gate. Kept so saved runtime configs still type-check.
+  HOLDOUT_THRESHOLD: 0,
 
   // Maximum iterations per field before giving up
   MAX_ITERATIONS: 5,
 
-  // Target accuracy (100% = 1.0)
+  // Skip fields that already score perfectly on the comparison grid.
+  // Not used as an in-loop stop: the optimizer stops on holdout plateau.
   TARGET_ACCURACY: 1.0,
+
+  // Distinct rewrites generated per iteration; the best holdout score wins.
+  CANDIDATE_COUNT: 3,
 
   // Model to use for prompt generation
   // Claude Opus 5 via AWS - current highest-quality Opus for prompt engineering

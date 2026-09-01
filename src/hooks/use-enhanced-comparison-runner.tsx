@@ -8,6 +8,13 @@ import { useGroundTruth } from '@/hooks/use-ground-truth';
 import { useExtractionProgress } from '@/hooks/use-extraction-progress';
 import { calculateFieldMetricsWithDebug, calculateFieldMetricsWithDebugAsync } from '@/lib/metrics';
 import { getCompareConfigForField } from '@/lib/compare-type-storage';
+import {
+  applyRunComparisonCompareConfig,
+  buildComparisonRunSnapshot,
+  buildPromptVersionsMap,
+} from '@/lib/comparison-run-snapshot';
+import type { FieldCompareConfig } from '@/lib/compare-types';
+import { splitComparisonEval } from '@/lib/eval-split';
 import { formatModelName, NOT_PRESENT_VALUE, findFieldValue } from '@/lib/utils';
 import { 
   createExtractionSummaryMessage, 
@@ -584,9 +591,11 @@ export const useEnhancedComparisonRunner = (
     
     // Calculate fresh metrics for all fields and models (async with compare types)
     const newAverages: Record<string, ModelAverages> = {};
+    const compareConfigsByField: Record<string, FieldCompareConfig | null> = {};
 
-    // Get template key for compare type lookup from accuracyData
     const templateKey = accuracyData.templateKey;
+    const allFileIds = processedResults.map((fileResult) => fileResult.id);
+    const evalSplit = splitComparisonEval(allFileIds);
 
     // Process fields sequentially to handle async compare operations
     for (const field of accuracyData.fields) {
@@ -596,18 +605,15 @@ export const useEnhancedComparisonRunner = (
       const fileIds = processedResults.map((fileResult) => fileResult.id);
 
       // Get compare config for this field
-      let compareConfig = templateKey
+      const configuredCompareConfig = templateKey
         ? getCompareConfigForField(templateKey, fieldKey)
         : null;
+      compareConfigsByField[fieldKey] = configuredCompareConfig;
 
-      // IMPORTANT: Override LLM-judge to prevent it from being used in Run Comparison
-      // LLM-judge should only be used in the Optimizer flow (DSPy Alpha)
-      if (compareConfig && compareConfig.compareType === 'llm-judge') {
+      // LLM-judge is reserved for optimizer/Agent Alpha; Run Comparison stays deterministic
+      const compareConfig = applyRunComparisonCompareConfig(configuredCompareConfig);
+      if (configuredCompareConfig && compareConfig && configuredCompareConfig.compareType !== compareConfig.compareType) {
         logger.debug('Overriding llm-judge with near-exact-string for Run Comparison', { fieldKey });
-        compareConfig = {
-          ...compareConfig,
-          compareType: 'near-exact-string'
-        };
       }
 
       // Process only the models that were active for this run
@@ -624,14 +630,20 @@ export const useEnhancedComparisonRunner = (
           predictions,
           groundTruths,
           compareConfig || undefined,
-          fileIds
+          fileIds,
+          evalSplit.scoringFileIds
         );
 
         modelAvgs[modelName] = {
           accuracy: result.accuracy,
           precision: result.precision,
           recall: result.recall,
-          f1: result.f1Score
+          f1: result.f1Score,
+          lenientAccuracy: result.lenientAccuracy,
+          lenientPrecision: result.lenientPrecision,
+          lenientRecall: result.lenientRecall,
+          lenientF1: result.lenientF1,
+          reliability: result.reliability,
         };
 
         // Persist per-cell comparison metadata so the UI can show LLM judge reasoning
@@ -671,7 +683,8 @@ export const useEnhancedComparisonRunner = (
     const updatedAccuracyDataWithMetrics = updatePromptVersionMetrics({
       ...accuracyData,
       results: processedResults,
-      averages: newAverages
+      averages: newAverages,
+      evalSplit,
     });
     
     // Atomically update the store with the complete new state including metrics
@@ -681,7 +694,19 @@ export const useEnhancedComparisonRunner = (
         runId,
         results: processedResults,
         averages: newAverages,
-        apiResults
+        apiResults,
+        evalSplit,
+        promptVersions: buildPromptVersionsMap(updatedAccuracyDataWithMetrics.fields),
+        snapshot: buildComparisonRunSnapshot({
+          templateKey: accuracyData.templateKey,
+          fields: updatedAccuracyDataWithMetrics.fields,
+          fileIds: processedResults.map((fileResult) => fileResult.id),
+          modelIds: activeModelsForRun,
+          compareConfigsByField,
+          trainFileIds: evalSplit.trainFileIds,
+          holdoutFileIds: evalSplit.holdoutFileIds,
+          scoringFileIds: evalSplit.scoringFileIds,
+        }),
       }
     });
     

@@ -7,12 +7,30 @@ import { NOT_PRESENT_VALUE } from '@/lib/utils';
 import { logger } from '@/lib/logger';
 import type { FieldCompareConfig } from './compare-types';
 import { parseFlexibleDate } from './date-utils';
+import {
+  createConfusionCounts,
+  isErrorPrediction,
+  isPendingPrediction,
+  isStrictMatch,
+  metricsFromConfusion,
+  outcomeForPair,
+  recordConfusion,
+  reliabilityFromCounts,
+  type ConfusionCounts,
+} from './scoring';
 
 export type MetricsResult = {
+  /** Strict channel (partial / different-format do not count as hits). */
   accuracy: number;
   precision: number;
   recall: number;
   f1Score: number;
+  lenientAccuracy: number;
+  lenientPrecision: number;
+  lenientRecall: number;
+  lenientF1: number;
+  /** Completed extractions that were not errors / completed extractions. */
+  reliability: number;
 };
 
 export type MetricsDebugInfo = {
@@ -21,6 +39,8 @@ export type MetricsDebugInfo = {
   falseNegatives: number;
   trueNegatives: number;
   totalValidPairs: number;
+  errorPairs: number;
+  pendingPairs: number;
   examples: {
     truePositives: Array<{predicted: string, actual: string}>;
     falsePositives: Array<{predicted: string, actual: string}>;
@@ -30,6 +50,75 @@ export type MetricsDebugInfo = {
   // Per-cell comparison results (index matches predictions/groundTruths arrays)
   comparisonResults?: any[];
 };
+
+function emptyExamples() {
+  return {
+    truePositives: [] as Array<{predicted: string, actual: string}>,
+    falsePositives: [] as Array<{predicted: string, actual: string}>,
+    falseNegatives: [] as Array<{predicted: string, actual: string}>,
+    trueNegatives: [] as Array<{predicted: string, actual: string}>,
+  };
+}
+
+function emptyMetricsResult(comparisonResults?: unknown[]): MetricsResult & { debug: MetricsDebugInfo } {
+  return {
+    accuracy: 0,
+    precision: 0,
+    recall: 0,
+    f1Score: 0,
+    lenientAccuracy: 0,
+    lenientPrecision: 0,
+    lenientRecall: 0,
+    lenientF1: 0,
+    reliability: 0,
+    debug: {
+      truePositives: 0,
+      falsePositives: 0,
+      falseNegatives: 0,
+      trueNegatives: 0,
+      totalValidPairs: 0,
+      errorPairs: 0,
+      pendingPairs: 0,
+      examples: emptyExamples(),
+      comparisonResults,
+    },
+  };
+}
+
+function metricsResultFromCounts(
+  strict: ConfusionCounts,
+  lenient: ConfusionCounts,
+  errorPairs: number,
+  pendingPairs: number,
+  examples: ReturnType<typeof emptyExamples>,
+  comparisonResults?: unknown[]
+): MetricsResult & { debug: MetricsDebugInfo } {
+  const strictMetrics = metricsFromConfusion(strict);
+  const lenientMetrics = metricsFromConfusion(lenient);
+  const completedPairs = strict.pairs;
+  return {
+    accuracy: strictMetrics.accuracy,
+    precision: strictMetrics.precision,
+    recall: strictMetrics.recall,
+    f1Score: strictMetrics.f1Score,
+    lenientAccuracy: lenientMetrics.accuracy,
+    lenientPrecision: lenientMetrics.precision,
+    lenientRecall: lenientMetrics.recall,
+    lenientF1: lenientMetrics.f1Score,
+    reliability: reliabilityFromCounts(errorPairs, completedPairs),
+    debug: {
+      truePositives: strict.truePositives,
+      falsePositives: strict.falsePositives,
+      falseNegatives: strict.falseNegatives,
+      trueNegatives: strict.trueNegatives,
+      totalValidPairs: strict.pairs,
+      errorPairs,
+      pendingPairs,
+      examples,
+      comparisonResults,
+    },
+  };
+}
 
 export type ComparisonResult = {
   isMatch: boolean;
@@ -230,13 +319,8 @@ export function calculateFieldMetrics(
   predictions: string[], 
   groundTruths: string[]
 ): MetricsResult {
-  const result = calculateFieldMetricsWithDebug(predictions, groundTruths);
-  return {
-    accuracy: result.accuracy,
-    precision: result.precision,
-    recall: result.recall,
-    f1Score: result.f1Score
-  };
+  const { debug: _debug, ...metrics } = calculateFieldMetricsWithDebug(predictions, groundTruths);
+  return metrics;
 }
 
 /**
@@ -254,185 +338,103 @@ export async function calculateFieldMetricsWithDebugAsync(
   predictions: string[],
   groundTruths: string[],
   compareConfig?: FieldCompareConfig,
-  fileIds?: string[]
+  fileIds?: string[],
+  scoringFileIds?: string[]
 ): Promise<MetricsResult & { debug: MetricsDebugInfo }> {
   if (predictions.length !== groundTruths.length) {
     throw new Error('Predictions and ground truths must have the same length');
   }
 
   if (predictions.length === 0) {
-    return {
-      accuracy: 0,
-      precision: 0,
-      recall: 0,
-      f1Score: 0,
-      debug: {
-        truePositives: 0,
-        falsePositives: 0,
-        falseNegatives: 0,
-        trueNegatives: 0,
-        totalValidPairs: 0,
-        examples: {
-          truePositives: [],
-          falsePositives: [],
-          falseNegatives: [],
-          trueNegatives: []
-        }
-      }
-    };
+    return emptyMetricsResult();
   }
 
-  let truePositives = 0;
-  let falsePositives = 0;
-  let falseNegatives = 0;
-  let trueNegatives = 0;
-  let totalValidPairs = 0;
-
-  const examples = {
-    truePositives: [] as Array<{predicted: string, actual: string}>,
-    falsePositives: [] as Array<{predicted: string, actual: string}>,
-    falseNegatives: [] as Array<{predicted: string, actual: string}>,
-    trueNegatives: [] as Array<{predicted: string, actual: string}>
-  };
-
-  // Store detailed comparison results for each cell (for UI display)
+  const scoringSet = scoringFileIds && scoringFileIds.length > 0 ? new Set(scoringFileIds) : null;
+  const strict = createConfusionCounts();
+  const lenient = createConfusionCounts();
+  const examples = emptyExamples();
   const comparisonResults: any[] = [];
+  let errorPairs = 0;
+  let pendingPairs = 0;
 
   for (let i = 0; i < predictions.length; i++) {
-    const predicted = predictions[i];
+    const predictedStr = predictions[i] != null ? String(predictions[i]) : '';
     const actual = groundTruths[i];
+    const inScoring = !scoringSet || (fileIds ? scoringSet.has(fileIds[i]) : true);
 
-    // Skip if prediction is in pending/error state
-    // Convert to string to handle numbers and ensure we can call string methods
-    const predictedStr = predicted != null ? String(predicted) : '';
-    if (!predictedStr || predictedStr.startsWith('Pending') || predictedStr.startsWith('Error')) {
+    if (isPendingPrediction(predictedStr)) {
       comparisonResults.push(null);
+      if (inScoring) pendingPairs++;
       continue;
     }
 
-    // Handle empty/missing ground truth - treat as "Not Present"
+    const isError = isErrorPrediction(predictedStr);
     const normalizedActual = !actual || normalizeText(actual) === '' ? NOT_PRESENT_VALUE : actual;
     const normalizedPredicted = !predictedStr || normalizeText(predictedStr) === '' ? NOT_PRESENT_VALUE : predictedStr;
-
-    totalValidPairs++;
+    const groundTruthNotPresent = normalizedActual === NOT_PRESENT_VALUE;
+    const predictedNotPresent = normalizedPredicted === NOT_PRESENT_VALUE;
 
     let comparisonResult: any = null;
 
-    // Case 1: Ground truth is "Not Present"
-    if (normalizedActual === NOT_PRESENT_VALUE) {
-      if (normalizedPredicted === NOT_PRESENT_VALUE) {
-        trueNegatives++; // Model correctly predicted "Not Present"
-        examples.trueNegatives.push({predicted: normalizedPredicted, actual: normalizedActual});
-        comparisonResult = {
-          isMatch: true,
-          matchType: 'exact',
-          confidence: 'high'
+    if (isError) {
+      comparisonResult = {
+        isMatch: false,
+        matchType: 'none',
+        matchClassification: 'none',
+        confidence: 'high',
+        error: 'extraction-error',
+      };
+    } else if (groundTruthNotPresent) {
+      comparisonResult = predictedNotPresent
+        ? { isMatch: true, matchType: 'exact', matchClassification: 'exact', confidence: 'high' }
+        : { isMatch: false, matchType: 'none', matchClassification: 'none', confidence: 'high' };
+    } else if (compareConfig) {
+      const configWithFileId = { ...compareConfig };
+      if (compareConfig.compareType === 'llm-judge' && fileIds && fileIds[i]) {
+        configWithFileId.parameters = {
+          ...compareConfig.parameters,
+          fileId: fileIds[i],
         };
-      } else {
-        falsePositives++; // Model incorrectly predicted something when field should be empty
-        examples.falsePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
-        comparisonResult = {
-          isMatch: false,
-          matchType: 'none',
-          confidence: 'high'
-        };
       }
-    }
-    // Case 2: Ground truth exists (is not "Not Present")
-    else {
-      // Use compare engine with configured compare type - get full comparison result
-      if (compareConfig) {
-        // For LLM judge comparisons, inject fileId into parameters
-        const configWithFileId = { ...compareConfig };
-        if (compareConfig.compareType === 'llm-judge' && fileIds && fileIds[i]) {
-          configWithFileId.parameters = {
-            ...compareConfig.parameters,
-            fileId: fileIds[i]
-          };
-        }
-
-        // Dynamic import to use compare engine
-        const { compareValues: compareValuesEngine } = await import('./compare-engine');
-        comparisonResult = await compareValuesEngine(normalizedPredicted, normalizedActual, configWithFileId);
-      } else {
-        // Fall back to legacy comparison
-        comparisonResult = compareValues(normalizedPredicted, normalizedActual);
-      }
-
-      const match = comparisonResult.isMatch;
-
-      if (match) {
-        truePositives++; // Model correctly predicted the value
-        examples.truePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
-      } else {
-        // FIXED: Wrong predictions count as BOTH FP and FN
-        // FP: Model predicted something wrong (predicted value is incorrect)
-        // FN: Model failed to extract the correct ground truth value
-        falsePositives++; // Predicted something wrong
-        falseNegatives++; // Failed to extract the correct value
-        examples.falsePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
-        examples.falseNegatives.push({predicted: normalizedPredicted, actual: normalizedActual});
-      }
+      const { compareValues: compareValuesEngine } = await import('./compare-engine');
+      comparisonResult = await compareValuesEngine(normalizedPredicted, normalizedActual, configWithFileId);
+    } else {
+      comparisonResult = compareValues(normalizedPredicted, normalizedActual);
     }
 
     comparisonResults.push(comparisonResult);
-  }
 
-  // Calculate metrics using same logic as sync version
-  if (totalValidPairs === 0) {
-    return {
-      accuracy: 0,
-      precision: 0,
-      recall: 0,
-      f1Score: 0,
-      debug: {
-        truePositives: 0,
-        falsePositives: 0,
-        falseNegatives: 0,
-        trueNegatives: 0,
-        totalValidPairs: 0,
-        examples: {
-          truePositives: [],
-          falsePositives: [],
-          falseNegatives: [],
-          trueNegatives: []
-        },
-        comparisonResults
-      }
-    };
-  }
-
-  const accuracy = (truePositives + trueNegatives) / totalValidPairs;
-
-  let precision: number;
-  let recall: number;
-  let f1Score: number;
-
-  if (truePositives === 0 && falsePositives === 0 && falseNegatives === 0 && trueNegatives > 0) {
-    precision = 1.0;
-    recall = 1.0;
-    f1Score = 1.0;
-  } else {
-    precision = (truePositives + falsePositives) > 0 ? truePositives / (truePositives + falsePositives) : 0;
-    recall = (truePositives + falseNegatives) > 0 ? truePositives / (truePositives + falseNegatives) : 0;
-    f1Score = (precision + recall) > 0 ? (2 * precision * recall) / (precision + recall) : 0;
-  }
-
-  return {
-    accuracy: Math.max(0, Math.min(1, accuracy)),
-    precision: Math.max(0, Math.min(1, precision)),
-    recall: Math.max(0, Math.min(1, recall)),
-    f1Score: Math.max(0, Math.min(1, f1Score)),
-    debug: {
-      truePositives,
-      falsePositives,
-      falseNegatives,
-      trueNegatives,
-      totalValidPairs,
-      examples,
-      comparisonResults
+    if (!inScoring) {
+      continue;
     }
-  };
+
+    if (isError) {
+      errorPairs++;
+    }
+
+    const pairArgs = {
+      groundTruthNotPresent,
+      predictedNotPresent,
+      isError,
+    };
+    const lenientOutcome = outcomeForPair({ ...pairArgs, isMatch: Boolean(comparisonResult?.isMatch) });
+    const strictOutcome = outcomeForPair({ ...pairArgs, isMatch: isStrictMatch(comparisonResult) });
+    recordConfusion(lenient, lenientOutcome);
+    recordConfusion(strict, strictOutcome);
+
+    if (strictOutcome === 'tp') {
+      examples.truePositives.push({ predicted: normalizedPredicted, actual: normalizedActual });
+    } else if (strictOutcome === 'tn') {
+      examples.trueNegatives.push({ predicted: normalizedPredicted, actual: normalizedActual });
+    } else if (strictOutcome === 'fp') {
+      examples.falsePositives.push({ predicted: normalizedPredicted, actual: normalizedActual });
+    } else {
+      examples.falsePositives.push({ predicted: normalizedPredicted, actual: normalizedActual });
+      examples.falseNegatives.push({ predicted: normalizedPredicted, actual: normalizedActual });
+    }
+  }
+
+  return metricsResultFromCounts(strict, lenient, errorPairs, pendingPairs, examples, comparisonResults);
 }
 
 /**
@@ -451,187 +453,80 @@ export function calculateFieldMetricsWithDebug(
   if (predictions.length !== groundTruths.length) {
     throw new Error('Predictions and ground truths must have the same length');
   }
-  
+
   if (predictions.length === 0) {
-    return { 
-      accuracy: 0, 
-      precision: 0, 
-      recall: 0, 
-      f1Score: 0,
-      debug: {
-        truePositives: 0,
-        falsePositives: 0,
-        falseNegatives: 0,
-        trueNegatives: 0,
-        totalValidPairs: 0,
-        examples: {
-          truePositives: [],
-          falsePositives: [],
-          falseNegatives: [],
-          trueNegatives: []
-        }
-      }
-    };
+    return emptyMetricsResult();
   }
-  
-  let truePositives = 0;
-  let falsePositives = 0;
-  let falseNegatives = 0;
-  let trueNegatives = 0;
-  let totalValidPairs = 0;
-  
-  const examples = {
-    truePositives: [] as Array<{predicted: string, actual: string}>,
-    falsePositives: [] as Array<{predicted: string, actual: string}>,
-    falseNegatives: [] as Array<{predicted: string, actual: string}>,
-    trueNegatives: [] as Array<{predicted: string, actual: string}>
-  };
-  
+
+  const strict = createConfusionCounts();
+  const lenient = createConfusionCounts();
+  const examples = emptyExamples();
+  let errorPairs = 0;
+  let pendingPairs = 0;
+
   for (let i = 0; i < predictions.length; i++) {
-    const predicted = predictions[i];
+    const predictedStr = predictions[i] != null ? String(predictions[i]) : '';
     const actual = groundTruths[i];
-    
-    // Skip if prediction is in pending/error state
-    // Convert to string to handle numbers and ensure we can call string methods
-    const predictedStr = predicted != null ? String(predicted) : '';
-    if (!predictedStr || predictedStr.startsWith('Pending') || predictedStr.startsWith('Error')) {
+
+    if (isPendingPrediction(predictedStr)) {
+      pendingPairs++;
       continue;
     }
-    
-    // Handle empty/missing ground truth - treat as "Not Present"
+
+    const isError = isErrorPrediction(predictedStr);
     const normalizedActual = !actual || normalizeText(actual) === '' ? NOT_PRESENT_VALUE : actual;
     const normalizedPredicted = !predictedStr || normalizeText(predictedStr) === '' ? NOT_PRESENT_VALUE : predictedStr;
-    
-    totalValidPairs++;
-    
-    // Case 1: Ground truth is "Not Present"
-    if (normalizedActual === NOT_PRESENT_VALUE) {
-      if (normalizedPredicted === NOT_PRESENT_VALUE) {
-        trueNegatives++; // Model correctly predicted "Not Present"
-        examples.trueNegatives.push({predicted: normalizedPredicted, actual: normalizedActual});
-      } else {
-        falsePositives++; // Model incorrectly predicted something when field should be empty
-        examples.falsePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
-      }
+    const groundTruthNotPresent = normalizedActual === NOT_PRESENT_VALUE;
+    const predictedNotPresent = normalizedPredicted === NOT_PRESENT_VALUE;
+
+    let comparisonResult: ReturnType<typeof compareValues> | null = null;
+    if (!isError && !groundTruthNotPresent) {
+      comparisonResult = compareValues(normalizedPredicted, normalizedActual);
+    } else if (!isError && groundTruthNotPresent && predictedNotPresent) {
+      comparisonResult = { isMatch: true, matchType: 'exact', matchClassification: 'exact', confidence: 'high' };
     }
-    // Case 2: Ground truth exists (is not "Not Present")
-    else {
-      if (isMatch(normalizedPredicted, normalizedActual)) {
-        truePositives++; // Model correctly predicted the value
-        examples.truePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
-      } else {
-        // FIXED: Wrong predictions count as BOTH FP and FN
-        // FP: Model predicted something wrong (predicted value is incorrect)
-        // FN: Model failed to extract the correct ground truth value
-        falsePositives++; // Predicted something wrong
-        falseNegatives++; // Failed to extract the correct value
-        examples.falsePositives.push({predicted: normalizedPredicted, actual: normalizedActual});
-        examples.falseNegatives.push({predicted: normalizedPredicted, actual: normalizedActual});
-      }
+
+    if (isError) {
+      errorPairs++;
     }
-  }
-  
-  // Handle edge case where no valid pairs exist
-  if (totalValidPairs === 0) {
-    return { 
-      accuracy: 0, 
-      precision: 0, 
-      recall: 0, 
-      f1Score: 0,
-      debug: {
-        truePositives: 0,
-        falsePositives: 0,
-        falseNegatives: 0,
-        trueNegatives: 0,
-        totalValidPairs: 0,
-        examples: {
-          truePositives: [],
-          falsePositives: [],
-          falseNegatives: [],
-          trueNegatives: []
-        }
-      }
+
+    const pairArgs = {
+      groundTruthNotPresent,
+      predictedNotPresent,
+      isError,
     };
-  }
-  
-  // Calculate metrics using standard formulas
-  const accuracy = (truePositives + trueNegatives) / totalValidPairs;
-  
-  // Handle special case: when everything is correctly "Not Present"
-  // This should be considered perfect performance, not 0%
-  let precision: number;
-  let recall: number;
-  let f1Score: number;
-  
-  if (truePositives === 0 && falsePositives === 0 && falseNegatives === 0 && trueNegatives > 0) {
-    // All classifications are True Negatives - perfect "Not Present" classification
-    precision = 1.0;
-    recall = 1.0;
-    f1Score = 1.0;
-  } else {
-    // Standard precision/recall calculations
-    precision = (truePositives + falsePositives) > 0 ? truePositives / (truePositives + falsePositives) : 0;
-    recall = (truePositives + falseNegatives) > 0 ? truePositives / (truePositives + falseNegatives) : 0;
-    f1Score = (precision + recall) > 0 ? (2 * precision * recall) / (precision + recall) : 0;
-  }
-  
-  // VALIDATION: Ensure F1 formula consistency and reasonable values
-  if (precision > 0 && recall > 0) {
-    const expectedF1 = (2 * precision * recall) / (precision + recall);
-    const f1Diff = Math.abs(f1Score - expectedF1);
-    if (f1Diff > 0.001) {
-      logger.warn('Field-level F1 formula inconsistency', {
-        calculated: f1Score.toFixed(3),
-        expected: expectedF1.toFixed(3),
-        diff: f1Diff.toFixed(3),
-        counts: { truePositives, falsePositives, falseNegatives, trueNegatives }
-      });
+    const lenientOutcome = outcomeForPair({ ...pairArgs, isMatch: Boolean(comparisonResult?.isMatch) });
+    const strictOutcome = outcomeForPair({ ...pairArgs, isMatch: isStrictMatch(comparisonResult) });
+    recordConfusion(lenient, lenientOutcome);
+    recordConfusion(strict, strictOutcome);
+
+    if (strictOutcome === 'tp') {
+      examples.truePositives.push({ predicted: normalizedPredicted, actual: normalizedActual });
+    } else if (strictOutcome === 'tn') {
+      examples.trueNegatives.push({ predicted: normalizedPredicted, actual: normalizedActual });
+    } else if (strictOutcome === 'fp') {
+      examples.falsePositives.push({ predicted: normalizedPredicted, actual: normalizedActual });
+    } else {
+      examples.falsePositives.push({ predicted: normalizedPredicted, actual: normalizedActual });
+      examples.falseNegatives.push({ predicted: normalizedPredicted, actual: normalizedActual });
     }
   }
-  
-  // VALIDATION: Check for impossible metrics combinations
-  if (precision >= 0.999 && falsePositives > 0) {
-    logger.warn('Impossible metrics: Precision=100% but FP > 0', { falsePositives });
-  }
-  
-  if (recall >= 0.999 && falseNegatives > 0) {
-    logger.warn('Impossible metrics: Recall=100% but FN > 0', { falseNegatives });
-  }
-  
-  // VALIDATION: Log confusion matrix for debugging
-  if (truePositives + falsePositives + falseNegatives + trueNegatives > 0) {
-    logger.debug('Confusion matrix', {
-      matrix: { truePositives, falsePositives, falseNegatives, trueNegatives },
-      metrics: {
-        precision: (precision * 100).toFixed(1) + '%',
-        recall: (recall * 100).toFixed(1) + '%',
-        f1: (f1Score * 100).toFixed(1) + '%',
-        accuracy: (accuracy * 100).toFixed(1) + '%'
-      }
-    });
-  }
-  
-  // VALIDATION: Precision should be < 1.0 if any field accuracy < 1.0 (unless all are "Not Present")
-  if (precision >= 0.999 && falsePositives === 0 && truePositives > 0) {
-    logger.debug('Precision=100% validated', {
-      counts: { truePositives, falsePositives, falseNegatives, trueNegatives }
-    });
-  }
-  
-  return {
-    accuracy: Math.max(0, Math.min(1, accuracy)), // Clamp between 0 and 1
-    precision: Math.max(0, Math.min(1, precision)),
-    recall: Math.max(0, Math.min(1, recall)),
-    f1Score: Math.max(0, Math.min(1, f1Score)),
-    debug: {
-      truePositives,
-      falsePositives,
-      falseNegatives,
-      trueNegatives,
-      totalValidPairs,
-      examples
-    }
-  };
+
+  const result = metricsResultFromCounts(strict, lenient, errorPairs, pendingPairs, examples);
+  logger.debug('Confusion matrix', {
+    matrix: {
+      truePositives: result.debug.truePositives,
+      falsePositives: result.debug.falsePositives,
+      falseNegatives: result.debug.falseNegatives,
+      trueNegatives: result.debug.trueNegatives,
+    },
+    metrics: {
+      accuracy: (result.accuracy * 100).toFixed(1) + '%',
+      lenientAccuracy: (result.lenientAccuracy * 100).toFixed(1) + '%',
+      reliability: (result.reliability * 100).toFixed(1) + '%',
+    },
+  });
+  return result;
 }
 
 /**

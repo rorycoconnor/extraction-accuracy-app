@@ -1,6 +1,7 @@
-import type { AccuracyData } from './types';
+import type { AccuracyData, FieldAverage } from './types';
 import { compareModelIds } from '@/lib/main-page-constants';
 import { logger } from '@/lib/logger';
+import type { ScoreChannel } from '@/lib/scoring';
 
 // Constants for better maintainability
 export const PERFORMANCE_THRESHOLDS = {
@@ -17,6 +18,7 @@ export interface ModelSummary {
   overallAccuracy: number;
   overallPrecision: number;
   overallRecall: number;
+  overallReliability: number;
   fieldsWon: number;
   totalFields: number;
   rank: number;
@@ -33,6 +35,34 @@ export interface ModelSummary {
   }>;
 }
 
+export function pickChannelAverage(
+  avg: FieldAverage,
+  channel: ScoreChannel = 'strict'
+): {
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1: number;
+  reliability: number;
+} {
+  if (channel === 'lenient' && typeof avg.lenientAccuracy === 'number') {
+    return {
+      accuracy: avg.lenientAccuracy,
+      precision: avg.lenientPrecision ?? avg.precision,
+      recall: avg.lenientRecall ?? avg.recall,
+      f1: avg.lenientF1 ?? avg.f1,
+      reliability: avg.reliability ?? 1,
+    };
+  }
+  return {
+    accuracy: avg.accuracy,
+    precision: avg.precision,
+    recall: avg.recall,
+    f1: avg.f1,
+    reliability: avg.reliability ?? 1,
+  };
+}
+
 /**
  * Calculates initial model summaries without winner determination
  */
@@ -40,19 +70,21 @@ export function calculateModelSummaries(
   visibleModels: string[],
   fields: AccuracyData['fields'],
   averages: AccuracyData['averages'],
-  fieldSettings?: Record<string, { includeInMetrics: boolean }>
+  fieldSettings?: Record<string, { includeInMetrics: boolean }>,
+  scoreChannel: ScoreChannel = 'strict'
 ): ModelSummary[] {
   return visibleModels.map(modelName => {
     const fieldPerformance = fields.map(field => {
       const fieldAvg = averages[field.key]?.[modelName] || { accuracy: 0, precision: 0, recall: 0, f1: 0 };
+      const channelAvg = pickChannelAverage(fieldAvg, scoreChannel);
       const isIncluded = fieldSettings?.[field.key]?.includeInMetrics !== false;
       return {
         fieldName: field.name,
         fieldKey: field.key,
-        f1: fieldAvg.f1,
-        accuracy: fieldAvg.accuracy,
-        precision: fieldAvg.precision,
-        recall: fieldAvg.recall,
+        f1: channelAvg.f1,
+        accuracy: channelAvg.accuracy,
+        precision: channelAvg.precision,
+        recall: channelAvg.recall,
         isWinner: false,
         isSharedVictory: false,
         isIncludedInMetrics: isIncluded
@@ -77,6 +109,12 @@ export function calculateModelSummaries(
       : 0;
     const overallRecall = enabledFields.length > 0 
       ? enabledFields.reduce((sum, fp) => sum + fp.recall, 0) / enabledFields.length 
+      : 0;
+    const overallReliability = enabledFields.length > 0
+      ? enabledFields.reduce((sum, fp) => {
+          const avg = averages[fp.fieldKey]?.[modelName];
+          return sum + (avg?.reliability ?? 1);
+        }, 0) / enabledFields.length
       : 0;
     
     // VALIDATION: Check if macro-averaged metrics satisfy F1 formula
@@ -127,6 +165,7 @@ export function calculateModelSummaries(
       overallAccuracy,
       overallPrecision,
       overallRecall,
+      overallReliability,
       fieldsWon: 0,
       totalFields: enabledFields.length, // 🔧 FIX: Count only enabled fields
       rank: 0,

@@ -35,9 +35,8 @@
  * 
  * ## Convergence
  * 
- * The iteration converges when accuracy reaches TARGET_ACCURACY (default 100%).
- * Even when converged, if the prompt is "simple" (< 100 chars), a more robust
- * prompt is generated for production reliability.
+ * The iteration no longer stops at 100% train accuracy. It generates several
+ * rewrite candidates; Agent Alpha later picks by holdout lift.
  * 
  * ## Validation Mode
  * 
@@ -61,6 +60,7 @@ import {
   getExamplePromptForField,
 } from '@/lib/agent-alpha-prompts';
 import { AGENT_ALPHA_CONFIG } from '@/lib/agent-alpha-config';
+import { uniquePrompts } from '@/lib/agent-alpha-search';
 import { processWithConcurrency } from '@/lib/concurrency';
 import { analyzeFailedExtractions, buildDocumentContextForPrompt } from '@/lib/document-analysis';
 import type { AccuracyField } from '@/lib/types';
@@ -160,9 +160,8 @@ function mapToBoxAIFieldType(fieldType: AccuracyField['type'], hasOptions: boole
  *    configured comparison method (exact match, semantic, LLM-judge, etc.).
  *    Only documents with valid ground truth are included in accuracy calculation.
  * 
- * 3. **Convergence Check**: If accuracy >= TARGET_ACCURACY (default 100%), the
- *    iteration is considered converged. However, if the prompt is "simple"
- *    (< 100 chars or generic), a more robust prompt is still generated.
+ * 3. **Candidate rewrites**: Generate several distinct prompts from the same
+ *    failures. Holdout selection happens in process-field.
  * 
  * 4. **Failure Analysis** (optional): When ENABLE_DOCUMENT_ANALYSIS is true and
  *    on early iterations, analyzes failed extractions to understand WHY they failed
@@ -389,13 +388,9 @@ export async function runFieldIteration(params: {
     } else {
       logger.info(`   Accuracy: ${(accuracy * 100).toFixed(1)}%`);
     }
-    
-    // Step 3: Check if converged
-    converged = accuracy >= AGENT_ALPHA_CONFIG.TARGET_ACCURACY;
   }
 
   // Step 4: Build failure and success examples for prompt generation
-  // We do this even when converged, because we may want to generate a more robust prompt
   for (const result of extractionResults) {
     if (result.extractedValue === result.expectedValue || 
         (result.extractedValue === NOT_PRESENT_VALUE && !result.expectedValue)) {
@@ -409,16 +404,6 @@ export async function runFieldIteration(params: {
     }
   }
 
-  // Determine if we should generate a new prompt
-  // We generate a new prompt when:
-  // 1. Not converged (need to improve accuracy)
-  // 2. Converged but using a simple/default prompt (need robust prompt for production)
-  // 3. NOT in validationOnly mode (holdout validation doesn't need new prompts)
-  const isSimplePrompt = currentPrompt.length < 100 || 
-    currentPrompt.toLowerCase().startsWith('extract the ');
-  const shouldGeneratePrompt = !validationOnly && (!converged || (converged && isSimplePrompt));
-
-  // In validationOnly mode (holdout validation), just return accuracy - no prompt generation
   if (validationOnly) {
     logger.info(`   📊 Validation-only mode: accuracy ${(accuracy * 100).toFixed(1)}% (skipping prompt generation)`);
     return {
@@ -428,23 +413,9 @@ export async function runFieldIteration(params: {
     };
   }
 
-  if (converged && !shouldGeneratePrompt) {
-    // Converged with a robust prompt - no need to generate a new one
-    logger.info(`   ✅ Converged! Accuracy: ${(accuracy * 100).toFixed(1)}%`);
-    return {
-      newPrompt: currentPrompt,
-      accuracy,
-      converged: true,
-    };
-  }
-
-  // Step 5: Generate improved prompt using Box AI Enhanced Extract Agent
+  // Step 5: Generate CANDIDATE_COUNT rewrites from the same failure set
   try {
-    if (converged) {
-      logger.info(`   🔄 Generating robust prompt despite 100% accuracy (simple prompt: ${currentPrompt.length} chars)`);
-    } else {
-      logger.info(`   🤖 Generating improved prompt...`);
-    }
+    logger.info(`   🤖 Generating ${AGENT_ALPHA_CONFIG.CANDIDATE_COUNT} candidate prompt(s)...`);
 
     // Infer document type from template key if available
     const documentType = inferDocumentType(templateKey);
@@ -483,141 +454,137 @@ export async function runFieldIteration(params: {
       }
     }
     
-    const promptRequest = buildAgentAlphaPrompt({
-      fieldName,
-      fieldType,
-      currentPrompt,
-      previousPrompts,
-      failureExamples,
-      successExamples,
-      iterationNumber,
-      maxIterations,
-      options,
-      documentType,
-      templateKey, // Pass template name for additional document type context
-      customInstructions: systemPromptOverride, // Pass custom instructions if provided
-      documentContext, // Pass analyzed document context
-      // companyName would be passed if available from settings
-    });
-
-    // Use Box AI text_gen with blank file
     const placeholderId = await getBlankPlaceholderFileId();
-    const response = await boxApiFetch('/ai/text_gen', {
-      method: 'POST',
-      body: JSON.stringify({
-        prompt: promptRequest,
-        items: [{ id: placeholderId, type: 'file' as const }],
-        ai_agent: {
-          type: 'ai_agent_text_gen',
-          basic_gen: {
-            model: promptGenerationModel,
-          },
-        },
-      }),
-    });
+    const generated: string[] = [];
+    const candidateCount = AGENT_ALPHA_CONFIG.CANDIDATE_COUNT;
 
-    const rawAnswer = response?.answer ?? response;
-    
-    // DETAILED LOGGING: See exactly what Claude returns
-    logger.info(`   📝 Raw Box AI response (first 500 chars): "${String(rawAnswer).substring(0, 500)}"`);
-    logger.debug(`   📝 Full raw response: ${JSON.stringify(rawAnswer)}`);
-    
-    let parsedResponse = parseAgentAlphaPromptResponse(rawAnswer as string, fieldName);
-    
-    // Validate the generated prompt against quality checklist
-    if (AGENT_ALPHA_CONFIG.PROMPT_VALIDATION_ENABLED) {
-      const validation = validatePrompt(parsedResponse.newPrompt);
-      
-      if (!validation.isValid) {
-        logger.warn(`   ⚠️ Prompt validation failed: ${validation.errors.join('; ')}`);
-        
-        // Attempt repair if within limit
-        const maxRepairAttempts = AGENT_ALPHA_CONFIG.PROMPT_REPAIR_MAX_ATTEMPTS;
-        let repaired = false;
-        
-        for (let attempt = 1; attempt <= maxRepairAttempts && !repaired; attempt++) {
-          logger.info(`   🔧 Attempting prompt repair (${attempt}/${maxRepairAttempts})...`);
-          
-          try {
-            // Build repair request with specific errors to fix
-            const repairRequest = buildPromptRepairRequest(
-              parsedResponse.newPrompt,
-              validation,
-              fieldName,
-              fieldType
-            );
-            
-            // Call Box AI to repair the prompt
-            const repairResponse = await boxApiFetch('/ai/text_gen', {
-              method: 'POST',
-              body: JSON.stringify({
-                prompt: repairRequest,
-                items: [{ id: placeholderId, type: 'file' as const }],
-                ai_agent: {
-                  type: 'ai_agent_text_gen',
-                  basic_gen: {
-                    model: promptGenerationModel,
+    for (let variant = 0; variant < candidateCount; variant++) {
+      const variantHint =
+        candidateCount > 1
+          ? `## VARIANT ${variant + 1} OF ${candidateCount}\nWrite a DISTINCT rewrite from other variants. Change the location, synonym list, or disambiguation — do not paraphrase the same paragraph.`
+          : undefined;
+
+      const promptRequest = buildAgentAlphaPrompt({
+        fieldName,
+        fieldType,
+        currentPrompt,
+        previousPrompts: [...previousPrompts, ...generated],
+        failureExamples,
+        successExamples,
+        iterationNumber,
+        maxIterations,
+        options,
+        documentType,
+        templateKey,
+        customInstructions: systemPromptOverride,
+        documentContext,
+        variantHint,
+      });
+
+      const response = await boxApiFetch('/ai/text_gen', {
+        method: 'POST',
+        body: JSON.stringify({
+          prompt: promptRequest,
+          items: [{ id: placeholderId, type: 'file' as const }],
+          ai_agent: {
+            type: 'ai_agent_text_gen',
+            basic_gen: {
+              model: promptGenerationModel,
+            },
+          },
+        }),
+      });
+
+      const rawAnswer = response?.answer ?? response;
+      logger.info(`   📝 Candidate ${variant + 1} raw response (first 300 chars): "${String(rawAnswer).substring(0, 300)}"`);
+
+      let parsedResponse = parseAgentAlphaPromptResponse(rawAnswer as string, fieldName);
+
+      if (AGENT_ALPHA_CONFIG.PROMPT_VALIDATION_ENABLED) {
+        const validation = validatePrompt(parsedResponse.newPrompt);
+
+        if (!validation.isValid) {
+          logger.warn(`   ⚠️ Prompt validation failed: ${validation.errors.join('; ')}`);
+
+          const maxRepairAttempts = AGENT_ALPHA_CONFIG.PROMPT_REPAIR_MAX_ATTEMPTS;
+          let repaired = false;
+
+          for (let attempt = 1; attempt <= maxRepairAttempts && !repaired; attempt++) {
+            logger.info(`   🔧 Attempting prompt repair (${attempt}/${maxRepairAttempts})...`);
+
+            try {
+              const repairRequest = buildPromptRepairRequest(
+                parsedResponse.newPrompt,
+                validation,
+                fieldName,
+                fieldType
+              );
+
+              const repairResponse = await boxApiFetch('/ai/text_gen', {
+                method: 'POST',
+                body: JSON.stringify({
+                  prompt: repairRequest,
+                  items: [{ id: placeholderId, type: 'file' as const }],
+                  ai_agent: {
+                    type: 'ai_agent_text_gen',
+                    basic_gen: {
+                      model: promptGenerationModel,
+                    },
                   },
-                },
-              }),
-            });
-            
-            const repairAnswer = repairResponse?.answer ?? repairResponse;
-            const repairedParsed = parseAgentAlphaPromptResponse(repairAnswer as string, fieldName);
-            
-            // Validate the repaired prompt
-            const repairValidation = validatePrompt(repairedParsed.newPrompt);
-            
-            if (repairValidation.isValid) {
-              logger.info(`   ✅ Prompt repair successful!`);
-              parsedResponse = repairedParsed;
-              repaired = true;
-            } else {
-              logger.warn(`   ⚠️ Repaired prompt still invalid: ${repairValidation.errors.join('; ')}`);
+                }),
+              });
+
+              const repairAnswer = repairResponse?.answer ?? repairResponse;
+              const repairedParsed = parseAgentAlphaPromptResponse(repairAnswer as string, fieldName);
+              const repairValidation = validatePrompt(repairedParsed.newPrompt);
+
+              if (repairValidation.isValid) {
+                logger.info(`   ✅ Prompt repair successful!`);
+                parsedResponse = repairedParsed;
+                repaired = true;
+              } else {
+                logger.warn(`   ⚠️ Repaired prompt still invalid: ${repairValidation.errors.join('; ')}`);
+              }
+            } catch (repairError) {
+              logger.warn(`   ⚠️ Repair attempt ${attempt} failed:`, repairError as Error);
             }
-          } catch (repairError) {
-            logger.warn(`   ⚠️ Repair attempt ${attempt} failed:`, repairError as Error);
+          }
+
+          if (!repaired) {
+            logger.warn(`   ⚠️ Repair failed after ${maxRepairAttempts} attempt(s), using fallback prompt`);
+            const fallbackPrompt = getExamplePromptForField(fieldName, fieldType, options);
+            parsedResponse = {
+              newPrompt: fallbackPrompt,
+              reasoning: `Fallback: Generated prompt failed validation (${validation.errors.join('; ')})`,
+            };
           }
         }
-        
-        // If repair failed, fall back to example prompt
-        if (!repaired) {
-          logger.warn(`   ⚠️ Repair failed after ${maxRepairAttempts} attempt(s), using fallback prompt`);
-          const fallbackPrompt = getExamplePromptForField(fieldName, fieldType, options);
-          parsedResponse = {
-            newPrompt: fallbackPrompt,
-            reasoning: `Fallback: Generated prompt failed validation (${validation.errors.join('; ')})`,
-          };
-        }
-      } else {
-        logger.info(`   ✅ Prompt validation passed`);
       }
+
+      generated.push(parsedResponse.newPrompt);
+      logger.info(`   ✅ Candidate ${variant + 1}: "${parsedResponse.newPrompt.substring(0, 80)}..." (${parsedResponse.newPrompt.length} chars)`);
     }
 
-    logger.info(`   ✅ New prompt generated: "${parsedResponse.newPrompt.substring(0, 100)}..."`);
-    logger.info(`   📊 Prompt length: ${parsedResponse.newPrompt.length} chars`);
-    logger.debug(`   Reasoning: ${parsedResponse.reasoning}`);
+    const candidates = uniquePrompts(generated, currentPrompt);
+    const newPrompt = candidates[0] ?? currentPrompt;
+
+    logger.info(`   📊 ${candidates.length} unique candidate(s) after deduping`);
 
     return {
-      newPrompt: parsedResponse.newPrompt,
+      newPrompt,
+      candidates,
       accuracy,
-      converged, // Return the actual converged status
+      converged,
       failureExamples,
     };
   } catch (error) {
     logger.error(`   ✗ Prompt generation failed:`, error as Error);
-    
-    // If converged but prompt generation failed, return current prompt
-    if (converged) {
-      logger.warn(`   Using current prompt since we're converged`);
-      return {
-        newPrompt: currentPrompt,
-        accuracy,
-        converged: true,
-      };
-    }
-    
-    throw error;
+    return {
+      newPrompt: currentPrompt,
+      candidates: [],
+      accuracy,
+      converged,
+    };
   }
 }
 

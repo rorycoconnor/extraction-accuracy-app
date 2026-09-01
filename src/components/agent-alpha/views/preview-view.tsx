@@ -187,8 +187,10 @@ export const PreviewView: React.FC<PreviewViewProps> = ({ results }) => {
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {didImprove && result.converged ? (
+                    {didImprove && result.finalAccuracy >= 0.999 ? (
                       <Badge className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-transparent">✓ 100% Accuracy</Badge>
+                    ) : didImprove && result.converged ? (
+                      <Badge className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-transparent">Stopped — no further lift</Badge>
                     ) : didImprove ? (
                       <Badge className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 border-transparent">Max Iterations</Badge>
                     ) : null}

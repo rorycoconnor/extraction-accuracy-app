@@ -12,6 +12,7 @@ import {
   assignRanks,
   type ModelSummary
 } from '@/lib/model-ranking-utils';
+import type { ScoreChannel } from '@/lib/scoring';
 
 /**
  * Props for the ModelRankingSummary component
@@ -42,6 +43,7 @@ type ViewMode = 'stack' | 'side-by-side';
 function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
   // View mode state (default to side-by-side view)
   const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
+  const [scoreChannel, setScoreChannel] = useState<ScoreChannel>('strict');
 
   // Early validation to prevent runtime errors
   if (!data || !data.fields || !data.averages) {
@@ -67,14 +69,14 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
   // Calculate model summaries with memoization for performance
   const modelSummaries: ModelSummary[] = useMemo(() => {
     // Calculate initial summaries
-    const summaries = calculateModelSummaries(visibleModels, fields, averages, data.fieldSettings);
+    const summaries = calculateModelSummaries(visibleModels, fields, averages, data.fieldSettings, scoreChannel);
     
     // Determine winners and assign ranks
     determineFieldWinners(summaries, fields, data.fieldSettings);
     assignRanks(summaries);
     
     return summaries;
-  }, [visibleModels, fields, averages, data.fieldSettings]);
+  }, [visibleModels, fields, averages, data.fieldSettings, scoreChannel]);
   
   /**
    * Returns the appropriate icon for a model's rank
@@ -148,7 +150,7 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
           </div>
           
           {/* Overall Metrics */}
-          <div className="grid grid-cols-4 gap-4 mb-3">
+          <div className="grid grid-cols-5 gap-4 mb-3">
             <div className="text-center">
               <div className="text-2xl font-bold">{(summary.overallAccuracy * 100).toFixed(1)}%</div>
               <div className="text-xs text-muted-foreground">Accuracy</div>
@@ -164,6 +166,10 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
             <div className="text-center">
               <div className="text-2xl font-bold">{(summary.overallRecall * 100).toFixed(1)}%</div>
               <div className="text-xs text-muted-foreground">Recall</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold">{(summary.overallReliability * 100).toFixed(1)}%</div>
+              <div className="text-xs text-muted-foreground">Reliability</div>
             </div>
           </div>
           
@@ -273,6 +279,9 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
                     {(summary.overallAccuracy * 100).toFixed(1)}% Accuracy
                   </Badge>
                 </div>
+                <p className="text-center text-xs text-muted-foreground mt-2">
+                  Reliability {(summary.overallReliability * 100).toFixed(0)}%
+                </p>
               </div>
               
               {/* Field Performance */}
@@ -366,6 +375,35 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
             </Button>
           </div>
 
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <Button
+              variant={scoreChannel === 'strict' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setScoreChannel('strict')}
+              className={cn(
+                'text-xs px-3 py-1.5',
+                scoreChannel === 'strict'
+                  ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100'
+                  : 'text-gray-600 dark:text-gray-400'
+              )}
+            >
+              Strict
+            </Button>
+            <Button
+              variant={scoreChannel === 'lenient' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setScoreChannel('lenient')}
+              className={cn(
+                'text-xs px-3 py-1.5',
+                scoreChannel === 'lenient'
+                  ? 'bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-gray-100'
+                  : 'text-gray-600 dark:text-gray-400'
+              )}
+            >
+              Lenient
+            </Button>
+          </div>
+
           {/* Field Performance Legend */}
           <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
             <span className="font-medium text-gray-700 dark:text-gray-300">Field Performance:</span>
@@ -384,6 +422,12 @@ function ModelRankingSummary({ data, shownColumns }: ModelRankingSummaryProps) {
           </div>
         </div>
       </CardHeader>
+      {data.evalSplit?.holdoutFileIds && data.evalSplit.holdoutFileIds.length > 0 && (
+        <p className="px-6 text-xs text-muted-foreground">
+          Ranked on {data.evalSplit.holdoutFileIds.length} holdout file{data.evalSplit.holdoutFileIds.length === 1 ? '' : 's'}
+          {' '}({data.results.length} extracted). Strict ignores partial/substring credit.
+        </p>
+      )}
       <CardContent>
         {viewMode === 'stack' ? renderStackView() : renderSideBySideView()}
       </CardContent>

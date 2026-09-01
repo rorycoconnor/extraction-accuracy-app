@@ -23,7 +23,7 @@ import { MousePointer2, Play, RotateCcw, Clock } from 'lucide-react';
 // Union type to handle both legacy and new comparison results
 type ComparisonResult = LegacyComparisonResult | EngineComparisonResult;
 import { ModelPill } from '@/components/model-pill';
-import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
+import { pickChannelAverage } from '@/lib/model-ranking-utils';
 import { UI_LABELS, isKnownModel } from '@/lib/main-page-constants';
 import { ImageThumbnailHover } from '@/components/image-thumbnail-hover';
 import { logger } from '@/lib/logger';
@@ -57,7 +57,8 @@ interface ProcessedRowData {
   id: string;
   fileName: string;
   fileType: string;
-  [key: string]: string | CellData; // Dynamic field-model combinations
+  isHoldout?: boolean;
+  [key: string]: string | boolean | CellData | undefined;
 }
 
 type TanStackExtractionTableProps = {
@@ -224,9 +225,16 @@ const FileNameCell = ({ row }: { row: ProcessedRowData }) => (
       >
         {row.fileName.replace(/\.pdf$|\.docx$|\.jpg$/, '')}
       </div>
-      <Badge variant="outline" className="mt-1 font-normal text-xs w-fit">
-        {row.fileType}
-      </Badge>
+      <div className="flex flex-wrap gap-1 mt-1">
+        <Badge variant="outline" className="font-normal text-xs w-fit">
+          {row.fileType}
+        </Badge>
+        {row.isHoldout && (
+          <Badge variant="outline" className="font-normal text-xs w-fit">
+            Holdout
+          </Badge>
+        )}
+      </div>
     </ImageThumbnailHover>
   </div>
 );
@@ -601,6 +609,7 @@ export default function TanStackExtractionTable({
         id: result.id,
         fileName: result.fileName,
         fileType: result.fileType,
+        isHoldout: data.evalSplit?.holdoutFileIds?.includes(result.id) === true,
       };
       
       // Add flattened field-model data
@@ -633,7 +642,7 @@ export default function TanStackExtractionTable({
       
       return row;
     });
-  }, [results, fields, visibleColumns, refreshCounter, groundTruthHash]);
+  }, [results, fields, visibleColumns, refreshCounter, groundTruthHash, data.evalSplit]);
 
   // Define columns for TanStack Table
   const columns = React.useMemo<ColumnDef<ProcessedRowData>[]>(() => {
@@ -972,7 +981,14 @@ export default function TanStackExtractionTable({
               {showMetrics && (
                 <tr className="border-t sticky bottom-0 z-50">
                   <td className="sticky-column file-name-cell field-averages-cell bg-background font-bold border-t">
-                    <div className="p-3 text-center font-semibold field-averages-text">Field Averages</div>
+                    <div className="p-3 text-center font-semibold field-averages-text">
+                      Field Averages
+                      {data.evalSplit?.holdoutFileIds && data.evalSplit.holdoutFileIds.length > 0 && (
+                        <div className="text-xs font-normal text-muted-foreground mt-1">
+                          Holdout · {data.evalSplit.holdoutFileIds.length} file{data.evalSplit.holdoutFileIds.length === 1 ? '' : 's'}
+                        </div>
+                      )}
+                    </div>
                   </td>
                   {fields.map((field, fieldIndex) => {
                     const groupIdx = fieldIndex;
@@ -999,6 +1015,10 @@ export default function TanStackExtractionTable({
                         
                         // 🔍 DEBUG: Log averages lookup
                         const metrics = averages[field.key]?.[modelName] ?? { accuracy: 0, precision: 0, recall: 0, f1: 0 };
+                        const channel = pickChannelAverage(metrics, 'strict');
+                        const accuracy = channel.accuracy;
+                        const lenientAccuracy = metrics.lenientAccuracy;
+                        const reliability = channel.reliability;
                         
                         if (fieldIndex === 0 && modelName !== 'Ground Truth') {
                           console.log('🔍 TABLE: Looking up averages', {
@@ -1012,8 +1032,6 @@ export default function TanStackExtractionTable({
                             accuracyType: typeof metrics.accuracy
                           });
                         }
-                        
-                        const accuracy = metrics.accuracy;
                         
                         // Check if there's any ground truth data for this field across all files
                         const hasGroundTruth = results.some(result => {
@@ -1051,13 +1069,20 @@ export default function TanStackExtractionTable({
                                     TBD
                                   </div>
                                 ) : (
-                                  <div className={cn(
-                                    "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold",
-                                    accuracy >= 0.9 ? 'bg-green-100 text-green-700 dark:bg-green-900/55 dark:text-green-100' : 
-                                    accuracy >= 0.7 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/55 dark:text-yellow-100' : 
-                                    'bg-red-100 text-red-700 dark:bg-red-900/55 dark:text-red-100'
-                                  )}>
-                                    Accuracy {accuracy > 0 ? `${(accuracy * 100).toFixed(0)}%` : '0%'}
+                                  <div className="flex flex-col items-center gap-0.5">
+                                    <div className={cn(
+                                      "inline-flex items-center px-3 py-1 rounded-full text-xs font-bold",
+                                      accuracy >= 0.9 ? 'bg-green-100 text-green-700 dark:bg-green-900/55 dark:text-green-100' : 
+                                      accuracy >= 0.7 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/55 dark:text-yellow-100' : 
+                                      'bg-red-100 text-red-700 dark:bg-red-900/55 dark:text-red-100'
+                                    )}>
+                                      Accuracy {accuracy > 0 ? `${(accuracy * 100).toFixed(0)}%` : '0%'}
+                                    </div>
+                                    <div className="text-[10px] font-normal text-muted-foreground">
+                                      {typeof lenientAccuracy === 'number' ? `Lenient ${(lenientAccuracy * 100).toFixed(0)}%` : null}
+                                      {typeof lenientAccuracy === 'number' && typeof reliability === 'number' ? ' · ' : null}
+                                      {typeof reliability === 'number' ? `Rel ${(reliability * 100).toFixed(0)}%` : null}
+                                    </div>
                                   </div>
                                 )}
                               </div>

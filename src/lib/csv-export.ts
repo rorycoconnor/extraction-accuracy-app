@@ -187,6 +187,14 @@ function generateFieldAveragesRows(
     // Removed explicit section title row per request
   ];
 
+  if (accuracyData.evalSplit?.holdoutFileIds && accuracyData.evalSplit.holdoutFileIds.length > 0) {
+    rows.push([
+      'Eval split',
+      `Holdout ${accuracyData.evalSplit.holdoutFileIds.length} of ${accuracyData.results.length} files · Accuracy is strict (partial matches do not count)`
+    ]);
+    rows.push(['']);
+  }
+
   // Header row: Field, per-model Accuracy columns, then Prompt
   const headerRow = ['Field', ...summaryData.modelsCompared.map(model => formatModelName(model)), 'Prompt'];
   rows.push(headerRow);

@@ -281,25 +281,12 @@ describe('Agent-Alpha Workflow', () => {
   });
 
   describe('Convergence Logic', () => {
-    test('should converge when accuracy reaches 100%', () => {
-      const accuracy = 1.0;
-      const targetAccuracy = AGENT_ALPHA_CONFIG.TARGET_ACCURACY;
-      
-      const converged = accuracy >= targetAccuracy;
-      
-      expect(converged).toBe(true);
+    test('does not treat 100% train accuracy as automatic success', () => {
+      expect(AGENT_ALPHA_CONFIG.HOLDOUT_THRESHOLD).toBe(0);
+      expect(AGENT_ALPHA_CONFIG.CANDIDATE_COUNT).toBeGreaterThan(1);
     });
 
-    test('should not converge when accuracy below target', () => {
-      const accuracy = 0.95;
-      const targetAccuracy = AGENT_ALPHA_CONFIG.TARGET_ACCURACY;
-      
-      const converged = accuracy >= targetAccuracy;
-      
-      expect(converged).toBe(false);
-    });
-
-    test('target accuracy should be 100%', () => {
+    test('still skips fields that already score perfectly on the comparison', () => {
       expect(AGENT_ALPHA_CONFIG.TARGET_ACCURACY).toBe(1.0);
     });
   });

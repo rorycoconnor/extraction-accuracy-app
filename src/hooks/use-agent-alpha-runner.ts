@@ -425,14 +425,19 @@ export const useAgentAlphaRunner = () => {
       return;
     }
 
-    logger.info('Agent-Alpha: Applying results', { count: pendingResults.results.length });
-
     try {
+      const appliedResults = pendingResults.results.filter((result) => {
+        if (result.improved === false) return false;
+        const before = accuracyData.fields.find((f) => f.key === result.fieldKey);
+        return Boolean(before && result.finalPrompt.trim() !== before.prompt.trim());
+      });
+
+      logger.info('Agent-Alpha: Applying results', { count: appliedResults.length });
+
       const timestamp = new Date().toISOString();
       
-      // Build updated fields with new prompts and prompt history
       const updatedFields = accuracyData.fields.map((field) => {
-        const result = pendingResults.results.find((r) => r.fieldKey === field.key);
+        const result = appliedResults.find((r) => r.fieldKey === field.key);
         if (!result) return field;
 
         const newVersion = {
@@ -465,7 +470,7 @@ export const useAgentAlphaRunner = () => {
       });
 
       // Then persist to localStorage
-      for (const result of pendingResults.results) {
+      for (const result of appliedResults) {
         const updatedField = updatedFields.find((f) => f.key === result.fieldKey);
         if (!updatedField) continue;
 
@@ -484,7 +489,9 @@ export const useAgentAlphaRunner = () => {
 
       toast({
         title: 'Prompts Applied',
-        description: `Successfully saved ${pendingResults.results.length} Agent-Alpha prompt(s).`,
+        description: appliedResults.length === 0
+          ? 'No prompts beat the original on holdout, so nothing was written.'
+          : `Saved ${appliedResults.length} improved Agent-Alpha prompt(s).`,
         variant: 'default',
       });
 

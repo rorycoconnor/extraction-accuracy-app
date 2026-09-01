@@ -185,26 +185,24 @@ describe('Metrics Calculation - Core Business Logic', () => {
       
       const result = calculateFieldMetricsWithDebug(predictions, groundTruths)
       
-      // Should only count 2 valid pairs (skip Pending)
+      expect(result.debug.pendingPairs).toBe(1)
       expect(result.debug.totalValidPairs).toBe(2)
       expect(result.debug.truePositives).toBe(2)
-      
-      // Accuracy = 2/2 = 100% (Pending excluded)
       expect(result.accuracy).toBe(1.0)
+      expect(result.reliability).toBe(1.0)
     })
 
-    test('should exclude "Error: ..." from calculations', () => {
+    test('should count "Error: ..." as a failed extraction', () => {
       const predictions = ['Acme Corp', 'Error: Rate limit exceeded', 'Charlie Co']
       const groundTruths = ['Acme Corp', 'Beta Inc', 'Charlie Co']
       
       const result = calculateFieldMetricsWithDebug(predictions, groundTruths)
       
-      // Should only count 2 valid pairs (skip Error)
-      expect(result.debug.totalValidPairs).toBe(2)
+      expect(result.debug.errorPairs).toBe(1)
+      expect(result.debug.totalValidPairs).toBe(3)
       expect(result.debug.truePositives).toBe(2)
-      
-      // Accuracy = 2/2 = 100% (Error excluded)
-      expect(result.accuracy).toBe(1.0)
+      expect(result.accuracy).toBeCloseTo(2 / 3, 5)
+      expect(result.reliability).toBeCloseTo(2 / 3, 5)
     })
 
     test('should handle all predictions being errors/pending', () => {
@@ -213,12 +211,14 @@ describe('Metrics Calculation - Core Business Logic', () => {
       
       const result = calculateFieldMetricsWithDebug(predictions, groundTruths)
       
-      // No valid pairs
-      expect(result.debug.totalValidPairs).toBe(0)
+      expect(result.debug.pendingPairs).toBe(2)
+      expect(result.debug.errorPairs).toBe(1)
+      expect(result.debug.totalValidPairs).toBe(1)
       expect(result.accuracy).toBe(0)
       expect(result.precision).toBe(0)
       expect(result.recall).toBe(0)
       expect(result.f1Score).toBe(0)
+      expect(result.reliability).toBe(0)
     })
   })
 
@@ -394,15 +394,17 @@ describe('Metrics Calculation - Core Business Logic', () => {
       
       const result = calculateFieldMetricsWithDebug(predictions, groundTruths)
       
-      // 4 correct (3 TP + 1 TN), 1 wrong (FP+FN), 1 error (excluded)
-      expect(result.debug.totalValidPairs).toBe(5) // Excludes error
+      // 4 correct (3 TP + 1 TN), 1 wrong (FP+FN), 1 error (now scored as a miss)
+      expect(result.debug.totalValidPairs).toBe(6)
+      expect(result.debug.errorPairs).toBe(1)
       expect(result.debug.truePositives).toBe(3)
       expect(result.debug.trueNegatives).toBe(1)
-      expect(result.debug.falsePositives).toBe(1)
-      expect(result.debug.falseNegatives).toBe(1)
+      expect(result.debug.falsePositives).toBe(2)
+      expect(result.debug.falseNegatives).toBe(2)
       
-      // Accuracy = (3+1)/5 = 0.8
-      expect(result.accuracy).toBe(0.8)
+      // Accuracy = (3+1)/6
+      expect(result.accuracy).toBeCloseTo(4 / 6, 5)
+      expect(result.reliability).toBeCloseTo(5 / 6, 5)
     })
 
     test('should handle all models failing', () => {
@@ -429,6 +431,16 @@ describe('Metrics Calculation - Core Business Logic', () => {
       expect(result.debug.falseNegatives).toBe(3)
       expect(result.accuracy).toBe(0)
       expect(result.recall).toBe(0)
+    })
+  })
+
+  describe('Strict vs lenient channels', () => {
+    test('partial substring matches count for lenient but not strict accuracy', () => {
+      const result = calculateFieldMetrics(['Acme Corporation Inc'], ['Acme Corp'])
+
+      expect(result.lenientAccuracy).toBe(1)
+      expect(result.accuracy).toBe(0)
+      expect(result.reliability).toBe(1)
     })
   })
 

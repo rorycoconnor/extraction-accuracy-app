@@ -29,8 +29,10 @@ describe('Agent-Alpha Configuration', () => {
       expect(typeof AGENT_ALPHA_CONFIG.MAX_ITERATIONS).toBe('number');
     });
 
-    test('should have TARGET_ACCURACY of 1.0 (100%)', () => {
+    test('should skip already-perfect fields, not treat 100% as the optimizer goal', () => {
       expect(AGENT_ALPHA_CONFIG.TARGET_ACCURACY).toBe(1.0);
+      expect(AGENT_ALPHA_CONFIG.CANDIDATE_COUNT).toBe(3);
+      expect(AGENT_ALPHA_CONFIG.HOLDOUT_THRESHOLD).toBe(0);
     });
 
     test('should have a valid PROMPT_GEN_MODEL', () => {

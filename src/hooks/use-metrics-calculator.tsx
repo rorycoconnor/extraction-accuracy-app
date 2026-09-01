@@ -176,7 +176,8 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
           predictions,
           groundTruths,
           compareConfig || undefined,
-          fileIds
+          fileIds,
+          accuracyData.evalSplit?.scoringFileIds
         );
 
         logger.debug('Metrics calculated', {
@@ -206,7 +207,12 @@ export const useMetricsCalculator = (): UseMetricsCalculatorReturn => {
           accuracy: result.accuracy,
           precision: result.precision,
           recall: result.recall,
-          f1: result.f1Score
+          f1: result.f1Score,
+          lenientAccuracy: result.lenientAccuracy,
+          lenientPrecision: result.lenientPrecision,
+          lenientRecall: result.lenientRecall,
+          lenientF1: result.lenientF1,
+          reliability: result.reliability,
         };
 
         // Store per-cell comparison results

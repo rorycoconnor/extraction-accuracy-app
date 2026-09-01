@@ -92,6 +92,11 @@ export type FieldAverage = {
   precision: number;
   recall: number;
   f1: number;
+  lenientAccuracy?: number;
+  lenientPrecision?: number;
+  lenientRecall?: number;
+  lenientF1?: number;
+  reliability?: number;
 };
 
 export type ModelAverages = {
@@ -138,6 +143,11 @@ export type AccuracyData = {
   fieldSettings?: Record<string, {
     includeInMetrics: boolean;
   }>;
+  evalSplit?: {
+    trainFileIds: string[];
+    holdoutFileIds: string[];
+    scoringFileIds: string[];
+  };
 };
 
 export type BoxTemplateField = {

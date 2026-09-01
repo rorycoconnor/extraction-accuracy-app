@@ -12,7 +12,12 @@ import {
 } from '@/lib/optimizer-types';
 import type { AgentAlphaState, AgentAlphaPendingResults } from '@/lib/agent-alpha-types';
 import { saveAccuracyData, getAccuracyData } from '@/lib/mock-data';
-import { sanitizeShownColumns } from '@/lib/main-page-constants';
+import { getActiveModelsForRun, sanitizeShownColumns } from '@/lib/main-page-constants';
+import {
+  buildComparisonRunSnapshotFromAccuracyData,
+  buildPromptVersionsMap,
+  type ComparisonRunSnapshot,
+} from '@/lib/comparison-run-snapshot';
 
 // Enhanced types for our unified store
 export interface ComparisonSession {
@@ -30,7 +35,10 @@ export interface ComparisonRun {
   sessionId: string;
   name: string;
   timestamp: string;
-  promptVersions: Record<string, string>; // fieldKey -> promptVersionId
+  /** fieldKey -> promptHistory id, or "active" when the prompt is not in history */
+  promptVersions: Record<string, string>;
+  /** Immutable copy of prompts, compare types, files, and models used for this run */
+  snapshot?: ComparisonRunSnapshot;
   results: FileResult[];
   averages: Record<string, any>;
   apiResults: ApiExtractionResult[];
@@ -66,7 +74,7 @@ type AccuracyDataAction =
   | { type: 'SET_SHOWN_COLUMNS'; payload: Record<string, boolean> }
   | { type: 'CREATE_SESSION'; payload: { name: string; templateKey: string; baseModel: string } }
   | { type: 'START_COMPARISON_RUN'; payload: { sessionId: string; name?: string } }
-  | { type: 'COMPLETE_COMPARISON_RUN'; payload: { runId: string; results: FileResult[]; averages: Record<string, any>; apiResults: ApiExtractionResult[] } }
+  | { type: 'COMPLETE_COMPARISON_RUN'; payload: { runId: string; results: FileResult[]; averages: Record<string, any>; apiResults: ApiExtractionResult[]; promptVersions?: Record<string, string>; snapshot?: ComparisonRunSnapshot; evalSplit?: AccuracyData['evalSplit'] } }
   | { type: 'SET_ACTIVE_RUN'; payload: string }
   | { type: 'SAVE_PROMPT_VERSION'; payload: { fieldKey: string; prompt: string; metrics?: any } }
   | { type: 'CLEAR_RESULTS' }
@@ -413,12 +421,23 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
         return state;
       }
 
+      const snapshot = action.payload.snapshot ?? buildComparisonRunSnapshotFromAccuracyData({
+        templateKey: currentData.templateKey,
+        fields: currentData.fields,
+        results,
+        shownColumns: currentData.shownColumns,
+        modelIds: getActiveModelsForRun(currentData.shownColumns),
+      });
+      const promptVersions = action.payload.promptVersions ?? buildPromptVersionsMap(currentData.fields);
+      const evalSplit = action.payload.evalSplit ?? currentData.evalSplit;
+
       const newRun: ComparisonRun = {
         id: runId,
         sessionId: currentSession.id,
         name: `Run ${currentSession.runs.length + 1}`,
         timestamp,
-        promptVersions: {}, // Will be populated with current prompt versions
+        promptVersions,
+        snapshot,
         results,
         averages,
         apiResults,
@@ -446,6 +465,7 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
           ...currentData,
           results,
           averages,
+          evalSplit,
           sessions: updatedSessions,
           lastModified: timestamp
         },
@@ -466,6 +486,7 @@ function accuracyDataReducer(state: AccuracyDataState, action: AccuracyDataActio
           fields: state.data.fields, // Fields are already immutable, no need to copy
           results: [], // Clear extraction results
           averages: {}, // Reset averages
+          evalSplit: undefined,
           sessions: state.data.sessions.map(session => ({
             ...session,
             runs: session.runs.map(run => ({
@@ -802,8 +823,8 @@ export const useAccuracyDataCompat = () => {
       updatePrompt: (fieldKey: string, newPrompt: string) => dispatch({ type: 'UPDATE_PROMPT', payload: { fieldKey, newPrompt } }),
       createSession: (name: string, templateKey: string, baseModel: string) => dispatch({ type: 'CREATE_SESSION', payload: { name, templateKey, baseModel } }),
       startComparisonRun: (sessionId: string, name?: string) => dispatch({ type: 'START_COMPARISON_RUN', payload: { sessionId, name } }),
-      completeComparisonRun: (runId: string, results: FileResult[], averages: Record<string, any>, apiResults: ApiExtractionResult[]) => 
-        dispatch({ type: 'COMPLETE_COMPARISON_RUN', payload: { runId, results, averages, apiResults } }),
+      completeComparisonRun: (runId: string, results: FileResult[], averages: Record<string, any>, apiResults: ApiExtractionResult[], promptVersions?: Record<string, string>, snapshot?: ComparisonRunSnapshot) => 
+        dispatch({ type: 'COMPLETE_COMPARISON_RUN', payload: { runId, results, averages, apiResults, promptVersions, snapshot } }),
       clearResults: () => dispatch({ type: 'CLEAR_RESULTS' }),
     };
   }, [state.data, dispatch]);

@@ -22,7 +22,14 @@ vi.mock('@/lib/utils', () => ({
 // Mock model ranking utils
 vi.mock('@/lib/model-ranking-utils', () => ({
   calculateModelSummaries: vi.fn(() => []),
-  assignRanks: vi.fn(() => [])
+  assignRanks: vi.fn(() => []),
+  pickChannelAverage: vi.fn((avg: { accuracy?: number; reliability?: number; lenientAccuracy?: number }) => ({
+    accuracy: avg?.accuracy ?? 0,
+    precision: 0,
+    recall: 0,
+    f1: 0,
+    reliability: avg?.reliability ?? 1,
+  })),
 }))
 
 // Mock metrics comparison

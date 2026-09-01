@@ -29,9 +29,9 @@ export function formatEstimatedTime(
   // - Prompt generation API call
   // - Rate limit delays (500ms stagger)
   // - Network latency
+  const candidates = AGENT_ALPHA_CONFIG.CANDIDATE_COUNT || 1;
   const avgIterationsPerField = Math.min(iterations, 3);
-  // Based on observed timings: ~20 seconds base + extraction time
-  const secondsPerIteration = 20 + (docs / AGENT_ALPHA_CONFIG.EXTRACTION_CONCURRENCY) * 6;
+  const secondsPerIteration = 20 + (docs / AGENT_ALPHA_CONFIG.EXTRACTION_CONCURRENCY) * 6 + (candidates - 1) * 8;
   const secondsPerField = avgIterationsPerField * secondsPerIteration;
   
   // Fields processed in parallel batches

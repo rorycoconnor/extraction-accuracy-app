@@ -175,10 +175,11 @@ export function selectDocsForAgentAlpha(
     fieldToDocIds[fieldKey] = selectedDocs.map((doc) => doc.docId);
   }
 
-  // Split docs into train and holdout sets
-  // Holdout docs are used for validation to prevent overfitting
+  // Split docs into train and holdout sets.
+  // Shuffle so holdout is not always the tail of the greedy failure list
+  // (those docs are systematically the least failure-covering).
   const allSelectedDocIds = selectedDocs.map((doc) => doc.docId);
-  const { trainDocIds, holdoutDocIds } = splitTrainHoldout(allSelectedDocIds, holdoutRatio);
+  const { trainDocIds, holdoutDocIds } = splitTrainHoldout(allSelectedDocIds, holdoutRatio, 'shuffled');
 
   return {
     docs: selectedDocs,
@@ -188,45 +189,67 @@ export function selectDocsForAgentAlpha(
   };
 }
 
+export type HoldoutSplitStrategy = 'tail' | 'shuffled';
+
+function hashSeed(value: string): number {
+  let hash = 2166136261;
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+/** Reproducible shuffle: same IDs always produce the same order. */
+export function seededShuffle<T>(items: T[], seed: number): T[] {
+  const out = [...items];
+  let state = seed || 1;
+  for (let i = out.length - 1; i > 0; i--) {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    const j = state % (i + 1);
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
+
 /**
- * Split document IDs into train and holdout sets
- * Ensures at least 1 doc in holdout if there are enough docs
- * 
- * @param docIds All document IDs to split
- * @param holdoutRatio Ratio of docs to hold out (0.0 to 1.0)
- * @returns Object with trainDocIds and holdoutDocIds arrays
+ * Split document IDs into train and holdout sets.
+ * Ensures at least 1 doc in holdout if there are enough docs.
+ *
+ * `tail` keeps input order and holds out the end (used by Run Comparison so
+ * the same selected list scores the same way). `shuffled` mixes a seeded
+ * permutation first so Agent Alpha holdout is not the greedy tail.
  */
 export function splitTrainHoldout(
   docIds: string[],
-  holdoutRatio: number
+  holdoutRatio: number,
+  strategy: HoldoutSplitStrategy = 'tail'
 ): { trainDocIds: string[]; holdoutDocIds: string[] } {
   const totalDocs = docIds.length;
-  
-  // If we have fewer than 3 docs, don't split - use all for training
-  // (holdout validation requires meaningful sample sizes)
+
   if (totalDocs < 3 || holdoutRatio <= 0) {
     return {
       trainDocIds: [...docIds],
       holdoutDocIds: [],
     };
   }
-  
-  // Calculate holdout count, ensuring at least 1 doc if ratio > 0
+
   let holdoutCount = Math.round(totalDocs * holdoutRatio);
-  
-  // Ensure we have at least 1 holdout doc if ratio > 0 and enough docs
+
   if (holdoutRatio > 0 && holdoutCount === 0 && totalDocs >= 3) {
     holdoutCount = 1;
   }
-  
-  // Ensure we don't hold out more than half the docs
+
   holdoutCount = Math.min(holdoutCount, Math.floor(totalDocs / 2));
-  
-  // Take holdout from the END of the array (greedy selection prioritized important docs first)
-  // This way, training gets the most important failure-covering docs
-  const trainDocIds = docIds.slice(0, totalDocs - holdoutCount);
-  const holdoutDocIds = docIds.slice(totalDocs - holdoutCount);
-  
+
+  const ordered =
+    strategy === 'shuffled'
+      ? seededShuffle(docIds, hashSeed([...docIds].sort().join('\0')))
+      : [...docIds];
+
+  const trainDocIds = ordered.slice(0, totalDocs - holdoutCount);
+  const holdoutDocIds = ordered.slice(totalDocs - holdoutCount);
+
   return {
     trainDocIds,
     holdoutDocIds,

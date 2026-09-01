@@ -3,7 +3,7 @@
  * 
  * This module provides the core prompt construction logic for Agent-Alpha.
  * It builds structured requests for Box AI (Claude) to generate high-quality
- * extraction prompts that achieve 100% accuracy.
+ * extraction prompts that hold up on documents the model has not trained on.
  * 
  * ## Key Functions
  * 
@@ -86,6 +86,8 @@ export type AgentAlphaPromptParams = {
   customInstructions?: string;
   /** Analyzed document context from failure analysis */
   documentContext?: string;
+  /** When generating several rewrites, ask for a distinct approach */
+  variantHint?: string;
 };
 
 /**
@@ -156,6 +158,7 @@ export function buildAgentAlphaPrompt(params: AgentAlphaPromptParams): string {
     templateKey,
     customInstructions,
     documentContext,
+    variantHint,
   } = params;
   
   // For counter party fields, use the company name provided by the user (via custom system prompt)
@@ -289,7 +292,7 @@ Your prompt MUST explicitly tell the AI to EXCLUDE "${detectedCompany}" and find
 
   // Add previous failed attempts
   if (previousPrompts.length > 0 && iterationNumber > 1) {
-    prompt += `\n## PREVIOUS ATTEMPTS (didn't achieve 100%)\n`;
+    prompt += `\n## PREVIOUS ATTEMPTS (did not beat the current prompt)\n`;
     previousPrompts.slice(-2).forEach((p, idx) => {
       prompt += `${idx + 1}. "${truncate(p, 100)}"\n`;
     });
@@ -305,6 +308,10 @@ Your prompt MUST explicitly tell the AI to EXCLUDE "${detectedCompany}" and find
   // Iteration urgency
   if (iterationNumber >= 3) {
     prompt += `\n⚠️ ITERATION ${iterationNumber}/${maxIterations} - Previous approaches failed. Try something significantly different!\n`;
+  }
+
+  if (variantHint) {
+    prompt += `\n${variantHint}\n`;
   }
 
   // Final instructions - VERY EXPLICIT about JSON format

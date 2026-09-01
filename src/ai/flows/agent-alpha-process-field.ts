@@ -4,6 +4,7 @@ import { logger } from '@/lib/logger';
 import { runFieldIteration } from './agent-alpha-iteration';
 import { AGENT_ALPHA_CONFIG } from '@/lib/agent-alpha-config';
 import { getExamplePromptForField } from '@/lib/agent-alpha-prompts';
+import { pickBestCandidate, uniquePrompts } from '@/lib/agent-alpha-search';
 import type { AccuracyField } from '@/lib/types';
 import type { FieldCompareConfig } from '@/lib/compare-types';
 import type { AgentAlphaFieldResult } from '@/lib/agent-alpha-types';
@@ -50,7 +51,6 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     sampledDocIds,
     trainDocIds,
     holdoutDocIds,
-    holdoutThreshold = AGENT_ALPHA_CONFIG.HOLDOUT_THRESHOLD,
     templateKey,
     testModel,
     promptGenerationModel = AGENT_ALPHA_CONFIG.PROMPT_GEN_MODEL,
@@ -122,14 +122,35 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
   const initialPrompt = currentPrompt;
   const previousPrompts: string[] = [];
   let finalAccuracy = initialAccuracy;
-  // Initialize bestAccuracy to -1 so the first iteration's result always becomes the baseline
-  // This is important because initialAccuracy is calculated on ALL docs, but we test on a SUBSET
-  let bestAccuracy = -1; 
-  let bestPrompt = currentPrompt; // Track the prompt that achieved best accuracy
+  let bestAccuracy = -1;
+  let bestPrompt = currentPrompt;
   let converged = false;
   let iterationCount = 0;
 
-  // Iterate up to maxIterations times
+  const evalDocIds = hasHoldout ? holdoutDocIds : effectiveTrainDocs;
+
+  const scorePromptOnDocs = async (prompt: string, iteration: number, docs: string[]) => {
+    const scored = await runFieldIteration({
+      fieldKey,
+      fieldName,
+      fieldType,
+      currentPrompt: prompt,
+      previousPrompts: [],
+      sampledDocIds: docs,
+      groundTruth,
+      templateKey,
+      testModel,
+      promptGenerationModel,
+      iterationNumber: iteration,
+      maxIterations,
+      options: fieldOptions,
+      compareConfig: effectiveCompareConfig,
+      systemPromptOverride,
+      validationOnly: true,
+    });
+    return scored.accuracy;
+  };
+
   for (let iteration = 1; iteration <= maxIterations; iteration++) {
     iterationCount = iteration;
 
@@ -142,7 +163,7 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         fieldType,
         currentPrompt,
         previousPrompts,
-        sampledDocIds: effectiveTrainDocs, // Use train docs for iteration
+        sampledDocIds: effectiveTrainDocs,
         groundTruth,
         templateKey,
         testModel,
@@ -154,114 +175,71 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         systemPromptOverride,
       });
 
-      finalAccuracy = iterationResult.accuracy;
-      logger.info(`   Train accuracy: ${(finalAccuracy * 100).toFixed(1)}%`);
+      const trainAccuracy = iterationResult.accuracy;
+      logger.info(`   Train accuracy: ${(trainAccuracy * 100).toFixed(1)}%`);
 
-      // Check if converged on training set (100% accuracy reached)
-      if (iterationResult.converged) {
-        logger.info(`   ✅ Train set converged! Accuracy: ${(finalAccuracy * 100).toFixed(1)}%`);
-        
-        // If we have holdout docs, validate on them before declaring true convergence
-        let holdoutAccuracy = 1.0;
-        let holdoutPassed = true;
-        
-        if (hasHoldout) {
-          logger.info(`   🧪 Validating on ${holdoutDocIds.length} holdout doc(s)...`);
-          
-          // Run holdout validation with the current prompt
-          // validationOnly=true skips prompt generation (saves API calls)
-          const holdoutResult = await runFieldIteration({
-            fieldKey,
-            fieldName,
-            fieldType,
-            currentPrompt,
-            previousPrompts: [],
-            sampledDocIds: holdoutDocIds,
-            groundTruth,
-            templateKey,
-            testModel,
-            promptGenerationModel,
-            iterationNumber: iteration,
-            maxIterations,
-            options: fieldOptions,
-            compareConfig: effectiveCompareConfig,
-            systemPromptOverride,
-            validationOnly: true, // Only compute accuracy, don't generate new prompt
-          });
-          
-          holdoutAccuracy = holdoutResult.accuracy;
-          holdoutPassed = holdoutAccuracy >= holdoutThreshold;
-          
-          if (holdoutPassed) {
-            logger.info(`   ✅ Holdout validation PASSED: ${(holdoutAccuracy * 100).toFixed(1)}%`);
-          } else {
-            logger.warn(`   ⚠️ Holdout validation FAILED: ${(holdoutAccuracy * 100).toFixed(1)}% (threshold: ${(holdoutThreshold * 100).toFixed(1)}%)`);
-            logger.warn(`   🔄 Continuing optimization to improve generalization...`);
-          }
-        }
-        
-        // Only consider truly converged if holdout validation passed (or no holdout)
-        if (holdoutPassed) {
-          // IMPORTANT: Even if we achieved 100% accuracy, if this is iteration 1 and
-          // we're using a simple/default prompt, we should still generate an improved
-          // prompt for production robustness
-          const isSimplePrompt = currentPrompt.length < 100 || 
-            currentPrompt.toLowerCase().startsWith('extract the ');
-          
-          if (iteration === 1 && isSimplePrompt) {
-            logger.info(`   🔄 Generating robust prompt despite 100% accuracy (simple prompt detected)`);
-            // Use the generated newPrompt instead of the simple one
-            // The newPrompt was generated based on the successful extractions
-            if (iterationResult.newPrompt && iterationResult.newPrompt.length > currentPrompt.length) {
-              bestPrompt = iterationResult.newPrompt;
-              logger.info(`   ✅ Using generated robust prompt (${bestPrompt.length} chars)`);
-            } else {
-              bestPrompt = currentPrompt;
-            }
-          } else {
-            // When converged with a non-simple prompt, keep the current prompt
-            bestPrompt = currentPrompt;
-          }
-          bestAccuracy = finalAccuracy;
-          converged = true;
-          break;
-        }
-        // If holdout failed, continue to next iteration (don't break)
+      const candidates = uniquePrompts(
+        [iterationResult.newPrompt, ...(iterationResult.candidates ?? [])],
+        currentPrompt
+      );
+
+      if (!hasAnyGroundTruth) {
+        const longest = [currentPrompt, ...candidates].sort((a, b) => b.length - a.length)[0];
+        bestPrompt = longest;
+        currentPrompt = longest;
+        finalAccuracy = trainAccuracy;
+        converged = true;
+        logger.info(`   ✅ No ground truth — keeping generated prompt (${bestPrompt.length} chars)`);
+        break;
       }
 
-      // Track best accuracy and prompt (BEFORE updating currentPrompt)
-      // The currentPrompt is what we just tested and got finalAccuracy with
-      if (finalAccuracy > bestAccuracy) {
-        bestAccuracy = finalAccuracy;
-        bestPrompt = currentPrompt; // Save the prompt that achieved this accuracy
-        logger.info(`   📈 New best accuracy: ${(bestAccuracy * 100).toFixed(1)}%`);
-      } else if (finalAccuracy === bestAccuracy && currentPrompt.length > bestPrompt.length) {
-        // Same accuracy but the prompt we just TESTED is more detailed - prefer it
-        // This helps when the simple prompt gets lucky but a detailed prompt is more robust
-        // FIX: Use currentPrompt (what we tested), not iterationResult.newPrompt (what we'll test next)
-        bestPrompt = currentPrompt;
-        logger.info(`   📝 Same accuracy but using more detailed prompt (${bestPrompt.length} chars vs ${currentPrompt.length} chars)`);
+      if (candidates.length === 0) {
+        logger.info(`   📉 No new candidates — search plateaued`);
+        if (bestAccuracy < 0) {
+          bestAccuracy = hasHoldout ? await scorePromptOnDocs(currentPrompt, iteration, evalDocIds) : trainAccuracy;
+          bestPrompt = currentPrompt;
+        }
+        finalAccuracy = bestAccuracy;
+        converged = true;
+        break;
       }
 
-      // Update for next iteration - the NEW prompt will be tested next
+      const currentEvalAccuracy = hasHoldout
+        ? await scorePromptOnDocs(currentPrompt, iteration, evalDocIds)
+        : trainAccuracy;
+
+      const scoredCandidates = [];
+      for (const candidate of candidates) {
+        const accuracy = await scorePromptOnDocs(candidate, iteration, evalDocIds);
+        scoredCandidates.push({ prompt: candidate, accuracy });
+        logger.info(`   🧪 Candidate holdout/eval ${(accuracy * 100).toFixed(1)}% (${candidate.length} chars)`);
+      }
+
+      const { winner, improved: lifted } = pickBestCandidate({
+        current: { prompt: currentPrompt, accuracy: currentEvalAccuracy },
+        candidates: scoredCandidates,
+      });
+
+      if (bestAccuracy < 0 || winner.accuracy > bestAccuracy) {
+        bestAccuracy = winner.accuracy;
+        bestPrompt = winner.prompt;
+        logger.info(`   📈 New best eval accuracy: ${(bestAccuracy * 100).toFixed(1)}%`);
+      }
+
+      finalAccuracy = winner.accuracy;
+
+      if (!lifted) {
+        logger.info(`   📉 No candidate beat the current prompt on the eval set — stopping`);
+        converged = true;
+        break;
+      }
+
       previousPrompts.push(currentPrompt);
-      currentPrompt = iterationResult.newPrompt;
-      logger.info(`   📝 New prompt generated for next iteration (${currentPrompt.length} chars)`);
-
-      // If this is the last iteration and still not converged
-      if (iteration === maxIterations) {
-        logger.info(`   ⚠️  Max iterations reached. Final accuracy: ${(finalAccuracy * 100).toFixed(1)}%`);
-        // Use best accuracy/prompt if current iteration didn't improve
-        if (bestAccuracy > finalAccuracy) {
-          logger.info(`   📊 Using best accuracy from earlier iteration: ${(bestAccuracy * 100).toFixed(1)}%`);
-          finalAccuracy = bestAccuracy;
-          currentPrompt = bestPrompt;
-        }
-      }
+      currentPrompt = winner.prompt;
+      logger.info(`   📝 Selected candidate for next iteration (${currentPrompt.length} chars)`);
     } catch (error) {
       logger.error(`   ❌ Error in iteration ${iteration}:`, error as Error);
 
-      // If we have at least one successful iteration, use best result
       if (iteration > 1 && bestAccuracy > initialAccuracy) {
         logger.warn(`   Using best prompt from earlier iteration (${(bestAccuracy * 100).toFixed(1)}%)`);
         currentPrompt = bestPrompt;
@@ -269,38 +247,27 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         break;
       }
 
-      // Otherwise, rethrow
       throw error;
     }
   }
 
-  // Use the best result from our iterations as the starting point.
-  // Note: bestAccuracy is from the TRAIN subset, which is optimistic vs. unseen docs.
   if (bestAccuracy >= 0) {
     finalAccuracy = bestAccuracy;
   }
 
-  // Consistent, held-out final evaluation.
-  // The per-iteration accuracy is measured on the TRAIN subset, so it can be optimistic
-  // and isn't comparable to the original all-docs accuracy. Here we re-measure the chosen
-  // prompt on a fixed eval set (holdout when available) and decide keep-vs-replace via a
-  // fair head-to-head against the user's original prompt on those SAME docs.
   let improved: boolean;
   let finalPromptToUse: string;
   let baselineAccuracy = initialAccuracy;
   let finalAccuracyEvalSet: AgentAlphaFieldResult['finalAccuracyEvalSet'] = 'none';
 
   if (!hasAnyGroundTruth) {
-    // Nothing to measure against - we generated a prompt from scratch, so treat as improved.
     improved = true;
     finalPromptToUse = bestPrompt;
     logger.info(`   ✅ Generated prompt for field without ground truth`);
   } else {
-    const evalDocIds = hasHoldout ? holdoutDocIds : effectiveTrainDocs;
     finalAccuracyEvalSet = hasHoldout ? 'holdout' : 'train';
 
     try {
-      // Measure the chosen prompt on the eval set (unseen holdout when available).
       const finalEval = await runFieldIteration({
         fieldKey,
         fieldName,
@@ -321,9 +288,6 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
       });
       finalAccuracy = finalEval.accuracy;
 
-      // Establish a fair baseline on the SAME docs. Only worth re-measuring when the user
-      // actually had a real prompt to beat; otherwise initialAccuracy (from a generic/absent
-      // prompt) is already the honest baseline and we avoid an extra extraction pass.
       if (userOriginalPrompt) {
         const baselineEval = await runFieldIteration({
           fieldKey,
@@ -346,7 +310,15 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         baselineAccuracy = baselineEval.accuracy;
       }
 
-      improved = finalAccuracy >= baselineAccuracy;
+      improved = finalAccuracy > baselineAccuracy;
+      if (
+        !improved &&
+        !userOriginalPrompt &&
+        finalAccuracy >= baselineAccuracy &&
+        bestPrompt.trim() !== initialPrompt.trim()
+      ) {
+        improved = true;
+      }
       finalPromptToUse = improved ? bestPrompt : (userOriginalPrompt ?? initialPrompt);
 
       logger.info(`   🧪 Final eval on ${finalAccuracyEvalSet} set (${evalDocIds.length} doc(s)): ${(finalAccuracy * 100).toFixed(1)}% vs baseline ${(baselineAccuracy * 100).toFixed(1)}%`);
@@ -354,10 +326,8 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
         logger.warn(`   ⚠️ Optimized prompt did NOT beat the baseline on unseen docs - keeping original, will NOT recommend update`);
       }
     } catch (evalError) {
-      // If the consistent eval fails, fall back to the previous train-subset decision so a
-      // transient extraction error doesn't abort the whole field.
       logger.warn(`   ⚠️ Consistent final evaluation failed, falling back to train-subset decision:`, evalError as Error);
-      improved = finalAccuracy >= initialAccuracy;
+      improved = finalAccuracy > initialAccuracy;
       finalPromptToUse = improved ? bestPrompt : initialPrompt;
       finalAccuracyEvalSet = 'none';
     }

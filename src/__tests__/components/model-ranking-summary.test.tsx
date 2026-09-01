@@ -23,6 +23,7 @@ vi.mock('@/lib/model-ranking-utils', () => ({
       overallF1: averages[fields[0].key]?.[modelName]?.f1 || 0,
       overallPrecision: averages[fields[0].key]?.[modelName]?.precision || 0,
       overallRecall: averages[fields[0].key]?.[modelName]?.recall || 0,
+      overallReliability: averages[fields[0].key]?.[modelName]?.reliability ?? 1,
       fieldsWon: 1,
       totalFields: fields.length,
       rank: 1,
@@ -279,7 +280,7 @@ describe('ModelRankingSummary - Accuracy-First Display Tests', () => {
       
       // Should show individual field accuracy percentages (in side-by-side view)
       // 3 Accuracy badges + (2 fields × 3 models) + 1 in Key Insights = 10 total
-      expect(screen.getAllByText(/\d+%/)).toHaveLength(10)
+      expect(screen.getAllByText(/\d+%/)).toHaveLength(13)
     })
 
     test('should indicate field winners with proper styling', () => {

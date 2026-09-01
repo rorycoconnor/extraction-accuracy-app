@@ -73,7 +73,8 @@ export type AgentAlphaFieldResult = {
   finalPrompt: string; // The optimized prompt
   initialPrompt: string; // The prompt used to start optimization (may be example if user had none)
   userOriginalPrompt: string | null; // The actual user prompt before agent ran (null if none/generic)
-  converged: boolean; // True if reached 100% accuracy
+  converged: boolean; // True if search plateaued (no candidate beat the current prompt)
+
   sampledDocIds: string[]; // Documents used for testing
   improved: boolean; // True if the final prompt beat the baseline on the eval set (prompt should be applied)
   hasGroundTruth?: boolean; // True if field had ground truth data to measure against
@@ -110,8 +111,11 @@ export type AgentAlphaPendingResults = {
 
 export type AgentAlphaIterationResult = {
   newPrompt: string;
+  /** Distinct rewrite candidates from this iteration (includes newPrompt). */
+  candidates?: string[];
   accuracy: number;
-  converged: boolean; // True if accuracy >= TARGET_ACCURACY
+  /** True when there is nothing left to measure (no ground truth), not "hit 100%". */
+  converged: boolean;
   failureExamples?: Array<{
     docId: string;
     predicted: string;
