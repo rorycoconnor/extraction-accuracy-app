@@ -8,22 +8,25 @@ A comprehensive tool for optimizing AI model accuracy in metadata extraction fro
 - **Multi-Model AI Testing**: Compare results across 15+ models from Google, Anthropic, OpenAI, and Box (Gemini 2.5 Flash/Pro, Claude 3.7/4/4.5 Sonnet, GPT-4.1/5/5.1, OpenAI O3, Enhanced Extract Agent)
 - **Metadata Extraction**: Extract structured metadata from contracts and documents stored in Box
 - **Ground Truth Management**: Create and manage ground truth data with side-by-side document preview
-- **Performance Metrics**: Calculate accuracy, precision, recall, and F1 scores for model comparison
+- **Performance Metrics**: Strict accuracy (default), lenient accuracy, precision, recall, F1, and reliability
+- **Holdout ranking**: With 3+ files, Run Comparison ranks models on the last 20% of selected files (Holdout badge on those rows)
+- **Run snapshots**: Each comparison stores the prompts, compare types, files, and models that produced the scores
 - **Template Management**: Configure extraction templates with custom fields and prompts
 - **Real-time Progress Tracking**: Live progress updates as extractions complete with ~10x speedup via server-side parallel processing
-- **Comparison Types**: Configure per-field comparison strategies (exact, near-exact, semantic, LLM-as-judge)
+- **Comparison Types**: Configure per-field comparison strategies (exact, near-exact, date, number, lists, LLM-as-judge)
 - **Semantic Matching**: Intelligent value matching with acronym expansion and bidirectional matching
 
 ### Agent Alpha - Agentic Prompt Optimization
-Agent Alpha is an intelligent prompt optimization system that automatically improves extraction prompts to achieve higher accuracy:
+Agent Alpha improves extraction prompts by measuring them, not by chasing 100% on the training docs:
 
-- **Automatic Optimization**: Analyzes extraction failures and iteratively improves prompts until reaching target accuracy
-- **Multi-Field Processing**: Processes multiple fields in parallel for faster optimization
-- **Smart Document Sampling**: Uses holdout validation to prevent overfitting
-- **Configurable Settings**: Customize test model, document count, max attempts, and concurrency
-- **System Prompt Customization**: Create and manage custom system prompt versions for different use cases
-- **Real-time Progress**: Live progress tracking with field-by-field status updates
-- **Preview & Apply**: Review generated prompts before applying them to your template
+- **Search loop**: Up to 5 iterations; each iteration writes 3 prompt candidates and keeps the one that wins on holdout
+- **Stop on lift**: Stops when no candidate beats the current prompt. A tie keeps the original
+- **Document sampling**: Default 16 docs, shuffled 20% holdout (not the tail of the failure list)
+- **Apply only winners**: Preview, then Apply writes only fields that beat the original. No-lift fields are skipped
+- **Multi-Field Processing**: Processes multiple fields in parallel
+- **Configurable Settings**: Test model, document count (1–25, default 16), max attempts, and concurrency
+- **System Prompt Customization**: Create and manage custom system prompt versions
+- **Real-time Progress**: Live field-by-field status updates
 
 ### Prompt Studio - Manual Prompt Engineering
 Prompt Studio provides a comprehensive environment for manually crafting and testing extraction prompts:
@@ -56,8 +59,8 @@ Prompt Studio provides a comprehensive environment for manually crafting and tes
 
 1. **Clone the repository**
    ```bash
-   git clone [your-repo-url]
-   cd box-optimizer
+   git clone https://github.com/rorycoconnor/extraction-accuracy-app.git
+   cd extraction-accuracy-app
    ```
 
 2. **Install dependencies**
@@ -107,13 +110,13 @@ Prompt Studio provides a comprehensive environment for manually crafting and tes
 3. **Configure Settings**:
    - Choose a System Prompt (or use default)
    - Select the model to test with
-   - Set number of test documents (1-25)
+   - Set number of test documents (1-25, default 16)
    - Configure max attempts per field (1-10)
    - Set concurrent field processing (1-8)
 4. **Start Optimization**: Click "Start Agent" to begin
 5. **Monitor Progress**: Watch real-time progress as fields are optimized
-6. **Review Results**: Preview optimized prompts with accuracy improvements
-7. **Apply Changes**: Click "Apply Prompts" to save improvements
+6. **Review Results**: Preview optimized prompts. Fields that did not beat the original are marked skip
+7. **Apply Changes**: Click "Apply Prompts" to save only the improved fields
 
 #### Prompt Studio - Manual Prompt Engineering
 1. **Open Prompt Studio**: Click the prompt icon on any field in the extraction table
@@ -130,9 +133,9 @@ Prompt Studio provides a comprehensive environment for manually crafting and tes
 - Bulk operations for efficient data management
 
 #### Performance Analysis
-- Calculate accuracy metrics per model and field
-- Compare model performance across document types
-- Track improvement over time
+- Rank models on the holdout slice (3+ files) using **strict** accuracy by default
+- Toggle **Lenient** to include partial/substring matches (closer to older runs)
+- Reliability is completed extractions / attempted (errors count as misses, not skipped)
 - Export results for further analysis
 
 ## Architecture
@@ -156,7 +159,7 @@ src/
 │   │   ├── prompt-studio-sheet.tsx  # Main sheet component
 │   │   ├── panels/                  # File selection, test results
 │   │   └── components/              # Version history card
-│   ├── extraction-table.tsx
+│   ├── tanstack-extraction-table.tsx
 │   └── extraction-modal.tsx
 ├── features/             # Feature modules
 │   └── prompt-library/              # Cross-template prompt management
@@ -207,10 +210,13 @@ Templates are stored in localStorage and can be configured with:
 ## Performance Metrics
 
 The application calculates comprehensive metrics:
-- **Accuracy**: Overall correctness of extractions
-- **Precision**: Relevance of extracted information
-- **Recall**: Completeness of extraction
-- **F1 Score**: Harmonic mean of precision and recall
+- **Strict accuracy** (default): Partial/substring matches do not count. Same date in a different format still counts
+- **Lenient accuracy**: Includes partial matches (use this to compare with historical runs)
+- **Reliability**: Completed extractions / attempted. Failed jobs count against the model
+- **Precision / Recall / F1**: Per field, then macro-averaged for ranking
+- **Holdout**: With 3+ selected files, ranking uses the last 20% of the list. Train rows stay visible
+
+Percentages will look lower than older runs. That is honest scoring, not worse extraction.
 
 ## Contributing
 
