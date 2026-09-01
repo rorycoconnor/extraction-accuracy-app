@@ -91,8 +91,8 @@ export const AGENT_ALPHA_CONFIG = {
   TARGET_ACCURACY: 1.0,
 
   // Model to use for prompt generation
-  // Claude 4.5 Opus via AWS - highest quality for prompt engineering
-  PROMPT_GEN_MODEL: 'aws__claude_4_5_opus',
+  // Claude Opus 5 via AWS - current highest-quality Opus for prompt engineering
+  PROMPT_GEN_MODEL: 'aws__claude_opus_5',
 
   // API timeout in milliseconds
   API_TIMEOUT_MS: 30000,
@@ -136,10 +136,11 @@ export const AGENT_ALPHA_CONFIG = {
 // Available models for prompt generation
 // These are high-capability models suitable for writing extraction prompts
 export const PROMPT_GEN_MODELS = [
+  { id: 'aws__claude_opus_5', name: 'Claude Opus 5' },
+  { id: 'aws__claude_sonnet_5', name: 'Claude Sonnet 5' },
+  { id: 'aws__claude_4_5_sonnet', name: 'Claude 4.5 Sonnet' },
   { id: 'google__gemini_2_5_pro', name: 'Gemini 2.5 Pro' },
   { id: 'google__gemini_2_5_flash', name: 'Gemini 2.5 Flash' },
-  { id: 'aws__claude_4_5_opus', name: 'Claude 4.5 Opus' },
-  { id: 'aws__claude_4_5_sonnet', name: 'Claude 4.5 Sonnet' },
 ] as const;
 
 // User-configurable runtime options
@@ -165,7 +166,7 @@ export function getDefaultRuntimeConfig(): AgentAlphaRuntimeConfig {
     maxDocs: AGENT_ALPHA_CONFIG.MAX_DOCS,
     maxIterations: AGENT_ALPHA_CONFIG.MAX_ITERATIONS,
     testModel: AGENT_ALPHA_CONFIG.DEFAULT_TEST_MODEL,
-    promptGenerationModel: 'google__gemini_2_5_pro', // Default to Gemini 2.5 Pro
+    promptGenerationModel: 'aws__claude_opus_5', // Default to current Claude Opus 5
     systemPromptOverride: undefined,
     customInstructions: undefined,
     holdoutRatio: AGENT_ALPHA_CONFIG.HOLDOUT_RATIO,

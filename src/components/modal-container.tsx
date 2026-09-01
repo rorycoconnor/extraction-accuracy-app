@@ -16,7 +16,7 @@ import PromptStudioSheet from '@/components/prompt-studio-sheet';
 import InlineGroundTruthEditor from '@/components/inline-ground-truth-editor';
 import ModelRankingSummary from '@/components/model-ranking-summary';
 import OptimizerSummaryModal from '@/components/optimizer-summary-modal';
-import type { AccuracyData, AccuracyField, BoxTemplate, BoxFile } from '@/lib/types';
+import type { AccuracyData, AccuracyField, BoxTemplate, BoxFile, FieldReference } from '@/lib/types';
 import type { OptimizerDocumentTheory, OptimizerFieldSummary } from '@/lib/optimizer-types';
 
 interface ModalContainerProps {
@@ -42,6 +42,7 @@ interface ModalContainerProps {
     file: BoxFile;
     field: AccuracyField;
     currentValue: string;
+    fieldReferences?: Record<string, FieldReference>;
   } | null;
   selectedTemplate: BoxTemplate | null;
   onCloseInlineEditor: () => void;
@@ -140,6 +141,7 @@ const ModalContainer: React.FC<ModalContainerProps> = ({
               field={selectedCellForEdit.field}
               currentValue={selectedCellForEdit.currentValue}
               onSave={onSaveInlineGroundTruth}
+              fieldReferences={selectedCellForEdit.fieldReferences}
             />
           );
         }

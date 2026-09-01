@@ -69,7 +69,7 @@ describe('TanStackExtractionTable', () => {
 
   const createMockAccuracyData = (overrides?: Partial<AccuracyData>): AccuracyData => ({
     templateKey: 'test-template',
-    baseModel: 'google__gemini_2_0_flash_001',
+    baseModel: 'google__gemini_3_5_flash',
     fields: [
       {
         name: 'Company Name',
@@ -93,13 +93,13 @@ describe('TanStackExtractionTable', () => {
         fileType: 'pdf',
         fields: {
           company_name: {
-            'google__gemini_2_0_flash_001': 'Acme Corp',
-            'anthropic__claude_3_5_sonnet': 'Acme Corporation',
+            'google__gemini_3_5_flash': 'Acme Corp',
+            'aws__claude_4_5_sonnet': 'Acme Corporation',
             'Ground Truth': 'Acme Corp'
           },
           contract_date: {
-            'google__gemini_2_0_flash_001': '2025-01-01',
-            'anthropic__claude_3_5_sonnet': '2025-01-01',
+            'google__gemini_3_5_flash': '2025-01-01',
+            'aws__claude_4_5_sonnet': '2025-01-01',
             'Ground Truth': '2025-01-01'
           }
         }
@@ -110,13 +110,13 @@ describe('TanStackExtractionTable', () => {
         fileType: 'pdf',
         fields: {
           company_name: {
-            'google__gemini_2_0_flash_001': 'Beta Inc',
-            'anthropic__claude_3_5_sonnet': 'Beta Inc',
+            'google__gemini_3_5_flash': 'Beta Inc',
+            'aws__claude_4_5_sonnet': 'Beta Inc',
             'Ground Truth': 'Beta Inc'
           },
           contract_date: {
-            'google__gemini_2_0_flash_001': '2025-02-01',
-            'anthropic__claude_3_5_sonnet': '2025-02-15',
+            'google__gemini_3_5_flash': '2025-02-01',
+            'aws__claude_4_5_sonnet': '2025-02-15',
             'Ground Truth': '2025-02-01'
           }
         }
@@ -124,12 +124,12 @@ describe('TanStackExtractionTable', () => {
     ],
     averages: {
       company_name: {
-        'google__gemini_2_0_flash_001': { accuracy: 100, precision: 100, recall: 100, f1: 100 },
-        'anthropic__claude_3_5_sonnet': { accuracy: 50, precision: 50, recall: 50, f1: 50 }
+        'google__gemini_3_5_flash': { accuracy: 100, precision: 100, recall: 100, f1: 100 },
+        'aws__claude_4_5_sonnet': { accuracy: 50, precision: 50, recall: 50, f1: 50 }
       },
       contract_date: {
-        'google__gemini_2_0_flash_001': { accuracy: 100, precision: 100, recall: 100, f1: 100 },
-        'anthropic__claude_3_5_sonnet': { accuracy: 50, precision: 50, recall: 50, f1: 50 }
+        'google__gemini_3_5_flash': { accuracy: 100, precision: 100, recall: 100, f1: 100 },
+        'aws__claude_4_5_sonnet': { accuracy: 50, precision: 50, recall: 50, f1: 50 }
       }
     },
     ...overrides
@@ -138,8 +138,8 @@ describe('TanStackExtractionTable', () => {
   const defaultProps = {
     data: createMockAccuracyData(),
     shownColumns: {
-      'google__gemini_2_0_flash_001': true,
-      'anthropic__claude_3_5_sonnet': true
+      'google__gemini_3_5_flash': true,
+      'aws__claude_4_5_sonnet': true
     },
     showMetrics: true,
     onOpenPromptStudio: mockOnOpenPromptStudio,
@@ -206,8 +206,8 @@ describe('TanStackExtractionTable', () => {
       const props = {
         ...defaultProps,
         shownColumns: {
-          'google__gemini_2_0_flash_001': true,
-          'anthropic__claude_3_5_sonnet': false // Hidden
+          'google__gemini_3_5_flash': true,
+          'aws__claude_4_5_sonnet': false // Hidden
         }
       }
       
@@ -222,8 +222,8 @@ describe('TanStackExtractionTable', () => {
       const props = {
         ...defaultProps,
         shownColumns: {
-          'google__gemini_2_0_flash_001': false,
-          'anthropic__claude_3_5_sonnet': false
+          'google__gemini_3_5_flash': false,
+          'aws__claude_4_5_sonnet': false
         }
       }
       
@@ -402,7 +402,7 @@ describe('TanStackExtractionTable', () => {
             fileType: 'pdf',
             fields: {
               company_name: {
-                'google__gemini_2_0_flash_001': 'Test Corp',
+                'google__gemini_3_5_flash': 'Test Corp',
                 'Ground Truth': 'Test Corp'
               }
             }
@@ -430,7 +430,7 @@ describe('TanStackExtractionTable', () => {
             fileType: 'pdf',
             fields: {
               company_name: {
-                'google__gemini_2_0_flash_001': 'Company & Co. <Special> "Chars"',
+                'google__gemini_3_5_flash': 'Company & Co. <Special> "Chars"',
                 'Ground Truth': 'Company & Co. <Special> "Chars"'
               }
             }

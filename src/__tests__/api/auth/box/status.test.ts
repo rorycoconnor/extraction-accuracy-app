@@ -44,15 +44,17 @@ describe('Box OAuth Status API Route', () => {
         success: true,
         status: {
           isConnected: true,
-          tokens: {
-            accessToken: 'access_token_123',
-            refreshToken: 'refresh_token_456',
-            expiresAt: expect.any(Number),
-            tokenType: 'Bearer'
-          },
+          expiresAt: expect.any(Number),
+          tokenType: 'Bearer',
           lastConnected: expect.any(String)
         }
       })
+
+      // Tokens are httpOnly-cookie only and must never reach the client.
+      const serialized = JSON.stringify(responseData)
+      expect(serialized).not.toContain('access_token_123')
+      expect(serialized).not.toContain('refresh_token_456')
+      expect(responseData.status).not.toHaveProperty('tokens')
     })
 
     test('should return disconnected status when user is not authenticated', async () => {
@@ -127,7 +129,7 @@ describe('Box OAuth Status API Route', () => {
     test('should handle malformed OAuth status response', async () => {
       const { getOAuthStatus } = await import('@/services/oauth')
       
-      // Mock malformed response (null) - the route passes it through
+      // Mock malformed response (null) - the route degrades to disconnected
       vi.mocked(getOAuthStatus).mockResolvedValue(null as any)
       
       const request = createMockRequest()
@@ -137,8 +139,7 @@ describe('Box OAuth Status API Route', () => {
       
       const responseData = await response.json()
       expect(responseData.success).toBe(true)
-      // When null is returned, status is null
-      expect(responseData.status).toBeNull()
+      expect(responseData.status.isConnected).toBe(false)
     })
   })
 

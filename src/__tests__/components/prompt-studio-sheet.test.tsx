@@ -358,11 +358,19 @@ describe('PromptStudioSheet Component Tests', () => {
 
     test('should have focusable buttons', () => {
       render(<PromptStudioSheet {...defaultProps} />)
-      
+
       const buttons = screen.getAllByRole('button')
-      buttons.forEach(button => {
-        expect(button).not.toHaveAttribute('disabled')
-      })
+      expect(buttons.length).toBeGreaterThan(0)
+
+      // "Generate Prompt" stays disabled until improvement instructions are given,
+      // and "Save as New Version" until the prompt is edited. Every other control
+      // must be reachable on first render.
+      const intentionallyDisabled = /generate prompt|save as new version/i
+      buttons
+        .filter(button => !intentionallyDisabled.test(button.textContent ?? ''))
+        .forEach(button => {
+          expect(button).not.toHaveAttribute('disabled')
+        })
     })
   })
 })

@@ -42,7 +42,7 @@ import {
 } from 'lucide-react';
 import { formatModelName } from '@/lib/utils';
 import type { AccuracyData } from '@/lib/types';
-import { AVAILABLE_MODELS, isPremiumModel, isMultiModalModel } from '@/lib/main-page-constants';
+import { AVAILABLE_MODELS, isPremiumModel, isMultiModalModel, sortModelIds, sortKnownModelIds } from '@/lib/main-page-constants';
 import { ModelIcon, ModelPill } from '@/components/model-pill';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -103,17 +103,17 @@ const ControlBar: React.FC<ControlBarProps> = ({
   const availableModels = React.useMemo(() => {
     // If no accuracy data, return all available models from constants
     if (!accuracyData?.results?.[0]?.fields) {
-      return AVAILABLE_MODELS.sort();
+      return sortModelIds(AVAILABLE_MODELS);
     }
     
     const firstResultField = accuracyData.results[0].fields[accuracyData.fields[0]?.key];
     if (!firstResultField) {
-      return AVAILABLE_MODELS.sort();
+      return sortModelIds(AVAILABLE_MODELS);
     }
     
-    return Object.keys(firstResultField)
-      .filter(key => key !== 'Ground Truth')
-      .sort();
+    return sortKnownModelIds(
+      Object.keys(firstResultField).filter(key => key !== 'Ground Truth')
+    );
   }, [accuracyData]);
 
   // Filter state for pills

@@ -75,15 +75,27 @@ export type AgentAlphaFieldResult = {
   userOriginalPrompt: string | null; // The actual user prompt before agent ran (null if none/generic)
   converged: boolean; // True if reached 100% accuracy
   sampledDocIds: string[]; // Documents used for testing
-  improved: boolean; // True if finalAccuracy >= initialAccuracy (prompt should be applied)
+  improved: boolean; // True if the final prompt beat the baseline on the eval set (prompt should be applied)
   hasGroundTruth?: boolean; // True if field had ground truth data to measure against
+  // Accuracy of the original/user prompt measured on the SAME docs as finalAccuracy,
+  // giving a fair head-to-head baseline (falls back to initialAccuracy when not re-measured).
+  baselineAccuracy?: number;
+  // Which document set finalAccuracy was measured on for an honest, consistent number.
+  finalAccuracyEvalSet?: 'holdout' | 'train' | 'all' | 'none';
   // Experiment metadata for auditability
   experimentMetadata?: PromptExperimentMetadata;
+};
+
+export type AgentAlphaFailedField = {
+  fieldKey: string;
+  fieldName: string;
+  error: string;
 };
 
 export type AgentAlphaPendingResults = {
   runId: string;
   results: AgentAlphaFieldResult[];
+  failedFields?: AgentAlphaFailedField[]; // Fields that errored; absent/empty means none
   timestamp: string;
   testModel: string; // Model used for testing extractions
   sampledDocIds: string[]; // Documents used for testing

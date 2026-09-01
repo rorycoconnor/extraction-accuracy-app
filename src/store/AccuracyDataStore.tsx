@@ -12,6 +12,7 @@ import {
 } from '@/lib/optimizer-types';
 import type { AgentAlphaState, AgentAlphaPendingResults } from '@/lib/agent-alpha-types';
 import { saveAccuracyData, getAccuracyData } from '@/lib/mock-data';
+import { sanitizeShownColumns } from '@/lib/main-page-constants';
 
 // Enhanced types for our unified store
 export interface ComparisonSession {
@@ -146,7 +147,7 @@ function createInitialUnifiedData(): UnifiedAccuracyData {
     averages: {},
     sessions: [defaultSession],
     currentSessionId: defaultSessionId,
-    shownColumns: { 'Ground Truth': true },
+    shownColumns: sanitizeShownColumns(),
     lastModified: timestamp,
   };
 }
@@ -185,8 +186,9 @@ function migrateToUnifiedData(legacyData: AccuracyData): UnifiedAccuracyData {
   }
 
   // 🔧 FIX: Preserve existing shownColumns if the data already has them
-  // This prevents resetting selected models when saving prompts
-  const preservedShownColumns = (legacyData as any).shownColumns || { 'Ground Truth': true };
+  // This prevents resetting selected models when saving prompts. Sanitizing drops
+  // any models retired since the data was saved.
+  const preservedShownColumns = sanitizeShownColumns((legacyData as any).shownColumns);
 
   return {
     ...legacyData,
@@ -700,8 +702,14 @@ export const AccuracyDataProvider: React.FC<{ children: React.ReactNode }> = ({ 
           const unifiedData = 'sessions' in savedData 
             ? savedData as UnifiedAccuracyData
             : migrateToUnifiedData(savedData);
-            
-          dispatch({ type: 'LOAD_DATA_SUCCESS', payload: unifiedData });
+
+          dispatch({
+            type: 'LOAD_DATA_SUCCESS',
+            payload: {
+              ...unifiedData,
+              shownColumns: sanitizeShownColumns(unifiedData.shownColumns),
+            },
+          });
         } else {
           // No saved data, create initial structure
           const initialData = createInitialUnifiedData();

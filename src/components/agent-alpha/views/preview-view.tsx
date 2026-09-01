@@ -2,10 +2,37 @@
 
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Info } from 'lucide-react';
+import { Info, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { calculateAvgImprovement } from '../utils';
 import type { PreviewViewProps } from '../types';
+
+/**
+ * Where a field's final accuracy was measured, which decides how much to trust it.
+ * 'holdout' is a clean read on documents the prompt never saw. 'train' means it was
+ * scored on the same documents it was tuned on, so it reads high. 'none' means the
+ * held-out validation errored and the number fell back to the tuning-set figure.
+ * Results produced before this was tracked leave it undefined, so those stay silent
+ * rather than being labelled unverified.
+ */
+const EVAL_SET_BADGES = {
+  holdout: {
+    label: 'Verified on holdout docs',
+    className: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-transparent',
+  },
+  train: {
+    label: 'Scored on tuning docs',
+    className: 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border-transparent',
+  },
+  all: {
+    label: 'Scored on all docs',
+    className: 'bg-gray-100 dark:bg-muted text-gray-800 dark:text-foreground border-transparent',
+  },
+  none: {
+    label: 'Unverified accuracy',
+    className: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300 border-transparent',
+  },
+} as const;
 
 export const PreviewView: React.FC<PreviewViewProps> = ({ results }) => {
   const holdoutCount = results.holdoutDocIds?.length ?? 0;
@@ -21,8 +48,55 @@ export const PreviewView: React.FC<PreviewViewProps> = ({ results }) => {
   const supervisedResults = results.results.filter(r => r.hasGroundTruth !== false);
   const unsupervisedResults = results.results.filter(r => r.hasGroundTruth === false);
 
+  const failedFields = results.failedFields ?? [];
+
+  // Ground-truth-free fields never get a held-out score, so excluding them keeps
+  // this to fields whose validation was supposed to happen and didn't.
+  const unverifiedFields = results.results.filter(
+    r => r.hasGroundTruth !== false && r.finalAccuracyEvalSet === 'none'
+  );
+
   return (
     <div className="space-y-6">
+      {/* Fields whose held-out validation errored, leaving an optimistic number */}
+      {unverifiedFields.length > 0 && (
+        <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+              {unverifiedFields.length} field{unverifiedFields.length !== 1 ? 's' : ''} could not be validated on held-out documents
+            </p>
+            <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+              Validation failed for {unverifiedFields.map(f => f.fieldName).join(', ')}. The accuracy shown
+              was measured on the same documents used to tune the prompt, so it is likely optimistic.
+              Treat these figures as unconfirmed.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Fields that errored during the run and produced no prompt */}
+      {failedFields.length > 0 && (
+        <div className="rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30 p-4 flex items-start gap-3">
+          <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-medium text-red-800 dark:text-red-300">
+              {failedFields.length} field{failedFields.length !== 1 ? 's' : ''} failed and {failedFields.length !== 1 ? 'were' : 'was'} not optimized
+            </p>
+            <ul className="text-sm text-red-700 dark:text-red-400 mt-1 space-y-1">
+              {failedFields.map(field => (
+                <li key={field.fieldKey}>
+                  <span className="font-medium">{field.fieldName}</span>: {field.error}
+                </li>
+              ))}
+            </ul>
+            <p className="text-sm text-red-700 dark:text-red-400 mt-2">
+              These fields keep their existing prompts. The results below cover the remaining fields only.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Insufficient Holdout Warning */}
       {hasNoHoldout && trainCount < 3 && (
         <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 flex items-start gap-3">
@@ -92,6 +166,9 @@ export const PreviewView: React.FC<PreviewViewProps> = ({ results }) => {
             {supervisedResults.map((result) => {
               // Check if prompt improved
               const didImprove = result.improved ?? (result.finalAccuracy >= result.initialAccuracy);
+              const evalBadge = result.finalAccuracyEvalSet
+                ? EVAL_SET_BADGES[result.finalAccuracyEvalSet]
+                : null;
               
               return (
               <div key={result.fieldKey} className={cn(
@@ -118,6 +195,9 @@ export const PreviewView: React.FC<PreviewViewProps> = ({ results }) => {
                     <Badge className="bg-gray-100 dark:bg-muted text-gray-800 dark:text-foreground border-transparent">
                       {result.iterationCount} iteration{result.iterationCount !== 1 ? 's' : ''}
                     </Badge>
+                    {evalBadge && (
+                      <Badge className={evalBadge.className}>{evalBadge.label}</Badge>
+                    )}
                   </div>
                 </div>
 

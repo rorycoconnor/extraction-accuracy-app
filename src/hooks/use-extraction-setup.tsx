@@ -12,9 +12,9 @@ import {
   UI_LABELS, 
   TOAST_MESSAGES, 
   AVAILABLE_MODELS, 
-  ALL_MODELS 
+  ALL_MODELS,
+  sanitizeShownColumns
 } from '@/lib/main-page-constants';
-import { generateInitialPromptForField } from '@/lib/main-page-utils';
 import { 
   associateFilesToTemplate,
   getAccuracyData
@@ -171,19 +171,8 @@ export const useExtractionSetup = ({
       ),
     };
     
-    // Show Ground Truth, Gemini 2.0 Flash, and Gemini 2.0 Flash (no prompt) by default when creating a new comparison
-    const newShownColumns: Record<string, boolean> = {};
-    ALL_MODELS.forEach(modelName => {
-      if (modelName === UI_LABELS.GROUND_TRUTH || 
-          modelName === 'google__gemini_2_0_flash_001' || 
-          modelName === 'google__gemini_2_0_flash_001_no_prompt') {
-        newShownColumns[modelName] = true;
-      } else {
-        newShownColumns[modelName] = false;
-      }
-    });
-    
-    setShownColumns(newShownColumns);
+    // Show Ground Truth plus the default model pair when creating a new comparison
+    setShownColumns(sanitizeShownColumns());
     setAccuracyData(newAccuracyData);
     
     logger.info('Accuracy data initialized with prompt version preservation');

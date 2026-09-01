@@ -228,7 +228,7 @@ function mapToBoxAIFieldType(fieldType: AccuracyField['type'], hasOptions: boole
  *     'doc3': '2024-03-10'
  *   },
  *   templateKey: 'lease_agreement',
- *   testModel: 'azure__openai__gpt_4_1_mini',
+ *   testModel: 'google__gemini_2_5_flash',
  *   iterationNumber: 1,
  *   maxIterations: 5,
  * });

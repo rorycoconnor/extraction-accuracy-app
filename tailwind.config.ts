@@ -88,10 +88,21 @@ export default {
             height: '0',
           },
         },
+        'bounding-box-pulse': {
+          '0%, 100%': {
+            opacity: '1',
+            boxShadow: '0 0 12px 4px rgba(234, 179, 8, 0.3)',
+          },
+          '50%': {
+            opacity: '0.6',
+            boxShadow: '0 0 20px 8px rgba(234, 179, 8, 0.5)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'bounding-box-pulse': 'bounding-box-pulse 1.5s ease-in-out infinite',
       },
     },
   },

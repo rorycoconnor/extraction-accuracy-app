@@ -24,6 +24,7 @@ import { MousePointer2, Play, RotateCcw, Clock } from 'lucide-react';
 type ComparisonResult = LegacyComparisonResult | EngineComparisonResult;
 import { ModelPill } from '@/components/model-pill';
 import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
+import { UI_LABELS, isKnownModel } from '@/lib/main-page-constants';
 import { ImageThumbnailHover } from '@/components/image-thumbnail-hover';
 import { logger } from '@/lib/logger';
 import { getCompareConfigForField } from '@/lib/compare-type-storage';
@@ -584,9 +585,11 @@ export default function TanStackExtractionTable({
     return groundTruthValues;
   }, [results, fields]);
 
-  // Get visible columns (models) based on shownColumns prop
+  // Get visible columns (models) based on shownColumns prop, dropping retired models
   const visibleColumns = React.useMemo(() => {
-    return Object.keys(shownColumns).filter(col => shownColumns[col] !== false);
+    return Object.keys(shownColumns).filter(
+      col => shownColumns[col] !== false && (col === UI_LABELS.GROUND_TRUTH || isKnownModel(col))
+    );
   }, [shownColumns]);
 
   // Transform data for TanStack Table

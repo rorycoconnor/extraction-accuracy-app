@@ -8,14 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Terminal, Edit3, FileText, MapPin } from 'lucide-react';
-import type { BoxFile, BoxTemplate, AccuracyField, ContextMatch } from '@/lib/types';
+import { Loader2, Terminal, Edit3, FileText, MapPin, Navigation, Eye } from 'lucide-react';
+import type { BoxFile, BoxTemplate, AccuracyField, ContextMatch, FieldReference, BoundingBox } from '@/lib/types';
 import { DatePicker } from './ui/date-picker';
-import { getBoxFileEmbedLinkAction } from '@/lib/actions/box';
+import { getBoxAccessTokenAction } from '@/lib/actions/box';
 import { getFieldContext } from '@/lib/actions/context';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { NOT_PRESENT_VALUE } from '@/lib/utils';
 import { logger } from '@/lib/logger';
+import { Badge } from '@/components/ui/badge';
+import BoxContentPreview, { type BoxContentPreviewHandle } from '@/components/box-content-preview';
 
 type InlineGroundTruthEditorProps = {
   isOpen: boolean;
@@ -25,6 +27,7 @@ type InlineGroundTruthEditorProps = {
   field: AccuracyField;
   currentValue: string;
   onSave: (fileId: string, fieldKey: string, newValue: string) => Promise<void>;
+  fieldReferences?: Record<string, FieldReference>;
 };
 
 export default function InlineGroundTruthEditor({ 
@@ -34,21 +37,20 @@ export default function InlineGroundTruthEditor({
   template, 
   field, 
   currentValue, 
-  onSave 
+  onSave,
+  fieldReferences
 }: InlineGroundTruthEditorProps) {
   const { toast } = useToast();
-  const [embedUrl, setEmbedUrl] = React.useState<string | null>(null);
-  const [isEmbedLoading, setIsEmbedLoading] = React.useState(true);
-  const [embedError, setEmbedError] = React.useState<string | null>(null);
+  const [accessToken, setAccessToken] = React.useState<string | null>(null);
+  const [isTokenLoading, setIsTokenLoading] = React.useState(true);
+  const [tokenError, setTokenError] = React.useState<string | null>(null);
   const [context, setContext] = React.useState<ContextMatch | null>(null);
   const [isContextLoading, setIsContextLoading] = React.useState(false);
   const [contextError, setContextError] = React.useState<string | null>(null);
+  const [activeCitationIndex, setActiveCitationIndex] = React.useState<number | null>(null);
   
-  // Track previous isOpen state to detect open/close transitions
   const prevIsOpenRef = React.useRef(isOpen);
-  
-  // Track focused element to restore after iframe loads (focus theft prevention)
-  const focusedElementRef = React.useRef<HTMLElement | null>(null);
+  const previewRef = React.useRef<BoxContentPreviewHandle>(null);
   const formContainerRef = React.useRef<HTMLDivElement>(null);
 
   const { control, handleSubmit, formState: { isSubmitting }, reset } = useForm({
@@ -67,82 +69,99 @@ export default function InlineGroundTruthEditor({
     }
   }, [isOpen, field.key, currentValue, reset]);
 
-  // Load embed URL
   React.useEffect(() => {
-    if (isOpen && file.id) {
-      setIsEmbedLoading(true);
-      setEmbedError(null);
-      setEmbedUrl(null);
-
-      getBoxFileEmbedLinkAction(file.id)
-        .then(url => {
-          // Capture currently focused element before iframe renders
-          if (document.activeElement instanceof HTMLElement && 
-              formContainerRef.current?.contains(document.activeElement)) {
-            focusedElementRef.current = document.activeElement;
-          }
-          setEmbedUrl(url);
-        })
+    if (isOpen) {
+      // Don't show loading spinner if we already have a token — avoids
+      // unmounting the preview when the dialog reopens for a different field.
+      if (!accessToken) {
+        setIsTokenLoading(true);
+      }
+      setTokenError(null);
+      getBoxAccessTokenAction()
+        .then(token => setAccessToken(token))
         .catch(err => {
-          logger.error('Failed to get embed link', err);
-          setEmbedError(err instanceof Error ? err.message : "Could not load file preview.");
+          logger.error('Failed to get access token', err);
+          setTokenError(err instanceof Error ? err.message : 'Could not load file preview.');
         })
-        .finally(() => {
-          setIsEmbedLoading(false);
-        });
+        .finally(() => setIsTokenLoading(false));
     }
-  }, [isOpen, file.id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
-  // Handle iframe load to restore focus after Box embed steals it
-  const handleIframeLoad = React.useCallback(() => {
-    // Box's embed viewer steals focus multiple times as it initializes.
-    // We monitor and restore focus for a short period after load.
-    const restoreFocus = () => {
-      if (focusedElementRef.current && document.body.contains(focusedElementRef.current)) {
-        // Check if focus has moved to something outside our form (like the iframe)
-        const activeElement = document.activeElement;
-        const isInForm = formContainerRef.current?.contains(activeElement);
-        const isInIframe = activeElement?.tagName === 'IFRAME';
+  // Flatten all citations from all models into a single list for display
+  const allCitations = React.useMemo(() => {
+    if (!fieldReferences) return [];
+    
+    const citations: Array<{
+      modelName: string;
+      content: string;
+      pageIndex: number | null;
+      boundingBox?: { top_left: { x: number; y: number }; bottom_right: { x: number; y: number } };
+      boundingBoxes: BoundingBox[];
+      citationIndex: number;
+    }> = [];
+    
+    for (const [modelName, fieldRef] of Object.entries(fieldReferences)) {
+      fieldRef.citations.forEach((citation, idx) => {
+        const boxes = citation.bounding_boxes ?? [];
+        const firstBB = boxes[0];
+        // Page number comes from the citation level (Box API puts it there),
+        // falling back to the bounding box page_index if present.
+        const page = citation.page ?? firstBB?.page_index ?? null;
         
-        if (!isInForm || isInIframe) {
-          focusedElementRef.current.focus();
-        }
-      }
-    };
-
-    // Restore focus multiple times to combat Box's repeated focus theft
-    // Box viewer initializes in phases and may steal focus multiple times
-    requestAnimationFrame(restoreFocus);
-    setTimeout(restoreFocus, 100);
-    setTimeout(restoreFocus, 300);
-    setTimeout(restoreFocus, 500);
-  }, []);
-
-  // Track focus changes within the form to know what to restore
-  const handleFormFocus = React.useCallback((e: React.FocusEvent) => {
-    if (e.target instanceof HTMLElement) {
-      focusedElementRef.current = e.target;
+        citations.push({
+          modelName,
+          content: citation.content,
+          pageIndex: typeof page === 'number' ? page : null,
+          boundingBox: firstBB ? { top_left: firstBB.top_left, bottom_right: firstBB.bottom_right } : undefined,
+          boundingBoxes: boxes,
+          citationIndex: idx,
+        });
+      });
     }
-  }, []);
+    return citations;
+  }, [fieldReferences, field.key]);
 
-  // Detect when focus leaves the form to the iframe and restore it
-  const handleFormBlur = React.useCallback((e: React.FocusEvent) => {
-    // Use setTimeout to check where focus went after the blur completes
-    setTimeout(() => {
-      const activeElement = document.activeElement;
-      const isInIframe = activeElement?.tagName === 'IFRAME';
-      const isInForm = formContainerRef.current?.contains(activeElement);
-      
-      // If focus went to the iframe and we had a focused form element, restore focus
-      if ((isInIframe || !isInForm) && focusedElementRef.current && document.body.contains(focusedElementRef.current)) {
-        // Only restore if the user was actively editing (input, textarea, or select)
-        const tagName = focusedElementRef.current.tagName.toLowerCase();
-        if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') {
-          focusedElementRef.current.focus();
-        }
+  // Highlight a citation in the document. Prefers exact coordinate-based
+  // bounding box overlays (from Box AI reference data) and falls back to
+  // text search when a citation has no bounding boxes.
+  const showCitation = React.useCallback((citation: typeof allCitations[number], citationIdx: number) => {
+    if (citation.boundingBoxes.length > 0) {
+      previewRef.current?.highlightBoundingBoxes(citation.boundingBoxes);
+    } else if (citation.pageIndex !== null) {
+      const pageNumber = citation.pageIndex + 1;
+      previewRef.current?.setPage(pageNumber);
+      if (citation.content) {
+        previewRef.current?.highlightText(citation.content, pageNumber);
       }
-    }, 0);
-  }, []);
+    }
+    setActiveCitationIndex(citationIdx);
+    logger.debug('Showing citation in preview', {
+      citationIdx,
+      pageIndex: citation.pageIndex,
+      boxCount: citation.boundingBoxes.length,
+    });
+  }, [allCitations]);
+
+  // Auto-navigate to first citation when preview is ready
+  const [previewReady, setPreviewReady] = React.useState(false);
+  const handlePreviewLoad = React.useCallback(() => setPreviewReady(true), []);
+
+  React.useEffect(() => {
+    if (previewReady && allCitations.length > 0 && activeCitationIndex === null) {
+      const first = allCitations[0];
+      if (first.boundingBoxes.length > 0 || first.pageIndex !== null) {
+        showCitation(first, 0);
+      }
+    }
+  }, [previewReady, allCitations, activeCitationIndex, showCitation]);
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      setPreviewReady(false);
+      setActiveCitationIndex(null);
+    }
+  }, [isOpen]);
 
   // Fetch context information when the editor opens with a current value
   React.useEffect(() => {
@@ -241,36 +260,35 @@ export default function InlineGroundTruthEditor({
   };
 
   const renderPreview = () => {
-    return (
-      <>
-        {isEmbedLoading && (
-          <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-background z-10">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-        )}
-        
-        {embedError && !isEmbedLoading && (
-          <div className="flex h-full w-full items-center justify-center p-4">
-            <Alert variant="destructive">
-              <Terminal className="h-4 w-4" />
-              <AlertTitle>Preview Error</AlertTitle>
-              <AlertDescription>{embedError}</AlertDescription>
-            </Alert>
-          </div>
-        )}
-        
-        {embedUrl && (
-          <iframe
-            src={embedUrl}
-            className={`h-full w-full ${isEmbedLoading ? 'invisible' : 'visible'}`}
-            title="PDF Preview"
-            tabIndex={-1}
-            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-            onLoad={handleIframeLoad}
-          />
-        )}
-      </>
-    );
+    if (isTokenLoading) {
+      return (
+        <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-background z-10">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
+    }
+    if (tokenError) {
+      return (
+        <div className="flex h-full w-full items-center justify-center p-4">
+          <Alert variant="destructive">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Preview Error</AlertTitle>
+            <AlertDescription>{tokenError}</AlertDescription>
+          </Alert>
+        </div>
+      );
+    }
+    if (accessToken) {
+      return (
+        <BoxContentPreview
+          ref={previewRef}
+          fileId={file.id}
+          accessToken={accessToken}
+          onLoad={handlePreviewLoad}
+        />
+      );
+    }
+    return null;
   };
 
   const templateField = template.fields.find(tf => tf.key === field.key);
@@ -290,7 +308,7 @@ export default function InlineGroundTruthEditor({
           </div>
           
           {/* Right Side: Field Editor */}
-          <div className="flex-[2] flex flex-col border-l" ref={formContainerRef} onFocusCapture={handleFormFocus} onBlurCapture={handleFormBlur}>
+          <div className="flex-[2] flex flex-col border-l" ref={formContainerRef}>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
               <DialogHeader className="p-6 border-b">
                 <DialogTitle className="font-headline text-xl flex items-center gap-2">
@@ -304,12 +322,27 @@ export default function InlineGroundTruthEditor({
                 </DialogDescription>
               </DialogHeader>
               
-              <div className="flex-grow p-6">
+              <div className="flex-grow overflow-y-auto p-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor={field.key}>
-                      {field.name} ({templateField.type})
-                    </Label>
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor={field.key}>
+                        {field.name} ({templateField.type})
+                      </Label>
+                      {allCitations.length > 0 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 gap-1.5 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                          onClick={() => showCitation(allCitations[0], 0)}
+                          title="Highlight where Box AI found this in the document"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          Show in document
+                        </Button>
+                      )}
+                    </div>
                     <Controller
                       name={field.key}
                       control={control}
@@ -317,11 +350,69 @@ export default function InlineGroundTruthEditor({
                     />
                   </div>
                   
-                  {/* Show where AI found the information */}
+                  {/* Box AI Citations with page navigation (when available) */}
+                  {allCitations.length > 0 && (
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground flex items-center gap-2">
+                        <Navigation className="h-4 w-4" />
+                        Citations from Box AI
+                        <Badge variant="secondary" className="text-xs">{allCitations.length}</Badge>
+                      </Label>
+                      <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                        {allCitations.map((citation, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              if (citation.boundingBoxes.length > 0 || citation.pageIndex !== null) {
+                                showCitation(citation, idx);
+                              }
+                            }}
+                            className={`w-full text-left text-sm p-2.5 rounded border transition-all ${
+                              activeCitationIndex === idx
+                                ? 'bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 ring-1 ring-blue-200 dark:ring-blue-800'
+                                : 'bg-muted/30 border-border hover:bg-blue-50/50 dark:hover:bg-blue-900/10 hover:border-blue-200 dark:hover:border-blue-800'
+                            } ${(citation.boundingBoxes.length > 0 || citation.pageIndex !== null) ? 'cursor-pointer' : 'cursor-default'}`}
+                          >
+                            <div className="flex items-start gap-2">
+                              <Eye className={`h-3.5 w-3.5 mt-0.5 flex-shrink-0 ${
+                                activeCitationIndex === idx ? 'text-blue-600 dark:text-blue-400' : 'text-muted-foreground'
+                              }`} />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1.5 flex-wrap">
+                                  {citation.pageIndex !== null && (
+                                    <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                      Page {citation.pageIndex + 1}
+                                    </Badge>
+                                  )}
+                                  {citation.boundingBoxes.length > 0 && (
+                                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-yellow-400 text-yellow-700 dark:text-yellow-400">
+                                      {citation.boundingBoxes.length > 1
+                                        ? `${citation.boundingBoxes.length} highlights`
+                                        : 'Highlight'}
+                                    </Badge>
+                                  )}
+                                  <span className="truncate text-[10px] opacity-70">{citation.modelName.replace(/__/g, ' ')}</span>
+                                </div>
+                                <p className="text-xs leading-relaxed line-clamp-3">
+                                  &ldquo;{citation.content}&rdquo;
+                                </p>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground">
+                        Click a citation to highlight where it was found in the document.
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Fallback: text-search-based context (when no Box AI citations) */}
                   <div className="space-y-2">
                     <Label className="text-sm text-muted-foreground flex items-center gap-2">
                       <MapPin className="h-4 w-4" />
-                      Where AI Found This Information:
+                      {allCitations.length > 0 ? 'Text Search Context:' : 'Where AI Found This Information:'}
                     </Label>
                     {isContextLoading ? (
                       <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 bg-muted/30 rounded border">
@@ -351,7 +442,7 @@ export default function InlineGroundTruthEditor({
                           </div>
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          💡 This shows the sentence(s) where the AI found "<strong>{context.value}</strong>" in the document.
+                          This shows the sentence(s) where the AI found &ldquo;<strong>{context.value}</strong>&rdquo; in the document.
                         </div>
                       </div>
                     ) : currentValue && currentValue.trim() !== '' && currentValue !== NOT_PRESENT_VALUE ? (

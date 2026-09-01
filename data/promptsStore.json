@@ -1,48 +1,26 @@
 {
   "noticePeriod": {
-    "activePrompt": "Search for the Renewal Notice Period, which is a TIME DURATION (e.g., '30 Days', '60 Days', '90 Days') specifying how much advance notice is required before renewal. Look in 'Term', 'Renewal', 'Subscription', 'Termination', or 'Notice' sections. Match ONLY values explicitly labeled 'Renewal Notice Period', 'Notice Period', 'advance notice', 'prior written notice', 'days notice before renewal', 'notice required'. Return ONLY the duration value (e.g., '30 Days', '60 Days'). Do NOT return renewal types like 'Autorenewal', 'Manual Renewal', 'No Renewal', or 'Evergreen' - these are NOT notice periods. Do NOT extract unlabeled values. If no explicit notice period duration is found with a clear label, return 'Not Present'.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-02-28T00:56:26.897Z-2501f372-6a84-4e83-b1c0-276ce629594e",
-        "prompt": "Search for the Renewal Notice Period, which is a TIME DURATION (e.g., '30 Days', '60 Days', '90 Days') specifying how much advance notice is required before renewal. Look in 'Term', 'Renewal', 'Subscription', 'Termination', or 'Notice' sections. Match ONLY values explicitly labeled 'Renewal Notice Period', 'Notice Period', 'advance notice', 'prior written notice', 'days notice before renewal', 'notice required'. Return ONLY the duration value (e.g., '30 Days', '60 Days'). Do NOT return renewal types like 'Autorenewal', 'Manual Renewal', 'No Renewal', or 'Evergreen' - these are NOT notice periods. Do NOT extract unlabeled values. If no explicit notice period duration is found with a clear label, return 'Not Present'.",
-        "savedAt": "2026-02-28T00:56:26.897Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 100.0% (2 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "noticePeriod",
-            "fieldName": "Renewal Notice Period",
-            "compareType": "near-exact-string"
-          },
-          "trainDocIds": [
-            "1920031763042",
-            "1918858263705",
-            "1918922486299",
-            "1918860970908",
-            "1918885002919"
-          ],
-          "holdoutDocIds": [
-            "1918854938133"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 74,
-    "lastModified": "2026-02-28T00:56:26.917Z"
+    "usageCount": 76,
+    "lastModified": "2026-05-06T16:21:44.290Z"
   },
   "terminationForConvenience": {
-    "activePrompt": "Search the \"Termination\" section for whether either party can terminate WITHOUT cause. Look for: \"terminate for convenience\", \"terminate at will\", \"terminate without cause\", \"terminate for any reason\", \"terminate at its sole discretion\", \"terminate upon X days notice\" (without requiring breach). Return \"Yes\" if either party can terminate without cause/breach. Return \"No\" if termination requires cause, breach, or default. Do NOT classify breach-based termination as \"convenience\".",
+    "activePrompt": "",
     "promptHistory": [
       {
-        "id": "agent-alpha-2026-02-28T00:56:26.897Z-12371abd-d507-4207-a1bf-c38e1425276c",
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2026-09-01T00:37:01.743Z"
+      },
+      {
+        "id": "agent-alpha-2026-05-06T16:36:07.965Z-b49cb512-b852-4630-98cc-eeaa247d23aa",
         "prompt": "Search the \"Termination\" section for whether either party can terminate WITHOUT cause. Look for: \"terminate for convenience\", \"terminate at will\", \"terminate without cause\", \"terminate for any reason\", \"terminate at its sole discretion\", \"terminate upon X days notice\" (without requiring breach). Return \"Yes\" if either party can terminate without cause/breach. Return \"No\" if termination requires cause, breach, or default. Do NOT classify breach-based termination as \"convenience\".",
-        "savedAt": "2026-02-28T00:56:26.897Z",
+        "savedAt": "2026-05-06T16:36:07.965Z",
         "source": "agent-alpha",
         "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 100.0% (1 iterations)",
+        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 100.0% (3 iterations)",
         "experimentMetadata": {
           "testModel": "google__gemini_2_5_flash",
           "compareConfig": {
@@ -51,32 +29,39 @@
             "compareType": "exact-string"
           },
           "trainDocIds": [
-            "1920031763042",
             "1918858263705",
+            "1920031763042",
             "1918922486299",
             "1918860970908",
-            "1918885002919"
+            "1918885002919",
+            "1918854938133"
           ],
           "holdoutDocIds": [
-            "1918854938133"
+            "1912827412690",
+            "1912834427833"
           ]
         }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 84,
-    "lastModified": "2026-02-28T00:56:26.920Z"
+    "usageCount": 89,
+    "lastModified": "2026-09-01T00:37:01.757Z"
   },
   "terminationForCause": {
-    "activePrompt": "Search the \"Termination\" section for cause-based termination rights. Look for: \"terminate for cause\", \"material breach\", \"default\", \"failure to perform\", \"insolvency\", \"bankruptcy\". Return \"Yes\" if the agreement allows termination for cause/breach. Return \"No\" if there is no cause-based termination provision. Note: Most contracts have cause-based termination, so \"Yes\" is common.",
+    "activePrompt": "",
     "promptHistory": [
       {
-        "id": "agent-alpha-2026-02-28T00:56:26.897Z-71b486e2-66cd-4c8e-ac8f-f110c25e183a",
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2026-09-01T00:37:08.711Z"
+      },
+      {
+        "id": "agent-alpha-2026-05-06T16:36:07.965Z-6befd7be-d06f-48e5-9b91-c0fd84e3b0d1",
         "prompt": "Search the \"Termination\" section for cause-based termination rights. Look for: \"terminate for cause\", \"material breach\", \"default\", \"failure to perform\", \"insolvency\", \"bankruptcy\". Return \"Yes\" if the agreement allows termination for cause/breach. Return \"No\" if there is no cause-based termination provision. Note: Most contracts have cause-based termination, so \"Yes\" is common.",
-        "savedAt": "2026-02-28T00:56:26.897Z",
+        "savedAt": "2026-05-06T16:36:07.965Z",
         "source": "agent-alpha",
         "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 100.0% (1 iterations)",
+        "note": "Agent-Alpha optimized. Initial: 62.5% → Final: 100.0% (3 iterations)",
         "experimentMetadata": {
           "testModel": "google__gemini_2_5_flash",
           "compareConfig": {
@@ -85,117 +70,105 @@
             "compareType": "exact-string"
           },
           "trainDocIds": [
+            "1918858263705",
             "1920031763042",
-            "1918858263705",
-            "1918922486299",
-            "1918860970908",
-            "1918885002919"
-          ],
-          "holdoutDocIds": [
-            "1918854938133"
-          ]
-        }
-      }
-    ],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 4,
-    "lastModified": "2026-02-28T00:56:26.923Z"
-  },
-  "governingLaw": {
-    "activePrompt": "",
-    "promptHistory": [],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 60,
-    "lastModified": "2026-02-28T00:44:42.178Z"
-  },
-  "venue": {
-    "activePrompt": "",
-    "promptHistory": [],
-    "lastUsedTemplate": "contracts",
-    "usageCount": 68,
-    "lastModified": "2026-02-28T00:44:42.180Z"
-  },
-  "endDate": {
-    "activePrompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-02-28T00:56:26.897Z-e040a1c3-1b26-4a8a-aaf5-5da125959f1d",
-        "prompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
-        "savedAt": "2026-02-28T00:56:26.897Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "endDate",
-            "fieldName": "End Date",
-            "compareType": "date-exact"
-          },
-          "trainDocIds": [
-            "1920031763042",
-            "1918858263705",
-            "1918922486299",
-            "1918860970908",
-            "1918885002919"
-          ],
-          "holdoutDocIds": [
-            "1918854938133"
-          ]
-        }
-      },
-      {
-        "id": "agent-alpha-2026-02-25T03:18:26.717Z-4696faa2-81bc-43eb-9de4-d044ff128fcf",
-        "prompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
-        "savedAt": "2026-02-25T03:18:26.717Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "endDate",
-            "fieldName": "End Date",
-            "compareType": "date-exact"
-          },
-          "trainDocIds": [
-            "1918858263705",
             "1918922486299",
             "1918860970908",
             "1918885002919",
             "1918854938133"
           ],
           "holdoutDocIds": [
-            "1912827412690"
+            "1912827412690",
+            "1912834427833"
           ]
         }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 2,
-    "lastModified": "2026-02-28T00:56:26.911Z"
+    "usageCount": 9,
+    "lastModified": "2026-09-01T00:37:08.724Z"
+  },
+  "governingLaw": {
+    "activePrompt": "",
+    "promptHistory": [],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 62,
+    "lastModified": "2026-05-06T16:21:44.292Z"
+  },
+  "venue": {
+    "activePrompt": "",
+    "promptHistory": [],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 70,
+    "lastModified": "2026-05-06T16:21:44.293Z"
+  },
+  "endDate": {
+    "activePrompt": "",
+    "promptHistory": [
+      {
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2026-08-28T18:22:35.142Z"
+      },
+      {
+        "id": "agent-alpha-2026-05-06T16:36:07.965Z-c7dcdb4e-6c4f-4b15-ac9e-d3206f48be06",
+        "prompt": "Search for when this agreement ends. Look for: \"expires on\", \"terminates on\", \"term ends\", \"valid until\", \"expiration date\". If no explicit end date exists, CALCULATE it from the Effective Date plus the Term duration (e.g., Effective Date \"January 1, 2024\" + Term \"2 years\" = End Date \"December 31, 2025\"). For perpetual or evergreen agreements with no fixed end, return \"Perpetual\". Return date in YYYY-MM-DD format. Do NOT confuse with notice periods or renewal dates.",
+        "savedAt": "2026-05-06T16:36:07.965Z",
+        "source": "agent-alpha",
+        "generationMethod": "agent",
+        "note": "Agent-Alpha optimized. Initial: 12.5% → Final: 80.0% (3 iterations)",
+        "experimentMetadata": {
+          "testModel": "google__gemini_2_5_flash",
+          "compareConfig": {
+            "fieldKey": "endDate",
+            "fieldName": "End Date",
+            "compareType": "date-exact"
+          },
+          "trainDocIds": [
+            "1918858263705",
+            "1920031763042",
+            "1918922486299",
+            "1918860970908",
+            "1918885002919",
+            "1918854938133"
+          ],
+          "holdoutDocIds": [
+            "1912827412690",
+            "1912834427833"
+          ]
+        }
+      }
+    ],
+    "lastUsedTemplate": "contracts",
+    "usageCount": 7,
+    "lastModified": "2026-08-28T18:22:35.156Z"
   },
   "effectiveDate": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 61,
-    "lastModified": "2026-02-28T00:44:42.167Z"
+    "usageCount": 63,
+    "lastModified": "2026-05-06T16:21:44.283Z"
   },
   "contractTerm": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 58,
-    "lastModified": "2026-02-28T00:44:42.170Z"
+    "usageCount": 60,
+    "lastModified": "2026-05-06T16:21:44.284Z"
   },
   "counterPartyName": {
-    "activePrompt": "Search for the counter party name (the OTHER contracting party, not the recurring/extracting company). Look for synonyms such as \"Party\", \"Second Party\", \"Contractor\", \"Vendor\", \"Supplier\", \"Client\", \"Customer\", \"Recipient\", \"Disclosing Party\", \"Receiving Party\", \"Licensee\", \"Service Provider\". Look in: (1) the opening paragraph after 'by and between', 'Agreement between', or 'entered into by', (2) the preamble/recitals identifying both parties, (3) signature blocks at document end. CRITICAL: If one party appears across multiple contracts as the consistent party (e.g., 'Increo, Inc.'), that is the extracting company - return the OTHER party instead. Do NOT return the extracting company's name (the party that appears consistently across all contracts). Do NOT return generic role labels like 'Contractor' or 'Vendor' instead of the actual legal entity name. Do NOT omit legal suffixes such as LLC, Inc., Corp., Ltd., or LLP. Return the full legal entity name exactly as written. Return 'Not Present' if no counter party is identifiable.",
+    "activePrompt": "",
     "promptHistory": [
       {
-        "id": "agent-alpha-2026-02-28T00:56:26.897Z-11595458-5170-4a12-a026-ccd890a8ce7c",
-        "prompt": "Search for the counter party name (the OTHER contracting party, not the recurring/extracting company). Look for synonyms such as \"Party\", \"Second Party\", \"Contractor\", \"Vendor\", \"Supplier\", \"Client\", \"Customer\", \"Recipient\", \"Disclosing Party\", \"Receiving Party\", \"Licensee\", \"Service Provider\". Look in: (1) the opening paragraph after 'by and between', 'Agreement between', or 'entered into by', (2) the preamble/recitals identifying both parties, (3) signature blocks at document end. CRITICAL: If one party appears across multiple contracts as the consistent party (e.g., 'Increo, Inc.'), that is the extracting company - return the OTHER party instead. Do NOT return the extracting company's name (the party that appears consistently across all contracts). Do NOT return generic role labels like 'Contractor' or 'Vendor' instead of the actual legal entity name. Do NOT omit legal suffixes such as LLC, Inc., Corp., Ltd., or LLP. Return the full legal entity name exactly as written. Return 'Not Present' if no counter party is identifiable.",
-        "savedAt": "2026-02-28T00:56:26.897Z",
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2026-08-03T16:36:17.197Z"
+      },
+      {
+        "id": "agent-alpha-2026-05-06T16:36:07.965Z-bd0e7f73-d969-42f6-a672-a089ea8cd54d",
+        "prompt": "Search for the counter party name (the OTHER contracting party, NOT Increo, Inc.). Look for synonyms including: \"Party\", \"Contractor\", \"Vendor\", \"Client\", \"Recipient\", \"Disclosing Party\", \"Receiving Party\", \"Licensee\", \"Licensor\", \"Supplier\", \"Service Provider\", \"Customer\", \"Purchaser\", \"Seller\", \"Consultant\". Look in: (1) opening paragraph after 'by and between', 'Agreement between', or 'entered into by', (2) recitals/preamble identifying parties, (3) signature blocks. CRITICAL: Increo, Inc. is the extracting company - NEVER return this name. Do NOT return 'Increo, Inc.' or any variation of the extracting company's name. Do NOT return generic party labels like 'Party A' or 'the Contractor' without the actual legal entity name. Do NOT return individuals' names unless they are the sole contracting party (not just signatories). Do NOT confuse subsidiaries, affiliates, or referenced third parties with the primary counter party. Return the OTHER legal entity name exactly as written, including suffixes (LLC, Inc., Corp.). If multiple non-Increo parties exist, return the primary contracting party. Return 'Not Present' if no counter party is identified.",
+        "savedAt": "2026-05-06T16:36:07.965Z",
         "source": "agent-alpha",
         "generationMethod": "agent",
         "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 100.0% (2 iterations)",
@@ -207,29 +180,36 @@
             "compareType": "near-exact-string"
           },
           "trainDocIds": [
-            "1920031763042",
             "1918858263705",
+            "1920031763042",
             "1918922486299",
             "1918860970908",
-            "1918885002919"
+            "1918885002919",
+            "1918854938133"
           ],
           "holdoutDocIds": [
-            "1918854938133"
+            "1912827412690",
+            "1912834427833"
           ]
         }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 82,
-    "lastModified": "2026-02-28T00:56:26.899Z"
+    "usageCount": 87,
+    "lastModified": "2026-08-03T16:36:17.214Z"
   },
   "counterPartyAddress": {
-    "activePrompt": "Search for the counter party's business address (the OTHER party, not the extracting company). Look in: (1) opening recitals/preamble near party definitions, (2) 'Notices' or 'Communications' section, (3) signature blocks beneath the counter party's name. Look for phrases like 'principal place of business', 'located at', 'with offices at', 'address for notice', 'registered address', 'whose address is'. CRITICAL: Do NOT extract '1234 Main Street, Phoenix, Arizona 85032' - this is typically the extracting company's address. Prefer addresses appearing directly after the counter party's legal name or under 'Party B'/'Second Party' labels. Return complete address (street, city, state, ZIP) on a single line. Return 'Not Present' if no counter party address found.",
+    "activePrompt": "",
     "promptHistory": [
       {
-        "id": "agent-alpha-2026-02-28T00:56:26.897Z-00e466bb-1f4a-4a42-9b0f-e0bf809674c0",
-        "prompt": "Search for the counter party's business address (the OTHER party, not the extracting company). Look in: (1) opening recitals/preamble near party definitions, (2) 'Notices' or 'Communications' section, (3) signature blocks beneath the counter party's name. Look for phrases like 'principal place of business', 'located at', 'with offices at', 'address for notice', 'registered address', 'whose address is'. CRITICAL: Do NOT extract '1234 Main Street, Phoenix, Arizona 85032' - this is typically the extracting company's address. Prefer addresses appearing directly after the counter party's legal name or under 'Party B'/'Second Party' labels. Return complete address (street, city, state, ZIP) on a single line. Return 'Not Present' if no counter party address found.",
-        "savedAt": "2026-02-28T00:56:26.897Z",
+        "id": "v2",
+        "prompt": "",
+        "savedAt": "2026-09-01T00:36:48.695Z"
+      },
+      {
+        "id": "agent-alpha-2026-05-06T16:36:07.965Z-9bfa3aac-d47e-4088-ba80-80455e4a2845",
+        "prompt": "Search for the counter party's business address (the OTHER party, not the extracting company). Look in: (1) the block explicitly labeled 'Counter Party', (2) the 'Ship To' section, (3) opening recitals near the counter party's name, (4) 'Notices' section, (5) signature blocks. Look for phrases like 'principal place of business', 'located at', 'address for notices', 'registered office', 'mailing address', 'offices at'. CRITICAL: Do NOT extract '1234 Main Street, Phoenix, Arizona 85032' - this is the extracting company's address. Select the address directly under or adjacent to the 'Counter Party' or 'Ship To' label, not the 'Bill To' block. Return the complete address on a single line. Return 'Not Present' if no counter party address is found.",
+        "savedAt": "2026-05-06T16:36:07.965Z",
         "source": "agent-alpha",
         "generationMethod": "agent",
         "note": "Agent-Alpha optimized. Initial: 87.5% → Final: 100.0% (2 iterations)",
@@ -241,28 +221,30 @@
             "compareType": "near-exact-string"
           },
           "trainDocIds": [
-            "1920031763042",
             "1918858263705",
+            "1920031763042",
             "1918922486299",
             "1918860970908",
-            "1918885002919"
+            "1918885002919",
+            "1918854938133"
           ],
           "holdoutDocIds": [
-            "1918854938133"
+            "1912827412690",
+            "1912834427833"
           ]
         }
       }
     ],
     "lastUsedTemplate": "contracts",
-    "usageCount": 82,
-    "lastModified": "2026-02-28T00:56:26.908Z"
+    "usageCount": 87,
+    "lastModified": "2026-09-01T00:36:48.707Z"
   },
   "contractType": {
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 79,
-    "lastModified": "2026-02-28T00:44:42.159Z"
+    "usageCount": 81,
+    "lastModified": "2026-05-06T16:21:44.276Z"
   },
   "limitationOfLiability": {
     "activePrompt": "Concisely extract and summarize the agreement’s limitation-of-liability provision. Capture: whether a monetary cap exists or liability is unlimited; the cap basis (e.g., fees paid/fees paid or payable/total contract value/order or SOW/ACV/fixed amount) and any multiplier; any greater/lesser-of rule and any measurement window (e.g., 12 months preceding claim/initial term); the cap structure (aggregate vs per-claim/per-order/per-contract-year) and mutuality (mutual vs one-sided); any carve-outs that sit outside the cap or are separately capped (e.g., confidentiality, data security/privacy, IP infringement, bodily injury, willful misconduct, payment obligations), noting any super-cap; whether indemnity is inside or outside the cap; and the section heading/number for the controlling clause. Exclude general damage disclaimers unless they are expressly listed as carve-outs.",
@@ -325,8 +307,8 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 57,
-    "lastModified": "2026-02-28T00:44:42.187Z"
+    "usageCount": 59,
+    "lastModified": "2026-05-06T16:21:44.299Z"
   },
   "contractValue": {
     "activePrompt": "",
@@ -527,38 +509,11 @@
     "lastModified": "2025-09-13T05:56:05.071Z"
   },
   "renewalType": {
-    "activePrompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
-    "promptHistory": [
-      {
-        "id": "agent-alpha-2026-02-28T00:56:26.897Z-81b68b2d-d148-4e9c-b118-6c444e67d5eb",
-        "prompt": "Search the \"Term\", \"Renewal\", or \"Duration\" sections for how this agreement renews. Return EXACTLY one of: Autorenewal, Manual Renewal, Evergreen Renewal. \"Autorenewal\" = automatically extends unless notice given. \"Manual Renewal\" = requires explicit action to renew. \"Evergreen Renewal\" = continues indefinitely until terminated. \"No Renewal\" = expires without renewal option. Look for phrases like \"automatically renew\", \"shall renew\", \"may be renewed\", \"no renewal\". Do NOT guess - if unclear, look for termination language to infer.",
-        "savedAt": "2026-02-28T00:56:26.897Z",
-        "source": "agent-alpha",
-        "generationMethod": "agent",
-        "note": "Agent-Alpha optimized. Initial: 50.0% → Final: 100.0% (1 iterations)",
-        "experimentMetadata": {
-          "testModel": "google__gemini_2_5_flash",
-          "compareConfig": {
-            "fieldKey": "renewalType",
-            "fieldName": "Renewal Type",
-            "compareType": "exact-string"
-          },
-          "trainDocIds": [
-            "1920031763042",
-            "1918858263705",
-            "1918922486299",
-            "1918860970908",
-            "1918885002919"
-          ],
-          "holdoutDocIds": [
-            "1918854938133"
-          ]
-        }
-      }
-    ],
+    "activePrompt": "",
+    "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 85,
-    "lastModified": "2026-02-28T00:56:26.914Z"
+    "usageCount": 88,
+    "lastModified": "2026-05-06T16:21:44.288Z"
   },
   "disputeResolution": {
     "activePrompt": "Identify the agreement’s primary dispute resolution mechanism governing merits disputes.  Select the single best match from the predefined enum options for this field.",
@@ -6949,8 +6904,8 @@
     "activePrompt": "",
     "promptHistory": [],
     "lastUsedTemplate": "contracts",
-    "usageCount": 18,
-    "lastModified": "2026-02-28T00:44:42.188Z"
+    "usageCount": 20,
+    "lastModified": "2026-05-06T16:21:44.301Z"
   },
   "firstName": {
     "activePrompt": "Look in MI field",

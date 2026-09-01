@@ -1,6 +1,7 @@
 import type { AccuracyData } from '@/lib/types';
 import { formatModelName } from '@/lib/utils';
 import { calculateModelSummaries, assignRanks } from '@/lib/model-ranking-utils';
+import { sortModelIds, isKnownModel } from '@/lib/main-page-constants';
 import { logger } from './logger';
 
 export interface ExportSummaryData {
@@ -28,7 +29,7 @@ function calculateSummaryStats(
   // Only include models that are currently visible/selected
   const allModels = accuracyData.results.length > 0 && accuracyData.results[0].fields[accuracyData.fields[0]?.key]
     ? Object.keys(accuracyData.results[0].fields[accuracyData.fields[0].key])
-        .filter(key => key !== 'Ground Truth')
+        .filter(key => key !== 'Ground Truth' && isKnownModel(key))
     : [];
 
   // Filter models based on what's currently shown in the UI
@@ -50,13 +51,13 @@ function calculateSummaryStats(
         topModel: modelsCompared[0] ? formatModelName(modelsCompared[0]) : 'none'
       });
     } catch (error) {
-      logger.warn('Failed to sort models by performance, using alphabetical order', { error: error instanceof Error ? error : String(error) });
-      modelsCompared = visibleModels.sort();
+      logger.warn('Failed to sort models by performance, using canonical model order', { error: error instanceof Error ? error : String(error) });
+      modelsCompared = sortModelIds(visibleModels);
     }
   } else {
-    // Fallback to alphabetical sorting if no performance data available
-    modelsCompared = visibleModels.sort();
-    logger.debug('CSV Export: Using alphabetical order (no performance data available)');
+    // Fallback to the canonical model order if no performance data available
+    modelsCompared = sortModelIds(visibleModels);
+    logger.debug('CSV Export: Using canonical model order (no performance data available)');
   }
 
   return {

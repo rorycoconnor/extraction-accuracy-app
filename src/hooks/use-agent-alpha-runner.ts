@@ -10,7 +10,7 @@ import { logger } from '@/lib/logger';
 import { getCompareConfigForField } from '@/lib/compare-type-storage';
 import { getConfiguredTemplates } from '@/lib/mock-data';
 import { v4 as uuidv4 } from 'uuid';
-import type { AgentAlphaFieldResult } from '@/lib/agent-alpha-types';
+import type { AgentAlphaFieldResult, AgentAlphaFailedField } from '@/lib/agent-alpha-types';
 import type { AgentAlphaRuntimeConfig } from '@/lib/agent-alpha-config';
 import { getDefaultRuntimeConfig, AGENT_ALPHA_CONFIG } from '@/lib/agent-alpha-config';
 
@@ -126,6 +126,9 @@ export const useAgentAlphaRunner = () => {
 
       // Step 2: Process fields with controlled concurrency
       const results: AgentAlphaFieldResult[] = [];
+      // A field that throws is dropped from `results`, so track it separately;
+      // otherwise the run reports success while silently optimizing fewer fields.
+      const failedFields: AgentAlphaFailedField[] = [];
       
       // Track parallel execution for debugging
       let maxConcurrentFields = 0;
@@ -228,7 +231,13 @@ export const useAgentAlphaRunner = () => {
           return fieldResult;
         } catch (error) {
           logger.error(`Agent-Alpha: Failed to process field ${fieldPlan.field.name}`, error as Error);
-          
+
+          failedFields.push({
+            fieldKey: fieldPlan.fieldKey,
+            fieldName: fieldPlan.field.name,
+            error: error instanceof Error ? error.message : String(error),
+          });
+
           // Dispatch failure completion
           dispatch({
             type: 'AGENT_ALPHA_FIELD_COMPLETED',
@@ -364,6 +373,7 @@ export const useAgentAlphaRunner = () => {
         payload: {
           runId,
           results,
+          failedFields,
           timestamp: new Date().toISOString(),
           testModel: config.testModel,
           sampledDocIds: workPlan.sampledDocIds,
@@ -377,13 +387,26 @@ export const useAgentAlphaRunner = () => {
         },
       });
 
-      toast({
-        title: 'Agent-Alpha Complete',
-        description: `Generated ${results.length} improved prompt(s). Review and approve in the preview modal.`,
-        variant: 'default',
-      });
-
-      logger.info('Agent-Alpha: Run completed successfully');
+      if (failedFields.length > 0) {
+        const failedNames = failedFields.map(f => f.fieldName).join(', ');
+        logger.warn('Agent-Alpha: Run completed with field failures', {
+          failedCount: failedFields.length,
+          totalFields: workPlan.fields.length,
+          failedFields: failedFields.map(f => ({ fieldName: f.fieldName, error: f.error })),
+        });
+        toast({
+          title: `Agent-Alpha Finished With ${failedFields.length} Failed Field(s)`,
+          description: `Generated ${results.length} of ${workPlan.fields.length} improved prompt(s). Failed: ${failedNames}. Review the rest in the preview modal.`,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Agent-Alpha Complete',
+          description: `Generated ${results.length} improved prompt(s). Review and approve in the preview modal.`,
+          variant: 'default',
+        });
+        logger.info('Agent-Alpha: Run completed successfully');
+      }
     } catch (error) {
       logger.error('❌ Agent-Alpha failed:', error as Error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

@@ -22,6 +22,17 @@ export type ExtractMetadataInput = z.infer<typeof ExtractMetadataInputSchema>;
 export const ExtractMetadataOutputSchema = z.object({
   data: z.record(z.string()).describe('The extracted metadata as key-value pairs.'),
   confidenceScores: z.record(z.number()).optional().describe('Per-field confidence scores from Box AI (0-1).'),
+  referenceData: z.record(z.object({
+    citations: z.array(z.object({
+      content: z.string(),
+      page: z.number().optional(),
+      bounding_boxes: z.array(z.object({
+        page_index: z.number(),
+        top_left: z.object({ x: z.number(), y: z.number() }),
+        bottom_right: z.object({ x: z.number(), y: z.number() }),
+      })).optional(),
+    })),
+  })).optional().describe('Per-field citation references with bounding boxes from Box AI.'),
 });
 export type ExtractMetadataOutput = z.infer<typeof ExtractMetadataOutputSchema>;
 

@@ -196,11 +196,18 @@ describe('Agent-Alpha Prompt Generation', () => {
   });
 
   describe('parseAgentAlphaPromptResponse', () => {
-    // NOTE: The parser has a minimum length requirement of 100 characters for prompts
-    // to ensure quality. Short prompts trigger fallback behavior.
-    
-    const createLongPrompt = (base: string) => 
-      `${base}. Look in the header section, signature blocks, and main body. Search for variations like "${base}", "The ${base}", and similar phrases. Return the exact value as it appears in the document. If not found, return "Not Present".`;
+    // NOTE: The parser rejects prompts under 350 characters, and prompts missing
+    // 3+ of: location, synonyms, output format, not-found handling. Anything that
+    // fails those checks falls back to the field's example prompt.
+    // This suffix is over 350 chars on its own and satisfies all four elements.
+    const VALID_PROMPT_SUFFIX =
+      ' Look in the header section, the signature blocks, and the main body of the document.' +
+      ' Search for variations and synonyms of the field label, including abbreviated and expanded forms.' +
+      ' Return the exact value as it appears in the document, preserving original casing and punctuation.' +
+      ' Do not infer or guess a value that is not explicitly stated anywhere.' +
+      ' If the value is not present, return "Not Present".';
+
+    const createLongPrompt = (base: string) => `${base}.${VALID_PROMPT_SUFFIX}`;
 
     test('should parse valid JSON response with long enough prompt', () => {
       const longPrompt = createLongPrompt('Look for company name');
@@ -217,7 +224,7 @@ describe('Agent-Alpha Prompt Generation', () => {
 
     test('should handle response with extra whitespace', () => {
       // Use JSON.stringify to properly escape the string
-      const longPrompt = 'Extract the value from the document. Look in the header section, signature blocks, and main body. Search for variations and synonyms. Return the exact value as it appears in the document.';
+      const longPrompt = `Extract the value from the document.${VALID_PROMPT_SUFFIX}`;
       const response = JSON.stringify({
         newPrompt: longPrompt,
         reasoning: 'Added specificity',
@@ -231,7 +238,7 @@ describe('Agent-Alpha Prompt Generation', () => {
       expect(result.reasoning).toBe('Added specificity');
     });
 
-    test('should use fallback for prompts under 100 characters', () => {
+    test('should use fallback for prompts under 350 characters', () => {
       // Short prompts trigger fallback behavior
       const response = '```json\n{"newPrompt": "Test prompt", "reasoning": "Test reason"}\n```';
 
@@ -243,7 +250,7 @@ describe('Agent-Alpha Prompt Generation', () => {
     });
 
     test('should handle response wrapped in markdown code blocks with valid prompt', () => {
-      const longPrompt = 'Extract the field value. Look in the header section, signature blocks, and main body. Search for variations and synonyms. Return the exact value as it appears in the document.';
+      const longPrompt = `Extract the field value.${VALID_PROMPT_SUFFIX}`;
       const response = `\`\`\`json\n${JSON.stringify({ newPrompt: longPrompt, reasoning: 'Test reason' })}\n\`\`\``;
 
       const result = parseAgentAlphaPromptResponse(response, 'Field');
@@ -299,8 +306,7 @@ describe('Agent-Alpha Prompt Generation', () => {
     });
 
     test('should handle escaped quotes in prompt', () => {
-      // Prompt must be 150+ chars and have 3+ key elements: location, synonyms, format, not-found handling
-      const longPrompt = 'Look for "Company Name" in quotes, search in the header section, signature blocks, and main body of the document. Also look for variations like "The Company Name" and "Company Name Inc". Return the exact value as found. If not found, return "Not Present".';
+      const longPrompt = `Look for "Company Name" in quotes.${VALID_PROMPT_SUFFIX}`;
       const response = JSON.stringify({
         newPrompt: longPrompt,
         reasoning: 'Added quote handling',
@@ -312,7 +318,7 @@ describe('Agent-Alpha Prompt Generation', () => {
     });
 
     test('should handle newlines in prompt', () => {
-      const longPrompt = 'Line 1: Search the header section for the value.\nLine 2: Look for variations and synonyms.\nLine 3: If not found in header, check the signature block and body text for the field value.';
+      const longPrompt = `Line 1: Search the header section for the value.\nLine 2: Look for variations and synonyms.\nLine 3: Check the signature block and body text.${VALID_PROMPT_SUFFIX}`;
       const response = JSON.stringify({
         newPrompt: longPrompt,
         reasoning: 'Multi-line prompt',
@@ -326,7 +332,7 @@ describe('Agent-Alpha Prompt Generation', () => {
     });
 
     test('should handle unicode characters', () => {
-      const longPrompt = 'Extract the company name (公司名称) from the document. Search in the header, signature blocks, and main body. Look for variations in both English and Chinese. Return the exact value as it appears.';
+      const longPrompt = `Extract the company name (公司名称) from the document.${VALID_PROMPT_SUFFIX}`;
       const response = JSON.stringify({
         newPrompt: longPrompt,
         reasoning: 'Added Chinese translation',

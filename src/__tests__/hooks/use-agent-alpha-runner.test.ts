@@ -343,6 +343,127 @@ describe('useAgentAlphaRunner Hook', () => {
     })
   })
 
+  describe('Partial field failures', () => {
+    const buildFieldPlan = (key: string, name: string) => ({
+      fieldKey: key,
+      field: { key, name, type: 'string', prompt: `Prompt for ${name}`, options: undefined },
+      initialAccuracy: 0.5,
+      groundTruth: {},
+    })
+
+    const runWithFields = async (fieldPlans: unknown[]) => {
+      mockState.data = {
+        templateKey: 'test-template',
+        baseModel: 'google__gemini_2_5_flash',
+        fields: [],
+        results: [],
+        averages: {},
+      } as unknown as AccuracyData
+
+      const { prepareAgentAlphaWorkPlan } = await import('@/ai/flows/agent-alpha-prepare')
+      vi.mocked(prepareAgentAlphaWorkPlan).mockResolvedValue({
+        fields: fieldPlans,
+        sampledDocIds: ['doc1'],
+        trainDocIds: ['doc1'],
+        holdoutDocIds: [],
+        templateKey: 'test-template',
+      } as never)
+
+      const { result } = renderHook(() => useAgentAlphaRunner())
+      await act(async () => {
+        await result.current.runAgentAlphaWithConfig({
+          maxDocs: 8,
+          maxIterations: 5,
+          testModel: 'google__gemini_2_5_flash',
+          fieldConcurrency: 5,
+        })
+      })
+    }
+
+    const succeedExcept = async (failingFieldName: string | null) => {
+      const { processAgentAlphaField } = await import('@/ai/flows/agent-alpha-process-field')
+      vi.mocked(processAgentAlphaField).mockImplementation((async (args: { fieldKey: string; fieldName: string }) => {
+        if (args.fieldName === failingFieldName) {
+          throw new Error('Box API returned 429')
+        }
+        return {
+          fieldKey: args.fieldKey,
+          fieldName: args.fieldName,
+          initialAccuracy: 0.5,
+          finalAccuracy: 0.9,
+          finalPrompt: 'improved prompt',
+          iterationCount: 1,
+          improved: true,
+          converged: false,
+          sampledDocIds: ['doc1'],
+          hasGroundTruth: true,
+        }
+      }) as never)
+    }
+
+    const findToast = (predicate: (arg: { title: string }) => boolean) =>
+      mockToast.mock.calls.map(call => call[0]).find(predicate)
+
+    test('surfaces the failed field in the toast rather than reporting plain success', async () => {
+      await succeedExcept('Broken Field')
+      await runWithFields([
+        buildFieldPlan('good', 'Good Field'),
+        buildFieldPlan('broken', 'Broken Field'),
+      ])
+
+      const failureToast = findToast(arg => arg.title.includes('Failed Field'))
+
+      expect(failureToast).toBeDefined()
+      expect(failureToast).toMatchObject({
+        title: 'Agent-Alpha Finished With 1 Failed Field(s)',
+        variant: 'destructive',
+      })
+      expect(failureToast!.description).toContain('Broken Field')
+      expect(failureToast!.description).toContain('1 of 2')
+
+      // The old behaviour was a plain success toast; make sure it is gone.
+      expect(findToast(arg => arg.title === 'Agent-Alpha Complete')).toBeUndefined()
+    })
+
+    test('includes failed fields and their error in the completion payload', async () => {
+      await succeedExcept('Broken Field')
+      await runWithFields([
+        buildFieldPlan('good', 'Good Field'),
+        buildFieldPlan('broken', 'Broken Field'),
+      ])
+
+      const completeDispatch = mockDispatch.mock.calls
+        .map(call => call[0])
+        .find(action => action.type === 'AGENT_ALPHA_COMPLETE')
+
+      expect(completeDispatch).toBeDefined()
+      expect(completeDispatch.payload.results).toHaveLength(1)
+      expect(completeDispatch.payload.failedFields).toEqual([
+        { fieldKey: 'broken', fieldName: 'Broken Field', error: 'Box API returned 429' },
+      ])
+    })
+
+    test('still reports clean success when every field succeeds', async () => {
+      await succeedExcept(null)
+      await runWithFields([
+        buildFieldPlan('good', 'Good Field'),
+        buildFieldPlan('also-good', 'Also Good Field'),
+      ])
+
+      expect(findToast(arg => arg.title === 'Agent-Alpha Complete')).toMatchObject({
+        variant: 'default',
+      })
+      expect(findToast(arg => arg.title.includes('Failed Field'))).toBeUndefined()
+
+      const completeDispatch = mockDispatch.mock.calls
+        .map(call => call[0])
+        .find(action => action.type === 'AGENT_ALPHA_COMPLETE')
+
+      expect(completeDispatch.payload.results).toHaveLength(2)
+      expect(completeDispatch.payload.failedFields).toEqual([])
+    })
+  })
+
   describe('State Exposure', () => {
     test('should expose agentAlphaState from store', () => {
       mockState.agentAlpha = {

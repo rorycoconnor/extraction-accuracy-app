@@ -34,6 +34,28 @@ export type ContextMatch = {
   endIndex: number;
 };
 
+// Box AI citation bounding box coordinates (normalized 0-1 relative to page)
+export type BoundingBox = {
+  page_index: number;
+  top_left: { x: number; y: number };
+  bottom_right: { x: number; y: number };
+};
+
+// A single citation reference from Box AI for a specific field
+export type Citation = {
+  content: string;
+  page?: number;
+  bounding_boxes?: BoundingBox[];
+};
+
+// Per-field reference data from Box AI extract_structured response
+export type FieldReference = {
+  citations: Citation[];
+};
+
+// All reference data for a single extraction keyed by field
+export type ExtractionReferences = Record<string, FieldReference>;
+
 // New types for the accuracy grid
 export type FieldResult = {
   // e.g. "Gemini 1.5 Flash": "NDA", "Ground Truth": "NDA"
@@ -60,6 +82,9 @@ export type FileResult = {
   // Comparison metadata for each field and model (optional)
   // e.g. "Contract Type": { "Gemini 1.5 Flash": { isMatch: true, matchType: 'llm-judge', details: '...' } }
   comparisonResults?: Record<string, Record<string, ComparisonMetadata>>;
+  // Box AI citation references per model per field (for bounding box navigation)
+  // e.g. "azure__openai__gpt_4o_mini": { "contractType": { citations: [...] } }
+  referenceData?: Record<string, ExtractionReferences>;
 };
 
 export type FieldAverage = {
@@ -196,6 +221,7 @@ export interface ApiExtractionResult {
   modelName: string;
   extractedMetadata: Record<string, any>;
   confidenceScores?: Record<string, number>;  // Per-field confidence scores from Box AI
+  referenceData?: ExtractionReferences;  // Per-field citation references with bounding boxes
   success: boolean;
   error?: ExtractionError;
   retryCount?: number;

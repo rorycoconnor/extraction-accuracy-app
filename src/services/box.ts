@@ -741,6 +741,7 @@ type BoxAIExtractRequestBody = {
         scope: string;
     };
     include_confidence_score?: boolean;
+    include_reference?: boolean;
     ai_agent?: {
         id: string;
         type: 'ai_agent_id';
@@ -758,10 +759,11 @@ type BoxAIExtractRequestBody = {
     };
 }
 
-// Return type for extraction with confidence scores
+// Return type for extraction with confidence scores and references
 export type BoxAIExtractionResult = {
     extractedData: Record<string, any>;
     confidenceScores?: Record<string, number>;
+    referenceData?: import('@/lib/types').ExtractionReferences;
 }
 
 // Configuration for Box AI extraction with retry and timeout
@@ -788,6 +790,7 @@ export async function extractStructuredMetadataWithBoxAI(
       const requestBody: BoxAIExtractRequestBody = {
         items: [{ id: fileId, type: 'file' as const }],
         include_confidence_score: true,
+        include_reference: true,
       };
       
       // CRITICAL FIX: Use Box metadata template when available
@@ -957,12 +960,19 @@ export async function extractStructuredMetadataWithBoxAI(
           throw new Error(`Failed to parse Box AI response: ${parseError}`);
         }
         
-        boxLogger.debug('Box AI response parsed successfully', { 
+        // Log ALL top-level keys in the response to discover where bounding boxes live
+        boxLogger.info('📦 BOX AI FULL RESPONSE KEYS', { 
           model, 
           fileId, 
+          allKeys: Object.keys(result || {}),
           hasAnswer: !!result?.answer, 
           hasEntries: !!result?.entries, 
-          hasConfidenceScore: !!result?.confidence_score 
+          hasConfidenceScore: !!result?.confidence_score,
+          hasReference: !!result?.reference,
+          hasBoundingBoxes: !!result?.bounding_boxes,
+          hasBoundingBox: !!result?.bounding_box,
+          hasCitations: !!result?.citations,
+          fullResponsePreview: JSON.stringify(result).slice(0, 3000),
         });
 
         // Handle Box AI response formats - simplified based on actual API behavior
@@ -973,7 +983,8 @@ export async function extractStructuredMetadataWithBoxAI(
           fileId,
           model,
           responseKeys: Object.keys(result || {}),
-          hasConfidenceScore: 'confidence_score' in (result || {})
+          hasConfidenceScore: 'confidence_score' in (result || {}),
+          hasReference: 'reference' in (result || {})
         });
         
         // Check multiple possible locations for confidence scores
@@ -1027,6 +1038,145 @@ export async function extractStructuredMetadataWithBoxAI(
           });
         }
         
+        // Parse reference data (citations + bounding boxes) from the response
+        let referenceData: import('@/lib/types').ExtractionReferences | undefined;
+        const rawReference = result?.reference;
+        
+        // Log the FULL raw reference structure for debugging
+        boxLogger.info('🔍 RAW REFERENCE FROM BOX API', {
+          fileId,
+          model,
+          hasReference: !!rawReference,
+          referenceType: typeof rawReference,
+          referenceKeys: rawReference && typeof rawReference === 'object' ? Object.keys(rawReference) : [],
+          rawReferenceJson: JSON.stringify(rawReference).slice(0, 3000),
+        });
+        
+        // Helper: extract bounding boxes from a citation object, checking multiple possible field names.
+        // Box API returns `page` at the citation level and `boundingBox` (singular) with {left,top,right,bottom}.
+        const parseBoundingBoxes = (citation: any): import('@/lib/types').BoundingBox[] | undefined => {
+          const rawBoxes = citation?.bounding_boxes 
+            || citation?.boundingBoxes 
+            || citation?.bounding_box
+            || citation?.boundingBox
+            || citation?.bbox
+            || citation?.locations
+            || citation?.location;
+          
+          if (!rawBoxes) return undefined;
+          
+          const boxesArray = Array.isArray(rawBoxes) ? rawBoxes : [rawBoxes];
+          if (boxesArray.length === 0) return undefined;
+          
+          // Page lives at the citation level in Box API responses, not inside the bounding box
+          const citationPage = citation?.page ?? citation?.page_index ?? citation?.pageIndex;
+          
+          return boxesArray.map((bb: any) => ({
+            page_index: bb?.page_index ?? bb?.pageIndex ?? bb?.page ?? citationPage ?? 0,
+            top_left: { 
+              x: bb?.top_left?.x ?? bb?.topLeft?.x ?? bb?.left ?? 0, 
+              y: bb?.top_left?.y ?? bb?.topLeft?.y ?? bb?.top ?? 0 
+            },
+            bottom_right: { 
+              x: bb?.bottom_right?.x ?? bb?.bottomRight?.x ?? bb?.right ?? 0, 
+              y: bb?.bottom_right?.y ?? bb?.bottomRight?.y ?? bb?.bottom ?? 0 
+            },
+          }));
+        };
+
+        // Helper: parse a single citation object
+        const parseCitation = (citation: any) => {
+          const content = citation?.content || citation?.text || citation?.snippet || '';
+          const boxes = parseBoundingBoxes(citation);
+          
+          // Page number lives at the citation level in Box API responses
+          const rawPage = citation?.page ?? citation?.page_index ?? citation?.pageIndex;
+          const page = typeof rawPage === 'number' ? rawPage : undefined;
+          
+          boxLogger.debug('📎 Parsing citation object', {
+            citationKeys: citation ? Object.keys(citation) : [],
+            hasContent: !!content,
+            page,
+            hasBoundingBoxes: !!boxes,
+            boundingBoxCount: boxes?.length ?? 0,
+            rawCitation: JSON.stringify(citation).slice(0, 500),
+          });
+          
+          return { content, page, bounding_boxes: boxes };
+        };
+        
+        if (rawReference && typeof rawReference === 'object' && Object.keys(rawReference).length > 0) {
+          referenceData = {};
+          for (const [fieldKey, refData] of Object.entries(rawReference)) {
+            boxLogger.debug(`📋 Processing reference for field "${fieldKey}"`, {
+              refDataType: typeof refData,
+              isArray: Array.isArray(refData),
+              refDataKeys: refData && typeof refData === 'object' && !Array.isArray(refData) ? Object.keys(refData as object) : [],
+              rawRefData: JSON.stringify(refData).slice(0, 500),
+            });
+            
+            if (Array.isArray(refData)) {
+              referenceData[fieldKey] = {
+                citations: refData.map((citation: any) => parseCitation(citation)),
+              };
+            } else if (typeof refData === 'object' && refData !== null) {
+              const obj = refData as any;
+              // Check if this object has a citations/references array inside it
+              if (Array.isArray(obj.citations)) {
+                referenceData[fieldKey] = {
+                  citations: obj.citations.map((c: any) => parseCitation(c)),
+                };
+              } else if (Array.isArray(obj.references)) {
+                referenceData[fieldKey] = {
+                  citations: obj.references.map((c: any) => parseCitation(c)),
+                };
+              } else {
+                // Treat the object itself as a single citation
+                referenceData[fieldKey] = {
+                  citations: [parseCitation(obj)],
+                };
+              }
+            }
+          }
+          
+          // Check if bounding boxes are at the top level of the response (separate from reference)
+          const topLevelBoxes = result?.bounding_boxes || result?.bounding_box || result?.boundingBoxes;
+          if (topLevelBoxes && typeof topLevelBoxes === 'object') {
+            boxLogger.info('📦 Found top-level bounding_boxes, merging into reference data', {
+              topLevelBoxKeys: Object.keys(topLevelBoxes),
+              rawTopLevelBoxes: JSON.stringify(topLevelBoxes).slice(0, 1000),
+            });
+            for (const [fieldKey, boxes] of Object.entries(topLevelBoxes)) {
+              if (referenceData[fieldKey]) {
+                const boxesArray = Array.isArray(boxes) ? boxes : [boxes];
+                // Merge into first citation if it lacks bounding boxes
+                const firstCitation = referenceData[fieldKey].citations[0];
+                if (firstCitation && (!firstCitation.bounding_boxes || firstCitation.bounding_boxes.length === 0)) {
+                  firstCitation.bounding_boxes = boxesArray.map((bb: any) => ({
+                    page_index: bb?.page_index ?? bb?.pageIndex ?? bb?.page ?? 0,
+                    top_left: { x: bb?.top_left?.x ?? bb?.topLeft?.x ?? bb?.left ?? 0, y: bb?.top_left?.y ?? bb?.topLeft?.y ?? bb?.top ?? 0 },
+                    bottom_right: { x: bb?.bottom_right?.x ?? bb?.bottomRight?.x ?? bb?.right ?? 0, y: bb?.bottom_right?.y ?? bb?.bottomRight?.y ?? bb?.bottom ?? 0 },
+                  }));
+                }
+              }
+            }
+          }
+          
+          boxLogger.info('📍 REFERENCE DATA EXTRACTED', {
+            fileId,
+            model,
+            fieldCount: Object.keys(referenceData).length,
+            fields: Object.entries(referenceData).map(([key, ref]) => ({
+              key,
+              citationCount: ref.citations.length,
+              hasBoundingBoxes: ref.citations.some(c => c.bounding_boxes && c.bounding_boxes.length > 0),
+              firstCitationBoxes: ref.citations[0]?.bounding_boxes?.length ?? 0,
+            })),
+          });
+        } else {
+          boxLogger.debug('No reference data in Box response', { fileId, model });
+        }
+        
         // Check for the most common response format first (what we see in logs)
         if (result?.answer && typeof result.answer === 'object') {
           extractedData = result.answer;
@@ -1037,7 +1187,7 @@ export async function extractStructuredMetadataWithBoxAI(
             hasConfidenceScores: !!confidenceScores,
             attemptNumber: attempt + 1
           });
-          return { extractedData, confidenceScores };
+          return { extractedData, confidenceScores, referenceData };
         }
         
         // Handle array response format
@@ -1056,7 +1206,7 @@ export async function extractStructuredMetadataWithBoxAI(
             hasConfidenceScores: !!confidenceScores,
             attemptNumber: attempt + 1
           });
-          return { extractedData, confidenceScores };
+          return { extractedData, confidenceScores, referenceData };
         }
         
         // Handle entries array format (legacy)
@@ -1076,7 +1226,7 @@ export async function extractStructuredMetadataWithBoxAI(
             hasConfidenceScores: !!confidenceScores,
             attemptNumber: attempt + 1
           });
-          return { extractedData, confidenceScores };
+          return { extractedData, confidenceScores, referenceData };
         }
         
         // Fallback: try other possible response formats
@@ -1095,7 +1245,7 @@ export async function extractStructuredMetadataWithBoxAI(
           attemptNumber: attempt + 1
         });
         
-        return { extractedData, confidenceScores };
+        return { extractedData, confidenceScores, referenceData };
         
       } catch (fetchError) {
         clearTimeout(timeoutId);

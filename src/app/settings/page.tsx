@@ -196,27 +196,6 @@ function SettingsContent() {
     fetchUserInfo();
   }, [oauthStatus]); // Refetch when OAuth status changes
 
-  React.useEffect(() => {
-    const logAccessToken = async () => {
-      try {
-        const response = await fetch('/api/auth/box/status');
-        const data = await response.json();
-        
-        if (data.success && data.status.accessToken) {
-          logger.debug('OAuth token info', {
-            tokenType: data.status.tokenType
-          });
-        } else {
-          logger.warn('No access token found');
-        }
-      } catch (error) {
-        logger.error('Failed to fetch token', error instanceof Error ? error : { error });
-      }
-    };
-    
-    logAccessToken();
-  }, []);
-
   async function onSubmit(values: SettingsFormValues) {
     setIsSaving(true);
     

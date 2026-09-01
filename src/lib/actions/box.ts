@@ -1,6 +1,6 @@
 'use server';
 
-import { getTemplates, getTemplatesWithTaxonomyOptions, getFolderItems, getFolderContents, getBoxFileContent, getBoxFileEmbedLink } from '@/services/box';
+import { getTemplates, getTemplatesWithTaxonomyOptions, getFolderItems, getFolderContents, getBoxFileContent, getBoxFileEmbedLink, getBoxAccessToken } from '@/services/box';
 import { logger } from '@/lib/logger';
 import type { BoxTemplate, BoxFile, BoxFolder } from '@/lib/types';
 
@@ -67,6 +67,15 @@ export async function getBoxFileEmbedLinkAction(fileId: string): Promise<string>
         return url;
     } catch (error) {
         logger.error('Error in getBoxFileEmbedLinkAction', { fileId, error: error instanceof Error ? error : String(error) });
+        throw error;
+    }
+}
+
+export async function getBoxAccessTokenAction(): Promise<string> {
+    try {
+        return await getBoxAccessToken();
+    } catch (error) {
+        logger.error('Error in getBoxAccessTokenAction', { error: error instanceof Error ? error : String(error) });
         throw error;
     }
 }

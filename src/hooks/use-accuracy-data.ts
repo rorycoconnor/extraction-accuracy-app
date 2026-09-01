@@ -12,11 +12,7 @@ import type { AccuracyData, AccuracyField, BoxTemplate, BoxFile, FieldResult, Mo
 import { logger } from '@/lib/logger';
 
 // Import centralized model constants
-import { AVAILABLE_MODELS, ALL_MODELS, UI_LABELS } from '@/lib/main-page-constants';
-
-function generateInitialPromptForField(field: any): string {
-  return `Extract the ${field.displayName} from this document. Return only the exact value without any additional text or formatting.`;
-}
+import { AVAILABLE_MODELS, ALL_MODELS, UI_LABELS, sanitizeShownColumns } from '@/lib/main-page-constants';
 
 export function useAccuracyData() {
   const [accuracyData, setAccuracyData] = useState<AccuracyData | null>(null);
@@ -169,34 +165,21 @@ export function useAccuracyData() {
       
       setAccuracyData(hydratedAccuracyData);
       
-      // Try to restore column visibility from localStorage
+      // Restore column visibility from localStorage. Sanitizing drops models
+      // retired since the state was saved and gives newly added models their
+      // default, so unparseable or stale data still yields a usable map.
       const savedColumnVisibility = localStorage.getItem('shownColumns');
+      let parsedColumns: Record<string, boolean> | null = null;
+
       if (savedColumnVisibility) {
         try {
-          const parsedColumns = JSON.parse(savedColumnVisibility);
-                     const newShownColumns: Record<string, boolean> = {};
-           newShownColumns['Ground Truth'] = true;
-           AVAILABLE_MODELS.forEach((model: string) => {
-             newShownColumns[model] = parsedColumns[model] ?? false;
-           });
-          setShownColumns(newShownColumns);
+          parsedColumns = JSON.parse(savedColumnVisibility);
         } catch (error) {
           logger.error('useAccuracyData: Failed to parse saved column visibility', error instanceof Error ? error : { error });
-          const newShownColumns: Record<string, boolean> = {};
-          newShownColumns['Ground Truth'] = true;
-          AVAILABLE_MODELS.forEach((model: string) => {
-            newShownColumns[model] = model === 'google__gemini_2_0_flash_001' || model === 'google__gemini_2_0_flash_001_no_prompt';
-          });
-          setShownColumns(newShownColumns);
         }
-      } else {
-        const newShownColumns: Record<string, boolean> = {};
-        newShownColumns['Ground Truth'] = true;
-        AVAILABLE_MODELS.forEach((model: string) => {
-          newShownColumns[model] = model === 'google__gemini_2_0_flash_001' || model === 'google__gemini_2_0_flash_001_no_prompt';
-        });
-        setShownColumns(newShownColumns);
       }
+
+      setShownColumns(sanitizeShownColumns(parsedColumns));
     }
     
     refreshTemplatesOnly();

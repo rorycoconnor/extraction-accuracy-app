@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 100;
 const AUTH_RATE_LIMIT_MAX = 20;
+const PROXY_RATE_LIMIT_MAX = 2000;
 
 const requestCounts = new Map<string, { count: number; windowStart: number }>();
 
@@ -41,12 +42,12 @@ function addSecurityHeaders(response: NextResponse): NextResponse {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://api.box.com https://placehold.co",
-      "connect-src 'self' https://api.box.com https://account.box.com https://upload.box.com",
-      "frame-src 'self' https://app.box.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn01.boxcdn.net",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn01.boxcdn.net",
+      "font-src 'self' https://fonts.gstatic.com https://cdn01.boxcdn.net",
+      "img-src 'self' data: blob: https://api.box.com https://placehold.co https://*.boxcloud.com https://*.boxcdn.net https://cdn01.boxcdn.net",
+      "connect-src 'self' https://api.box.com https://account.box.com https://upload.box.com https://*.app.box.com https://dl.boxcloud.com https://*.boxcloud.com",
+      "frame-src 'self' https://app.box.com https://*.app.box.com https://*.box.com",
       "base-uri 'self'",
       "form-action 'self' https://account.box.com",
     ].join('; ')
@@ -77,9 +78,17 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith('/api/')) {
     const rateLimitKey = getRateLimitKey(request);
     const isAuthRoute = pathname.startsWith('/api/auth/');
-    const maxRequests = isAuthRoute ? AUTH_RATE_LIMIT_MAX : RATE_LIMIT_MAX_REQUESTS;
+    // The Preview SDK fans out into many sub-requests per document, so the
+    // proxy gets a much higher ceiling rather than being exempted entirely.
+    const isProxyRoute = pathname.startsWith('/api/box-proxy/');
+    const maxRequests = isProxyRoute
+      ? PROXY_RATE_LIMIT_MAX
+      : isAuthRoute
+        ? AUTH_RATE_LIMIT_MAX
+        : RATE_LIMIT_MAX_REQUESTS;
+    const rateLimitBucket = isProxyRoute ? 'proxy' : isAuthRoute ? 'auth' : 'api';
     const { allowed, remaining } = checkRateLimit(
-      `${rateLimitKey}:${isAuthRoute ? 'auth' : 'api'}`,
+      `${rateLimitKey}:${rateLimitBucket}`,
       maxRequests
     );
 

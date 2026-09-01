@@ -8,7 +8,6 @@ import { useToast } from '@/hooks/use-toast';
 import { extractMetadataBatch, type BatchExtractionJob, type BatchExtractionResult } from '@/ai/flows/batch-metadata-extraction';
 import { formatModelName } from '@/lib/utils';
 import { 
-  createExtractionSummaryMessage,
   createExtractionError
 } from '@/lib/error-handler';
 import type { 
@@ -50,7 +49,7 @@ const FIELD_TYPES = {
 } as const;
 
 // Import centralized constants
-import { AVAILABLE_MODELS, UI_LABELS } from '@/lib/main-page-constants';
+import { AVAILABLE_MODELS, UI_LABELS, getActiveModelsForRun } from '@/lib/main-page-constants';
 
 /**
  * Generate default enum options for common contract fields
@@ -206,6 +205,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         modelName: job.modelName,
         extractedMetadata: batchResult.data || {},
         confidenceScores: batchResult.confidenceScores,
+        referenceData: batchResult.referenceData,
         success: batchResult.success,
         duration: batchResult.duration,
         retryCount: 1 // Mark as retry
@@ -335,10 +335,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
     }
 
     // Create extraction jobs for each file and model combination
-    const selectedModels = Object.entries(shownColumns)
-      .filter(([, isShown]) => isShown)
-      .map(([modelName]) => modelName)
-      .filter(modelName => modelName !== UI_LABELS.GROUND_TRUTH);
+    const selectedModels = getActiveModelsForRun(shownColumns);
       
     const extractionJobs: ExtractionJob[] = accuracyData.results.flatMap(fileResult =>
       selectedModels.map(modelName => ({ fileResult, modelName }))
@@ -494,6 +491,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
           modelName: job.modelName,
           extractedMetadata: batchResult.data || {},
           confidenceScores: batchResult.confidenceScores,
+          referenceData: batchResult.referenceData,
           success: batchResult.success,
           duration: batchResult.duration,
           retryCount: 0
@@ -538,6 +536,7 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
         modelName: job.modelName,
         extractedMetadata: batchResult.data || {},
         confidenceScores: batchResult.confidenceScores,
+        referenceData: batchResult.referenceData,
         success: batchResult.success,
         duration: batchResult.duration,
         retryCount: 0
@@ -559,20 +558,16 @@ export const useModelExtractionRunner = (): UseModelExtractionRunnerReturn => {
 
     setApiDebugData(apiResults);
 
-    // Check for files where ALL fields failed and retry once
+    // Check for files where ALL fields failed and retry once.
+    // Replace the original (failed) entry in-place instead of appending, otherwise
+    // a retried job would appear twice and get double-counted in run summaries/history.
     const retryResults = await retryFailedFiles(apiResults, extractionJobs, fieldsForExtraction, templateKeyForValidation);
-    const finalResults = [...apiResults, ...retryResults];
+    const resultKey = (r: ApiExtractionResult) => `${r.fileId}::${r.modelName}`;
+    const retryByKey = new Map(retryResults.map(result => [resultKey(result), result]));
+    const finalResults = apiResults.map(result => retryByKey.get(resultKey(result)) ?? result);
     
     // Update debug data with final results including retries
     setApiDebugData(finalResults);
-
-    // Show extraction summary
-    const summaryMessage = createExtractionSummaryMessage(finalResults);
-    toast({
-      title: summaryMessage.title,
-      description: summaryMessage.description,
-      variant: summaryMessage.variant === 'success' ? 'default' : summaryMessage.variant,
-    });
 
     return finalResults;
   };

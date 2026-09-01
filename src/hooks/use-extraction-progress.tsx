@@ -36,7 +36,9 @@ interface UseExtractionProgressReturn {
   startExtraction: (totalJobs: number) => void;
   stopExtraction: () => void;
   updateProgress: () => void;
-  updateDetailedProgress: (updates: Partial<DetailedProgress>) => void;
+  updateDetailedProgress: (
+    updates: Partial<DetailedProgress> | ((prev: DetailedProgress) => Partial<DetailedProgress>)
+  ) => void;
   resetProgress: () => void;
   isCurrentRun: (runId: number) => boolean;
 }
@@ -105,12 +107,17 @@ export const useExtractionProgress = (): UseExtractionProgressReturn => {
     }));
   };
 
-  const updateDetailedProgress = (updates: Partial<ExtractionProgress>) => {
+  const updateDetailedProgress = (
+    updates: Partial<ExtractionProgress> | ((prev: DetailedProgress) => Partial<ExtractionProgress>)
+  ) => {
     setDetailedProgress(prev => {
-      const newState = { ...prev, ...updates };
+      // Support functional updaters so callers can derive counts from the freshest
+      // state (avoids stale-closure bugs when many updates fire during one run).
+      const resolved = typeof updates === 'function' ? updates(prev) : updates;
+      const newState = { ...prev, ...resolved };
       
       // Calculate estimated time remaining if we have start time and completion data
-      if (newState.startTime && (updates.successful !== undefined || updates.failed !== undefined)) {
+      if (newState.startTime && (resolved.successful !== undefined || resolved.failed !== undefined)) {
         const currentTime = new Date();
         const elapsed = currentTime.getTime() - newState.startTime.getTime();
         const completedJobs = newState.successful + newState.failed;

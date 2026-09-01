@@ -59,6 +59,7 @@ import {
   AVAILABLE_MODELS,
   FIELD_TYPES,
   DEFAULT_ENUM_OPTIONS,
+  sortModelIds,
 } from '@/lib/main-page-constants';
 
 // ===== CUSTOM HOOKS FOR HANDLERS =====
@@ -278,11 +279,7 @@ const MainPage: React.FC = () => {
   const [isPromptStudioOpen, setIsPromptStudioOpen] = useState(false);
   const [selectedFieldForPromptStudio, setSelectedFieldForPromptStudio] = useState<AccuracyField | null>(null);
   const [isInlineEditorOpen, setIsInlineEditorOpen] = useState(false);
-  const [selectedCellForEdit, setSelectedCellForEdit] = useState<{
-    file: BoxFile;
-    field: AccuracyField;
-    currentValue: string;
-  } | null>(null);
+  const [selectedCellForEdit, setSelectedCellForEdit] = useState<import('@/hooks/use-data-handlers').SelectedCellForEdit | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<BoxTemplate | null>(null);
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [isOptimizerSummaryOpen, setIsOptimizerSummaryOpen] = useState(false);
@@ -668,10 +665,11 @@ const MainPage: React.FC = () => {
     }
     
     // Only include models that are shown (selected for comparison), excluding Ground Truth
-    return Object.entries(shownColumns)
-      .filter(([modelName, isVisible]) => isVisible && modelName !== 'Ground Truth')
-      .map(([modelName]) => modelName)
-      .sort();
+    return sortModelIds(
+      Object.entries(shownColumns)
+        .filter(([modelName, isVisible]) => isVisible && modelName !== 'Ground Truth')
+        .map(([modelName]) => modelName)
+    );
   }, [shownColumns]);
 
  // ===== COMPONENT RENDER =====

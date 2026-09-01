@@ -30,6 +30,7 @@ import { logger } from '@/lib/logger';
 import { validateEnumValue, validateMultiSelectValue } from '@/lib/enum-validator';
 
 // Import centralized constants
+import { getActiveModelsForRun } from '@/lib/main-page-constants';
 
 const UI_LABELS = {
   GROUND_TRUTH: 'Ground Truth',
@@ -51,11 +52,6 @@ const TOAST_MESSAGES = {
     variant: 'default' as const,
   },
 } as const;
-
-const getActiveModelsForRun = (shownColumns: Record<string, boolean>) =>
-  Object.entries(shownColumns)
-    .filter(([modelName, isShown]) => modelName !== UI_LABELS.GROUND_TRUTH && isShown)
-    .map(([modelName]) => modelName);
 
 interface UseEnhancedComparisonRunnerReturn {
   handleRunComparison: () => Promise<void>;
@@ -89,7 +85,6 @@ export const useEnhancedComparisonRunner = (
   const {
     isExtracting,
     progress,
-    detailedProgress,
     runIdRef,
     startExtraction,
     stopExtraction,
@@ -198,6 +193,12 @@ export const useEnhancedComparisonRunner = (
         selectedTemplate,
         shownColumns,
         (job, result) => {
+          // Stop reflecting results once the user cancels. The server run can't be
+          // truly aborted, but this keeps the grid and progress from churning after cancel.
+          if (cancelledRef.current) {
+            return;
+          }
+
           logger.debug('Progress update', { 
             modelName: job.modelName, 
             fileName: job.fileResult.fileName,
@@ -206,19 +207,21 @@ export const useEnhancedComparisonRunner = (
           
           updateProgress();
           
-          updateDetailedProgress({
+          // Derive counters from the freshest progress state (prev) so tallies
+          // accumulate correctly across the many callbacks fired during one run.
+          updateDetailedProgress((prev) => ({
             currentFile: job.fileResult.id,
             currentFileName: job.fileResult.fileName,
             currentModel: job.modelName,
             currentOperation: `${result.success ? 'Completed' : 'Failed'} ${formatModelName(job.modelName)} extraction for ${job.fileResult.fileName}`,
-            successful: result.success ? detailedProgress.successful + 1 : detailedProgress.successful,
-            failed: result.success ? detailedProgress.failed : detailedProgress.failed + 1,
-            filesCompleted: detailedProgress.filesCompleted.includes(job.fileResult.id) 
-              ? detailedProgress.filesCompleted 
-              : [...detailedProgress.filesCompleted, job.fileResult.id],
-            modelsCompleted: [...detailedProgress.modelsCompleted, `${job.fileResult.id}-${job.modelName}`],
+            successful: result.success ? prev.successful + 1 : prev.successful,
+            failed: result.success ? prev.failed : prev.failed + 1,
+            filesCompleted: prev.filesCompleted.includes(job.fileResult.id)
+              ? prev.filesCompleted
+              : [...prev.filesCompleted, job.fileResult.id],
+            modelsCompleted: [...prev.modelsCompleted, `${job.fileResult.id}-${job.modelName}`],
             lastUpdateTime: new Date()
-          });
+          }));
           
           // 🎨 Real-time update: Process this single result and dispatch to trigger UI updates
           if (currentDataRef.current) {
@@ -302,8 +305,7 @@ export const useEnhancedComparisonRunner = (
     stopExtraction,
     updateProgress,
     updateDetailedProgress,
-    runIdRef,
-    detailedProgress
+    runIdRef
   ]);
 
   /**
@@ -438,6 +440,21 @@ export const useEnhancedComparisonRunner = (
             });
           }
         }
+        
+        // Store reference data (citations + bounding boxes) for this model
+        if (result.referenceData) {
+          if (!fileResult.referenceData) {
+            fileResult.referenceData = {};
+          }
+          if (!fileResult.referenceData[job.modelName]) {
+            fileResult.referenceData[job.modelName] = {};
+          }
+          // Copy per-field references, matching by field key
+          const fieldRef = findFieldValue(result.referenceData as Record<string, any>, fieldKey);
+          if (fieldRef) {
+            fileResult.referenceData[job.modelName][fieldKey] = fieldRef;
+          }
+        }
       } else {
         const errorMessage = result.error?.userMessage || result.error?.message || UI_LABELS.UNKNOWN_ERROR;
         const conciseError = extractConciseErrorDescription(errorMessage);
@@ -474,8 +491,12 @@ export const useEnhancedComparisonRunner = (
         const existingFieldData = previousFields[fieldKey] || {};
         const fieldData: any = { ...existingFieldData };
         
-        // Always use the latest ground truth data - this prevents overwrites
-        const refreshedGroundTruthValue = refreshedGroundTruth[fileResult.id]?.groundTruth?.[fieldKey] || '';
+        // Always use the latest ground truth data - this prevents overwrites.
+        // Fall back to any existing in-grid ground truth so a store miss can't
+        // silently wipe a value the user already entered (mirrors the real-time path).
+        const refreshedGroundTruthValue = refreshedGroundTruth[fileResult.id]?.groundTruth?.[fieldKey]
+          || existingFieldData[UI_LABELS.GROUND_TRUTH]
+          || '';
         fieldData[UI_LABELS.GROUND_TRUTH] = refreshedGroundTruthValue;
         
         // Update only the models that actually participated in this run
@@ -506,6 +527,20 @@ export const useEnhancedComparisonRunner = (
                   };
                 }
                 fileResult.comparisonResults[fieldKey][modelResult.modelName].extractionConfidence = confidenceScore;
+              }
+            }
+            
+            // Store reference data (citations + bounding boxes) for this model
+            if (modelResult.referenceData) {
+              if (!fileResult.referenceData) {
+                fileResult.referenceData = {};
+              }
+              if (!fileResult.referenceData[modelResult.modelName]) {
+                fileResult.referenceData[modelResult.modelName] = {};
+              }
+              const fieldRef = findFieldValue(modelResult.referenceData as Record<string, any>, fieldKey);
+              if (fieldRef) {
+                fileResult.referenceData[modelResult.modelName][fieldKey] = fieldRef;
               }
             }
             

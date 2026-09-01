@@ -24,22 +24,22 @@ import type {
   AccuracyData, 
   AccuracyField, 
   BoxFile, 
-  PromptVersion 
+  PromptVersion,
+  FieldReference,
 } from '@/lib/types';
+
+export interface SelectedCellForEdit {
+  file: BoxFile;
+  field: AccuracyField;
+  currentValue: string;
+  fieldReferences?: Record<string, FieldReference>;
+}
 
 interface UseDataHandlersProps {
   accuracyData: AccuracyData | null;
   setAccuracyData: (data: AccuracyData) => void;
-  selectedCellForEdit: {
-    file: BoxFile;
-    field: AccuracyField;
-    currentValue: string;
-  } | null;
-  setSelectedCellForEdit: (cell: {
-    file: BoxFile;
-    field: AccuracyField;
-    currentValue: string;
-  } | null) => void;
+  selectedCellForEdit: SelectedCellForEdit | null;
+  setSelectedCellForEdit: (cell: SelectedCellForEdit | null) => void;
   setIsInlineEditorOpen: (open: boolean) => void;
   setSelectedFieldForPromptStudio: (field: AccuracyField) => void;
 }
@@ -77,10 +77,22 @@ export const useDataHandlers = ({
       type: 'file',
     };
     
+    // Collect per-model references for this specific field
+    let fieldReferences: Record<string, FieldReference> | undefined;
+    if (file.referenceData) {
+      for (const [modelName, modelRefs] of Object.entries(file.referenceData)) {
+        if (modelRefs[fieldKey]) {
+          if (!fieldReferences) fieldReferences = {};
+          fieldReferences[modelName] = modelRefs[fieldKey];
+        }
+      }
+    }
+    
     setSelectedCellForEdit({
       file: boxFile,
       field: field,
-      currentValue: currentValue
+      currentValue: currentValue,
+      fieldReferences,
     });
     setIsInlineEditorOpen(true);
   };

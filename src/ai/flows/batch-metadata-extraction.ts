@@ -27,6 +27,7 @@ export interface BatchExtractionResult {
   success: boolean;
   data?: Record<string, any>;
   confidenceScores?: Record<string, number>;
+  referenceData?: import('@/lib/types').ExtractionReferences;
   error?: string;
   duration?: number;
   timedOut?: boolean;
@@ -139,7 +140,7 @@ export async function extractMetadataBatch(
           templateKey: job.templateKey
         });
         
-        const { extractedData, confidenceScores } = await withTimeout(
+        const { extractedData, confidenceScores, referenceData } = await withTimeout(
           extractionPromise, 
           JOB_TIMEOUT_MS, 
           job.jobId
@@ -154,7 +155,9 @@ export async function extractMetadataBatch(
           duration,
           extractedFieldCount: Object.keys(extractedData).length,
           hasConfidenceScores: !!confidenceScores,
-          confidenceScoreCount: confidenceScores ? Object.keys(confidenceScores).length : 0
+          confidenceScoreCount: confidenceScores ? Object.keys(confidenceScores).length : 0,
+          hasReferenceData: !!referenceData,
+          referenceFieldCount: referenceData ? Object.keys(referenceData).length : 0
         });
 
         const result: BatchExtractionResult = {
@@ -162,6 +165,7 @@ export async function extractMetadataBatch(
           success: true,
           data: extractedData,
           confidenceScores,
+          referenceData,
           duration
         };
 
@@ -244,7 +248,8 @@ export async function extractMetadata(input: ExtractMetadataInput): Promise<Extr
 
   return {
     data: result.data || {},
-    confidenceScores: result.confidenceScores
+    confidenceScores: result.confidenceScores,
+    referenceData: result.referenceData
   };
 }
 

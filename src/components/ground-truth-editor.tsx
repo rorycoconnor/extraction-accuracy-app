@@ -11,14 +11,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Terminal, ChevronDown, ChevronRight, MapPin } from 'lucide-react';
-import type { BoxFile, BoxTemplate, ContextMatch } from '@/lib/types';
+import { Loader2, Terminal, ChevronDown, ChevronRight, MapPin, Navigation, Eye } from 'lucide-react';
+import type { BoxFile, BoxTemplate, ContextMatch, ExtractionReferences, BoundingBox } from '@/lib/types';
 import { DatePicker } from './ui/date-picker';
-import { getBoxFileEmbedLinkAction } from '@/lib/actions/box';
+import { getBoxAccessTokenAction } from '@/lib/actions/box';
 import { getFieldContext } from '@/lib/actions/context';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { NOT_PRESENT_VALUE } from '@/lib/utils';
 import { logger } from '@/lib/logger';
+import BoxContentPreview, { type BoxContentPreviewHandle } from '@/components/box-content-preview';
 
 type GroundTruthEditorProps = {
   isOpen: boolean;
@@ -27,6 +28,7 @@ type GroundTruthEditorProps = {
   template: BoxTemplate;
   groundTruth: Record<string, string>;
   onSave: (fileId: string, data: Record<string, string>) => void;
+  allReferenceData?: Record<string, ExtractionReferences>;
 };
 
 // Helper to create a default form state from template and ground truth data
@@ -49,7 +51,7 @@ const createDefaultValues = (template: BoxTemplate, groundTruth: Record<string, 
 };
 
 
-export default function GroundTruthEditor({ isOpen, onClose, file, template, groundTruth, onSave }: GroundTruthEditorProps) {
+export default function GroundTruthEditor({ isOpen, onClose, file, template, groundTruth, onSave, allReferenceData }: GroundTruthEditorProps) {
   logger.debug('GroundTruthEditor opened for file', { fileId: file.id, 
     template: template.templateKey,
     groundTruthData: groundTruth,
@@ -57,12 +59,11 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
   });
   
   const { toast } = useToast();
-  const [embedUrl, setEmbedUrl] = React.useState<string | null>(null);
-  const [isEmbedLoading, setIsEmbedLoading] = React.useState(true);
-  const [embedError, setEmbedError] = React.useState<string | null>(null);
+  const [accessToken, setAccessToken] = React.useState<string | null>(null);
+  const [isTokenLoading, setIsTokenLoading] = React.useState(true);
+  const [tokenError, setTokenError] = React.useState<string | null>(null);
   
-  // Track focused element to restore after iframe loads (focus theft prevention)
-  const focusedElementRef = React.useRef<HTMLElement | null>(null);
+  const previewRef = React.useRef<BoxContentPreviewHandle>(null);
   const formContainerRef = React.useRef<HTMLDivElement>(null);
   
   // Where Found functionality
@@ -145,83 +146,70 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
     }
   }, [isOpen, file.id, template, groundTruth, reset]);
 
-  // Load embed URL
   React.useEffect(() => {
-    if (isOpen && file.id) {
-      setIsEmbedLoading(true);
-      setEmbedError(null);
-      setEmbedUrl(null);
-
-      getBoxFileEmbedLinkAction(file.id)
-        .then(url => {
-          // Capture currently focused element before iframe renders
-          if (document.activeElement instanceof HTMLElement && 
-              formContainerRef.current?.contains(document.activeElement)) {
-            focusedElementRef.current = document.activeElement;
-          }
-          setEmbedUrl(url);
-        })
+    if (isOpen) {
+      if (!accessToken) {
+        setIsTokenLoading(true);
+      }
+      setTokenError(null);
+      getBoxAccessTokenAction()
+        .then(token => setAccessToken(token))
         .catch(err => {
-          logger.error('Failed to get embed link', err);
-          setEmbedError(err instanceof Error ? err.message : "Could not load file preview.");
+          logger.error('Failed to get access token', err);
+          setTokenError(err instanceof Error ? err.message : 'Could not load file preview.');
         })
-        .finally(() => {
-          setIsEmbedLoading(false);
+        .finally(() => setIsTokenLoading(false));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
+
+  // Get citations for a specific field from all models' reference data
+  const getFieldCitations = React.useCallback((fieldKey: string) => {
+    if (!allReferenceData) return [];
+    const citations: Array<{
+      modelName: string;
+      content: string;
+      pageIndex: number | null;
+      boundingBox?: { top_left: { x: number; y: number }; bottom_right: { x: number; y: number } };
+      boundingBoxes: BoundingBox[];
+    }> = [];
+    for (const [modelName, modelRefs] of Object.entries(allReferenceData)) {
+      const fieldRef = modelRefs[fieldKey];
+      if (fieldRef?.citations) {
+        fieldRef.citations.forEach(citation => {
+          const boxes = citation.bounding_boxes ?? [];
+          const firstBB = boxes[0];
+          const page = citation.page ?? firstBB?.page_index ?? null;
+          citations.push({
+            modelName,
+            content: citation.content,
+            pageIndex: typeof page === 'number' ? page : null,
+            boundingBox: firstBB ? { top_left: firstBB.top_left, bottom_right: firstBB.bottom_right } : undefined,
+            boundingBoxes: boxes,
+          });
         });
-    }
-  }, [isOpen, file.id]);
-
-  // Handle iframe load to restore focus after Box embed steals it
-  const handleIframeLoad = React.useCallback(() => {
-    // Box's embed viewer steals focus multiple times as it initializes.
-    // We monitor and restore focus for a short period after load.
-    const restoreFocus = () => {
-      if (focusedElementRef.current && document.body.contains(focusedElementRef.current)) {
-        // Check if focus has moved to something outside our form (like the iframe)
-        const activeElement = document.activeElement;
-        const isInForm = formContainerRef.current?.contains(activeElement);
-        const isInIframe = activeElement?.tagName === 'IFRAME';
-        
-        if (!isInForm || isInIframe) {
-          focusedElementRef.current.focus();
-        }
       }
-    };
-
-    // Restore focus multiple times to combat Box's repeated focus theft
-    // Box viewer initializes in phases and may steal focus multiple times
-    requestAnimationFrame(restoreFocus);
-    setTimeout(restoreFocus, 100);
-    setTimeout(restoreFocus, 300);
-    setTimeout(restoreFocus, 500);
-  }, []);
-
-  // Track focus changes within the form to know what to restore
-  const handleFormFocus = React.useCallback((e: React.FocusEvent) => {
-    if (e.target instanceof HTMLElement) {
-      focusedElementRef.current = e.target;
     }
-  }, []);
+    return citations;
+  }, [allReferenceData]);
 
-  // Detect when focus leaves the form to the iframe and restore it
-  const handleFormBlur = React.useCallback((e: React.FocusEvent) => {
-    // Use setTimeout to check where focus went after the blur completes
-    setTimeout(() => {
-      const activeElement = document.activeElement;
-      const isInIframe = activeElement?.tagName === 'IFRAME';
-      const isInForm = formContainerRef.current?.contains(activeElement);
-      
-      // If focus went to the iframe and we had a focused form element, restore focus
-      if ((isInIframe || !isInForm) && focusedElementRef.current && document.body.contains(focusedElementRef.current)) {
-        // Only restore if the user was actively editing (input, textarea, or select)
-        const tagName = focusedElementRef.current.tagName.toLowerCase();
-        if (tagName === 'input' || tagName === 'textarea' || tagName === 'select') {
-          focusedElementRef.current.focus();
-        }
+  // Highlight a citation in the document. Prefers exact coordinate-based
+  // bounding box overlays and falls back to text search when unavailable.
+  const showCitation = React.useCallback((citation: { content: string; pageIndex: number | null; boundingBoxes: BoundingBox[] }) => {
+    if (citation.boundingBoxes.length > 0) {
+      previewRef.current?.highlightBoundingBoxes(citation.boundingBoxes);
+    } else if (citation.pageIndex !== null) {
+      const pageNumber = citation.pageIndex + 1;
+      previewRef.current?.setPage(pageNumber);
+      if (citation.content) {
+        previewRef.current?.highlightText(citation.content, pageNumber);
       }
-    }, 0);
+    }
+    logger.debug('Showing citation in preview', {
+      pageIndex: citation.pageIndex,
+      boxCount: citation.boundingBoxes.length,
+    });
   }, []);
-
 
   const onSubmit = (data: Record<string, any>) => {
     logger.debug('GroundTruthEditor submitting data for file', { fileId: file.id });
@@ -294,6 +282,7 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
     const isOpen = openContexts[fieldKey];
     const isLoading = loadingContexts[fieldKey];
     const context = fieldContexts[fieldKey];
+    const citations = getFieldCitations(fieldKey);
 
     return (
       <Collapsible 
@@ -315,6 +304,11 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
             {isOpen ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
             <MapPin className="h-3 w-3" />
             Where Found
+            {citations.length > 0 && (
+              <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0">
+                {citations.length} citation{citations.length !== 1 ? 's' : ''}
+              </Badge>
+            )}
             {context && (
               <Badge variant="outline" className="ml-auto text-xs">
                 {context.confidence}
@@ -323,7 +317,49 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-2">
-          <div className="rounded-md border bg-muted/30 p-3 text-sm">
+          <div className="rounded-md border bg-muted/30 p-3 text-sm space-y-3">
+            {/* Box AI Citations with page navigation */}
+            {citations.length > 0 && (
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Navigation className="h-3 w-3" />
+                  Box AI Citations
+                </div>
+                {citations.map((citation, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={() => {
+                      if (citation.boundingBoxes.length > 0 || citation.pageIndex !== null) showCitation(citation);
+                    }}
+                    className={`w-full text-left text-xs p-2 rounded border bg-blue-50/50 dark:bg-blue-900/10 border-blue-200/50 dark:border-blue-800/50 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors ${
+                      (citation.boundingBoxes.length > 0 || citation.pageIndex !== null) ? 'cursor-pointer' : 'cursor-default'
+                    }`}
+                  >
+                    <div className="flex items-start gap-1.5">
+                      <Eye className="h-3 w-3 mt-0.5 flex-shrink-0 text-blue-500" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1 mb-1 flex-wrap">
+                          {citation.pageIndex !== null && (
+                            <Badge variant="outline" className="text-[9px] px-1 py-0">Page {citation.pageIndex + 1}</Badge>
+                          )}
+                          {citation.boundingBoxes.length > 0 && (
+                            <Badge variant="outline" className="text-[9px] px-1 py-0 border-yellow-400 text-yellow-700 dark:text-yellow-400">
+                              {citation.boundingBoxes.length > 1
+                                ? `${citation.boundingBoxes.length} highlights`
+                                : 'Highlight'}
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="text-[11px] leading-relaxed line-clamp-2">&ldquo;{citation.content}&rdquo;</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Text search context */}
             {isLoading ? (
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="h-3 w-3 animate-spin" />
@@ -340,11 +376,11 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
                   dangerouslySetInnerHTML={{ __html: context.highlightedContext }}
                 />
               </div>
-            ) : (
+            ) : citations.length === 0 ? (
               <div className="text-xs text-muted-foreground">
                 Context not found in document text
               </div>
-            )}
+            ) : null}
           </div>
         </CollapsibleContent>
       </Collapsible>
@@ -352,36 +388,34 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
   };
 
   const renderPreview = () => {
-    return (
-      <>
-        {isEmbedLoading && (
-          <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-background z-10">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-        )}
-        
-        {embedError && !isEmbedLoading && (
-          <div className="flex h-full w-full items-center justify-center p-4">
-            <Alert variant="destructive">
-              <Terminal className="h-4 w-4" />
-              <AlertTitle>Preview Error</AlertTitle>
-              <AlertDescription>{embedError}</AlertDescription>
-            </Alert>
-          </div>
-        )}
-        
-        {embedUrl && (
-          <iframe
-            src={embedUrl}
-            className={`h-full w-full ${isEmbedLoading ? 'invisible' : 'visible'}`}
-            title="PDF Preview"
-            tabIndex={-1}
-            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-            onLoad={handleIframeLoad}
-          />
-        )}
-      </>
-    );
+    if (isTokenLoading) {
+      return (
+        <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-background z-10">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
+    }
+    if (tokenError) {
+      return (
+        <div className="flex h-full w-full items-center justify-center p-4">
+          <Alert variant="destructive">
+            <Terminal className="h-4 w-4" />
+            <AlertTitle>Preview Error</AlertTitle>
+            <AlertDescription>{tokenError}</AlertDescription>
+          </Alert>
+        </div>
+      );
+    }
+    if (accessToken) {
+      return (
+        <BoxContentPreview
+          ref={previewRef}
+          fileId={file.id}
+          accessToken={accessToken}
+        />
+      );
+    }
+    return null;
   };
 
   return (
@@ -395,7 +429,7 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
             </div>
           </div>
           {/* Right Side: Metadata Form */}
-          <div className="flex-[2] flex flex-col border-l" ref={formContainerRef} onFocusCapture={handleFormFocus} onBlurCapture={handleFormBlur}>
+          <div className="flex-[2] flex flex-col border-l" ref={formContainerRef}>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col h-full">
               <DialogHeader className="p-6 border-b">
                 <div className="flex items-start justify-between">
@@ -423,12 +457,28 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
               </div>
               <ScrollArea className="flex-grow">
                 <div className="space-y-6 p-6">
-                  {template.fields.filter(f => f.isActive).map((field) => (
+                  {template.fields.filter(f => f.isActive).map((field) => {
+                    const fieldCitations = getFieldCitations(field.key);
+                    const highlightable = fieldCitations.find(c => c.boundingBoxes.length > 0 || c.pageIndex !== null);
+                    return (
                     <div key={field.id} className="space-y-2">
                         <div className="flex items-center justify-between">
                             <Label htmlFor={field.key}>
                                 {field.displayName} ({field.type})
                             </Label>
+                            {highlightable && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 gap-1.5 text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                                onClick={() => showCitation(highlightable)}
+                                title="Highlight where Box AI found this in the document"
+                              >
+                                <Eye className="h-3.5 w-3.5" />
+                                Show in document
+                              </Button>
+                            )}
                         </div>
                        <Controller
                             name={field.key}
@@ -441,7 +491,8 @@ export default function GroundTruthEditor({ isOpen, onClose, file, template, gro
                             )}
                         />
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </ScrollArea>
               <DialogFooter className="p-6 bg-muted/50 border-t">

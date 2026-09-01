@@ -144,43 +144,71 @@ export interface ModelConfig {
 export const MODEL_CONFIGS: ModelConfig[] = [
   // Google Gemini Models
   {
-    id: 'google__gemini_3_pro',
-    name: 'Gemini 3 Pro',
+    id: 'google__gemini_3_5_flash',
+    name: 'Gemini 3.5 Flash',
     vendor: 'Google',
     isPremium: true, // Premium tier
     isMultiModal: true
   },
   {
-    id: 'google__gemini_3_pro_no_prompt',
-    name: 'Gemini 3 Pro (no prompt)',
+    id: 'google__gemini_3_5_flash_no_prompt',
+    name: 'Gemini 3.5 Flash (no prompt)',
     vendor: 'Google',
     isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_3_5_flash_lite',
+    name: 'Gemini 3.5 Flash Lite',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_3_5_flash_lite_no_prompt',
+    name: 'Gemini 3.5 Flash Lite (no prompt)',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_3_1_flash_lite',
+    name: 'Gemini 3.1 Flash Lite',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'google__gemini_3_1_flash_lite_no_prompt',
+    name: 'Gemini 3.1 Flash Lite (no prompt)',
+    vendor: 'Google',
+    isPremium: false, // Standard tier
     isMultiModal: true
   },
   {
     id: 'google__gemini_3_flash',
     name: 'Gemini 3 Flash',
     vendor: 'Google',
-    isPremium: true, // Premium tier
+    isPremium: false, // Standard tier (Beta / customer-enabled)
     isMultiModal: true
   },
   {
     id: 'google__gemini_3_flash_no_prompt',
     name: 'Gemini 3 Flash (no prompt)',
     vendor: 'Google',
-    isPremium: true, // Premium tier
+    isPremium: false, // Standard tier (Beta / customer-enabled)
     isMultiModal: true
   },
   {
     id: 'google__gemini_2_5_flash',
-    name: 'Google 2.5 Flash',
+    name: 'Gemini 2.5 Flash',
     vendor: 'Google',
     isPremium: false, // Standard tier
     isMultiModal: true
   },
   {
     id: 'google__gemini_2_5_flash_no_prompt',
-    name: 'Google 2.5 Flash (no prompt)',
+    name: 'Gemini 2.5 Flash (no prompt)',
     vendor: 'Google',
     isPremium: false, // Standard tier
     isMultiModal: true
@@ -217,29 +245,99 @@ export const MODEL_CONFIGS: ModelConfig[] = [
 
   // AWS Claude Models
   {
-    id: 'aws__claude_3_7_sonnet',
-    name: 'Claude 3.7 Sonnet',
+    id: 'aws__claude_opus_5',
+    name: 'Claude Opus 5',
     vendor: 'Anthropic',
     isPremium: true, // Premium tier
     isMultiModal: false
   },
   {
-    id: 'aws__claude_3_7_sonnet_no_prompt',
-    name: 'Claude 3.7 Sonnet (no prompt)',
+    id: 'aws__claude_opus_5_no_prompt',
+    name: 'Claude Opus 5 (no prompt)',
     vendor: 'Anthropic',
     isPremium: true, // Premium tier
     isMultiModal: false
   },
   {
-    id: 'aws__claude_4_sonnet',
-    name: 'Claude 4 Sonnet',
+    id: 'aws__claude_sonnet_5',
+    name: 'Claude Sonnet 5',
     vendor: 'Anthropic',
     isPremium: true, // Premium tier
     isMultiModal: false
   },
   {
-    id: 'aws__claude_4_sonnet_no_prompt',
-    name: 'Claude 4 Sonnet (no prompt)',
+    id: 'aws__claude_sonnet_5_no_prompt',
+    name: 'Claude Sonnet 5 (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_4_8_opus',
+    name: 'Claude 4.8 Opus',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_4_8_opus_no_prompt',
+    name: 'Claude 4.8 Opus (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_4_7_opus',
+    name: 'Claude 4.7 Opus',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'aws__claude_4_7_opus_no_prompt',
+    name: 'Claude 4.7 Opus (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'aws__claude_4_6_opus',
+    name: 'Claude 4.6 Opus',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'aws__claude_4_6_opus_no_prompt',
+    name: 'Claude 4.6 Opus (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'aws__claude_4_6_sonnet',
+    name: 'Claude 4.6 Sonnet',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'aws__claude_4_6_sonnet_no_prompt',
+    name: 'Claude 4.6 Sonnet (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'aws__claude_4_5_opus',
+    name: 'Claude 4.5 Opus',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_4_5_opus_no_prompt',
+    name: 'Claude 4.5 Opus (no prompt)',
     vendor: 'Anthropic',
     isPremium: true, // Premium tier
     isMultiModal: false
@@ -258,33 +356,131 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     isPremium: true, // Premium tier
     isMultiModal: false
   },
-  // Azure OpenAI Models (GPT)
   {
-    id: 'azure__openai__gpt_4_1',
-    name: 'GPT-4.1',
-    vendor: 'Azure',
+    id: 'aws__claude_4_5_haiku',
+    name: 'Claude 4.5 Haiku',
+    vendor: 'Anthropic',
+    isPremium: false, // Standard tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_4_5_haiku_no_prompt',
+    name: 'Claude 4.5 Haiku (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: false, // Standard tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_7_sonnet',
+    name: 'Claude 3.7 Sonnet',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_3_7_sonnet_no_prompt',
+    name: 'Claude 3.7 Sonnet (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_fable_5',
+    name: 'Claude Fable 5',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier (Beta / customer-enabled)
+    isMultiModal: false
+  },
+  {
+    id: 'aws__claude_fable_5_no_prompt',
+    name: 'Claude Fable 5 (no prompt)',
+    vendor: 'Anthropic',
+    isPremium: true, // Premium tier (Beta / customer-enabled)
+    isMultiModal: false
+  },
+  // OpenAI Models (GPT)
+  {
+    id: 'openai__gpt_5_6_sol',
+    name: 'GPT-5.6 Sol',
+    vendor: 'OpenAI',
     isPremium: true, // Premium tier
     isMultiModal: true
   },
   {
-    id: 'azure__openai__gpt_4_1_no_prompt',
-    name: 'GPT-4.1 (no prompt)',
-    vendor: 'Azure',
+    id: 'openai__gpt_5_6_sol_no_prompt',
+    name: 'GPT-5.6 Sol (no prompt)',
+    vendor: 'OpenAI',
     isPremium: true, // Premium tier
     isMultiModal: true
   },
   {
-    id: 'azure__openai__gpt_4_1_mini',
-    name: 'GPT-4.1 Mini',
-    vendor: 'Azure',
+    id: 'openai__gpt_5_6_terra',
+    name: 'GPT-5.6 Terra',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_6_terra_no_prompt',
+    name: 'GPT-5.6 Terra (no prompt)',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_5',
+    name: 'GPT-5.5',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_5_no_prompt',
+    name: 'GPT-5.5 (no prompt)',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_4',
+    name: 'GPT-5.4',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_4_no_prompt',
+    name: 'GPT-5.4 (no prompt)',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_4_mini',
+    name: 'GPT-5.4 Mini',
+    vendor: 'OpenAI',
     isPremium: false, // Standard tier
     isMultiModal: true
   },
   {
-    id: 'azure__openai__gpt_4_1_mini_no_prompt',
-    name: 'GPT-4.1 Mini (no prompt)',
-    vendor: 'Azure',
+    id: 'openai__gpt_5_4_mini_no_prompt',
+    name: 'GPT-5.4 Mini (no prompt)',
+    vendor: 'OpenAI',
     isPremium: false, // Standard tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_2',
+    name: 'GPT-5.2',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
+    isMultiModal: true
+  },
+  {
+    id: 'openai__gpt_5_2_no_prompt',
+    name: 'GPT-5.2 (no prompt)',
+    vendor: 'OpenAI',
+    isPremium: true, // Premium tier
     isMultiModal: true
   },
   {
@@ -316,17 +512,17 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     isMultiModal: true
   },
   {
-    id: 'openai__gpt_o3',
-    name: 'OpenAI O3',
+    id: 'openai__gpt_5_mini',
+    name: 'GPT-5 Mini',
     vendor: 'OpenAI',
-    isPremium: true, // Premium tier (Beta)
+    isPremium: false, // Standard tier
     isMultiModal: true
   },
   {
-    id: 'openai__gpt_o3_no_prompt',
-    name: 'OpenAI O3 (no prompt)',
+    id: 'openai__gpt_5_mini_no_prompt',
+    name: 'GPT-5 Mini (no prompt)',
     vendor: 'OpenAI',
-    isPremium: true, // Premium tier (Beta)
+    isPremium: false, // Standard tier
     isMultiModal: true
   },
 
@@ -336,6 +532,90 @@ export const MODEL_CONFIGS: ModelConfig[] = [
 export const AVAILABLE_MODELS = MODEL_CONFIGS.map(model => model.id);
 export const ALL_MODELS = [UI_LABELS.GROUND_TRUTH, ...AVAILABLE_MODELS];
 export const PREMIUM_MODEL = 'enhanced_extract_agent';
+
+const MODEL_ORDER_INDEX = new Map(MODEL_CONFIGS.map((model, index) => [model.id, index]));
+
+/**
+ * Orders models by their position in MODEL_CONFIGS so each model stays next to its
+ * own "(no prompt)" variant. Sorting the raw IDs as strings does not work: e.g.
+ * `google__gemini_3_5_flash_lite` sorts between `google__gemini_3_5_flash` and
+ * `google__gemini_3_5_flash_no_prompt`, and `google__gemini_3_5_*` sorts before
+ * `google__gemini_3_flash`.
+ */
+export const compareModelIds = (a: string, b: string): number => {
+  if (a === b) return 0;
+  if (a === UI_LABELS.GROUND_TRUTH) return -1;
+  if (b === UI_LABELS.GROUND_TRUTH) return 1;
+
+  const indexA = MODEL_ORDER_INDEX.get(a);
+  const indexB = MODEL_ORDER_INDEX.get(b);
+
+  if (indexA !== undefined && indexB !== undefined) return indexA - indexB;
+  // Defensive only: callers should filter retired models with isKnownModel first.
+  if (indexA !== undefined) return -1;
+  if (indexB !== undefined) return 1;
+  return a.localeCompare(b);
+};
+
+export const sortModelIds = (modelIds: readonly string[]): string[] =>
+  [...modelIds].sort(compareModelIds);
+
+/**
+ * Saved results can reference models that have since been removed from MODEL_CONFIGS.
+ * Those are retired and must stay hidden from the UI and exports.
+ */
+export const isKnownModel = (modelId: string): boolean => MODEL_ORDER_INDEX.has(modelId);
+
+export const sortKnownModelIds = (modelIds: readonly string[]): string[] =>
+  sortModelIds(modelIds.filter(isKnownModel));
+
+// Columns pre-selected on first run. Must stay in sync with MODEL_CONFIGS ids,
+// otherwise the comparison grid opens with no models selected.
+export const DEFAULT_SELECTED_MODELS: string[] = [
+  'google__gemini_3_5_flash',
+  'google__gemini_3_5_flash_no_prompt'
+];
+
+export const isDefaultSelectedModel = (modelId: string): boolean =>
+  DEFAULT_SELECTED_MODELS.includes(modelId);
+
+/**
+ * Rebuilds a column-visibility map against the current MODEL_CONFIGS.
+ *
+ * Saved state outlives the model list, so it can still select models that have
+ * since been retired. Those keys are dropped here and newly added models pick up
+ * their default, keeping persisted state from silently driving extraction runs
+ * against model IDs Box no longer serves.
+ */
+export const sanitizeShownColumns = (
+  shownColumns?: Record<string, boolean> | null
+): Record<string, boolean> => {
+  const sanitized: Record<string, boolean> = {
+    [UI_LABELS.GROUND_TRUTH]: shownColumns?.[UI_LABELS.GROUND_TRUTH] ?? true,
+  };
+
+  for (const modelId of AVAILABLE_MODELS) {
+    sanitized[modelId] = shownColumns?.[modelId] ?? isDefaultSelectedModel(modelId);
+  }
+
+  return sanitized;
+};
+
+/**
+ * The models a comparison run should actually extract with: visible, not Ground
+ * Truth, and still present in MODEL_CONFIGS.
+ */
+export const getActiveModelsForRun = (
+  shownColumns: Record<string, boolean>
+): string[] =>
+  sortModelIds(
+    Object.entries(shownColumns)
+      .filter(
+        ([modelName, isShown]) =>
+          isShown && modelName !== UI_LABELS.GROUND_TRUTH && isKnownModel(modelName)
+      )
+      .map(([modelName]) => modelName)
+  );
 
 // Helper functions
 export const getModelConfig = (modelId: string): ModelConfig | undefined => {

@@ -26,8 +26,9 @@ import {
   getGroundTruthData,
   getGroundTruthForFile,
   associateFilesToTemplate,
+  getAccuracyData,
 } from '@/lib/mock-data';
-import type { BoxFile, BoxFolder, BoxTemplate, FileMetadataStore } from '@/lib/types';
+import type { BoxFile, BoxFolder, BoxTemplate, FileMetadataStore, ExtractionReferences } from '@/lib/types';
 import { Database, Pencil, Terminal, Folder, Download, Upload, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -889,6 +890,11 @@ export default function GroundTruthPage() {
           template={selectedFile.template}
           groundTruth={getGroundTruth(selectedFile.id)}
           onSave={handleSaveGroundTruth}
+          allReferenceData={(() => {
+            const data = getAccuracyData();
+            const fileResult = data?.results?.find(r => r.id === selectedFile.id);
+            return fileResult?.referenceData;
+          })()}
         />
       )}
 

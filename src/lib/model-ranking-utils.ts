@@ -1,4 +1,5 @@
 import type { AccuracyData } from './types';
+import { compareModelIds } from '@/lib/main-page-constants';
 import { logger } from '@/lib/logger';
 
 // Constants for better maintainability
@@ -237,7 +238,7 @@ function applyTieBreaking(
  * 2. Overall Precision  
  * 3. Overall Recall
  * 4. Total Field Wins
- * 5. Alphabetical order (final fallback)
+ * 5. Canonical model order (final fallback)
  */
 export function assignRanks(modelSummaries: ModelSummary[]): void {
   modelSummaries.sort((a, b) => {
@@ -261,8 +262,8 @@ export function assignRanks(modelSummaries: ModelSummary[]): void {
       return b.fieldsWon - a.fieldsWon;
     }
     
-    // 5. Alphabetical order (final fallback)
-    return a.modelName.localeCompare(b.modelName);
+    // 5. Canonical model order (final fallback)
+    return compareModelIds(a.modelName, b.modelName);
   });
   
   // Assign ranks, handling ties properly

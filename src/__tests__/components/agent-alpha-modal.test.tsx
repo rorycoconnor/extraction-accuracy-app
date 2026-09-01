@@ -42,24 +42,31 @@ vi.mock('@/lib/system-prompt-storage', () => ({
   updateAgentSystemPromptVersion: vi.fn()
 }))
 
-// Mock the agent-alpha-config
-vi.mock('@/lib/agent-alpha-config', () => ({
-  AGENT_ALPHA_CONFIG: {
-    MAX_DOCS: 8,
-    MAX_ITERATIONS: 5,
-    TARGET_ACCURACY: 1.0,
-    DEFAULT_TEST_MODEL: 'google__gemini_2_5_flash',
-    FIELD_CONCURRENCY: 5,
-    PROMPT_GEN_MODEL: 'aws__claude_4_5_opus'
-  },
-  getDefaultRuntimeConfig: () => ({
-    maxDocs: 8,
-    maxIterations: 5,
-    testModel: 'google__gemini_2_5_flash',
-    fieldConcurrency: 5
-  }),
-  DEFAULT_PROMPT_GENERATION_INSTRUCTIONS: 'Default instructions'
-}))
+// Partial mock: spreading the real module keeps newly added exports (such as
+// PROMPT_GEN_MODELS, which configure-view renders) available to the component.
+vi.mock('@/lib/agent-alpha-config', async importOriginal => {
+  const actual = await importOriginal<typeof import('@/lib/agent-alpha-config')>()
+  return {
+    ...actual,
+    AGENT_ALPHA_CONFIG: {
+      ...actual.AGENT_ALPHA_CONFIG,
+      MAX_DOCS: 8,
+      MAX_ITERATIONS: 5,
+      TARGET_ACCURACY: 1.0,
+      DEFAULT_TEST_MODEL: 'google__gemini_2_5_flash',
+      FIELD_CONCURRENCY: 5,
+      PROMPT_GEN_MODEL: 'aws__claude_opus_5'
+    },
+    getDefaultRuntimeConfig: () => ({
+      maxDocs: 8,
+      maxIterations: 5,
+      testModel: 'google__gemini_2_5_flash',
+      fieldConcurrency: 5,
+      promptGenerationModel: 'aws__claude_opus_5'
+    }),
+    DEFAULT_PROMPT_GENERATION_INSTRUCTIONS: 'Default instructions'
+  }
+})
 
 describe('AgentAlphaModal Component Tests', () => {
   const defaultProps = {

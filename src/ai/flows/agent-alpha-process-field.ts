@@ -274,26 +274,93 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     }
   }
 
-  // Use the best result from our iterations
-  // Note: bestAccuracy is from testing on sampled docs, which may differ from initialAccuracy (all docs)
+  // Use the best result from our iterations as the starting point.
+  // Note: bestAccuracy is from the TRAIN subset, which is optimistic vs. unseen docs.
   if (bestAccuracy >= 0) {
     finalAccuracy = bestAccuracy;
-    logger.info(`   📊 Final accuracy on test docs: ${(finalAccuracy * 100).toFixed(1)}%`);
   }
 
-  // Check if the new prompt actually improved accuracy
-  // If not, we should NOT recommend updating the prompt
-  // Exception: If no ground truth exists, always consider it "improved" since we generated a prompt from nothing
-  const improved = !hasAnyGroundTruth || finalAccuracy >= initialAccuracy;
-  
-  // If accuracy got worse (and we have ground truth to measure), keep the original prompt
-  const finalPromptToUse = improved ? bestPrompt : initialPrompt;
-  
-  if (!improved && hasAnyGroundTruth) {
-    logger.warn(`   ⚠️ New prompt performed WORSE than original (${(finalAccuracy * 100).toFixed(1)}% < ${(initialAccuracy * 100).toFixed(1)}%)`);
-    logger.warn(`   ⚠️ Keeping original prompt - will NOT recommend update`);
-  } else if (!hasAnyGroundTruth) {
+  // Consistent, held-out final evaluation.
+  // The per-iteration accuracy is measured on the TRAIN subset, so it can be optimistic
+  // and isn't comparable to the original all-docs accuracy. Here we re-measure the chosen
+  // prompt on a fixed eval set (holdout when available) and decide keep-vs-replace via a
+  // fair head-to-head against the user's original prompt on those SAME docs.
+  let improved: boolean;
+  let finalPromptToUse: string;
+  let baselineAccuracy = initialAccuracy;
+  let finalAccuracyEvalSet: AgentAlphaFieldResult['finalAccuracyEvalSet'] = 'none';
+
+  if (!hasAnyGroundTruth) {
+    // Nothing to measure against - we generated a prompt from scratch, so treat as improved.
+    improved = true;
+    finalPromptToUse = bestPrompt;
     logger.info(`   ✅ Generated prompt for field without ground truth`);
+  } else {
+    const evalDocIds = hasHoldout ? holdoutDocIds : effectiveTrainDocs;
+    finalAccuracyEvalSet = hasHoldout ? 'holdout' : 'train';
+
+    try {
+      // Measure the chosen prompt on the eval set (unseen holdout when available).
+      const finalEval = await runFieldIteration({
+        fieldKey,
+        fieldName,
+        fieldType,
+        currentPrompt: bestPrompt,
+        previousPrompts: [],
+        sampledDocIds: evalDocIds,
+        groundTruth,
+        templateKey,
+        testModel,
+        promptGenerationModel,
+        iterationNumber: iterationCount,
+        maxIterations,
+        options: fieldOptions,
+        compareConfig: effectiveCompareConfig,
+        systemPromptOverride,
+        validationOnly: true,
+      });
+      finalAccuracy = finalEval.accuracy;
+
+      // Establish a fair baseline on the SAME docs. Only worth re-measuring when the user
+      // actually had a real prompt to beat; otherwise initialAccuracy (from a generic/absent
+      // prompt) is already the honest baseline and we avoid an extra extraction pass.
+      if (userOriginalPrompt) {
+        const baselineEval = await runFieldIteration({
+          fieldKey,
+          fieldName,
+          fieldType,
+          currentPrompt: userOriginalPrompt,
+          previousPrompts: [],
+          sampledDocIds: evalDocIds,
+          groundTruth,
+          templateKey,
+          testModel,
+          promptGenerationModel,
+          iterationNumber: iterationCount,
+          maxIterations,
+          options: fieldOptions,
+          compareConfig: effectiveCompareConfig,
+          systemPromptOverride,
+          validationOnly: true,
+        });
+        baselineAccuracy = baselineEval.accuracy;
+      }
+
+      improved = finalAccuracy >= baselineAccuracy;
+      finalPromptToUse = improved ? bestPrompt : (userOriginalPrompt ?? initialPrompt);
+
+      logger.info(`   🧪 Final eval on ${finalAccuracyEvalSet} set (${evalDocIds.length} doc(s)): ${(finalAccuracy * 100).toFixed(1)}% vs baseline ${(baselineAccuracy * 100).toFixed(1)}%`);
+      if (!improved) {
+        logger.warn(`   ⚠️ Optimized prompt did NOT beat the baseline on unseen docs - keeping original, will NOT recommend update`);
+      }
+    } catch (evalError) {
+      // If the consistent eval fails, fall back to the previous train-subset decision so a
+      // transient extraction error doesn't abort the whole field.
+      logger.warn(`   ⚠️ Consistent final evaluation failed, falling back to train-subset decision:`, evalError as Error);
+      improved = finalAccuracy >= initialAccuracy;
+      finalPromptToUse = improved ? bestPrompt : initialPrompt;
+      finalAccuracyEvalSet = 'none';
+    }
   }
 
   const result: AgentAlphaFieldResult = {
@@ -309,6 +376,8 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
     sampledDocIds,
     improved,
     hasGroundTruth: hasAnyGroundTruth, // Track if accuracy metrics are meaningful
+    baselineAccuracy,
+    finalAccuracyEvalSet,
     // Experiment metadata for auditability
     experimentMetadata: {
       testModel,
@@ -324,75 +393,5 @@ export async function processAgentAlphaField(params: ProcessFieldParams): Promis
   logger.debug(`   📋 Result: initialPrompt="${String(initialPrompt).substring(0, 50)}..." finalPrompt="${String(finalPromptToUse).substring(0, 50)}..."`);
 
   return result;
-}
-
-/**
- * Process multiple fields in parallel on the server side.
- * This is a single server action that handles parallelization internally,
- * avoiding Next.js server action serialization.
- */
-export async function processAgentAlphaFieldsBatch(
-  fieldParams: ProcessFieldParams[],
-  concurrencyLimit: number = AGENT_ALPHA_CONFIG.FIELD_CONCURRENCY,
-  onFieldComplete?: (result: AgentAlphaFieldResult, index: number) => void
-): Promise<AgentAlphaFieldResult[]> {
-  logger.info(`Agent-Alpha Batch: Processing ${fieldParams.length} fields with concurrency ${concurrencyLimit}`);
-  
-  const results: AgentAlphaFieldResult[] = new Array(fieldParams.length);
-  const executing: Set<Promise<void>> = new Set();
-  
-  for (let i = 0; i < fieldParams.length; i++) {
-    const params = fieldParams[i];
-    const index = i;
-    
-    // Create a promise that processes the field and removes itself from the executing set when done
-    const fieldPromise = (async () => {
-      try {
-        const result = await processAgentAlphaField(params);
-        results[index] = result;
-        logger.info(`Agent-Alpha Batch: Field ${index + 1}/${fieldParams.length} completed (${params.fieldName})`);
-        if (onFieldComplete) {
-          try {
-            onFieldComplete(result, index);
-          } catch {
-            // Ignore callback errors
-          }
-        }
-      } catch (error) {
-        logger.error(`Agent-Alpha Batch: Field ${index + 1} failed (${params.fieldName})`, error as Error);
-        // Return a failed result
-        results[index] = {
-          fieldKey: params.fieldKey,
-          fieldName: params.fieldName,
-          initialAccuracy: params.initialAccuracy,
-          finalAccuracy: params.initialAccuracy,
-          iterationCount: 0,
-          initialPrompt: params.fieldPrompt || '',
-          userOriginalPrompt: params.fieldPrompt || null, // User's original or null if none
-          finalPrompt: params.fieldPrompt || '',
-          converged: false,
-          sampledDocIds: params.sampledDocIds,
-          improved: false,
-        };
-      }
-    })();
-    
-    // Track this promise and set up auto-removal when it completes
-    executing.add(fieldPromise);
-    fieldPromise.finally(() => {
-      executing.delete(fieldPromise);
-    });
-    
-    // Wait for a slot to open if we've hit the concurrency limit
-    if (executing.size >= concurrencyLimit) {
-      await Promise.race(executing);
-    }
-  }
-  
-  // Wait for all remaining fields
-  await Promise.all(executing);
-  
-  logger.info(`Agent-Alpha Batch: All ${fieldParams.length} fields completed`);
-  return results;
 }
 
